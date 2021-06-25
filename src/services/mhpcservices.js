@@ -1,5 +1,6 @@
 import apiClient from './apiClient'
 
+
 export default {
   getMhpcMastersCpdActivities() {
     return apiClient.get('/mhpc/masters-cme-activities/')

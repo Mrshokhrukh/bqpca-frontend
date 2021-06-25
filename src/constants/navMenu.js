@@ -1031,6 +1031,7 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/institutions/${serviceType}/track_dpr`,
 
       },
+      
       {
         name: 'Institute Profile',
         icon: getIconComponent('Building'),

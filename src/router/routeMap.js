@@ -440,6 +440,7 @@ export default {
       teaching_center_tracking: mhpcDashboard,
       new_education_program_application : mhpcDashboard,
       institute_dashboard: mhpcDashboard,
+      
 
       // ... other Health Certification routes for director
     },

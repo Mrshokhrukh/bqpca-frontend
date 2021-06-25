@@ -60,9 +60,9 @@
                     >
                       <Circle
                         class="h-4 w-4"
-                        :class="modalStatusInfo.iconClass" 
+                        :class="modalStatusInfo.iconClass"
                       />
-                      <span>{{ modalStatusInfo.displayText }}</span> {/* THIS IS THE TEXT TO CHANGE */}
+                      <span>{{ modalStatusInfo.displayText }}</span> 
                     </span>
                     <button
                       type="button"

@@ -1,642 +1,1142 @@
 <template>
-  <div class="min-h-screen bg-gray-50 py-8">
-    <div class="mx-auto">
-      <!-- Form Card -->
-      <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-        <!-- Header -->
-        <div class="bg-gradient-to-r from-blue-600 to-indigo-700 px-6 py-4">
-          <h2 class="text-2xl font-bold text-white">Institute Profile</h2>
-          <p class="text-blue-100 mt-1">Manage your educational institute details</p>
+  <div class="container mx-auto px-4 py-8">
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <h1 class="text-2xl font-bold text-gray-800 mb-6">Institute Profile</h1>
+
+      <div v-if="loading" class="flex justify-center items-center py-12">
+        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+
+      <form v-else @submit.prevent="submitForm" class="space-y-6">
+        <!-- Basic Information Section -->
+        <div class="border-b border-gray-200 pb-6">
+          <h2 class="text-lg font-medium text-gray-900 mb-4">Basic Information</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label for="name" class="block text-sm font-medium text-gray-700">Institute Name</label>
+              <input
+                type="text"
+                id="name"
+                v-model="formData.name"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                required
+              >
+            </div>
+
+            <div>
+              <label for="type" class="block text-sm font-medium text-gray-700">Institute Type</label>
+              <select
+                id="type"
+                v-model="formData.type"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                required
+              >
+                <option value="">Select type</option>
+                <option v-for="type in instituteTypes" :key="type" :value="type">{{ type }}</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="year_established" class="block text-sm font-medium text-gray-700">Year Established</label>
+              <input
+                type="number"
+                id="year_established"
+                v-model="formData.year_established"
+                min="1900"
+                :max="new Date().getFullYear()"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                required
+              >
+            </div>
+
+            <div>
+              <label for="website" class="block text-sm font-medium text-gray-700">Website</label>
+              <input
+                type="url"
+                id="website"
+                v-model="formData.website"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                placeholder="https://example.com"
+              >
+            </div>
+
+            <div class="md:col-span-2">
+              <label for="address" class="block text-sm font-medium text-gray-700">Address</label>
+              <textarea
+                id="address"
+                v-model="formData.address"
+                rows="2"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                required
+              ></textarea>
+            </div>
+
+            <div>
+              <label for="dzongkhag" class="block text-sm font-medium text-gray-700">Dzongkhag/Thromde</label>
+              <input
+                type="text"
+                id="dzongkhag"
+                v-model="formData.dzongkhag"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                required
+              >
+            </div>
+
+            <div>
+              <label for="affiliated_to" class="block text-sm font-medium text-gray-700">Affiliated To</label>
+              <input
+                type="text"
+                id="affiliated_to"
+                v-model="formData.affiliated_to"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              >
+            </div>
+
+            <div>
+              <label for="source_of_funding" class="block text-sm font-medium text-gray-700">Source of Funding</label>
+              <select
+                id="source_of_funding"
+                v-model="formData.source_of_funding"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              >
+                <option value="">Select funding source</option>
+                <option v-for="source in fundingSources" :key="source" :value="source">{{ source }}</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="total_area" class="block text-sm font-medium text-gray-700">Total Area (acres)</label>
+              <input
+                type="number"
+                id="total_area"
+                v-model="formData.total_area"
+                min="0"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              >
+            </div>
+
+            <div>
+              <label for="land_registration" class="block text-sm font-medium text-gray-700">Land Registration Certificate</label>
+              <input
+                type="file"
+                id="land_registration"
+                @change="handleFileUpload('land_registration', $event)"
+                class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+              >
+              <p v-if="formData.land_registration_file" class="mt-1 text-sm text-gray-500">
+                Current file: {{ formData.land_registration_file.name }}
+              </p>
+            </div>
+
+            <div>
+              <label for="tax_details" class="block text-sm font-medium text-gray-700">Latest Tax Details</label>
+              <input
+                type="file"
+                id="tax_details"
+                @change="handleFileUpload('tax_details', $event)"
+                class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+              >
+              <p v-if="formData.tax_details_file" class="mt-1 text-sm text-gray-500">
+                Current file: {{ formData.tax_details_file.name }}
+              </p>
+            </div>
+          </div>
         </div>
 
-        <!-- Success/Error Messages -->
-        <transition name="fade">
-          <div v-if="successMessage" class="mx-6 mt-4 p-3 bg-green-50 border-l-4 border-green-500 text-green-700 rounded flex items-center">
-            <CheckCircleIcon class="h-5 w-5 mr-2" />
-            {{ successMessage }}
-          </div>
-        </transition>
-
-        <transition name="fade">
-          <div v-if="errorMessage" class="mx-6 mt-4 p-3 bg-red-50 border-l-4 border-red-500 text-red-700 rounded flex items-center">
-            <ExclamationCircleIcon class="h-5 w-5 mr-2" />
-            {{ errorMessage }}
-          </div>
-        </transition>
-
-        <form @submit.prevent="handleSubmit" class="p-6 space-y-6">
-          <!-- Form Sections -->
+        <!-- Contact Information Section -->
+        <div class="border-b border-gray-200 pb-6">
+          <h2 class="text-lg font-medium text-gray-900 mb-4">Contact Information</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Basic Information Section -->
-            <div class="md:col-span-2">
-              <h3 class="text-lg font-medium text-gray-800 pb-2 border-b border-gray-200 mb-4">
-                Basic Information
-              </h3>
-            </div>
-
-            <!-- Institute Name -->
             <div>
-              <label for="name_of_institution" class="block text-sm font-medium text-gray-700">
-                Institute Name <span class="text-red-500">*</span>
-              </label>
-              <div class="mt-1 relative">
-                <input
-                  id="name_of_institution"
-                  v-model="form.name_of_institution"
-                  type="text"
-                  required
-                  class="block w-full px-3 py-2 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  :class="errors.name_of_institution ? 'border-red-300' : 'border-gray-300'"
-                  placeholder="Enter institute name"
-                  :disabled="!isEditing"
-                />
-                <p v-if="errors.name_of_institution" class="mt-1 text-sm text-red-600">{{ errors.name_of_institution }}</p>
-              </div>
+              <label for="telephone" class="block text-sm font-medium text-gray-700">Telephone</label>
+              <input
+                type="tel"
+                id="telephone"
+                v-model="formData.telephone"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                required
+              >
             </div>
 
-            <!-- Institute Type -->
             <div>
-              <label for="type_of_institution" class="block text-sm font-medium text-gray-700">
-                Institute Type <span class="text-red-500">*</span>
-              </label>
-              <div class="mt-1 relative">
-                <select
-                  id="type_of_institution"
-                  v-model="form.type_of_institution"
-                  required
-                  class="block w-full pl-3 pr-10 py-2 text-base border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  :class="errors.type_of_institution ? 'border-red-300' : 'border-gray-300'"
-                  :disabled="!isEditing || instituteTypes.length === 0"
-                >
-                  <option value="" disabled>Select Institute Type</option>
-                  <option v-for="type in instituteTypes" :key="type.id" :value="type.id">
-                    {{ type.name }}
-                  </option>
-                </select>
-                <p v-if="errors.type_of_institution" class="mt-1 text-sm text-red-600">{{ errors.type_of_institution }}</p>
-                <p v-if="instituteTypes.length === 0 && !isLoading && isEditing" class="mt-1 text-sm text-red-600">
-                  Failed to load institute types. Please try again later.
-                </p>
-              </div>
+              <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+              <input
+                type="email"
+                id="email"
+                v-model="formData.email"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                required
+              >
             </div>
 
-            <!-- Contact Information Section -->
-            <div class="md:col-span-2">
-              <h3 class="text-lg font-medium text-gray-800 pb-2 border-b border-gray-200 mb-4">
-                Contact Information
-              </h3>
-            </div>
-
-            <!-- Contact Email -->
             <div>
-              <label for="email_address" class="block text-sm font-medium text-gray-700">
-                Contact Email <span class="text-red-500">*</span>
-              </label>
-              <div class="mt-1 relative">
-                <div class="flex rounded-md shadow-sm">
-                  <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500">
-                    <EnvelopeIcon class="h-4 w-4" />
-                  </span>
-                  <input
-                    id="email_address"
-                    v-model="form.email_address"
-                    type="email"
-                    required
-                    class="flex-grow block w-full rounded-none rounded-r-md border focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    :class="errors.email_address ? 'border-red-300' : 'border-gray-300'"
-                    placeholder="institute@example.com"
-                    :disabled="!isEditing"
-                  />
-                </div>
-                <p v-if="errors.email_address" class="mt-1 text-sm text-red-600">{{ errors.email_address }}</p>
-              </div>
+              <label for="focal_person" class="block text-sm font-medium text-gray-700">Focal Person for IQA</label>
+              <input
+                type="text"
+                id="focal_person"
+                v-model="formData.focal_person"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                required
+              >
             </div>
 
-            <!-- Contact Number -->
             <div>
-              <label for="contact_number" class="block text-sm font-medium text-gray-700">
-                Contact number <span class="text-red-500">*</span>
-              </label>
-              <div class="mt-1 relative">
-                <div class="flex rounded-md shadow-sm">
-                  <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500">
-                    <PhoneIcon class="h-4 w-4" />
-                  </span>
-                  <input
-                    id="contact_number"
-                    v-model="form.contact_number"
-                    type="tel"
-                    required
-                    class="flex-grow block w-full rounded-none rounded-r-md border focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    :class="errors.contact_number ? 'border-red-300' : 'border-gray-300'"
-                    placeholder="+975 123 456 789"
-                    :disabled="!isEditing"
-                  />
-                </div>
-                <p v-if="errors.contact_number" class="mt-1 text-sm text-red-600">{{ errors.contact_number }}</p>
-              </div>
+              <label for="focal_person_contact" class="block text-sm font-medium text-gray-700">Focal Person Contact</label>
+              <input
+                type="tel"
+                id="focal_person_contact"
+                v-model="formData.focal_person_contact"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                required
+              >
             </div>
+          </div>
+        </div>
 
-            <!-- Location Address -->
-            <div class="md:col-span-2">
-              <label for="location_address" class="block text-sm font-medium text-gray-700">
-                Address <span class="text-red-500">*</span>
-              </label>
-              <div class="mt-1">
-                <textarea
-                  id="location_address"
-                  v-model="form.location_address"
-                  required
-                  rows="3"
-                  class="block w-full border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  :class="errors.location_address ? 'border-red-300' : 'border-gray-300'"
-                  placeholder="Full address of your institute"
-                  :disabled="!isEditing"
-                ></textarea>
-                <p v-if="errors.location_address" class="mt-1 text-sm text-red-600">{{ errors.location_address }}</p>
-              </div>
-            </div>
-
-            <!-- Dzongkhag/Thromde/City -->
-            <div class="md:col-span-2">
-              <label for="dzongkhag_thromde_city" class="block text-sm font-medium text-gray-700">
-                Dzongkhag <span class="text-red-500">*</span>
-              </label>
-              <div class="mt-1 relative">
-                <select
-                  id="dzongkhag_thromde_city"
-                  v-model="form.dzongkhag_thromde_city"
-                  required
-                  class="block w-full pl-3 pr-10 py-2 text-base border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  :class="errors.dzongkhag_thromde_city ? 'border-red-300' : 'border-gray-300'"
-                  :disabled="!isEditing || dzongkhags.length === 0"
-                >
-                  <option value="" disabled>Select Dzongkhag</option>
-                  <option v-for="dzongkhag in dzongkhags" :key="dzongkhag.id" :value="dzongkhag.id">
-                    {{ dzongkhag.name }}
-                  </option>
-                </select>
-                <p v-if="errors.dzongkhag_thromde_city" class="mt-1 text-sm text-red-600">{{ errors.dzongkhag_thromde_city }}</p>
-                <p v-if="dzongkhags.length === 0 && !isLoading && isEditing" class="mt-1 text-sm text-red-600">
-                  No Dzongkhag options available.
-                </p>
-              </div>
-            </div>
-
-            <!-- Website URL -->
-            <div class="md:col-span-2">
-              <label for="website_url" class="block text-sm font-medium text-gray-700">
-                Website URL
-              </label>
-              <div class="mt-1 relative">
-                <div class="flex rounded-md shadow-sm">
-                  <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500">
-                    <GlobeAltIcon class="h-4 w-4" />
-                  </span>
-                  <input
-                    id="website_url"
-                    v-model="form.website_url"
-                    type="url"
-                    class="flex-grow block w-full rounded-none rounded-r-md border focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    :class="errors.website_url ? 'border-red-300' : 'border-gray-300'"
-                    placeholder="https://www.example.edu"
-                    :disabled="!isEditing"
-                  />
-                </div>
-                <p v-if="errors.website_url" class="mt-1 text-sm text-red-600">{{ errors.website_url }}</p>
-              </div>
-            </div>
-
-            <!-- Institute Details Section -->
-            <div class="md:col-span-2">
-              <h3 class="text-lg font-medium text-gray-800 pb-2 border-b border-gray-200 mb-4">
-                Institute Details
-              </h3>
-            </div>
-
-            <!-- Establishment Date -->
+        <!-- Head of Institute Section -->
+        <div class="border-b border-gray-200 pb-6">
+          <h2 class="text-lg font-medium text-gray-900 mb-4">Head of Institute</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label for="year_of_establishment" class="block text-sm font-medium text-gray-700">
-                Establishment Date <span class="text-red-500">*</span>
-              </label>
-              <div class="mt-1 relative">
-                <div class="flex rounded-md shadow-sm">
-                  <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500">
-                    <CalendarIcon class="h-4 w-4" />
-                  </span>
-                  <input
-                    id="year_of_establishment"
-                    v-model="form.year_of_establishment"
-                    type="date"
-                    required
-                    class="flex-grow block w-full rounded-none rounded-r-md border focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    :class="errors.year_of_establishment ? 'border-red-300' : 'border-gray-300'"
-                    :disabled="!isEditing"
-                  />
-                </div>
-                <p v-if="errors.year_of_establishment" class="mt-1 text-sm text-red-600">{{ errors.year_of_establishment }}</p>
-              </div>
+              <label for="head_name" class="block text-sm font-medium text-gray-700">Name</label>
+              <input
+                type="text"
+                id="head_name"
+                v-model="formData.head_name"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                required
+              >
             </div>
 
-            <!-- Affiliation -->
             <div>
-              <label for="affiliation" class="block text-sm font-medium text-gray-700">
-                Affiliation
-              </label>
-              <div class="mt-1">
-                <input
-                  id="affiliation"
-                  v-model="form.affiliation"
-                  type="text"
-                  class="block w-full border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm border-gray-300"
-                  placeholder="Optional affiliation details"
-                  :disabled="!isEditing"
-                />
-                <p v-if="errors.affiliation" class="mt-1 text-sm text-red-600">{{ errors.affiliation }}</p>
-              </div>
+              <label for="head_position" class="block text-sm font-medium text-gray-700">Position</label>
+              <input
+                type="text"
+                id="head_position"
+                v-model="formData.head_position"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                required
+              >
+            </div>
+
+            <div>
+              <label for="head_email" class="block text-sm font-medium text-gray-700">Email</label>
+              <input
+                type="email"
+                id="head_email"
+                v-model="formData.head_email"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                required
+              >
+            </div>
+
+            <div>
+              <label for="head_contact" class="block text-sm font-medium text-gray-700">Contact</label>
+              <input
+                type="tel"
+                id="head_contact"
+                v-model="formData.head_contact"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                required
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Academic Information Section -->
+        <div class="border-b border-gray-200 pb-6">
+          <h2 class="text-lg font-medium text-gray-900 mb-4">Academic Information</h2>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div>
+              <label for="departments" class="block text-sm font-medium text-gray-700">Number of Departments</label>
+              <input
+                type="number"
+                id="departments"
+                v-model="formData.departments"
+                min="0"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              >
+            </div>
+
+            <div>
+              <label for="programs_total" class="block text-sm font-medium text-gray-700">Total Number of Programs</label>
+              <input
+                type="number"
+                id="programs_total"
+                v-model="formData.programs_total"
+                min="0"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              >
             </div>
           </div>
 
-          <!-- Submit Buttons -->
-          <div class="pt-4 border-t border-gray-200 flex justify-end space-x-3">
-            <!-- Reset Button -->
-            <button
-              v-if="isEditing"
-              type="button"
-              class="px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              @click="resetForm"
-              :disabled="isLoading"
-            >
-              Reset
-            </button>
+          <h3 class="text-md font-medium text-gray-700 mb-3">Program Breakdown</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+            <div>
+              <label for="programs_ug" class="block text-sm font-medium text-gray-700">Undergraduate</label>
+              <input
+                type="number"
+                id="programs_ug"
+                v-model="formData.programs_ug"
+                min="0"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              >
+            </div>
 
-            <!-- Edit Profile Button -->
-            <button
-              v-if="!isEditing"
-              type="button"
-              class="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              @click="enableEditing"
-              :disabled="mainButtonDisabled"
-            >
-              {{ mainButtonText }}
-            </button>
+            <div>
+              <label for="programs_pg" class="block text-sm font-medium text-gray-700">Postgraduate</label>
+              <input
+                type="number"
+                id="programs_pg"
+                v-model="formData.programs_pg"
+                min="0"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              >
+            </div>
 
-            <!-- Create/Update Profile Button -->
-            <button
-              v-if="isEditing"
-              type="submit"
-              :disabled="mainButtonDisabled"
-              class="inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              <span v-if="isLoading && isEditing" class="mr-2">
-                <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-              </span>
-              {{ mainButtonText }}
-            </button>
+            <div>
+              <label for="programs_doctoral" class="block text-sm font-medium text-gray-700">Doctoral</label>
+              <input
+                type="number"
+                id="programs_doctoral"
+                v-model="formData.programs_doctoral"
+                min="0"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              >
+            </div>
+
+            <div>
+              <label for="programs_other" class="block text-sm font-medium text-gray-700">Other</label>
+              <input
+                type="number"
+                id="programs_other"
+                v-model="formData.programs_other"
+                min="0"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              >
+            </div>
           </div>
-        </form>
-      </div>
 
-      <!-- Form help text -->
-      <div class="mt-4 text-sm text-gray-500 text-center">
-        <p>Fields marked with <span class="text-red-500">*</span> are required</p>
-      </div>
+          <div class="mb-6">
+            <label for="new_programs" class="block text-sm font-medium text-gray-700">New Programs Introduced (Last 5 Years)</label>
+            <textarea
+              id="new_programs"
+              v-model="formData.new_programs"
+              rows="3"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              placeholder="List new programs with introduction years"
+            ></textarea>
+          </div>
+
+          <div class="mb-6">
+            <label for="programs_with_electives" class="block text-sm font-medium text-gray-700">Number of Programs with Electives</label>
+            <input
+              type="number"
+              id="programs_with_electives"
+              v-model="formData.programs_with_electives"
+              min="0"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+            >
+            <div v-if="formData.programs_with_electives > 0" class="mt-2">
+              <label for="electives_details" class="block text-sm font-medium text-gray-700">Electives Details</label>
+              <textarea
+                id="electives_details"
+                v-model="formData.electives_details"
+                rows="2"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                placeholder="Specify electives"
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label for="working_days" class="block text-sm font-medium text-gray-700">Working Days (Last Academic Year)</label>
+              <input
+                type="number"
+                id="working_days"
+                v-model="formData.working_days"
+                min="0" max="365"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              >
+            </div>
+
+            <div>
+              <label for="teaching_days" class="block text-sm font-medium text-gray-700">Teaching Days (Last Academic Year)</label>
+              <input
+                type="number"
+                id="teaching_days"
+                v-model="formData.teaching_days"
+                min="0" max="365"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Faculty Information Section -->
+        <div class="border-b border-gray-200 pb-6">
+          <h2 class="text-lg font-medium text-gray-900 mb-4">Faculty Information</h2>
+
+          <h3 class="text-md font-medium text-gray-700 mb-3">Faculty by Gender</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+            <div>
+              <label for="faculty_female" class="block text-sm font-medium text-gray-700">Female</label>
+              <input
+                type="number"
+                id="faculty_female"
+                v-model="formData.faculty_female"
+                min="0"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              >
+            </div>
+
+            <div>
+              <label for="faculty_male" class="block text-sm font-medium text-gray-700">Male</label>
+              <input
+                type="number"
+                id="faculty_male"
+                v-model="formData.faculty_male"
+                min="0"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              >
+            </div>
+
+            <div>
+              <label for="faculty_total" class="block text-sm font-medium text-gray-700">Total</label>
+              <input
+                type="number"
+                id="faculty_total"
+                v-model="facultyTotal"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm bg-gray-100"
+                readonly
+              >
+            </div>
+          </div>
+
+          <h3 class="text-md font-medium text-gray-700 mb-3">Faculty by Employment Type</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+            <div>
+              <label for="regular_faculty_female" class="block text-sm font-medium text-gray-700">Regular (Female)</label>
+              <input
+                type="number"
+                id="regular_faculty_female"
+                v-model="formData.regular_faculty_female"
+                min="0"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              >
+            </div>
+
+            <div>
+              <label for="regular_faculty_male" class="block text-sm font-medium text-gray-700">Regular (Male)</label>
+              <input
+                type="number"
+                id="regular_faculty_male"
+                v-model="formData.regular_faculty_male"
+                min="0"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              >
+            </div>
+
+            <div>
+              <label for="regular_faculty_total" class="block text-sm font-medium text-gray-700">Regular Total</label>
+              <input
+                type="number"
+                id="regular_faculty_total"
+                v-model="regularFacultyTotal"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm bg-gray-100"
+                readonly
+              >
+            </div>
+
+            <div>
+              <label for="contract_faculty_female" class="block text-sm font-medium text-gray-700">Contract (Female)</label>
+              <input
+                type="number"
+                id="contract_faculty_female"
+                v-model="formData.contract_faculty_female"
+                min="0"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              >
+            </div>
+
+            <div>
+              <label for="contract_faculty_male" class="block text-sm font-medium text-gray-700">Contract (Male)</label>
+              <input
+                type="number"
+                id="contract_faculty_male"
+                v-model="formData.contract_faculty_male"
+                min="0"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              >
+            </div>
+
+            <div>
+              <label for="contract_faculty_total" class="block text-sm font-medium text-gray-700">Contract Total</label>
+              <input
+                type="number"
+                id="contract_faculty_total"
+                v-model="contractFacultyTotal"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm bg-gray-100"
+                readonly
+              >
+            </div>
+
+            <div>
+              <label for="visiting_faculty_female" class="block text-sm font-medium text-gray-700">Visiting (Female)</label>
+              <input
+                type="number"
+                id="visiting_faculty_female"
+                v-model="formData.visiting_faculty_female"
+                min="0"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              >
+            </div>
+
+            <div>
+              <label for="visiting_faculty_male" class="block text-sm font-medium text-gray-700">Visiting (Male)</label>
+              <input
+                type="number"
+                id="visiting_faculty_male"
+                v-model="formData.visiting_faculty_male"
+                min="0"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              >
+            </div>
+
+            <div>
+              <label for="visiting_faculty_total" class="block text-sm font-medium text-gray-700">Visiting Total</label>
+              <input
+                type="number"
+                id="visiting_faculty_total"
+                v-model="visitingFacultyTotal"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm bg-gray-100"
+                readonly
+              >
+            </div>
+          </div>
+
+          <h3 class="text-md font-medium text-gray-700 mb-3">Faculty by Qualification</h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div>
+              <label for="faculty_doctoral" class="block text-sm font-medium text-gray-700">Doctoral Degree</label>
+              <input
+                type="number"
+                id="faculty_doctoral"
+                v-model="formData.faculty_doctoral"
+                min="0"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              >
+            </div>
+
+            <div>
+              <label for="faculty_masters" class="block text-sm font-medium text-gray-700">Masters Degree</label>
+              <input
+                type="number"
+                id="faculty_masters"
+                v-model="formData.faculty_masters"
+                min="0"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              >
+            </div>
+
+            <div>
+              <label for="faculty_bachelors" class="block text-sm font-medium text-gray-700">Bachelors Degree</label>
+              <input
+                type="number"
+                id="faculty_bachelors"
+                v-model="formData.faculty_bachelors"
+                min="0"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Non-Teaching Staff Section -->
+        <div class="border-b border-gray-200 pb-6">
+          <h2 class="text-lg font-medium text-gray-900 mb-4">Non-Teaching Staff</h2>
+
+          <h3 class="text-md font-medium text-gray-700 mb-3">Technical Staff</h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div>
+              <label for="technical_staff_male" class="block text-sm font-medium text-gray-700">Male</label>
+              <input
+                type="number"
+                id="technical_staff_male"
+                v-model="formData.technical_staff_male"
+                min="0"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              >
+            </div>
+
+            <div>
+              <label for="technical_staff_female" class="block text-sm font-medium text-gray-700">Female</label>
+              <input
+                type="number"
+                id="technical_staff_female"
+                v-model="formData.technical_staff_female"
+                min="0"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              >
+            </div>
+
+            <div>
+              <label for="technical_staff_total" class="block text-sm font-medium text-gray-700">Total</label>
+              <input
+                type="number"
+                id="technical_staff_total"
+                v-model="technicalStaffTotal"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm bg-gray-100"
+                readonly
+              >
+            </div>
+          </div>
+
+          <h3 class="text-md font-medium text-gray-700 mb-3">Administrative Staff</h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div>
+              <label for="admin_staff_male" class="block text-sm font-medium text-gray-700">Male</label>
+              <input
+                type="number"
+                id="admin_staff_male"
+                v-model="formData.admin_staff_male"
+                min="0"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              >
+            </div>
+
+            <div>
+              <label for="admin_staff_female" class="block text-sm font-medium text-gray-700">Female</label>
+              <input
+                type="number"
+                id="admin_staff_female"
+                v-model="formData.admin_staff_female"
+                min="0"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              >
+            </div>
+
+            <div>
+              <label for="admin_staff_total" class="block text-sm font-medium text-gray-700">Total</label>
+              <input
+                type="number"
+                id="admin_staff_total"
+                v-model="adminStaffTotal"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm bg-gray-100"
+                readonly
+              >
+            </div>
+          </div>
+
+          <h3 class="text-md font-medium text-gray-700 mb-3">Support Staff</h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div>
+              <label for="support_staff_male" class="block text-sm font-medium text-gray-700">Male</label>
+              <input
+                type="number"
+                id="support_staff_male"
+                v-model="formData.support_staff_male"
+                min="0"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              >
+            </div>
+
+            <div>
+              <label for="support_staff_female" class="block text-sm font-medium text-gray-700">Female</label>
+              <input
+                type="number"
+                id="support_staff_female"
+                v-model="formData.support_staff_female"
+                min="0"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              >
+            </div>
+
+            <div>
+              <label for="support_staff_total" class="block text-sm font-medium text-gray-700">Total</label>
+              <input
+                type="number"
+                id="support_staff_total"
+                v-model="supportStaffTotal"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm bg-gray-100"
+                readonly
+              >
+            </div>
+          </div>
+
+          <div class="mt-6">
+            <label for="non_teaching_staff_total" class="block text-sm font-medium text-gray-700">Total Non-Teaching Staff</label>
+            <input
+              type="number"
+              id="non_teaching_staff_total"
+              v-model="nonTeachingStaffTotal"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm bg-gray-100"
+              readonly
+            >
+          </div>
+        </div>
+
+        <!-- Student Information Section -->
+        <div class="pb-6">
+          <h2 class="text-lg font-medium text-gray-900 mb-4">Student Information</h2>
+
+          <h3 class="text-md font-medium text-gray-700 mb-3">Students by Program Level</h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div>
+              <label for="students_diploma_male" class="block text-sm font-medium text-gray-700">Diploma (Male)</label>
+              <input
+                type="number"
+                id="students_diploma_male"
+                v-model="formData.students_diploma_male"
+                min="0"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              >
+            </div>
+
+            <div>
+              <label for="students_diploma_female" class="block text-sm font-medium text-gray-700">Diploma (Female)</label>
+              <input
+                type="number"
+                id="students_diploma_female"
+                v-model="formData.students_diploma_female"
+                min="0"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              >
+            </div>
+
+            <div>
+              <label for="students_diploma_total" class="block text-sm font-medium text-gray-700">Diploma Total</label>
+              <input
+                type="number"
+                id="students_diploma_total"
+                v-model="studentsDiplomaTotal"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm bg-gray-100"
+                readonly
+              >
+            </div>
+
+            <div>
+              <label for="students_bachelors_male" class="block text-sm font-medium text-gray-700">Bachelors (Male)</label>
+              <input
+                type="number"
+                id="students_bachelors_male"
+                v-model="formData.students_bachelors_male"
+                min="0"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              >
+            </div>
+
+            <div>
+              <label for="students_bachelors_female" class="block text-sm font-medium text-gray-700">Bachelors (Female)</label>
+              <input
+                type="number"
+                id="students_bachelors_female"
+                v-model="formData.students_bachelors_female"
+                min="0"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              >
+            </div>
+
+            <div>
+              <label for="students_bachelors_total" class="block text-sm font-medium text-gray-700">Bachelors Total</label>
+              <input
+                type="number"
+                id="students_bachelors_total"
+                v-model="studentsBachelorsTotal"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm bg-gray-100"
+                readonly
+              >
+            </div>
+
+            <div>
+              <label for="students_masters_male" class="block text-sm font-medium text-gray-700">Masters (Male)</label>
+              <input
+                type="number"
+                id="students_masters_male"
+                v-model="formData.students_masters_male"
+                min="0"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              >
+            </div>
+
+            <div>
+              <label for="students_masters_female" class="block text-sm font-medium text-gray-700">Masters (Female)</label>
+              <input
+                type="number"
+                id="students_masters_female"
+                v-model="formData.students_masters_female"
+                min="0"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              >
+            </div>
+
+            <div>
+              <label for="students_masters_total" class="block text-sm font-medium text-gray-700">Masters Total</label>
+              <input
+                type="number"
+                id="students_masters_total"
+                v-model="studentsMastersTotal"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm bg-gray-100"
+                readonly
+              >
+            </div>
+
+            <div>
+              <label for="students_other_male" class="block text-sm font-medium text-gray-700">Other (Male)</label>
+              <input
+                type="number"
+                id="students_other_male"
+                v-model="formData.students_other_male"
+                min="0"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              >
+            </div>
+
+            <div>
+              <label for="students_other_female" class="block text-sm font-medium text-gray-700">Other (Female)</label>
+              <input
+                type="number"
+                id="students_other_female"
+                v-model="formData.students_other_female"
+                min="0"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              >
+            </div>
+
+            <div>
+              <label for="students_other_total" class="block text-sm font-medium text-gray-700">Other Total</label>
+              <input
+                type="number"
+                id="students_other_total"
+                v-model="studentsOtherTotal"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm bg-gray-100"
+                readonly
+              >
+            </div>
+          </div>
+
+          <div class="mt-6">
+            <label for="students_total" class="block text-sm font-medium text-gray-700">Total Students</label>
+            <input
+              type="number"
+              id="students_total"
+              v-model="studentsTotal"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm bg-gray-100"
+              readonly
+            >
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="flex justify-end space-x-4">
+          <button
+            type="button"
+            @click="resetForm"
+            class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            Reset
+          </button>
+          <button
+            type="submit"
+            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            :disabled="submitting"
+          >
+            <span v-if="submitting" class="inline-flex items-center">
+              <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Saving...
+            </span>
+            <span v-else>Save Profile</span>
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+import { useToast } from 'vue-toastification';
 import apiService from '@/services/services'; // Ensure this path is correct
-import { bhutanDzongkhagsGewogs } from '@/constants/dzongkhags.js'; // Ensure this path is correct
-import {
-  EnvelopeIcon,
-  PhoneIcon,
-  CalendarIcon,
-  CheckCircleIcon,
-  ExclamationCircleIcon,
-  GlobeAltIcon,
-} from '@heroicons/vue/24/outline';
 
-// Reactive form data
-const form = reactive({
-  name_of_institution: '',
-  location_address: '',
-  email_address: '',
-  contact_number: '',
-  year_of_establishment: '',
-  type_of_institution: '',
-  affiliation: '',
-  website_url: '',
-  dzongkhag_thromde_city: '',
+const toast = useToast();
+
+const loading = ref(true);
+const submitting = ref(false);
+const profileId = ref(null);
+
+// Sample data for dropdowns
+const instituteTypes = ref([
+  'Public University',
+  'Private University',
+  'College',
+  'Institute',
+  'Other'
+]);
+
+const fundingSources = ref([
+  'Government',
+  'Private',
+  'Donor',
+  'Mixed',
+  'Other'
+]);
+
+// Form data structure
+const formData = ref({
+  // Basic Information
+  name: '',
+  type: '',
+  year_established: '', // Will be parsed as number by input type="number"
+  website: '',
+  address: '',
+  dzongkhag: '',
+  affiliated_to: '',
+  source_of_funding: '',
+  total_area: '', // Will be parsed as number
+  land_registration_file: null,
+  tax_details_file: null,
+
+  // Contact Information
+  telephone: '',
+  email: '',
+  focal_person: '',
+  focal_person_contact: '',
+
+  // Head of Institute
+  head_name: '',
+  head_position: '',
+  head_email: '',
+  head_contact: '',
+
+  // Academic Information
+  departments: 0,
+  programs_total: 0,
+  programs_ug: 0,
+  programs_pg: 0,
+  programs_doctoral: 0,
+  programs_other: 0,
+  programs_with_electives: 0,
+  electives_details: '',
+  new_programs: '',
+  working_days: 0,
+  teaching_days: 0,
+
+  // Faculty Information
+  faculty_female: 0,
+  faculty_male: 0,
+  regular_faculty_female: 0,
+  regular_faculty_male: 0,
+  contract_faculty_female: 0,
+  contract_faculty_male: 0,
+  visiting_faculty_female: 0,
+  visiting_faculty_male: 0,
+  faculty_doctoral: 0,
+  faculty_masters: 0,
+  faculty_bachelors: 0,
+
+  // Non-Teaching Staff
+  technical_staff_male: 0,
+  technical_staff_female: 0,
+  admin_staff_male: 0,
+  admin_staff_female: 0,
+  support_staff_male: 0,
+  support_staff_female: 0,
+
+  // Student Information
+  students_diploma_male: 0,
+  students_diploma_female: 0,
+  students_bachelors_male: 0,
+  students_bachelors_female: 0,
+  students_masters_male: 0,
+  students_masters_female: 0,
+  students_other_male: 0,
+  students_other_female: 0,
 });
 
-// State variables
-const instituteTypes = ref([]);
-const dzongkhags = ref([]);
-const profileId = ref(null);
-const successMessage = ref('');
-const errorMessage = ref('');
-const isLoading = ref(false);
-const errors = reactive({});
-const originalFormState = ref({});
-const isEditing = ref(true);
+// Computed properties for totals
+const facultyTotal = computed(() => {
+  return Number(formData.value.faculty_female) + Number(formData.value.faculty_male);
+});
 
-// Validation function
-const validateForm = () => {
-  Object.keys(errors).forEach((key) => delete errors[key]);
-  let isValid = true;
+const regularFacultyTotal = computed(() => {
+  return Number(formData.value.regular_faculty_female) + Number(formData.value.regular_faculty_male);
+});
 
-  if (!form.name_of_institution?.trim()) {
-    errors.name_of_institution = 'Institute name is required';
-    isValid = false;
+const contractFacultyTotal = computed(() => {
+  return Number(formData.value.contract_faculty_female) + Number(formData.value.contract_faculty_male);
+});
+
+const visitingFacultyTotal = computed(() => {
+  return Number(formData.value.visiting_faculty_female) + Number(formData.value.visiting_faculty_male);
+});
+
+const technicalStaffTotal = computed(() => {
+  return Number(formData.value.technical_staff_female) + Number(formData.value.technical_staff_male);
+});
+
+const adminStaffTotal = computed(() => {
+  return Number(formData.value.admin_staff_female) + Number(formData.value.admin_staff_male);
+});
+
+const supportStaffTotal = computed(() => {
+  return Number(formData.value.support_staff_female) + Number(formData.value.support_staff_male);
+});
+
+const nonTeachingStaffTotal = computed(() => {
+  return technicalStaffTotal.value + adminStaffTotal.value + supportStaffTotal.value;
+});
+
+const studentsDiplomaTotal = computed(() => {
+  return Number(formData.value.students_diploma_female) + Number(formData.value.students_diploma_male);
+});
+
+const studentsBachelorsTotal = computed(() => {
+  return Number(formData.value.students_bachelors_female) + Number(formData.value.students_bachelors_male);
+});
+
+const studentsMastersTotal = computed(() => {
+  return Number(formData.value.students_masters_female) + Number(formData.value.students_masters_male);
+});
+
+const studentsOtherTotal = computed(() => {
+  return Number(formData.value.students_other_female) + Number(formData.value.students_other_male);
+});
+
+const studentsTotal = computed(() => {
+  return studentsDiplomaTotal.value + studentsBachelorsTotal.value + studentsMastersTotal.value + studentsOtherTotal.value;
+});
+
+// Methods
+const handleFileUpload = (field, event) => {
+  const file = event.target.files[0];
+  if (file) {
+    formData.value[`${field}_file`] = file;
   }
-  if (!form.location_address?.trim()) {
-    errors.location_address = 'Address is required';
-    isValid = false;
-  }
-  if (!form.email_address?.trim()) {
-    errors.email_address = 'Contact email is required';
-    isValid = false;
-  } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(form.email_address)) {
-    errors.email_address = 'Please enter a valid email address';
-    isValid = false;
-  }
-  if (!form.contact_number?.trim()) {
-    errors.contact_number = 'Contact phone is required';
-    isValid = false;
-  } else if (!/^\+?[\d\s-(){}.]{7,20}$/.test(form.contact_number)) {
-    errors.contact_number = 'Please enter a valid phone number';
-    isValid = false;
-  }
-  if (!form.year_of_establishment) {
-    errors.year_of_establishment = 'Establishment date is required';
-    isValid = false;
-  } else {
-    const estDate = new Date(form.year_of_establishment);
-    if (isNaN(estDate.getTime())) {
-      errors.year_of_establishment = 'Invalid establishment date format.';
-      isValid = false;
-    }
-  }
-  if (!form.type_of_institution) {
-    errors.type_of_institution = 'Please select an institute type';
-    isValid = false;
-  }
-  if (!form.dzongkhag_thromde_city) {
-    errors.dzongkhag_thromde_city = 'Please select a Dzongkhag';
-    isValid = false;
-  }
-  if (form.website_url?.trim() && !/^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w-./?%&=]*)?$/.test(form.website_url)) {
-    errors.website_url = 'Please enter a valid website URL';
-    isValid = false;
-  }
-  return isValid;
 };
 
-// Form submission handler
-const handleSubmit = async () => {
-  if (!isEditing.value) {
-    console.warn('handleSubmit called while not in editing mode.');
-    return;
+const resetForm = () => {
+  if (confirm('Are you sure you want to reset all changes to the last saved state?')) {
+    loadProfile(); // Reloads data from the server
   }
-  if (!validateForm()) {
-    errorMessage.value = 'Please correct the errors in the form.';
-    setTimeout(() => {
-      errorMessage.value = '';
-    }, 5000);
-    return;
-  }
+};
 
-  isLoading.value = true;
-  successMessage.value = '';
-  errorMessage.value = '';
-  Object.keys(errors).forEach((key) => delete errors[key]);
-
+const loadProfile = async () => {
   try {
-    const formData = new FormData();
-    formData.append('name_of_institution', form.name_of_institution || '');
-    formData.append('type_of_institution', form.type_of_institution || '');
-    formData.append('email_address', form.email_address || '');
-    formData.append('contact_number', form.contact_number || '');
-    formData.append('location_address', form.location_address || '');
-    formData.append('dzongkhag_thromde_city', form.dzongkhag_thromde_city || '');
-    formData.append('year_of_establishment', form.year_of_establishment ? new Date(form.year_of_establishment).getFullYear().toString() : '');
-    formData.append('affiliation', form.affiliation || '');
-    formData.append('website', form.website_url || '');
+    loading.value = true;
+    const response = await apiService.getMyInstituteProfile(); // Ensure this API endpoint exists and returns data in the expected format
 
-    console.log('Submitting FormData for handleSubmit:');
-    for (let [key, value] of formData.entries()) {
-      console.log(`  ${key}: ${value}`);
-    }
-
-    let apiResponse;
-    if (profileId.value) {
-      apiResponse = await apiService.updateInstituteProfile(profileId.value, formData);
-      successMessage.value = 'Institute profile updated successfully!';
-    } else {
-      apiResponse = await apiService.createInstituteProfile(formData);
-      if (apiResponse && apiResponse.data && apiResponse.data.id) {
-        profileId.value = apiResponse.data.id;
-      } else {
-        console.warn('Profile created, but ID not found in API response:', apiResponse);
-      }
-      successMessage.value = 'Institute profile created successfully!';
-    }
-
-    saveOriginalFormState();
-    isEditing.value = false;
-
-    setTimeout(() => {
-      successMessage.value = '';
-    }, 5000);
-  } catch (error) {
-    console.error('Error saving profile:', error);
-    if (error.response?.data && typeof error.response.data === 'object') {
-      Object.keys(error.response.data).forEach((key) => {
-        const errorValue = error.response.data[key];
-        const frontendKey = key === 'website' ? 'website_url' : key;
-
-        if (Array.isArray(errorValue) && errorValue.length > 0) {
-          errors[frontendKey] = errorValue[0];
-        } else if (typeof errorValue === 'string') {
-          errors[frontendKey] = errorValue;
-        } else {
-          errors[frontendKey] = 'Error for this field.';
+    if (response && response.data) {
+      profileId.value = response.data.id;
+      // Map the API response to our form data structure
+      // Ensure all fields from response.data exist in formData and types match, or handle conversions
+      Object.keys(formData.value).forEach(key => {
+        if (Object.prototype.hasOwnProperty.call(response.data, key)) {
+            if (key.endsWith('_file')) {
+                // For file fields, we might get a URL or path from backend.
+                // Here, we're assuming the API might return a filename or path for display purposes,
+                // but the actual File object is only handled on new uploads.
+                // If the backend returns a URL to the file, you might want to store it differently,
+                // e.g., in a separate ref or by modifying formData structure to hold both path and new file object.
+                // For simplicity, we'll just assign it if backend provides, though this might not be a File object.
+                // A common pattern is to show a link to the existing file and only update if a new file is chosen.
+                // formData.value[key] = response.data[key]; // This line might need adjustment based on API response for files
+            } else if (typeof formData.value[key] === 'number' && typeof response.data[key] === 'string') {
+                 formData.value[key] = Number(response.data[key]) || 0;
+            } else if (typeof formData.value[key] === 'number' && response.data[key] === null) {
+                formData.value[key] = 0; // Or handle as appropriate
+            }
+             else {
+                 formData.value[key] = response.data[key] === null && typeof formData.value[key] === 'string' ? '' : response.data[key];
+            }
         }
       });
-      errorMessage.value = 'Please correct the errors below.';
+
+
     } else {
-      errorMessage.value = error.response?.data?.message || error.message || 'Failed to save profile. Please try again.';
-    }
-    setTimeout(() => {
-      errorMessage.value = '';
-    }, 7000);
-  } finally {
-    isLoading.value = false;
-  }
-};
-
-// Save original form state (deep copy)
-const saveOriginalFormState = () => {
-  originalFormState.value = JSON.parse(JSON.stringify(form));
-};
-
-// Reset form to last saved state
-const resetForm = () => {
-  if (!isEditing.value) return;
-
-  Object.keys(originalFormState.value).forEach((key) => {
-    if (Object.hasOwn(form, key)) {
-      form[key] = originalFormState.value[key];
-    }
-  });
-  Object.keys(errors).forEach((key) => delete errors[key]);
-  successMessage.value = '';
-  errorMessage.value = '';
-};
-
-// Enable editing mode
-const enableEditing = () => {
-  isEditing.value = true;
-  successMessage.value = '';
-  errorMessage.value = '';
-};
-
-// Fetch initial data on mount
-onMounted(async () => {
-  isLoading.value = true;
-
-  try {
-    // Map dzongkhags
-    try {
-      if (Array.isArray(bhutanDzongkhagsGewogs)) {
-        dzongkhags.value = bhutanDzongkhagsGewogs.map((item, index) => ({
-          id: item.id || String(index + 1),
-          name: item.dzongkhag,
-        }));
-      } else {
-        errorMessage.value = 'Failed to load Dzongkhag options (data format error).';
-      }
-    } catch (dzongkhagError) {
-      console.error('Error mapping dzongkhags:', dzongkhagError);
-      errorMessage.value = 'Failed to load Dzongkhag options.';
-    }
-
-    // Fetch institute types
-    try {
-      const typesResponse = await apiService.getMastersInstituteTypes();
-      if (typesResponse.data && Array.isArray(typesResponse.data.results)) {
-        instituteTypes.value = typesResponse.data.results.map((item) => ({
-          id: item.id,
-          name: item.name_of_institute,
-        }));
-      } else {
-        errorMessage.value = (errorMessage.value ? errorMessage.value + ' ' : '') + 'Invalid institute types response format.';
-      }
-    } catch (typeError) {
-      console.error('Error fetching institute types:', typeError);
-      errorMessage.value = (errorMessage.value ? errorMessage.value + ' ' : '') + 'Failed to load institute types.';
-    }
-
-    // Fetch existing profile
-    try {
-      const profileResponse = await apiService.getMyInstituteProfile();
-      const profileData = profileResponse.data;
-      console.log('Fetched Profile Data onMount:', JSON.parse(JSON.stringify(profileData || {})));
-
-      if (profileData && profileData.id) {
-        profileId.value = profileData.id;
-
-        form.name_of_institution = profileData.name_of_institution || '';
-        form.location_address = profileData.location_address || '';
-        form.email_address = profileData.email_address || '';
-        form.contact_number = profileData.contact_number || '';
-        form.type_of_institution = profileData.type_of_institution || '';
-        form.dzongkhag_thromde_city = profileData.dzongkhag_thromde_city || '';
-        form.affiliation = profileData.affiliation || '';
-        form.website_url = profileData.website || '';
-
-        if (profileData.year_of_establishment) {
-          const yearStr = String(profileData.year_of_establishment);
-          if (/^\d{4}$/.test(yearStr)) {
-            form.year_of_establishment = `${yearStr}-01-01`;
-          } else if (!/^\d{4}-\d{2}-\d{2}$/.test(yearStr)) {
-            const parsedDate = new Date(yearStr);
-            if (!isNaN(parsedDate.getTime())) {
-              form.year_of_establishment = parsedDate.toISOString().split('T')[0];
-            } else {
-              form.year_of_establishment = '';
-            }
-          } else {
-            form.year_of_establishment = yearStr;
-          }
+      // Handle case where no profile exists yet, or API returns empty/null
+      // Reset formData to initial state or default values if needed
+      Object.keys(formData.value).forEach(key => {
+        if (key.endsWith('_file')) {
+          formData.value[key] = null;
+        } else if (typeof formData.value[key] === 'number') {
+          formData.value[key] = 0;
         } else {
-          form.year_of_establishment = '';
+          formData.value[key] = '';
         }
-
-        console.log('Form state after populating from API:', JSON.parse(JSON.stringify(form)));
-        isEditing.value = false;
-      } else {
-        Object.keys(form).forEach((key) => (form[key] = ''));
-        isEditing.value = true;
-      }
-    } catch (profileError) {
-      if (profileError.response?.status === 404) {
-        console.log('No profile found, ready to create one.');
-        Object.keys(form).forEach((key) => (form[key] = ''));
-        isEditing.value = true;
-      } else {
-        console.error('Error fetching profile:', profileError);
-        errorMessage.value = (errorMessage.value ? errorMessage.value + ' ' : '') + 'Failed to load existing profile.';
-        isEditing.value = true;
-      }
+      });
+      profileId.value = null; // No existing profile
     }
   } catch (error) {
-    console.error('Unexpected error during component initialization:', error);
-    errorMessage.value = (errorMessage.value ? errorMessage.value + ' ' : '') + 'Failed to initialize form data.';
-    isEditing.value = true;
+    toast.error('Failed to load institute profile.');
+    console.error('Error loading profile:', error);
+    // Optionally, reset form or show specific error state
   } finally {
-    saveOriginalFormState();
-    console.log('Original form state saved onMount:', JSON.parse(JSON.stringify(originalFormState.value)));
-    isLoading.value = false;
-    if (errorMessage.value) {
-      setTimeout(() => {
-        errorMessage.value = '';
-      }, 7000);
-    }
+    loading.value = false;
   }
+};
+
+const submitForm = async () => {
+  try {
+    submitting.value = true;
+
+    const dataToSubmit = new FormData();
+
+    Object.keys(formData.value).forEach(key => {
+      if (key.endsWith('_file')) {
+        if (formData.value[key] instanceof File) { // Only append if it's a new File object
+          dataToSubmit.append(key.replace('_file', ''), formData.value[key]);
+        }
+      } else if (formData.value[key] !== null && formData.value[key] !== undefined) {
+        // Ensure numbers are sent as numbers if required by backend, FormData converts to string.
+        // If backend expects specific types, you might need to JSON.stringify parts of data or use a different content type.
+        // For 'multipart/form-data', values are typically strings or Files.
+        dataToSubmit.append(key, formData.value[key]);
+      }
+    });
+
+    // Add computed totals if your backend expects them explicitly
+    // dataToSubmit.append('faculty_total', facultyTotal.value);
+    // ... and so on for other totals, if needed. Usually, backend calculates these.
+
+    if (profileId.value) {
+      await apiService.updateInstituteProfile(profileId.value, dataToSubmit);
+      toast.success('Institute profile updated successfully!');
+    } else {
+      const response = await apiService.createInstituteProfile(dataToSubmit);
+      toast.success('Institute profile created successfully!');
+      if (response && response.data && response.data.id) {
+        profileId.value = response.data.id; // Store new ID
+      }
+      // Optionally reload profile to ensure form data reflects server state, including any server-generated fields
+      // await loadProfile();
+    }
+    // After successful submission, you might want to reload the profile to get the latest data including file URLs etc.
+    await loadProfile();
+
+  } catch (error) {
+    let errorMessage = 'Failed to save institute profile.';
+    if (error.response && error.response.data && error.response.data.message) {
+        errorMessage = error.response.data.message;
+    } else if (error.message) {
+        errorMessage = error.message;
+    }
+    toast.error(errorMessage);
+    console.error('Error saving profile:', error.response?.data || error);
+  } finally {
+    submitting.value = false;
+  }
+};
+
+// Load profile when component mounts
+onMounted(() => {
+  loadProfile();
 });
 
-// Computed property for the main action button text
-const mainButtonText = computed(() => {
-  if (!isEditing.value) return 'Edit Profile';
-  if (isEditing.value && isLoading.value) return 'Saving...';
-  return profileId.value ? 'Update Profile' : 'Create Profile';
-});
-
-// Computed property for main action button's disabled state
-const mainButtonDisabled = computed(() => {
-  if (isLoading.value) return true;
-  if (isEditing.value) {
-    if (!profileId.value && (instituteTypes.value.length === 0 || dzongkhags.value.length === 0)) {
-      return true;
-    }
-  }
-  return false;
-});
+// No return statement is needed with <script setup>
+// All top-level bindings are automatically exposed to the template
 </script>
-
-<style scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-</style>

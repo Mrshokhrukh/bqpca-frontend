@@ -75,7 +75,8 @@
         <div class="flex gap-4 w-full sm:w-auto justify-end">
           <button
             @click="fetchApplications"
-            class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700"
+            :disabled="isLoading"
+            class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 disabled:opacity-50"
             aria-label="Refresh applications"
           >
             Refresh
@@ -151,10 +152,10 @@
                   :class="['px-2.5 py-0.5 text-xs font-medium rounded-full', getStatusColor(application.do_dpr_review_decision)]"
                   :title="getStatusTooltip(application.do_dpr_review_decision)"
                 >
-                  {{ application.do_dpr_review_decision || 'N/A' }}
+                  {{ application.do_dpr_review_decision || application.application_status || 'N/A' }}
                 </span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatDate(application.created_at || application.commencement_date) }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatDate(application.created_at) }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                 <button @click="viewApplicationDetails(application)" class="text-indigo-600 hover:text-indigo-900" title="View Details">View</button>
                  <button
@@ -196,7 +197,7 @@
               Previous
             </button>
             <button
-              v-for="page in totalPages"
+              v-for="page in totalPagesArray"
               :key="page"
               @click="currentPage = page"
               :class="[
@@ -240,7 +241,7 @@
         </svg>
         <h3 class="mt-2 text-lg font-medium text-gray-900">No DPR Applications Found</h3>
         <p class="mt-1 text-sm text-gray-500">
-          You currently don't have any DPR applications matching your records in the system.
+          No DPR applications found matching your records or filters.
         </p>
         <button
           @click="openNewApplicationModal"
@@ -271,7 +272,8 @@
           </button>
           <button
             @click="handleProceedWithPaymentFlow"
-            class="inline-flex items-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700"
+            :disabled="isActionLoading[selectedApplication?.id || '']"
+            class="inline-flex items-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700 disabled:opacity-50"
           >
             Proceed
           </button>
@@ -292,14 +294,15 @@
         </p>
         <div class="flex justify-end gap-4">
           <button
-            @click="showCertificateModal = false, selectedApplication = null"
+            @click="closeCertificateModal"
             class="inline-flex items-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
           >
             Cancel
           </button>
           <button
             @click="handleViewCertificate(selectedApplication)"
-            class="inline-flex items-center rounded-md border border-transparent bg-green-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-green-700"
+            :disabled="isActionLoading[selectedApplication?.id || '']"
+            class="inline-flex items-center rounded-md border border-transparent bg-green-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-green-700 disabled:opacity-50"
           >
             View Certificate
           </button>
@@ -322,7 +325,7 @@
       @application-submitted="handleApplicationSubmitted"
     />
 
-    <!-- Application Details Modal (Placeholder) -->
+    <!-- Application Details Modal -->
      <div v-if="showDetailsModal && viewingApplication" class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50 p-4">
         <div class="bg-white rounded-lg shadow-xl p-6 md:p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4">
@@ -337,8 +340,8 @@
                 <div class="pb-4 border-b border-gray-100">
                     <h4 class="text-lg font-semibold text-gray-900 mb-1">{{ viewingApplication.name_of_institution }}</h4>
                     <p class="text-sm text-gray-500 mb-2">CID: {{ viewingApplication.CID }} | DPR Name: {{ viewingApplication.dpr_name }}</p>
-                    <span :class="['px-2.5 py-1 text-xs font-medium rounded-full', getStatusColor(viewingApplication.do_dpr_review_decision)]" :title="getStatusTooltip(viewingApplication.do_dpr_review_decision)">
-                        {{ viewingApplication.do_dpr_review_decision || 'N/A' }}
+                    <span :class="['px-2.5 py-1 text-xs font-medium rounded-full', getStatusColor(viewingApplication.do_dpr_review_decision || viewingApplication.application_status)]" :title="getStatusTooltip(viewingApplication.do_dpr_review_decision || viewingApplication.application_status)">
+                        {{ viewingApplication.do_dpr_review_decision || viewingApplication.application_status || 'N/A' }}
                     </span>
                 </div>
 
@@ -356,6 +359,7 @@
                     <div>
                         <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Location</p>
                         <p class="text-sm text-gray-700">{{ viewingApplication.dzongkhag }}, {{ viewingApplication.gewog || 'N/A' }}</p>
+                         <p class="text-sm text-gray-700">{{ viewingApplication.address }}</p>
                     </div>
                     <div>
                         <p class="text-xs font-medium text-gray-500 uppercase tracking-wider">Course Start Date</p>
@@ -371,7 +375,7 @@
                             <p class="text-sm text-gray-600 break-words">{{ viewingApplication.executive_summary || 'Not provided' }}</p>
                         </div>
                         <div>
-                            <p class="text-sm font-semibold text-gray-800 mb-1">DPR Review Summary</p>
+                            <p class="text-sm font-semibold text-gray-800 mb-1">DPR Review Summary (by DO)</p>
                             <p class="text-sm text-gray-600 break-words">{{ viewingApplication.do_dpr_review_summary || 'Pending Review' }}</p>
                         </div>
                     </div>
@@ -382,15 +386,16 @@
                     <div class="flex flex-wrap gap-x-6 gap-y-4">
                         <div>
                             <p class="text-sm font-semibold text-gray-800">Program Type</p>
-                            <p class="text-sm text-gray-600">{{ viewingApplication.type_of_programme === 'D' ? 'Diploma' : viewingApplication.type_of_programme === 'B' ? 'Bachelor' : 'Other' }}</p>
+                            <!-- Assuming program_type is an object with a name after fetch, or just the ID if not expanded -->
+                            <p class="text-sm text-gray-600">{{ viewingApplication.program_type?.name || viewingApplication.program_type?.program_name || viewingApplication.program_type || 'N/A' }}</p>
                         </div>
                         <div>
                             <p class="text-sm font-semibold text-gray-800">Duration</p>
-                            <p class="text-sm text-gray-600">{{ viewingApplication.course_duration }} months</p>
+                            <p class="text-sm text-gray-600">{{ viewingApplication.course_duration ? `${viewingApplication.course_duration} months` : 'N/A' }}</p>
                         </div>
-                        <div v-if="viewingApplication.do_dpr_review_decision === STATUS_REJECTED && viewingApplication.do_dpr_reason_if_rejected">
+                        <div v-if="(viewingApplication.do_dpr_review_decision === STATUS_REJECTED || viewingApplication.application_status === 'Final Rejected') && (viewingApplication.do_dpr_reason_if_rejected || viewingApplication.reason_if_rejected)">
                             <p class="text-sm font-semibold text-red-700">Rejection Reason</p>
-                            <p class="text-sm text-red-600 break-words">{{ viewingApplication.do_dpr_reason_if_rejected }}</p>
+                            <p class="text-sm text-red-600 break-words">{{ viewingApplication.do_dpr_reason_if_rejected || viewingApplication.reason_if_rejected }}</p>
                         </div>
                     </div>
                 </div>
@@ -399,10 +404,12 @@
                   <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Application Timeline</p>
                   <div class="relative pl-6">
                       <div class="absolute left-2 top-0 h-full w-0.5 bg-gray-200"></div>
+                      <div v-if="getTimeline(viewingApplication).length === 0" class="text-sm text-gray-500">No timeline events available.</div>
                       <div v-for="(event, index) in getTimeline(viewingApplication)" :key="index" class="mb-4 relative">
                           <div class="absolute left-[-20px] top-1 w-4 h-4 bg-blue-600 rounded-full border-2 border-white"></div>
                           <p class="text-sm font-medium text-gray-800">{{ event.status }}</p>
                           <p class="text-xs text-gray-500">{{ formatDate(event.date) }}</p>
+                          <p v-if="event.remarks" class="text-xs text-gray-500 mt-0.5 italic">Remarks: {{ event.remarks }}</p>
                       </div>
                   </div>
                 </div>
@@ -412,351 +419,462 @@
             </div>
         </div>
     </div>
-
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
-// Removed useRouter as startNewApplication now opens a modal
-import { useToast } from 'vue-toastification'
-import { useAuthStore } from '@/stores/authStore'
-import debounce from 'lodash/debounce'
-import apiServices from '@/services/services'
-import InstituteHeader from '@/components/common/MHPC/InstituteHeader.vue'
-import PaymentModal from '@/components/common/PaymentModal.vue'
-import DPRApplicationFormModal from './InstituteDPRApplication.vue'
+import { ref, computed, onMounted, watch } from 'vue';
+import { useToast } from 'vue-toastification';
+import { useAuthStore } from '@/stores/authStore';
+import debounce from 'lodash/debounce';
+import apiServices from '@/services/services';
+import InstituteHeader from '@/components/common/MHPC/InstituteHeader.vue';
+import PaymentModal from '@/components/common/PaymentModal.vue';
+import DPRApplicationFormModal from './InstituteDPRApplication.vue'; // Corrected self-reference
 
-const toast = useToast()
-const authStore = useAuthStore()
+const toast = useToast();
+const authStore = useAuthStore();
 
-const STATUS_APPROVED = 'Approved'
-const STATUS_REJECTED = 'Rejected'
-const STATUS_PENDING = 'Pending' // Could add more like 'In Review', 'Submitted'
-const statusOptions = [STATUS_APPROVED, STATUS_REJECTED, STATUS_PENDING, 'In Review', 'Submitted']
+const STATUS_APPROVED = 'Approved';
+const STATUS_REJECTED = 'Rejected';
+const STATUS_PENDING_REVIEW = 'Pending Review'; // Example specific status
+const STATUS_DPR_SUBMITTED = 'DPR Submitted'; // From your model's ApplicationStatusChoices
+const STATUS_PAYMENT_PENDING = 'Payment Pending';
+const STATUS_FULLY_APPROVED = 'Fully Approved';
+const STATUS_FINAL_REJECTED = 'Final Rejected';
+
+
+// Status options for the filter dropdown
+const statusOptions = [
+    STATUS_DPR_SUBMITTED, STATUS_PENDING_REVIEW, STATUS_APPROVED, STATUS_REJECTED,
+    STATUS_PAYMENT_PENDING, STATUS_FULLY_APPROVED, STATUS_FINAL_REJECTED
+];
+
 const dzongkhagOptions = [
   'Bumthang', 'Chukha', 'Dagana', 'Gasa', 'Haa', 'Lhuntse', 'Mongar', 'Paro',
   'Pemagatshel', 'Punakha', 'Samdrup Jongkhar', 'Samtse', 'Sarpang', 'Thimphu',
   'Trashigang', 'Trashiyangtse', 'Trongsa', 'Tsirang', 'Wangdue Phodrang', 'Zhemgang',
-]
+];
 
-const applications = ref([])
-const isLoading = ref(false)
-const apiError = ref(false)
-const errorMessage = ref('')
-const searchQuery = ref('')
-const filterStatus = ref('')
-const filterDzongkhag = ref('')
-const sortOrder = ref('desc') // 'desc' for newest first
-const currentPage = ref(1)
-const itemsPerPage = ref(10) // Made this a ref in case you want to change it
+const applications = ref([]);
+const isLoading = ref(false);
+const apiError = ref(false);
+const errorMessage = ref('');
+const searchQuery = ref('');
+const filterStatus = ref('');
+const filterDzongkhag = ref('');
+const sortOrder = ref('desc');
+const currentPage = ref(1);
+const itemsPerPage = ref(10);
 
-const isActionLoading = ref({}) // For individual application buttons loading state
+const isActionLoading = ref({});
 
-const showPaymentConfirmModal = ref(false)
-const showCertificateModal = ref(false)
-const selectedApplication = ref(null) // For payment/certificate modals
+const showPaymentConfirmModal = ref(false);
+const showCertificateModal = ref(false);
+const selectedApplication = ref(null);
 
-const paymentModalRef = ref(null)
-const selectedApplicationForPayment = ref(null)
-const dprPaymentAmount = ref(1500) // Example DPR Payment Amount
+const paymentModalRef = ref(null);
+const selectedApplicationForPayment = ref(null);
+const dprPaymentAmount = ref(1500); // Example DPR Payment Amount
 const paymentOutcomeHandled = ref(false);
 
-
-// For New Application Modal
-const showAddApplicationModal = ref(false)
-
-// For Details Modal
-const showDetailsModal = ref(false)
-const viewingApplication = ref(null)
-
+const showAddApplicationModal = ref(false);
+const showDetailsModal = ref(false);
+const viewingApplication = ref(null);
 
 const filteredApplications = computed(() => {
-  let result = applications.value
+  let result = applications.value;
   if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase()
+    const query = searchQuery.value.toLowerCase();
     result = result.filter(
       (app) =>
         app.name_of_institution?.toLowerCase().includes(query) ||
-        app.dpr_name?.toLowerCase().includes(query)  ||
+        app.dpr_name?.toLowerCase().includes(query) ||
         app.CID?.toLowerCase().includes(query)
-    )
+    );
   }
   if (filterStatus.value) {
-    result = result.filter((app) => app.do_dpr_review_decision === filterStatus.value)
+    // Filter by overall application_status or do_dpr_review_decision
+    result = result.filter((app) =>
+        app.application_status === filterStatus.value ||
+        app.do_dpr_review_decision === filterStatus.value
+    );
   }
   if (filterDzongkhag.value) {
-    result = result.filter((app) => app.dzongkhag === filterDzongkhag.value)
+    result = result.filter((app) => app.dzongkhag === filterDzongkhag.value);
   }
-  // Sorting by created_at or commencement_date as fallback
   return result.sort((a, b) => {
-    const dateA = new Date(a.created_at || a.commencement_date || 0)
-    const dateB = new Date(b.created_at || b.commencement_date || 0)
-    return sortOrder.value === 'desc' ? dateB - dateA : dateA - dateB
-  })
-})
+    const dateA = new Date(a.updated_at || a.created_at || 0); // Prefer updated_at for sorting
+    const dateB = new Date(b.updated_at || b.created_at || 0);
+    return sortOrder.value === 'desc' ? dateB - dateA : dateA - dateB;
+  });
+});
 
-const totalPages = computed(() => Math.ceil(filteredApplications.value.length / itemsPerPage.value))
+const totalPages = computed(() => Math.ceil(filteredApplications.value.length / itemsPerPage.value));
+const totalPagesArray = computed(() => {
+    const pages = [];
+    for (let i = 1; i <= totalPages.value; i++) {
+        pages.push(i);
+    }
+    return pages;
+});
+
 
 const paginatedApplications = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage.value
-  const end = start + itemsPerPage.value
-  return filteredApplications.value.slice(start, end)
-})
+  const start = (currentPage.value - 1) * itemsPerPage.value;
+  const end = start + itemsPerPage.value;
+  return filteredApplications.value.slice(start, end);
+});
 
 const getStatusColor = (status) => {
-  switch (status) {
-    case STATUS_APPROVED: return 'bg-green-100 text-green-700'
-    case STATUS_REJECTED: return 'bg-red-100 text-red-700'
-    case STATUS_PENDING: return 'bg-yellow-100 text-yellow-700'
-    case 'In Review': return 'bg-blue-100 text-blue-700'
-    case 'Submitted': return 'bg-gray-100 text-gray-700'
-    default: return 'bg-gray-100 text-gray-700'
-  }
-}
+  if (!status) return 'bg-gray-100 text-gray-700';
+  const s = status.toLowerCase();
+  if (s.includes('approved') || s.includes(STATUS_FULLY_APPROVED.toLowerCase())) return 'bg-green-100 text-green-700';
+  if (s.includes('rejected') || s.includes(STATUS_FINAL_REJECTED.toLowerCase())) return 'bg-red-100 text-red-700';
+  if (s.includes('pending') || s.includes('submitted') || s.includes(STATUS_DPR_SUBMITTED.toLowerCase())) return 'bg-yellow-100 text-yellow-700';
+  if (s.includes('review') || s === STATUS_PENDING_REVIEW.toLowerCase()) return 'bg-blue-100 text-blue-700';
+  if (s.includes(STATUS_PAYMENT_PENDING.toLowerCase())) return 'bg-purple-100 text-purple-700';
+  return 'bg-gray-100 text-gray-700';
+};
 
 const getStatusTooltip = (status) => {
+  if (!status) return 'Status not available.';
   switch (status) {
-    case STATUS_APPROVED: return 'Application has been approved. Proceed to payment if pending.'
-    case STATUS_REJECTED: return 'Application was rejected. Review the reason for rejection.'
-    case STATUS_PENDING: return 'Application is awaiting review.'
-    case 'In Review': return 'Application is currently under review.'
-    case 'Submitted': return 'Application has been submitted and is pending processing.'
-    default: return 'Status not available.'
+    case STATUS_APPROVED: return 'DPR review approved. Payment might be pending.';
+    case STATUS_REJECTED: return 'DPR review rejected. Check reasons.';
+    case STATUS_PENDING_REVIEW: return 'DPR is under review by Desk Officer.';
+    case STATUS_DPR_SUBMITTED: return 'DPR has been submitted, awaiting review.';
+    case STATUS_PAYMENT_PENDING: return 'DPR approved, payment is pending for final accreditation.';
+    case STATUS_FULLY_APPROVED: return 'Application is fully approved and accredited.';
+    case STATUS_FINAL_REJECTED: return 'Application has been finally rejected.';
+    default: return `Status: ${status}`;
   }
-}
+};
 
 const formatDate = (dateString) => {
-  if (!dateString) return 'N/A'
+  if (!dateString) return 'N/A';
   try {
-    const date = new Date(dateString)
-    if (isNaN(date.getTime())) return 'Invalid Date'
-    return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) // dd-mmm-yyyy
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      console.warn('Invalid date string received for formatDate:', dateString);
+      return 'Invalid Date';
+    }
+    return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
   } catch (e) {
-    console.error('Error formatting date:', e, dateString) // Log the error for debugging
-    
-    return 'Date Error'
+    console.error('Error formatting date:', dateString, e);
+    return 'Date Error';
   }
-}
+};
 
-const isApplicationApproved = (app) => app.do_dpr_review_decision === STATUS_APPROVED
-const isPaymentPending = (app) => isApplicationApproved(app) && !app.is_payment_complete
-const isPaymentCompleted = (app) => isApplicationApproved(app) && app.is_payment_complete === true
+const isApplicationDPRApproved = (app) => app.do_dpr_review_decision === STATUS_APPROVED;
+const isPaymentPending = (app) =>
+    (app.application_status === STATUS_PAYMENT_PENDING || isApplicationDPRApproved(app)) &&
+    app.is_payment_complete === false; // Explicitly check for false
+
+const isPaymentCompleted = (app) =>
+    app.application_status === STATUS_FULLY_APPROVED ||
+    (isApplicationDPRApproved(app) && app.is_payment_complete === true);
 
 
 const sortApplications = () => {
-  sortOrder.value = sortOrder.value === 'desc' ? 'asc' : 'desc'
-  currentPage.value = 1 // Reset to first page after sorting
-}
+  sortOrder.value = sortOrder.value === 'desc' ? 'asc' : 'desc';
+  currentPage.value = 1;
+};
 
 const debouncedSearch = debounce(() => {
-  currentPage.value = 1 // Reset to first page on search
-}, 300)
+  currentPage.value = 1;
+}, 300);
 
-watch(searchQuery, debouncedSearch)
+watch(searchQuery, debouncedSearch);
 watch([filterStatus, filterDzongkhag], () => {
-  currentPage.value = 1 // Reset to first page on filter change
-})
-
+  currentPage.value = 1;
+});
 
 const fetchApplications = async () => {
   if (!authStore.user || !authStore.user.cid) {
-    errorMessage.value = 'User information not available. Please log in again.'
-    apiError.value = true
-    isLoading.value = false
-    return
+    errorMessage.value = 'User information not available. Please log in again.';
+    apiError.value = true;
+    isLoading.value = false;
+    return;
   }
-  isLoading.value = true
-  apiError.value = false
-  errorMessage.value = ''
+  isLoading.value = true;
+  apiError.value = false;
+  errorMessage.value = '';
   try {
-    const response = await apiServices.getMhpcInstitutes() // Ensure this API fetches relevant fields
+    const response = await apiServices.getMhpcInstitutes();
     if (response && response.data && Array.isArray(response.data.results)) {
       const userCid = authStore.user.cid.toLowerCase();
       applications.value = response.data.results
-        .filter(app => app && typeof app.CID === 'string' && app.CID.toLowerCase() === userCid)
-        .map(app => ({ ...app, is_payment_complete: app.is_payment_complete || false }));
+        .filter(app =>
+          app &&
+          typeof app.CID === 'string' && app.CID.toLowerCase() === userCid &&
+          (app.dpr_name !== undefined && app.dpr_name !== null) // Ensure it's a DPR app
+        )
+        .map(app => ({
+            ...app,
+            is_payment_complete: app.is_payment_complete === true // Normalize boolean
+        }));
     } else {
-      applications.value = []
+      applications.value = [];
     }
   } catch (error) {
-    console.error('Error fetching DPR applications:', error)
-    applications.value = []
-    apiError.value = true
-    errorMessage.value = error.response?.data?.message || 'Failed to fetch applications.'
-    toast.error(errorMessage.value)
+    console.error('Error fetching DPR applications:', error);
+    applications.value = [];
+    apiError.value = true;
+    errorMessage.value = error.response?.data?.message || error.response?.data?.detail || 'Failed to fetch applications.';
+    toast.error(errorMessage.value);
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
-}
+};
 
-// --- Payment Flow Functions ---
 const openPaymentConfirmationModal = (application) => {
-  selectedApplication.value = application
+  selectedApplication.value = application;
   paymentOutcomeHandled.value = false;
-  if (application && application.id) isActionLoading.value[application.id] = true
-  showPaymentConfirmModal.value = true
-}
+  if (application && application.id) isActionLoading.value[application.id] = true;
+  showPaymentConfirmModal.value = true;
+};
 
 const cancelPaymentConfirmation = () => {
-  showPaymentConfirmModal.value = false
+  showPaymentConfirmModal.value = false;
   if (selectedApplication.value && selectedApplication.value.id) {
-    isActionLoading.value[selectedApplication.value.id] = false
+    isActionLoading.value[selectedApplication.value.id] = false;
   }
-  selectedApplication.value = null
-}
+  selectedApplication.value = null;
+};
 
 const handleProceedWithPaymentFlow = async () => {
-  if (!selectedApplication.value || !selectedApplication.value.id) {
-    toast.error('No application selected for payment.')
-    if(selectedApplication.value?.id) isActionLoading.value[selectedApplication.value.id] = false;
-    return
+  const currentApp = selectedApplication.value;
+  if (!currentApp || !currentApp.id) {
+    toast.error('No application selected for payment.');
+    if (currentApp?.id) isActionLoading.value[currentApp.id] = false;
+    showPaymentConfirmModal.value = false; // Close confirm modal
+    return;
   }
-  showPaymentConfirmModal.value = false
-  selectedApplicationForPayment.value = selectedApplication.value
+  showPaymentConfirmModal.value = false;
+  selectedApplicationForPayment.value = currentApp;
 
   if (paymentModalRef.value && typeof paymentModalRef.value.openModal === 'function') {
-    paymentModalRef.value.openModal()
+    paymentModalRef.value.openModal();
   } else {
-    console.error('Payment modal or openModal method not available.')
-    toast.error('Could not open payment window.')
-    if(selectedApplication.value?.id) isActionLoading.value[selectedApplication.value.id] = false;
+    console.error('Payment modal or openModal method not available.');
+    toast.error('Could not open payment window.');
+    if (currentApp?.id) isActionLoading.value[currentApp.id] = false;
     selectedApplication.value = null;
     selectedApplicationForPayment.value = null;
   }
-}
+};
 
 const handleDPRPaymentCompleted = async (paymentData) => {
   paymentOutcomeHandled.value = true;
-  if (!selectedApplicationForPayment.value) {
-    toast.error('Error: No application associated with this payment.')
-    const initialAppId = selectedApplication.value?.id;
-    if (initialAppId && isActionLoading.value[initialAppId]) {
-        isActionLoading.value[initialAppId] = false;
-    }
-    return
-  }
-  const appBeingPaid = selectedApplicationForPayment.value
-  try {
-    // --- TODO: API CALL TO UPDATE PAYMENT STATUS ON BACKEND ---
-    // Example: await apiServices.updateDprApplicationPaymentStatus(appBeingPaid.id, { is_payment_complete: true, payment_reference: paymentData.transactionId });
-    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
-    console.log('Simulated payment update for:', appBeingPaid.dpr_name, paymentData)
+  const appBeingPaid = selectedApplicationForPayment.value; // Use the one stored before opening payment modal
 
-    const appIndex = applications.value.findIndex((a) => a.id === appBeingPaid.id)
-    if (appIndex !== -1) {
-      applications.value[appIndex] = { ...applications.value[appIndex], is_payment_complete: true }
-    }
-    toast.success(`Payment for "${appBeingPaid.dpr_name}" completed.`)
-    // PaymentModal will emit 'close', which calls closeDPRPaymentModal
-  } catch (error) {
-    console.error('Error updating DPR application after payment:', error)
-    toast.error('Failed to update application after payment.')
-  } finally {
-     if (appBeingPaid && appBeingPaid.id) {
-        isActionLoading.value[appBeingPaid.id] = false
-     }
-    // selectedApplicationForPayment.value = null // Done in closeDPRPaymentModal
-    // selectedApplication.value = null; // Done in closeDPRPaymentModal
-  }
-}
-
-const closeDPRPaymentModal = () => {
-    if (!paymentOutcomeHandled.value) { // Only show 'cancelled' if not completed
-        toast.info('Payment process cancelled.')
-    }
-    paymentOutcomeHandled.value = false; // Reset for next time
-
-    const appForLoadingReset = selectedApplicationForPayment.value || selectedApplication.value;
-    if (appForLoadingReset && appForLoadingReset.id && isActionLoading.value[appForLoadingReset.id] !== undefined) {
-        isActionLoading.value[appForLoadingReset.id] = false;
-    }
-    selectedApplicationForPayment.value = null
-    selectedApplication.value = null
-}
-
-// --- Certificate Flow ---
-const openCertificateModal = (application) => {
-  selectedApplication.value = application
-  if (application && application.id) isActionLoading.value[application.id] = true;
-  showCertificateModal.value = true
-}
-
-const handleViewCertificate = async (application) => {
-  if (!application || !application.id) {
-    const currentSelectedAppId = selectedApplication.value?.id;
-    if (currentSelectedAppId && isActionLoading.value[currentSelectedAppId]) {
-        isActionLoading.value[currentSelectedAppId] = false;
-    }
-    selectedApplication.value = null;
+  if (!appBeingPaid || !appBeingPaid.id) {
+    toast.error('Error: No application associated with this payment.');
+     // Reset loading for the initially selected app if it's different or still set
+    const initialAppId = selectedApplication.value?.id || appBeingPaid?.id;
+    if (initialAppId) isActionLoading.value[initialAppId] = false;
     return;
   }
-  try {
-    // Simulate certificate generation/fetch
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    toast.info(`Certificate for "${application.dpr_name}" would open here (simulated).`);
-    // window.open(`/api/certificate/${application.id}`, '_blank');
-    showCertificateModal.value = false;
-  } catch (error) {
-    console.error('Error viewing certificate:', error);
-    toast.error('Failed to view certificate.');
-  } finally {
-    if (application && application.id) isActionLoading.value[application.id] = false;
-    selectedApplication.value = null;
-  }
-}
 
-// --- New Application Modal ---
+  try {
+    // API CALL TO UPDATE PAYMENT STATUS ON BACKEND
+    // Replace with your actual API call:
+    // await apiServices.updateDprApplicationPaymentStatus(appBeingPaid.id, { is_payment_complete: true, payment_id: paymentData.transactionId, application_status: STATUS_FULLY_APPROVED });
+    console.log('Simulating payment update for:', appBeingPaid.dpr_name, paymentData);
+    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
+
+    // Update local data optimistically or refetch
+    const appIndex = applications.value.findIndex((a) => a.id === appBeingPaid.id);
+    if (appIndex !== -1) {
+      applications.value[appIndex] = {
+        ...applications.value[appIndex],
+        is_payment_complete: true,
+        application_status: STATUS_FULLY_APPROVED, // Assume backend sets this
+        payment_id: paymentData.transactionId // Store payment ID if available
+      };
+    }
+    toast.success(`Payment for "${appBeingPaid.dpr_name}" completed successfully.`);
+  } catch (error) {
+    console.error('Error updating DPR application after payment:', error);
+    toast.error(error.response?.data?.detail || 'Failed to update application after payment.');
+  } finally {
+    if (appBeingPaid?.id) isActionLoading.value[appBeingPaid.id] = false;
+    // selectedApplicationForPayment is reset in closeDPRPaymentModal
+    // selectedApplication (from the confirm modal) is also reset there
+  }
+};
+
+const closeDPRPaymentModal = () => {
+  if (!paymentOutcomeHandled.value) {
+    toast.info('Payment process cancelled.');
+  }
+  paymentOutcomeHandled.value = false;
+
+  const appForLoadingReset = selectedApplicationForPayment.value || selectedApplication.value;
+  if (appForLoadingReset?.id && isActionLoading.value[appForLoadingReset.id] !== undefined) {
+    isActionLoading.value[appForLoadingReset.id] = false;
+  }
+  selectedApplicationForPayment.value = null;
+  selectedApplication.value = null; // Also reset the one from confirm modal
+};
+
+const openCertificateModal = (application) => {
+  selectedApplication.value = application;
+  if (application?.id) isActionLoading.value[application.id] = true;
+  showCertificateModal.value = true;
+};
+
+const closeCertificateModal = () => {
+    showCertificateModal.value = false;
+    if (selectedApplication.value?.id) {
+        isActionLoading.value[selectedApplication.value.id] = false;
+    }
+    selectedApplication.value = null;
+};
+
+const handleViewCertificate = async (application) => {
+    const currentApp = application || selectedApplication.value;
+    if (!currentApp || !currentApp.id) {
+        toast.error("No application selected to view certificate.");
+        closeCertificateModal();
+        return;
+    }
+    try {
+        // Simulate certificate generation/fetch or API call
+        // const certificateUrl = await apiServices.getDprCertificateUrl(currentApp.id);
+        // window.open(certificateUrl, '_blank');
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate
+        toast.info(`Certificate for "${currentApp.dpr_name}" would open here (simulated).`);
+        closeCertificateModal();
+    } catch (error) {
+        console.error('Error viewing certificate:', error);
+        toast.error(error.response?.data?.detail ||'Failed to view certificate.');
+    } finally {
+        if (currentApp?.id) isActionLoading.value[currentApp.id] = false;
+        // selectedApplication is reset by closeCertificateModal
+    }
+};
+
+
 const openNewApplicationModal = () => {
-  showAddApplicationModal.value = true
-}
+  showAddApplicationModal.value = true;
+};
 
 const closeNewApplicationModal = () => {
-  showAddApplicationModal.value = false
-}
+  showAddApplicationModal.value = false;
+};
 
-const handleApplicationSubmitted = (newApplicationData) => {
-  // Assuming the form modal returns the newly created application data
-  // or just signals success, requiring a refetch.
-  toast.success(`New DPR Application "${newApplicationData?.dpr_name || 'Application'}" submitted successfully!`);
-  fetchApplications(); // Refresh the list
-  closeNewApplicationModal();
-}
+const handleApplicationSubmitted = async (newApplicationDataFromModal) => {
+  // The child modal now emits the actual data from the API response
+  // if the API call was made in the child.
+  // If API call is made here (parent), newApplicationDataFromModal is the form data.
 
-// --- View Details Modal ---
+  // Assuming API call is made in the parent now (as per earlier suggestion)
+  isLoading.value = true; // For overall page loading state
+  const submittingToastId = toast.info("Submitting new DPR application...", { timeout: false });
+
+  try {
+    // The 'payload' is newApplicationDataFromModal if child only emits form data
+    const response = await apiServices.createMhpcInstitute(newApplicationDataFromModal);
+
+    toast.dismiss(submittingToastId);
+    if (response && response.data) { // Check for actual response data
+      toast.success(`New DPR Application "${response.data.dpr_name || newApplicationDataFromModal.dpr_name}" submitted successfully!`);
+      await fetchApplications(); // Refresh the list to include the new entry
+      closeNewApplicationModal();
+    } else {
+      toast.error('Failed to submit DPR application. Unexpected response from server.');
+    }
+  } catch (error) {
+    toast.dismiss(submittingToastId);
+    console.error("Error submitting DPR application from parent:", error);
+    const errorMessage = error.response?.data?.detail ||
+                         (typeof error.response?.data === 'object' ? Object.values(error.response.data).flat().join(' ') : null) ||
+                         error.message ||
+                         "An error occurred during submission.";
+    toast.error(`Submission failed: ${errorMessage}`);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+
 const viewApplicationDetails = (application) => {
-    viewingApplication.value = application;
-    showDetailsModal.value = true;
-}
+  viewingApplication.value = application;
+  showDetailsModal.value = true;
+};
 const closeDetailsModal = () => {
-    showDetailsModal.value = false;
-    viewingApplication.value = null;
-}
+  showDetailsModal.value = false;
+  viewingApplication.value = null;
+};
 
 const getTimeline = (app) => {
-  // This function is now used by the details modal
   if (!app) return [];
-  return [
-    { status: 'Submitted', date: app.created_at || new Date().toISOString() },
-    // Add more timeline events if available in your data model
-    {
-      status: `Status: ${app.do_dpr_review_decision || 'Pending'}`,
-      date: app.updated_at || app.created_at || new Date().toISOString(),
-    },
-     ...(app.is_payment_complete ? [{ status: 'Payment Completed', date: app.payment_completed_at || app.updated_at }] : []) // Assuming you have payment_completed_at
-  ].sort((a,b) => new Date(a.date) - new Date(b.date));
-}
+  const timelineEvents = [];
+
+  // Initial Submission
+  if (app.created_at) {
+    timelineEvents.push({ status: 'Application Submitted', date: app.created_at });
+  }
+
+  // DPR Review Status (if available and different from initial submission)
+  if (app.do_dpr_review_decision && app.do_dpr_review_decision !== 'Pending' && app.do_dpr_review_decision !== 'Submitted') {
+     timelineEvents.push({
+      status: `DPR Review: ${app.do_dpr_review_decision}`,
+      date: app.updated_at, // Assuming updated_at reflects this change
+      remarks: app.do_dpr_reason_if_rejected || app.do_dpr_review_summary
+    });
+  } else if (app.application_status === STATUS_DPR_SUBMITTED || app.application_status === STATUS_PENDING_REVIEW) {
+    // If no explicit decision yet, but status indicates it's in DPR phase
+    if (!timelineEvents.some(e => e.date === app.updated_at && e.status.includes('DPR'))) {
+         timelineEvents.push({ status: app.application_status, date: app.updated_at || app.created_at});
+    }
+  }
 
 
-onMounted(fetchApplications)
+  // Payment Status
+  if (app.application_status === STATUS_PAYMENT_PENDING && !app.is_payment_complete) {
+    timelineEvents.push({ status: 'Payment Pending', date: app.updated_at });
+  }
+  if (app.is_payment_complete && app.payment_id) {
+    // Ideally, you'd have a `payment_completed_at` timestamp.
+    // Using `updated_at` as a fallback.
+    timelineEvents.push({ status: 'Payment Completed', date: app.payment_completed_at || app.updated_at, remarks: `Ref: ${app.payment_id}` });
+  }
+
+  // Final Approval/Rejection
+  if (app.application_status === STATUS_FULLY_APPROVED) {
+    timelineEvents.push({ status: 'Fully Approved (Accredited)', date: app.valid_since || app.updated_at });
+  } else if (app.application_status === STATUS_FINAL_REJECTED) {
+     timelineEvents.push({ status: 'Application Finally Rejected', date: app.updated_at, remarks: app.reason_if_rejected });
+  }
+
+
+  // Remove duplicate events based on status and date (within a small threshold if needed)
+  const uniqueEvents = timelineEvents.filter((event, index, self) =>
+    index === self.findIndex((e) => (
+      e.status === event.status && new Date(e.date).toDateString() === new Date(event.date).toDateString()
+    ))
+  );
+
+  return uniqueEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
+};
+
+onMounted(fetchApplications);
 </script>
 
 <style scoped>
-/* Additional scoped styles if needed */
 .disabled\:opacity-50:disabled {
   opacity: 0.5;
 }
 .disabled\:cursor-not-allowed:disabled {
   cursor: not-allowed;
+}
+.max-h-\[90vh\] {
+  max-height: 90vh;
+}
+.overflow-y-auto {
+  overflow-y: auto;
 }
 </style>
