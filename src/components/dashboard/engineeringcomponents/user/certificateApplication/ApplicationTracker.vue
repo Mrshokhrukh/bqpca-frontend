@@ -68,7 +68,7 @@
     </div>
 
     <!-- Certificate Modal -->
-    <CertificateModal :application="selectedCertificateData" @close="closeCertificateModal"
+    <CertificateModal :qualification="selectedCertificateData" @close="closeCertificateModal"
       :showModal="showCertificateModal" />
 
     <!-- Payment Modal -->
