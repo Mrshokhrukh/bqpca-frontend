@@ -228,6 +228,36 @@
                     </p>
                   </div>
                 </div>
+
+                <!-- ===== CORRECTED SECTION START ===== -->
+                <div class="mt-8 pt-6 border-t border-slate-200">
+                  <h3 class="text-md font-bold mb-1 text-slate-700">Activity & Duration</h3>
+                  <p class="text-sm text-slate-500 mb-3">
+                    Total credits will be based on the duration in hours.
+                  </p>
+
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 border rounded-lg bg-slate-50/50">
+                    <div>
+                      <label for="activity" class="form-label">Activity <span class="text-rose-500">*</span></label>
+                      <textarea id="activity" v-model="application.activity" rows="3" class="form-textarea"
+                        placeholder="e.g. Lecture on new guidelines"></textarea>
+                      <p v-if="applicationDetailsErrors.activity" class="form-error-text">
+                        {{ applicationDetailsErrors.activity }}
+                      </p>
+                    </div>
+                    <div>
+                      <label for="duration" class="form-label">Duration (Hours) <span
+                          class="text-rose-500">*</span></label>
+                      <input type="number" id="duration" v-model.number="application.duration_in_hours" min="0.1"
+                        step="0.1" class="form-input" placeholder="e.g. 1.5" />
+                      <p v-if="applicationDetailsErrors.duration_in_hours" class="form-error-text">
+                        {{ applicationDetailsErrors.duration_in_hours }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <!-- ===== CORRECTED SECTION END ===== -->
+
               </div>
             </section>
 
@@ -389,47 +419,6 @@
                 </div>
               </div>
 
-              <div class="mt-8">
-                <h3 class="text-md font-bold mb-1 text-slate-700">Activities & Durations</h3>
-                <p class="text-sm text-slate-500 mb-3">
-                  Total credits will be the sum of durations in hours.
-                </p>
-                <p v-if="teachingLearningErrors.teachingMethods" class="mb-2 text-xs text-rose-500">
-                  {{ teachingLearningErrors.teachingMethods }}
-                </p>
-
-                <div class="space-y-4">
-                  <div v-for="(method, index) in teachingMethods" :key="index"
-                    class="p-4 border rounded-lg bg-slate-50/50 grid grid-cols-1 md:grid-cols-[1fr_auto_auto] gap-4 items-end">
-                    <div class="flex-grow">
-                      <label :for="`activity-${index}`" class="form-label">Activity {{ index + 1 }} <span
-                          class="text-rose-500">*</span></label>
-                      <textarea :id="`activity-${index}`" v-model="method.activity" @input="calculateTotalHours"
-                        rows="2" class="form-textarea" placeholder="e.g. Lecture on new guidelines"></textarea>
-                    </div>
-                    <div class="w-full md:w-40">
-                      <label :for="`duration-${index}`" class="form-label">Duration (Hours) <span
-                          class="text-rose-500">*</span></label>
-                      <input type="number" :id="`duration-${index}`" v-model.number="method.duration"
-                        @input="calculateTotalHours" min="0.1" step="0.1" class="form-input" placeholder="e.g. 1.5" />
-                    </div>
-                    <button v-if="teachingMethods.length > 1" @click.prevent="removeTeachingMethod(index)" type="button"
-                      class="h-10 px-3 py-2 border border-slate-300 rounded-md hover:bg-rose-50 hover:border-rose-300 text-sm text-rose-600 font-medium transition-colors">
-                      Remove
-                    </button>
-                  </div>
-                </div>
-
-                <button @click.prevent="addTeachingMethod" type="button"
-                  class="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-indigo-600 hover:text-indigo-800 py-2 px-4 border-2 border-dashed border-slate-300 rounded-lg hover:border-indigo-500 hover:bg-indigo-50 transition-all">
-                  <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                    <path
-                      d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
-                  </svg>
-                  Add Activity
-                </button>
-              </div>
-
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
                 <div class="md:col-span-2">
                   <label for="courseDocument" class="form-label">Course Document (PDF, max 5MB) <span
@@ -551,7 +540,7 @@
             role="dialog" aria-modal="true">
             <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
               <div class="fixed inset-0 bg-slate-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
-              <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+              <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">​</span>
               <div
                 class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
                 <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
@@ -618,12 +607,15 @@ const applicant = reactive({
   agencyTrainingLocation: '',
 })
 
+// CORRECTED: Moved activity and duration_in_hours here
 const application = reactive({
   isApproved: 'false', // Default to 'No'
   title: '',
   venue: '',
   fromDate: '',
   toDate: '',
+  activity: '',
+  duration_in_hours: null,
 })
 
 const cpdProvider = reactive({
@@ -642,15 +634,12 @@ const resourcePersons = ref([
   }
 ])
 
+// CORRECTED: Removed activity and duration from here
 const teachingMethod = reactive({
   type: '',
   expectedOutcome: '',
 })
 const selectedMethodologies = ref([])
-const teachingMethods = ref([{ activity: '', duration: null }])
-
-const totalHours = ref(0) // Calculated from teachingMethods durations
-const calculatedCredits = ref(0) // Often same as totalHours
 
 const participantDetails = reactive({
   category: [],
@@ -680,7 +669,7 @@ const validationErrors = ref([]) // General form errors
 const applicantDetailsErrors = ref({})
 const applicationDetailsErrors = ref({})
 const cpdProviderErrors = ref({})
-const resourcePersonsErrors = ref([]) // Array of error objects, one per resource person
+const resourcePersonsErrors = ref([])
 const teachingLearningErrors = ref({})
 const participantDetailsErrors = ref({})
 const approvedCpdErrors = ref({})
@@ -691,7 +680,7 @@ const filteredSubcategoryOptions = computed(() => {
     return []
   }
   return participantSubcategoryOptions.value.filter(
-    (subOpt) => participantDetails.category.includes(subOpt.categoryId) // Assumes subOpt has categoryId
+    (subOpt) => participantDetails.category.includes(subOpt.categoryId)
   )
 })
 
@@ -703,7 +692,7 @@ const getCategoryName = (categoryId) => {
 
 const addResourcePerson = () => {
   resourcePersons.value.push({ selectedPersonId: '', name: '', regNo: '', certificate: null })
-  resourcePersonsErrors.value.push({}) // Add a corresponding error object
+  resourcePersonsErrors.value.push({})
 }
 
 const removeResourcePerson = (index) => {
@@ -724,13 +713,10 @@ const updateResourcePersonDetails = (person) => {
 
 const toggleApprovedFields = () => {
   const isNowApproved = application.isApproved === 'true'
-  // Clear fields specific to the other state
   if (!isNowApproved) {
-    // Means it was 'true' and now 'false'
     approvalLetter.value = null
     participants.value = []
     attendanceSheet.value = null
-    // Clear related errors
     if (applicationDetailsErrors.value.approvalLetter)
       delete applicationDetailsErrors.value.approvalLetter
     approvedCpdErrors.value = {}
@@ -752,7 +738,7 @@ const handleFileUpload = (event, fileRef, maxSizeMB = 5, errorFieldKey, errorObj
       fileRef.value = file
     } else {
       fileRef.value = null
-      event.target.value = '' // Clear the input
+      event.target.value = ''
       const errorMsg = `Invalid file. Must be PDF and max ${maxSizeMB}MB.`
       errorObjectRef.value[errorFieldKey] = errorMsg
     }
@@ -792,24 +778,7 @@ const handleApprovalLetterUpload = (event) =>
 const handleCourseDocumentUpload = (event) =>
   handleFileUpload(event, courseDocument, 5, 'courseDocument', teachingLearningErrors)
 
-const addTeachingMethod = () => {
-  teachingMethods.value.push({ activity: '', duration: null })
-}
-
-const removeTeachingMethod = (index) => {
-  teachingMethods.value.splice(index, 1)
-  calculateTotalHours()
-}
-
-const calculateTotalHours = () => {
-  totalHours.value = teachingMethods.value.reduce((sum, method) => {
-    return sum + (Number(method.duration) || 0)
-  }, 0)
-  calculatedCredits.value = totalHours.value // Or your specific credit calculation logic
-}
-
 const validateForm = (forDraft = false) => {
-  // Clear previous errors
   validationErrors.value = []
   applicantDetailsErrors.value = {}
   applicationDetailsErrors.value = {}
@@ -824,34 +793,24 @@ const validateForm = (forDraft = false) => {
 
   let isValid = true
 
-  // Section 1: Applicant Details
   if (!forDraft && !applicant.agencyTrainingLocation?.trim()) {
-    console.log(
-      '[Validation] Applicant Details: agencyTrainingLocation missing',
-      applicant.agencyTrainingLocation
-    )
     applicantDetailsErrors.value.agencyTrainingLocation = 'Agency/Training Location is required.'
     isValid = false
   }
 
-  // Section 2: Application Details
   if (!forDraft && !application.title?.trim()) {
-    console.log('[Validation] Application Details: title missing', application.title)
     applicationDetailsErrors.value.title = 'Title of CPD is required.'
     isValid = false
   }
   if (!forDraft && !application.venue?.trim()) {
-    console.log('[Validation] Application Details: venue missing', application.venue)
     applicationDetailsErrors.value.venue = 'Venue is required.'
     isValid = false
   }
   if (!forDraft && !application.fromDate) {
-    console.log('[Validation] Application Details: fromDate missing', application.fromDate)
     applicationDetailsErrors.value.fromDate = 'From Date is required.'
     isValid = false
   }
   if (!forDraft && !application.toDate) {
-    console.log('[Validation] Application Details: toDate missing', application.toDate)
     applicationDetailsErrors.value.toDate = 'To Date is required.'
     isValid = false
   }
@@ -861,194 +820,122 @@ const validateForm = (forDraft = false) => {
     application.toDate &&
     new Date(application.fromDate) > new Date(application.toDate)
   ) {
-    console.log(
-      '[Validation] Application Details: fromDate > toDate',
-      application.fromDate,
-      application.toDate
-    )
     applicationDetailsErrors.value.toDate = 'To Date must be on or after From Date.'
     isValid = false
   }
   if (application.isApproved === 'true' && !forDraft && !approvalLetter.value) {
-    console.log(
-      '[Validation] Application Details: approvalLetter required for approved',
-      approvalLetter.value
-    )
     applicationDetailsErrors.value.approvalLetter =
       'Approval Letter is required if CPD is approved.'
     isValid = false
   }
 
-  // Section 3: CPD Providers Details
+  // CORRECTED: Validating activity and duration from the `application` object
+  if (!forDraft && !application.activity?.trim()) {
+    applicationDetailsErrors.value.activity = 'Activity description is required.';
+    isValid = false;
+  }
+  if (!forDraft && (!application.duration_in_hours || Number(application.duration_in_hours) <= 0)) {
+    applicationDetailsErrors.value.duration_in_hours = 'A valid positive duration is required.';
+    isValid = false;
+  }
+
   if (!forDraft && !cpdProvider.agency) {
-    console.log('[Validation] CPD Provider: agency missing', cpdProvider.agency)
     cpdProviderErrors.value.agency = 'CPD Providing Agency is required.'
     isValid = false
   }
   if (!forDraft && cpdProvider.agency === 'other' && !cpdProvider.otherAgency?.trim()) {
-    console.log('[Validation] CPD Provider: otherAgency missing', cpdProvider.otherAgency)
     cpdProviderErrors.value.otherAgency = 'Please specify the Other Agency.'
     isValid = false
   }
   if (!forDraft && !cpdProvider.reason) {
-    console.log('[Validation] CPD Provider: reason missing', cpdProvider.reason)
     cpdProviderErrors.value.reason = 'Reason for Conducting is required.'
     isValid = false
   }
   if (!forDraft && !cpdProvider.reasonDetails?.trim()) {
-    console.log('[Validation] CPD Provider: reasonDetails missing', cpdProvider.reasonDetails)
     cpdProviderErrors.value.reasonDetails = 'Reason Details are required.'
     isValid = false
   }
 
-  // Section 4: Resource Persons Details
   const hasAtLeastOneResourcePersonForNonDraft = resourcePersons.value.some(
     (p) => p.selectedPersonId && p.certificate
   )
   if (!forDraft && resourcePersons.value.length > 0 && !hasAtLeastOneResourcePersonForNonDraft) {
-    console.log(
-      '[Validation] Resource Persons: No complete resource person',
-      JSON.parse(JSON.stringify(resourcePersons.value))
-    )
     validationErrors.value.push(
       'At least one resource person with both selection and certificate is required for non-draft submissions.'
     )
     isValid = false
-    // Pinpoint which one is missing
     resourcePersons.value.forEach((person, index) => {
       if (person.selectedPersonId && !person.certificate) {
-        console.log(`[Validation] Resource Person ${index + 1}: certificate missing`, person)
         resourcePersonsErrors.value[index].certificate = 'Certificate required.'
       }
       if (!person.selectedPersonId && person.certificate) {
-        console.log(`[Validation] Resource Person ${index + 1}: selectedPersonId missing`, person)
         resourcePersonsErrors.value[index].selectedPersonId = 'Person selection required.'
       }
       if (!person.selectedPersonId && !person.certificate && (person.name || person.regNo)) {
-        console.log(
-          `[Validation] Resource Person ${index + 1}: both missing but has name/regNo`,
-          person
-        )
         resourcePersonsErrors.value[index].selectedPersonId = 'Person selection required.'
         resourcePersonsErrors.value[index].certificate = 'Certificate required.'
       }
     })
   } else if (!forDraft && resourcePersons.value.length === 0) {
-    console.log('[Validation] Resource Persons: No resource persons added')
     validationErrors.value.push(
       'At least one Resource Person is required for non-draft submissions.'
     )
     isValid = false
   }
 
-  // Section 5: Teaching Learning Method
   if (!forDraft && !teachingMethod.type) {
-    console.log('[Validation] Teaching Method: type missing', teachingMethod.type)
     teachingLearningErrors.value.type = 'Type of CPD is required.'
     isValid = false
   }
   if (!forDraft && selectedMethodologies.value.length === 0) {
-    console.log(
-      '[Validation] Teaching Method: selectedMethodologies missing',
-      selectedMethodologies.value
-    )
     teachingLearningErrors.value.selectedMethodologies =
       'At least one Methodology must be selected.'
     isValid = false
   }
   if (!forDraft && !teachingMethod.expectedOutcome?.trim()) {
-    console.log(
-      '[Validation] Teaching Method: expectedOutcome missing',
-      teachingMethod.expectedOutcome
-    )
     teachingLearningErrors.value.expectedOutcome = 'Expected Outcome is required.'
     isValid = false
   }
-  if (!forDraft) {
-    const hasCompleteMethod = teachingMethods.value.some(
-      (m) => m.activity?.trim() && m.duration && Number(m.duration) > 0
-    )
-    if (teachingMethods.value.length === 0 || !hasCompleteMethod) {
-      console.log(
-        '[Validation] Teaching Method: No complete teaching method',
-        JSON.parse(JSON.stringify(teachingMethods.value))
-      )
-      teachingLearningErrors.value.teachingMethods =
-        'At least one Activity with a positive Duration is required.'
-      isValid = false
-    } else {
-      teachingMethods.value.forEach((m, idx) => {
-        if (
-          (m.activity?.trim() && (!m.duration || Number(m.duration) <= 0)) ||
-          (!m.activity?.trim() && m.duration && Number(m.duration) > 0)
-        ) {
-          console.log(`[Validation] Teaching Method ${idx + 1}: activity/duration mismatch`, m)
-          teachingLearningErrors.value.teachingMethods =
-            'All activities must have a positive duration, and vice-versa.'
-          isValid = false
-        }
-      })
-    }
-  }
   if (!forDraft && !courseDocument.value) {
-    console.log('[Validation] Teaching Method: courseDocument missing', courseDocument.value)
     teachingLearningErrors.value.courseDocument = 'Course Document is required.'
     isValid = false
   }
 
-  // Section 6: Target Audience
   if (!forDraft && areOptionsLoaded.value) {
     if (participantDetails.category.length === 0) {
-      console.log('[Validation] Participants: category missing', participantDetails.category)
       participantDetailsErrors.value.categories = 'Target Participation Category is required.'
       isValid = false
     }
     const subcategoriesAvailable = filteredSubcategoryOptions.value.length > 0
     if (subcategoriesAvailable && participantDetails.subcategory.length === 0) {
-      console.log(
-        '[Validation] Participants: subcategory required but missing',
-        participantDetails.subcategory
-      )
       participantDetailsErrors.value.subcategories =
         'Participant Sub-category is required if available for selected categories.'
       isValid = false
     }
     if (participantDetails.number === null || participantDetails.number <= 0) {
-      console.log('[Validation] Participants: number missing or invalid', participantDetails.number)
       participantDetailsErrors.value.number =
         'Expected number of participants must be a positive number.'
       isValid = false
     }
     if (participantDetails.category.length > 1 && !participantDetails.relevance?.trim()) {
-      console.log(
-        '[Validation] Participants: relevance required for multiple categories',
-        participantDetails.relevance
-      )
       participantDetailsErrors.value.relevance =
         'Relevance to Topic/Profession is required for multiple categories.'
       isValid = false
     }
   } else if (!forDraft && !areOptionsLoaded.value) {
-    console.log('[Validation] Participants: options not loaded')
     validationErrors.value.push('Participation options are still loading. Please wait.')
     isValid = false
   }
 
-  // Section: Approved CPD
   if (application.isApproved === 'true' && !forDraft) {
     const validListedParticipants = participants.value.filter((p) => p.regNo?.trim())
     if (validListedParticipants.length > 0 && !attendanceSheet.value) {
-      console.log(
-        '[Validation] Approved CPD: attendanceSheet required for listed participants',
-        attendanceSheet.value
-      )
       approvedCpdErrors.value.attendanceSheet =
         'Attendance Sheet is required if participants are listed.'
       isValid = false
     }
     participants.value.forEach((p, index) => {
       if ((p.name?.trim() || p.regNo?.trim()) && !p.regNo?.trim()) {
-        console.log(`[Validation] Approved CPD Participant ${index + 1}: regNo missing`, p)
         if (!approvedCpdErrors.value.participants[index])
           approvedCpdErrors.value.participants[index] = {}
         approvedCpdErrors.value.participants[index].regNo =
@@ -1059,19 +946,7 @@ const validateForm = (forDraft = false) => {
   }
 
   if (!isValid && !forDraft) {
-    console.log('[Validation] Form is invalid, errors:', {
-      applicantDetailsErrors: applicantDetailsErrors.value,
-      applicationDetailsErrors: applicationDetailsErrors.value,
-      cpdProviderErrors: cpdProviderErrors.value,
-      resourcePersonsErrors: resourcePersonsErrors.value,
-      teachingLearningErrors: teachingLearningErrors.value,
-      participantDetailsErrors: participantDetailsErrors.value,
-      approvedCpdErrors: approvedCpdErrors.value,
-      validationErrors: validationErrors.value,
-    })
     validationErrors.value.unshift('Please correct the errors indicated below.')
-  } else {
-    console.log('[Validation] Form is valid')
   }
   return isValid
 }
@@ -1079,24 +954,20 @@ const validateForm = (forDraft = false) => {
 const prepareFormData = (isDraft = false) => {
   const fd = new FormData()
 
-  // Applicant
-  fd.append('cid_no', applicant.cidNumber || '') // Map to backend's expected field name e.g. applicant_cid_no
-  fd.append('full_name', applicant.fullName || '') // Map to backend's e.g. applicant_full_name
+  fd.append('cid_no', applicant.cidNumber || '')
+  fd.append('full_name', applicant.fullName || '')
   fd.append('proposed_training_location', applicant.agencyTrainingLocation?.trim() || '')
 
-  // Application
   const isCpdApprovedFlag = application.isApproved === 'true'
   fd.append('is_cpd_approved', isCpdApprovedFlag)
   fd.append('title_of_cpd', application.title?.trim() || '')
   fd.append('venue', application.venue?.trim() || '')
   fd.append('from_date', application.fromDate || '')
   fd.append('to_date', application.toDate || '')
+  // CORRECTED: Appending activity and duration from the `application` object
+  fd.append('activity', application.activity?.trim() || '');
+  fd.append('duration_in_hours', application.duration_in_hours || '');
 
-  if (!isCpdApprovedFlag) {
-    fd.append('total_calculated_credits', calculatedCredits.value)
-  }
-
-  // Conditional attachments based on approval status
   if (isCpdApprovedFlag) {
     if (approvalLetter.value) fd.append('approval_letter_attachment', approvalLetter.value)
     else if (isDraft) fd.append('approval_letter_attachment', '')
@@ -1105,7 +976,7 @@ const prepareFormData = (isDraft = false) => {
       .filter((p) => p.regNo?.trim())
       .map((p) => ({
         participant_reg_no: p.regNo.trim(),
-        review_status: 'Pending', // Default status
+        review_status: 'Pending',
       }))
     if (validListedParticipants.length > 0) {
       fd.append('participants', JSON.stringify(validListedParticipants))
@@ -1116,15 +987,12 @@ const prepareFormData = (isDraft = false) => {
     if (attendanceSheet.value && validListedParticipants.length > 0) {
       fd.append('attendance_sheet_attachment', attendanceSheet.value)
     } else if (isDraft && attendanceSheet.value) {
-      // Send if available even if no participants for draft
       fd.append('attendance_sheet_attachment', attendanceSheet.value)
     } else if (isDraft) {
       fd.append('attendance_sheet_attachment', '')
     }
   } else {
-    // Not CPD Approved
     if (isDraft) {
-      // Send empty placeholders for draft if backend expects them
       fd.append('approval_letter_attachment', '')
       fd.append('general_approved_cpd_attachment', '')
       fd.append('participants', JSON.stringify([]))
@@ -1132,7 +1000,6 @@ const prepareFormData = (isDraft = false) => {
     }
   }
 
-  // CPD Provider
   fd.append('cpd_providing_agency', cpdProvider.agency === 'other' ? '' : cpdProvider.agency || '')
   if (cpdProvider.agency === 'other') {
     fd.append('if_others_specify', cpdProvider.otherAgency?.trim() || '')
@@ -1142,15 +1009,12 @@ const prepareFormData = (isDraft = false) => {
   fd.append('reason_for_conducting', cpdProvider.reason || '')
   fd.append('reason_for_details', cpdProvider.reasonDetails?.trim() || '')
 
-  // Resource Persons
   const resourcePersonsToSend = resourcePersons.value.filter((person) => {
     if (isDraft) {
-      // For draft, include if any identifying info is present
       return (
         person.selectedPersonId || person.name?.trim() || person.regNo?.trim() || person.certificate
       )
     }
-    // For non-draft, already validated by validateForm that selectedPersonId and certificate are present
     return person.selectedPersonId && person.certificate
   })
 
@@ -1167,49 +1031,19 @@ const prepareFormData = (isDraft = false) => {
       if (person.certificate) {
         fd.append(`resources[${index}][document_supporting_expertise]`, person.certificate)
       }
-      // If draft and no certificate, key is not appended. Backend handles null FileField.
     })
-  } else if (isDraft) {
-    // If it's a draft and no resource persons, you might not need to send an empty array indication
-    // unless backend strictness requires an empty 'resources' key.
-    // fd.append('resources', JSON.stringify([])); // Usually not needed for FormData files
   }
 
-  // Teaching Learning Method
   fd.append('type_of_cpd', teachingMethod.type || '')
   if (selectedMethodologies.value.length > 0) {
     fd.append(
       'methodologies',
       JSON.stringify(
-        selectedMethodologies.value.map((methodId) => ({ methodology_name: methodId })) // Assuming methodId is what backend expects
+        selectedMethodologies.value.map((methodId) => ({ methodology_name: methodId }))
       )
     )
   } else if (isDraft) {
     fd.append('methodologies', JSON.stringify([]))
-  }
-
-  const learningMethodsToSubmit = teachingMethods.value
-    .filter(
-      (method) =>
-        method.activity?.trim() ||
-        (isDraft && method.duration !== null && method.duration !== undefined)
-    )
-    .map((method) => ({
-      activities: method.activity?.trim() || '',
-      duration:
-        method.duration !== null && method.duration !== undefined && Number(method.duration) > 0
-          ? Number(method.duration)
-          : isDraft
-            ? method.duration === null || method.duration === undefined
-              ? ''
-              : Number(method.duration)
-            : 0,
-    }))
-
-  if (learningMethodsToSubmit.length > 0) {
-    fd.append('learning_methods', JSON.stringify(learningMethodsToSubmit))
-  } else if (isDraft) {
-    fd.append('learning_methods', JSON.stringify([]))
   }
 
   fd.append('expected_outcome', teachingMethod.expectedOutcome?.trim() || '')
@@ -1219,9 +1053,7 @@ const prepareFormData = (isDraft = false) => {
     fd.append('course_document', '')
   }
 
-  // Target Audience
   if (areOptionsLoaded.value || isDraft) {
-    // Send even if empty for drafts, if backend expects keys
     fd.append('participation_category', JSON.stringify(participantDetails.category || []))
     fd.append('participant_sub_category', JSON.stringify(participantDetails.subcategory || []))
     fd.append(
@@ -1235,13 +1067,11 @@ const prepareFormData = (isDraft = false) => {
     fd.append('relevance_to_topic', participantDetails.relevance?.trim() || '')
   }
 
-  // Meta
   fd.append('is_draft', isDraft)
   if (authStore.user?.id) {
-    fd.append('user_id', authStore.user.id) // Or let backend derive from request.user
+    fd.append('user_id', authStore.user.id)
   }
 
-  // Log FormData for debugging
   console.log('--- FormData being sent (isDraft:', isDraft, ') ---')
   for (let pair of fd.entries()) {
     console.log(`${pair[0]}:`, pair[1] instanceof File ? pair[1].name : pair[1])
@@ -1253,11 +1083,15 @@ const prepareFormData = (isDraft = false) => {
 
 const resetFormState = () => {
   applicant.agencyTrainingLocation = ''
+
+  // CORRECTED: Resetting fields in the application object
   application.isApproved = 'false'
   application.title = ''
   application.venue = ''
   application.fromDate = ''
   application.toDate = ''
+  application.activity = ''
+  application.duration_in_hours = null
   approvalLetter.value = null
 
   cpdProvider.agency = ''
@@ -1271,9 +1105,6 @@ const resetFormState = () => {
   teachingMethod.type = ''
   teachingMethod.expectedOutcome = ''
   selectedMethodologies.value = []
-  teachingMethods.value = [{ activity: '', duration: null }]
-  totalHours.value = 0
-  calculatedCredits.value = 0
   courseDocument.value = null
 
   participantDetails.category = []
@@ -1281,15 +1112,13 @@ const resetFormState = () => {
   participantDetails.number = null
   participantDetails.relevance = ''
 
-  participants.value = [] // for approved CPD
-  attendanceSheet.value = null // for approved CPD
+  participants.value = []
+  attendanceSheet.value = null
 
-  // Clear all error objects
   validationErrors.value = []
   applicantDetailsErrors.value = {}
   applicationDetailsErrors.value = {}
   cpdProviderErrors.value = {}
-  // resourcePersonsErrors already reset
   teachingLearningErrors.value = {}
   participantDetailsErrors.value = {}
   approvedCpdErrors.value = {}
@@ -1300,7 +1129,6 @@ const resetFormState = () => {
 
 const saveDraft = async () => {
   currentAction.value = 'draft'
-  // Minimal validation for draft: title or agency location
   if (!applicant.agencyTrainingLocation?.trim() && !application.title?.trim()) {
     validationErrors.value = [
       'Please fill in at least Agency/Training Location or Title of CPD to save a draft.',
@@ -1309,7 +1137,6 @@ const saveDraft = async () => {
     currentAction.value = ''
     return
   }
-  // Clear all validation errors for draft attempt, as requirements are lax
   validationErrors.value = []
   applicantDetailsErrors.value = {}
   applicationDetailsErrors.value = {}
@@ -1321,10 +1148,9 @@ const saveDraft = async () => {
 
   try {
     loading.value = true
-    const fd = prepareFormData(true) // Pass true for isDraft
-    await apiService.createEpcCpdTask(fd) // Use your actual API endpoint method
+    const fd = prepareFormData(true)
+    await apiService.createEpcCpdTask(fd)
     successMessage.value = 'Draft saved successfully! You can complete and submit it later.'
-    // Optionally, reset parts of the form or navigate away after a delay
     setTimeout(() => {
       successMessage.value = ''
     }, 5000)
@@ -1345,7 +1171,6 @@ const saveDraft = async () => {
 
 const handleSubmit = () => {
   if (validateForm(false)) {
-    // Full validation for submit
     showConfirmation.value = true
   } else {
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -1354,10 +1179,9 @@ const handleSubmit = () => {
 
 const confirmSubmit = async () => {
   currentAction.value = 'submit'
-  showConfirmation.value = false // Close confirmation modal
+  showConfirmation.value = false
 
   if (!validateForm(false)) {
-    // Re-validate just in case, though unlikely to change
     window.scrollTo({ top: 0, behavior: 'smooth' })
     currentAction.value = ''
     return
@@ -1368,7 +1192,7 @@ const confirmSubmit = async () => {
     const fd = prepareFormData(false)
     await apiService.createEpcCpdTask(fd)
     successMessage.value = 'Application submitted successfully! Redirecting to dashboard...'
-    alert('Application submitted successfully!') // Simple toast alternative
+    alert('Application submitted successfully!')
     resetFormState()
     setTimeout(() => {
       successMessage.value = ''
@@ -1398,7 +1222,7 @@ const confirmSubmit = async () => {
     }
     window.scrollTo({ top: 0, behavior: 'smooth' })
   } finally {
-    loading.value = false // Always stop loading
+    loading.value = false
     currentAction.value = ''
   }
 }
@@ -1483,18 +1307,12 @@ onMounted(async () => {
     applicant.cidNumber = authStore.user.cid || '';
     applicant.fullName = [authStore.user.first_name, authStore.user.middle_name, authStore.user.last_name]
       .filter(Boolean).join(' ') || '';
-    applicant.cidNumber = authStore.user.cid || ''
-    applicant.fullName =
-      [authStore.user.first_name, authStore.user.middle_name, authStore.user.last_name]
-        .filter(Boolean)
-        .join(' ') || ''
   }
   resourcePersonsErrors.value = resourcePersons.value.map(() => ({}))
   if (application.isApproved === 'true') {
     approvedCpdErrors.value.participants = participants.value.map(() => ({}))
   }
 
-  calculateTotalHours() // Initial calculation
   await fetchUserRegistrations()
   await loadDropdownOptions()
 })
