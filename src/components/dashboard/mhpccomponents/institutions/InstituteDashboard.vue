@@ -84,7 +84,7 @@
           </div>
         </div>
 
-        ---
+        
 
         <div class="bg-white shadow-lg rounded-xl p-6 md:p-8 border border-gray-100">
           <h2 class="text-3xl font-semibold text-gray-800 mb-6 pb-4 border-b border-gray-200">Institute Information</h2>
@@ -152,7 +152,7 @@
           </dl>
         </div>
 
-        ---
+
 
         <div class="bg-white shadow-lg rounded-xl p-6 md:p-8 border border-gray-100">
           <h2 class="text-3xl font-semibold text-gray-800 mb-6 pb-4 border-b border-gray-200">Programs Offered by Institute ({{ institute.programs_offered_by_institute?.length || 0 }})</h2>
@@ -183,7 +183,7 @@
           <p v-else class="text-gray-500 text-center py-8 text-lg">No programs offered by this institute yet.</p>
         </div>
 
-        ---
+
 
         <div class="bg-white shadow-lg rounded-xl p-6 md:p-8 border border-gray-100">
           <h2 class="text-3xl font-semibold text-gray-800 mb-6 pb-4 border-b border-gray-200">All Available Programs in System ({{ allPrograms.length }})</h2>
@@ -220,7 +220,7 @@
           <p v-else class="text-gray-500 text-center py-8 text-lg">No programs found in the system.</p>
         </div>
 
-        ---
+
 
         <div class="bg-white shadow-lg rounded-xl p-6 md:p-8 border border-gray-100">
           <h2 class="text-3xl font-semibold text-gray-800 mb-6 pb-4 border-b border-gray-200">Teaching Hospitals ({{ institute.teaching_centers?.length || 0 }})</h2>
@@ -244,7 +244,7 @@
           <p v-else class="text-gray-500 text-center py-8 text-lg">No teaching hospitals associated with this institute yet.</p>
         </div>
 
-        ---
+
 
         <div class="bg-white shadow-lg rounded-xl p-6 md:p-8 border border-gray-100">
           <h2 class="text-3xl font-semibold text-gray-800 mb-6 pb-4 border-b border-gray-200">CAPA (Corrective & Preventive Actions) ({{ capas.length }})</h2>
@@ -330,6 +330,7 @@ const errorCapas = ref(null)
 
 
 const fetchInstituteData = async () => {
+  // Ensure user is authenticated before proceeding
   const userCid = user?.cid || user?.CID;
   if (!userCid) {
     error.value = "User CID not found. Please log in again.";
@@ -337,46 +338,57 @@ const fetchInstituteData = async () => {
     return;
   }
 
+  // Reset state for a new fetch request
   loading.value = true;
   error.value = null;
-  noInstituteFound.value = false; // Reset state on fetch
+  noInstituteFound.value = false;
+  institute.value = null; // Also good to reset the main data holder
 
   try {
-    const response = await apiService.getMhpcInstitute(userCid);
-    // Case 1: Successful response, but the results array is empty
-    if (response.data && response.data.results && response.data.results.length > 0) {
-      institute.value = response.data.results[0];
-      // Initialize arrays if they are null/undefined
+    const response = await apiService.getMhpcInstituteByCid(userCid);
+
+    // Check if 'results' is a non-empty array
+    if (response.data && Array.isArray(response.data.results) && response.data.results.length > 0) {
+      // The institute data is the first object in the 'results' array
+      const instituteData = response.data.results[0];
+      institute.value = instituteData;
+
+      // Ensure nested arrays exist before trying to access them
+      // You can set default empty arrays if they are null or undefined
       if (!Array.isArray(institute.value.programs_offered_by_institute)) {
         institute.value.programs_offered_by_institute = [];
       }
       if (!Array.isArray(institute.value.teaching_centers)) {
         institute.value.teaching_centers = [];
       }
-      // Fetch related data
+
+      // If we have a valid institute, fetch related data
       if (institute.value.id) {
+        // Use Promise.all to fetch related data concurrently for better performance
         await Promise.all([
           fetchTeachingFaculties(institute.value.id),
           fetchCapas(institute.value.id)
         ]);
       }
     } else {
-      // Set the specific "not found" state
-      console.warn('No institute found for this user in API response.');
+      // This block handles cases where the API returns a response with an empty 'results' array
+      console.warn('No institute found for this user in the API response.');
       noInstituteFound.value = true;
     }
   } catch (err) {
     const errorDetail = err.response?.data?.detail || '';
-    // Case 2: API throws an error, but it's the specific "No Institute" message
+
+    // Specific check for a "not found" message from the API
     if (errorDetail.includes('No Institute matches the given CID')) {
       console.warn('API returned a "No Institute" detail message.');
       noInstituteFound.value = true;
     } else {
-      // Case 3: A genuine technical error occurred
+      // Handle other potential network or server errors
       console.error('Error fetching institute data:', err);
       error.value = errorDetail || err.message || 'An unexpected error occurred while loading institute data.';
     }
   } finally {
+    // This will always run, ensuring the loading state is turned off
     loading.value = false;
   }
 };

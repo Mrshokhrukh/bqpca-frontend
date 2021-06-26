@@ -614,6 +614,9 @@ export default {
   getMhpcInstitute(id) {
     return apiClient.get(`/mhpc/mhpc-institutes/${id}/`);
   },
+  getMhpcInstituteByCid(cid) {
+    return apiClient.get(`/mhpc/mhpc-institutes/?cid=${cid}/`);
+  },
   createMhpcInstitute(data) {
     return apiClient.post('/mhpc/mhpc-institutes/', data);
   },

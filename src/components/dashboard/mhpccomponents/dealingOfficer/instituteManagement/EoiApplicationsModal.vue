@@ -62,7 +62,7 @@
                         class="h-4 w-4"
                         :class="modalStatusInfo.iconClass"
                       />
-                      <span>{{ modalStatusInfo.displayText }}</span> 
+                      <span>{{ modalStatusInfo.displayText }}</span>
                     </span>
                     <button
                       type="button"
@@ -108,7 +108,7 @@
                           </div>
                           <div class="w-full grid grid-cols-1 gap-4 mt-4">
                             <div class="flex items-center space-x-2 bg-gray-50 p-3 rounded-lg">
-                              <MapPin class="h-4 w-4 text-gray-400 flex-shrink-0" /> {/* Icon change based on context from previous */}
+                              <MapPin class="h-4 w-4 text-gray-400 flex-shrink-0" />
                               <span v-if="!isEditing" class="text-sm text-gray-600">{{ application.address }}</span>
                               <input
                                 v-else
@@ -154,7 +154,7 @@
                             />
                           </div>
                           <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                            <UserCircle class="h-4 w-4 text-gray-400 flex-shrink-0" /> {/* Icon change from prev */}
+                            <UserCircle class="h-4 w-4 text-gray-400 flex-shrink-0" />
                             <template v-if="!isEditing">
                               <span class="text-sm text-gray-600">
                                 {{ application.village }}, {{ application.dzongkhag }}
@@ -178,7 +178,7 @@
                             </template>
                           </div>
                           <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg> {/* Globe icon */}
+                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>
                             <span v-if="!isEditing" class="text-sm text-gray-600">{{ application.website || 'N/A' }}</span>
                             <input
                               v-else
@@ -460,7 +460,6 @@
                 </div>
               </div>
 
-              {/* Nested Prompt Dialog (no changes needed here from previous correct version) */}
               <TransitionRoot appear :show="isPromptDialogOpen" as="template">
                 <Dialog as="div" @close="cancelPromptAction" class="relative z-[100]">
                   <TransitionChild enter="duration-300 ease-out" enter-from="opacity-0" enter-to="opacity-100" leave="duration-200 ease-in" leave-from="opacity-100" leave-to="opacity-0">

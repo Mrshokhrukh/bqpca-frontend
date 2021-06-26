@@ -341,37 +341,34 @@ const fetchApplications = async () => {
   errorMessage.value = ''
 
   try {
-    const response = await apiServices.getMhpcInstitute(userCid)
+    const response = await apiServices.getMhpcInstituteByCid(userCid)
 
-    if (response && response.data && Array.isArray(response.data.results)) {
-      const userCid = authStore.user.cid.toLowerCase()
-      applications.value = response.data.results.filter(
-        (app) => app.CID && app.CID.toLowerCase() === userCid && app.application_status
-      )
-      // Sort by last updated date, then creation date
-      applications.value.sort((a, b) => {
-        const dateA = a.updated_at
-          ? new Date(a.updated_at)
-          : a.created_at
-          ? new Date(a.created_at)
-          : 0
-        const dateB = b.updated_at
-          ? new Date(b.updated_at)
-          : b.created_at
-          ? new Date(b.created_at)
-          : 0
+    if (response && response.data) {
+      // Case 1: The response is a paginated list (the original expectation)
+      if (Array.isArray(response.data.results)) {
+        applications.value = response.data.results
 
-        if (dateA instanceof Date && dateB instanceof Date) {
-          return dateB - dateA // Newest first
-        }
-        // Fallback if dates are not valid Date objects or are missing
-        return (b.id || dateB || 0) - (a.id || dateA || 0)
-      })
+        // Case 2: The response is a single object (what you're currently getting)
+      } else if (response.data.id) {
+        // Wrap the single object in an array
+        applications.value = [response.data]
+
+        // Case 3: Response is valid but empty/unexpected
+      } else {
+        applications.value = []
+      }
     } else {
       applications.value = []
-      // console.warn('Expected results to be an array or data structure not as expected:', response?.data);
-      // No explicit error message here, just an empty list.
     }
+
+    // You can remove the original client-side filtering and sorting
+    // if the API is already returning only the correct user's data.
+    // Let's assume you still want to sort:
+    applications.value.sort((a, b) => {
+      const dateA = a.updated_at ? new Date(a.updated_at) : new Date(a.created_at)
+      const dateB = b.updated_at ? new Date(b.updated_at) : new Date(b.created_at)
+      return dateB - dateA // Newest first
+    })
   } catch (error) {
     console.error('Error fetching EOI applications:', error)
     applications.value = []
