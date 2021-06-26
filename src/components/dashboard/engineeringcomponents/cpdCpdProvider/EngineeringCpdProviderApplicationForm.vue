@@ -354,13 +354,16 @@
                       </p>
                     </div>
                     <div>
-                      <label :for="`rpCertificates-${index}`" class="form-label">Doc Supporting Expertise (PDF, max 5MB)
+                      <!-- FIXED: Changed the ID and handler name to be more clear -->
+                      <label :for="`rpResourceDocument-${index}`" class="form-label">Doc Supporting Expertise (PDF, max
+                        5MB)
                         <span class="text-rose-500">*</span></label>
-                      <input type="file" :id="`rpCertificates-${index}`" @change="
-                        (event) => handleResourcePersonCertificateUpload(event, person, index)
+                      <input type="file" :id="`rpResourceDocument-${index}`" @change="
+                        (event) => handleResourcePersonDocumentUpload(event, person, index)
                       " accept=".pdf" class="form-input-file" />
-                      <p v-if="resourcePersonsErrors[index]?.certificate" class="form-error-text">
-                        {{ resourcePersonsErrors[index].certificate }}
+                      <!-- FIXED: Changed error field name to match the correct field -->
+                      <p v-if="resourcePersonsErrors[index]?.resourceDocument" class="form-error-text">
+                        {{ resourcePersonsErrors[index].resourceDocument }}
                       </p>
                     </div>
                   </div>
@@ -540,7 +543,7 @@
             role="dialog" aria-modal="true">
             <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
               <div class="fixed inset-0 bg-slate-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
-              <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">​</span>
+              <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true"></span>
               <div
                 class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
                 <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
@@ -630,7 +633,7 @@ const resourcePersons = ref([
     selectedPersonId: '', // ID of the selected user from userRegistrations
     name: '', // Auto-filled or manually entered if not found
     regNo: '', // Auto-filled or manually entered
-    certificate: null // File object
+    resourceDocument: null // FIXED: Changed from 'certificate' to 'resourceDocument'
   }
 ])
 
@@ -691,7 +694,7 @@ const getCategoryName = (categoryId) => {
 }
 
 const addResourcePerson = () => {
-  resourcePersons.value.push({ selectedPersonId: '', name: '', regNo: '', certificate: null })
+  resourcePersons.value.push({ selectedPersonId: '', name: '', regNo: '', resourceDocument: null }) // FIXED
   resourcePersonsErrors.value.push({})
 }
 
@@ -747,29 +750,30 @@ const handleFileUpload = (event, fileRef, maxSizeMB = 5, errorFieldKey, errorObj
   }
 }
 
-const handleResourcePersonCertificateUpload = (event, person, index) => {
+// FIXED: Renamed and updated the function to handle resource document correctly
+const handleResourcePersonDocumentUpload = (event, person, index) => {
   const file = event.target.files?.[0]
   const maxSizeMB = 5
 
   if (!resourcePersonsErrors.value[index]) resourcePersonsErrors.value[index] = {}
-  if (resourcePersonsErrors.value[index].certificate) {
-    delete resourcePersonsErrors.value[index].certificate
+  if (resourcePersonsErrors.value[index].resourceDocument) {
+    delete resourcePersonsErrors.value[index].resourceDocument
   }
   validationErrors.value = validationErrors.value.filter(
-    (e) => !e.toLowerCase().includes(`resource person ${index + 1} certificate`)
+    (e) => !e.toLowerCase().includes(`resource person ${index + 1} document`)
   )
 
   if (file) {
     if (file.type === 'application/pdf' && file.size <= maxSizeMB * 1024 * 1024) {
-      person.certificate = file
+      person.resourceDocument = file // FIXED: Changed from 'certificate' to 'resourceDocument'
     } else {
-      person.certificate = null
+      person.resourceDocument = null
       event.target.value = ''
       const errorMsg = `Invalid file. Must be PDF and max ${maxSizeMB}MB.`
-      resourcePersonsErrors.value[index].certificate = errorMsg
+      resourcePersonsErrors.value[index].resourceDocument = errorMsg
     }
   } else {
-    person.certificate = null
+    person.resourceDocument = null
   }
 }
 
@@ -856,24 +860,25 @@ const validateForm = (forDraft = false) => {
     isValid = false
   }
 
+  // FIXED: Updated validation to check for resourceDocument instead of certificate
   const hasAtLeastOneResourcePersonForNonDraft = resourcePersons.value.some(
-    (p) => p.selectedPersonId && p.certificate
+    (p) => p.selectedPersonId && p.resourceDocument
   )
   if (!forDraft && resourcePersons.value.length > 0 && !hasAtLeastOneResourcePersonForNonDraft) {
     validationErrors.value.push(
-      'At least one resource person with both selection and certificate is required for non-draft submissions.'
+      'At least one resource person with both selection and document is required for non-draft submissions.'
     )
     isValid = false
     resourcePersons.value.forEach((person, index) => {
-      if (person.selectedPersonId && !person.certificate) {
-        resourcePersonsErrors.value[index].certificate = 'Certificate required.'
+      if (person.selectedPersonId && !person.resourceDocument) {
+        resourcePersonsErrors.value[index].resourceDocument = 'Resource document required.'
       }
-      if (!person.selectedPersonId && person.certificate) {
+      if (!person.selectedPersonId && person.resourceDocument) {
         resourcePersonsErrors.value[index].selectedPersonId = 'Person selection required.'
       }
-      if (!person.selectedPersonId && !person.certificate && (person.name || person.regNo)) {
+      if (!person.selectedPersonId && !person.resourceDocument && (person.name || person.regNo)) {
         resourcePersonsErrors.value[index].selectedPersonId = 'Person selection required.'
-        resourcePersonsErrors.value[index].certificate = 'Certificate required.'
+        resourcePersonsErrors.value[index].resourceDocument = 'Resource document required.'
       }
     })
   } else if (!forDraft && resourcePersons.value.length === 0) {
@@ -1009,13 +1014,14 @@ const prepareFormData = (isDraft = false) => {
   fd.append('reason_for_conducting', cpdProvider.reason || '')
   fd.append('reason_for_details', cpdProvider.reasonDetails?.trim() || '')
 
+  // FIXED: Updated to filter based on resourceDocument instead of certificate
   const resourcePersonsToSend = resourcePersons.value.filter((person) => {
     if (isDraft) {
       return (
-        person.selectedPersonId || person.name?.trim() || person.regNo?.trim() || person.certificate
+        person.selectedPersonId || person.name?.trim() || person.regNo?.trim() || person.resourceDocument
       )
     }
-    return person.selectedPersonId && person.certificate
+    return person.selectedPersonId && person.resourceDocument
   })
 
   if (resourcePersonsToSend.length > 0) {
@@ -1028,8 +1034,9 @@ const prepareFormData = (isDraft = false) => {
 
       fd.append(`resources[${index}][resource_person_reg_no]`, regNoToUse)
       fd.append(`resources[${index}][resource_person_name]`, nameToUse)
-      if (person.certificate) {
-        fd.append(`resources[${index}][document_supporting_expertise]`, person.certificate)
+      // FIXED: Changed the field name to match the API expectation
+      if (person.resourceDocument) {
+        fd.append(`resources[${index}][resource_document]`, person.resourceDocument)
       }
     })
   }
@@ -1099,7 +1106,8 @@ const resetFormState = () => {
   cpdProvider.reason = ''
   cpdProvider.reasonDetails = ''
 
-  resourcePersons.value = [{ selectedPersonId: '', name: '', regNo: '', certificate: null }]
+  // FIXED: Reset with resourceDocument instead of certificate
+  resourcePersons.value = [{ selectedPersonId: '', name: '', regNo: '', resourceDocument: null }]
   resourcePersonsErrors.value = [{}]
 
   teachingMethod.type = ''
