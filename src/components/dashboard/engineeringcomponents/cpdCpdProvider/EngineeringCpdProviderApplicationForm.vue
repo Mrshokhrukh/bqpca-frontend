@@ -164,7 +164,7 @@
               </h2>
               <div class="space-y-6">
                 <div>
-                  <label class="form-label">Is this CPD approved by KYGUMBS or an International Agency?
+                  <label class="form-label">Is this CPD approved?
                     <span class="text-rose-500">*</span></label>
                   <div class="mt-2 flex items-center gap-x-6">
                     <label class="flex items-center text-sm text-slate-700 cursor-pointer">
