@@ -94,6 +94,8 @@ import Reports from '@/components/dashboard/accredcomponent/dealingOfficer/Repor
 import PaymentHistory from '@/components/dashboard/accredcomponent/dealingOfficer/PaymentHistory.vue'
 import AssignAssessor from '@/components/dashboard/accredcomponent/dealingOfficer/AssignAssessor.vue'
 import AccreditationAssessment from '@/components/dashboard/accredcomponent/dealingOfficer/AccreditationAssessment.vue'
+import InitialAccreditaionApplication from '@/components/dashboard/accredcomponent/dealingOfficer/InitialAccreditaionApplication.vue'
+import ManageAccreditationSchedule from '@/components/dashboard/accredcomponent/dealingOfficer/ManageAccreditationSchedule.vue'
 
 const route = useRoute()
 const { role } = useAuthStore()
@@ -197,6 +199,10 @@ const dealingOfficerComponent = computed(() => {
       return AssignAssessor
     case path.endsWith('/accreditation/accreditation_assessment'):
       return AccreditationAssessment
+    case path.endsWith('/accreditation/initial_accreditation_application'):
+      return InitialAccreditaionApplication  
+    case path.endsWith('/accreditation/manage_accreditation_schedule'):
+      return ManageAccreditationSchedule  
 
     default:
       return null

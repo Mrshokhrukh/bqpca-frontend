@@ -1671,9 +1671,19 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/dashboard`, // Corrected "dealing_Officer"
       },
       {
+        name: 'Manage Accreditation Schedule',
+        icon: getIconComponent('LayoutDashboard'),
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/manage_accreditation_schedule`, // Corrected "dealing_Officer"
+      },
+      {
         name: 'Accreditation Applications',
         icon: getIconComponent('ClipboardList'),
         children: [
+          {
+            name: 'Initial AccreditationApplication',
+            route: (serviceType) =>
+              `/admin/dealing_officer/${serviceType}/initial_accreditations`,
+          },
           {
             name: 'Institutional Accreditation',
             route: (serviceType) =>

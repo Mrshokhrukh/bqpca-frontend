@@ -229,6 +229,8 @@ export default {
       reports: accredDashboard,
       assign_assessor: accredDashboard,
       accreditation_assessment: accredDashboard,
+      initial_accreditations: accredDashboard,
+      manage_accreditation_schedule: accredDashboard,
     },
     engineering_certification: {
       dashboard: engineeringDashboard,
