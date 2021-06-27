@@ -379,14 +379,20 @@
                               class="p-4 bg-gray-50 rounded-lg border border-gray-200">
                               <div class="flex items-center justify-between">
                                 <div class="flex-1">
-                                  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <div>
-                                      <p class="text-xs text-gray-500">Registration No.</p>
-                                      <p class="text-sm font-medium text-gray-900">
-                                        {{ participant.participant_reg_no || 'Not provided' }}
-                                      </p>
-                                    </div>
-                                    <div>
+                                  <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+  <div>
+    <p class="text-xs text-gray-500">Registration No.</p>
+    <p class="text-sm font-medium text-gray-900">
+      {{ getParticipantRegNo(participant) }}
+    </p>
+  </div>
+  <div>
+    <p class="text-xs text-gray-500">Name</p>
+    <p class="text-sm font-medium text-gray-900">
+      {{ getParticipantName(participant) }}
+    </p>
+  </div>
+  <div>
                                       <p class="text-xs text-gray-500">Review Status</p>
                                       <span :class="[
                                         'inline-flex px-2 py-1 text-xs font-medium rounded-full',
@@ -670,7 +676,7 @@ const approvalMessage = ref('')
 const rejectionMessage = ref('')
 const rejectionError = ref('')
 const approvalCredits = ref(props.application?.credit || 0)
-
+const allParticipants = ref([])
 // Participant editing
 const editingParticipant = ref(null)
 const participantCredits = ref({})
@@ -736,29 +742,106 @@ const methodologyMap = {
  10: 'Other'
 }
 
+// Add this new function after the watch
+const fetchParticipantsData = async () => {
+  try {
+    // You'll need to import your API service at the top of the file
+    const apiServices = await import('@/services/services')
+    const response = await apiServices.default.getEpcFullApplicationListByCid('')
+
+    if (response.data) {
+      allParticipants.value = response.data.results || response.data || []
+      console.log(`Loaded ${allParticipants.value.length} participants for lookup.`)
+    }
+  } catch (error) {
+    console.error('Error fetching participants for lookup:', error)
+    allParticipants.value = []
+  }
+}
+
+const getParticipantName = (participant) => {
+  // For CPD task participants, we only have participant_reg_no
+  // We need to look up the actual user data from the participants list
+  if (participant.participant_reg_no && !participant.first_name && !participant.full_name) {
+    // Try to find the user data from the participants list
+    const userData = findUserByRegNo(participant.participant_reg_no)
+    if (userData) {
+      return getParticipantName(userData)
+    }
+    // If not found in loaded data, return a formatted version
+    return `User ${participant.participant_reg_no}`
+  }
+
+  // Check if this is from the application list (getEpcFullApplicationListByCid)
+  if (participant.full_name) {
+    return participant.full_name
+  }
+
+  // Handle first_name + last_name combination
+  if (participant.first_name || participant.last_name) {
+    const firstName = participant.first_name || ''
+    const middleName = participant.middle_name ? ` ${participant.middle_name}` : ''
+    const lastName = participant.last_name || ''
+    return `${firstName}${middleName} ${lastName}`.trim()
+  }
+
+  // Check if participant has a nested user object
+  if (participant.user) {
+    return getParticipantName(participant.user)
+  }
+
+  // Fallback to other possible name fields
+  return participant.name || participant.participant_name || participant.username || 'Unknown Name'
+}
+
+const getParticipantRegNo = (participant) => {
+  // Check nested objects first
+  if (participant.user && participant.user.cid) {
+    return participant.user.cid
+  }
+
+  // Check direct fields - for CPD task participants, participant_reg_no is the main field
+  return participant.participant_reg_no || participant.cid || participant.registration_no || participant.reg_no || participant.registrationNo || 'N/A'
+}
+
+// Helper function to find user data by registration number
+const findUserByRegNo = (regNo) => {
+  return allParticipants.value.find(p =>
+    p.cid === regNo ||
+    p.registration_no === regNo ||
+    p.reg_no === regNo ||
+    p.participant_reg_no === regNo
+  )
+}
+
 const getMethodologyName = (methodologyId) => {
  if (!methodologyId) return 'Not specified'
  return methodologyMap[methodologyId] || `Unknown Methodology (ID: ${methodologyId})`
 }
 
 watch(
- () => props.application,
- (newApplication) => {
-   if (newApplication) {
-     editedApplication.value = { ...newApplication }
-     approvalCredits.value = newApplication.credit || 0
-     isEditing.value = false
-     showApprovalForm.value = false
-     showRejectionForm.value = false
-     approvalMessage.value = ''
-     rejectionMessage.value = ''
-     rejectionError.value = ''
-     editingParticipant.value = null
-     participantCredits.value = {}
-   }
- },
- { immediate: true }
+  () => props.application,
+  (newApplication) => {
+    if (newApplication) {
+      editedApplication.value = { ...newApplication }
+      approvalCredits.value = newApplication.credit || 0
+      isEditing.value = false
+      showApprovalForm.value = false
+      showRejectionForm.value = false
+      approvalMessage.value = ''
+      rejectionMessage.value = ''
+      rejectionError.value = ''
+      editingParticipant.value = null
+      participantCredits.value = {}
+
+      // Fetch participants data when application changes
+      fetchParticipantsData()
+    }
+  },
+  { immediate: true }
 )
+
+
 
 const getApplicationStatus = () => {
  const status = props.application?.status || 'pending'
