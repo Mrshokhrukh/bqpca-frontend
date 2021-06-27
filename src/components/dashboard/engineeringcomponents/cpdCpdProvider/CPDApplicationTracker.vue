@@ -144,8 +144,8 @@
               {{ application.id }}
             </td>
             <td class="px-6 py-4 text-sm text-gray-900 font-medium max-w-xs truncate"
-              :title="application.description || ''">
-              {{ application.description || 'N/A' }}
+              :title="application.title_of_cpd || ''">
+              {{ application.title_of_cpd || 'N/A' }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
               {{ formatDate(application.created_at) }}
@@ -274,7 +274,7 @@
               <div class="sm:col-span-2">
                 <p class="text-xs font-medium text-gray-500 uppercase">Title of CPD</p>
                 <p class="text-sm text-gray-800">
-                  {{ selectedApplication.description || 'N/A' }}
+                  {{ selectedApplication.title_of_cpd || 'N/A' }}
                 </p>
               </div>
               <div>
@@ -345,7 +345,7 @@
               <div>
                 <p class="text-xs font-medium text-gray-500 uppercase">Duration (Hours)</p>
                 <p class="text-sm text-gray-800">
-                  {{ selectedApplication.duration_in_hours || 'N/A' }}
+                  {{ selectedApplication.total_duration_hours || selectedApplication.duration_in_hours || 'N/A' }}
                 </p>
               </div>
               <div class="col-span-full">
@@ -371,7 +371,7 @@
               <div class="col-span-full">
                 <p class="text-xs font-medium text-gray-500 uppercase">CPD Providing Agency</p>
                 <p class="text-sm text-gray-800 mt-1">
-                  {{ selectedApplication.cpd_providing_agency || selectedApplication.if_others_specify || 'N/A' }}
+                  {{ getCpdProvidingAgencyName(selectedApplication.cpd_providing_agency) || selectedApplication.if_others_specify || 'N/A' }}
                 </p>
               </div>
             </div>
@@ -512,34 +512,50 @@ const statusFilter = ref('')
 const showViewModal = ref(false)
 const selectedApplication = ref(null)
 
+// CPD Providing Agency mapping
+const cpdProvidingAgencyMap = {
+  1: 'Royal University of Bhutan',
+  2: 'Engineers Australia',
+  3: 'Institution of Engineers Singapore',
+  4: 'Institution of Civil Engineers (ICE)',
+  5: 'American Society of Civil Engineers (ASCE)',
+  6: 'Institute of Electrical and Electronics Engineers (IEEE)',
+  7: 'Other'
+}
+
+const getCpdProvidingAgencyName = (agencyId) => {
+  if (!agencyId) return 'Not specified'
+  return cpdProvidingAgencyMap[agencyId] || `Unknown Agency (ID: ${agencyId})`
+}
+
 // --- Status Logic ---
 
 // Determines the user-facing status text based on the actual API fields
 const getStatusText = (application) => {
   if (!application) return 'Unknown'
 
+  // Check if it's a draft first
   if (application.is_draft) {
     return 'Draft'
   }
 
-  // Check if CPD is approved
-  if (application.is_cpd_approved) {
-    // If approved, check if participants are missing
-    if (!application.participants || application.participants.length === 0) {
-      return 'Needs Participants'
-    } else {
-      return 'Completed'
-    }
-  }
+  // Use the status field from API (pending, approved, regretted)
+  const apiStatus = application.status?.toLowerCase()
 
-  // If status is false and not a draft, it's likely pending or rejected
-  // You may need to adjust this logic based on your exact API behavior
-  if (application.status === false && !application.is_draft) {
-    return 'Pending'
+  switch (apiStatus) {
+    case 'approved':
+      // If approved, check if participants are missing
+      if (!application.participants || application.participants.length === 0) {
+        return 'Needs Participants'
+      } else {
+        return 'Completed'
+      }
+    case 'regretted':
+      return 'Rejected'
+    case 'pending':
+    default:
+      return 'Pending'
   }
-
-  // Default fallback
-  return 'Unknown'
 }
 
 // Determines the Tailwind CSS classes for the status badge
@@ -561,9 +577,11 @@ const getStatusClass = (application) => {
   }
 }
 
-// Specifically checks if status is 'Needs Participants'
+// Specifically checks if status is 'Needs Participants' - only for approved applications
 const isApprovedWithoutParticipants = (application) => {
-  return getStatusText(application) === 'Needs Participants'
+  // Must be approved status AND missing participants
+  return application.status?.toLowerCase() === 'approved' &&
+         (!application.participants || application.participants.length === 0)
 }
 
 // --- Computed Properties ---
@@ -575,8 +593,8 @@ const filteredApplications = computed(() => {
   const statusTerm = statusFilter.value
 
   return applications.value.filter((app) => {
-    // Match on Description (title) or ID
-    const titleMatch = app.description?.toLowerCase().includes(term)
+    // Match on Title (title_of_cpd) or ID
+    const titleMatch = app.title_of_cpd?.toLowerCase().includes(term)
     const idMatch = app.id?.toString().toLowerCase().includes(term)
     const searchMatch = term === '' || titleMatch || idMatch
 
@@ -713,13 +731,14 @@ const editApplication = (application) => {
 }
 
 const addParticipants = (application) => {
-  // Double check status before navigating
-  if (!application.is_cpd_approved) {
+  // Check if application is approved using the status field
+  if (application.status?.toLowerCase() !== 'approved') {
     toast.error('This application must be Approved before adding participants.')
     console.warn(
       'Attempted to add participants to non-approved application:',
       application.id,
-      application.is_cpd_approved,
+      'Status:',
+      application.status
     )
     return
   }
@@ -727,7 +746,7 @@ const addParticipants = (application) => {
   console.log('Navigating to add participants for application:', application.id)
   // Ensure the target route exists and handles the query param
   router.push(
-    `/admin/cme_cpd_provider/engineering_certification/cpd_approved_add_participants`,
+    `/admin/cme_cpd_provider/engineering_certification/cpd_approved_add_participants?id=${application.id}`
   )
 }
 
