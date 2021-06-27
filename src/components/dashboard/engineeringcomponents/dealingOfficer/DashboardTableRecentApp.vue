@@ -74,34 +74,44 @@ const recentApplications = ref([])
 const viewAll = ref(false)
 const currentPage = ref(1)
 const itemsPerPage = 15
-const allApplications = ref([]) //Store all applications
+const allApplications = ref([]) // Store all applications
 
 onMounted(async () => {
   try {
-    const New_Reg_applicantsResponse = await apiService.getEpcNewApplications()
-    const NewReg_applicantsData = New_Reg_applicantsResponse.data.results || []
-    const NewReg_appedApplicants = NewReg_applicantsData.map((app) => ({
-      id: app.id,
-      name: app?.application?.full_name,
-      type: app.registration_type?.name || 'Registration',
-      status: app.user_qualifications?.[0]?.endorsement_decision || 'Pending',
-      date: app.user_qualifications?.[0]?.updated_at || app.created_at,
-    }))
 
-    const applicantsResponse = await apiService.getEpcNewQualifications()
-    const applicantsData = applicantsResponse.data.results || []
-    const mappedApplicants = applicantsData.map((app) => ({
-      id: app.id,
-      name: app?.application_display?.full_name,
-      type: app.registration_type?.name || 'Additional Qualification',
-      status: app?.endorsement_decision || 'Pending',
-      date: app.user_qualifications?.[0]?.updated_at || app.created_at,
-    }))
+    const applicationsResponse = await apiService.getEpcNewApplications()
+    const applicationsData = applicationsResponse.data.results || []
+
+
+    const processedApplications = []
+    applicationsData.forEach((app) => {
+
+      if (app.user_qualifications && app.user_qualifications.length > 0) {
+        app.user_qualifications.forEach((qual) => {
+          processedApplications.push({
+            id: `${app.id}-${qual.id}`, // Create a unique key
+            name: app?.application?.full_name,
+            type: qual.registration_type_name || 'Unknown Qualification',
+            status: qual.endorsement_decision || 'Pending',
+            date: qual.updated_at || qual.created_at,
+          })
+        })
+      } else {
+
+        processedApplications.push({
+          id: app.id,
+          name: app?.application?.full_name,
+          type: app.registration_type_name || 'Registration',
+          status: 'Pending',
+          date: app.updated_at || app.created_at,
+        })
+      }
+    })
 
     const cpdRecordsResponse = await apiService.getEpcCogs()
     const cpdData = cpdRecordsResponse.data.results || []
     const mappedCpd = cpdData.map((cpd) => ({
-      id: cpd.id,
+      id: `cpd-${cpd.id}`,
       name: cpd.full_name,
       type: 'CPD',
       status: cpd.review_status,
@@ -111,27 +121,32 @@ onMounted(async () => {
     const cogsRecordsResponse = await apiService.getEpcCogs()
     const cogsData = cogsRecordsResponse.data.results || []
     const mappedCogs = cogsData.map((cogs) => ({
-      id: cogs.id,
+      id: `cogs-${cogs.id}`,
       name: cogs.full_name,
       type: 'CoGS',
       status: cogs.endorsement_decision,
       date: cogs.updated_at,
     }))
 
-    // Corrected CAPA API call with parentheses
     const capaRecordsResponse = await apiService.getEpcCapas()
     const capaData = capaRecordsResponse.data.results || []
     const mappedcapa = capaData.map((capa) => ({
-      id: capa.id,
+      id: `capa-${capa.id}`,
       name: capa?.teaching_center?.institute?.name_of_institution,
       type: 'CAPA',
       status: capa.status,
       date: capa.updated_at,
     }))
 
-    allApplications.value = [...NewReg_appedApplicants, ...mappedApplicants, ...mappedCpd, ...mappedCogs, ...mappedcapa]
+
+    allApplications.value = [...processedApplications, ...mappedCpd, ...mappedCogs, ...mappedcapa]
+
+
     allApplications.value.sort((a, b) => new Date(b.date) - new Date(a.date))
+
+
     recentApplications.value = allApplications.value.slice(0, 5)
+
   } catch (error) {
     console.error('Error fetching data:', error)
   }
@@ -158,12 +173,18 @@ const displayedApplications = computed(() => {
 const totalPages = computed(() => {
   return Math.ceil(allApplications.value.length / itemsPerPage)
 })
+
+// Updated to include more types
 const getApplicationTypeClass = (type) => {
   const classes = {
-    Registration: 'bg-blue-100 text-blue-800',
-    Renewal: 'bg-green-100 text-green-800',
-    CPD: 'bg-purple-100 text-purple-800',
-    CoGS: 'bg-yellow-100 text-yellow-800',
+    'Registration': 'bg-blue-100 text-blue-800',
+    'New registration': 'bg-blue-100 text-blue-800',
+    'Additional Qualification': 'bg-indigo-100 text-indigo-800',
+    'Re-registration': 'bg-orange-100 text-orange-800',
+    'Renewal': 'bg-green-100 text-green-800',
+    'CPD': 'bg-purple-100 text-purple-800',
+    'CoGS': 'bg-yellow-100 text-yellow-800',
+    'CAPA': 'bg-pink-100 text-pink-800',
   }
   return classes[type] || 'bg-gray-100 text-gray-800'
 }
@@ -176,7 +197,8 @@ const getStatusClass = (status) => {
     Approved: 'bg-green-100 text-green-800',
     Rejected: 'bg-red-100 text-red-800',
     Regret: 'bg-red-100 text-red-800',
-    R: 'bg-green-100 text-green-800',
+    R: 'bg-green-100 text-green-800', // Resolved
+    Resolved: 'bg-green-100 text-green-800',
   }
   return classes[status] || 'bg-gray-100 text-gray-800'
 }
@@ -190,22 +212,25 @@ const formatDate = (dateString) => {
     return 'Invalid Date'
   }
 }
+
+
 const getStatusText = (status) => {
   switch (status) {
     case 'P':
-      return 'Pending'
-    case 'R':
-      return 'Resolved'
-    case 'C':
-      return 'Cancelled'
     case 'Pending':
       return 'Pending'
+    case 'R':
+    case 'Resolved':
+      return 'Resolved'
+    case 'C':
+    case 'Cancelled':
+      return 'Cancelled'
     case 'Approved':
       return 'Approved'
     case 'Rejected':
       return 'Rejected'
     default:
-      return 'Unknown'
+      return status || 'Unknown'
   }
 }
 </script>
