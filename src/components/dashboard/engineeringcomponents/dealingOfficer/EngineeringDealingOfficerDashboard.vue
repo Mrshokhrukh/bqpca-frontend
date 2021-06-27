@@ -393,6 +393,7 @@ const iconMap = {
 
 const getIconComponent = (iconName) => iconMap[iconName] || null
 
+// Refs for individual counts
 const pendingApplicationCount = ref(0)
 const pendingPhysicalCount = ref(0)
 const pendingCpdCount = ref(0)
@@ -402,20 +403,23 @@ const approvedApplicationsTodayCount = ref(0)
 const ActiveCount = ref(0)
 const RenewalCount = ref(0)
 const RegisterCount = ref(0)
+// Refs for stats card breakdown
+const pendingNewRegCount = ref(0)
+const pendingAdditionalQualsCount = ref(0)
 
 const quickStats = computed(() => [
   {
-    title: 'Total Applications',
+    title: 'Total Registrations',
     value: RegisterCount.value.toLocaleString(),
     icon: 'DocumentTextIcon',
   },
   {
-    title: 'Total Qualification Applications',
+    title: 'Total Qualification Apps',
     value: totalApplicationsCount.value.toLocaleString(),
-    icon: 'DocumentTextIcon',
+    icon: 'AcademicCapIcon',
   },
   {
-    title: 'Approved Qualification Today',
+    title: 'Approved Qualifications', // Changed from 'Today' to be more general
     value: approvedApplicationsTodayCount.value.toLocaleString(),
     icon: 'ClipboardDocumentCheckIcon',
   },
@@ -434,7 +438,7 @@ const quickStats = computed(() => [
 const priorityTasks = ref([
   {
     id: 1,
-    title: 'Application Registration',
+    title: 'Application Review', // Renamed for clarity
     pending_Counts: 0,
     icon: 'DocumentTextIcon',
     route: '/admin/dealing_officer/engineering_certification/application_lists',
@@ -462,79 +466,95 @@ const priorityTasks = ref([
   },
 ])
 
-
 const stats = computed(() => {
-  const totalPendingReviews = pendingApplicationCount.value + pendingPhysicalCount.value
-  const additionalQuals = pendingApplicationCount.value // Use actual count
-  const renewals = RenewalCount.value // Use actual count from API
-  const newRegistrations = Math.round(pendingApplicationCount.value * 0.1)
-  const selfDirectedCPD = Math.round(pendingCpdCount.value * 0.7)
-  const programApprovals = pendingCpdCount.value - selfDirectedCPD
+  // Total pending reviews is the sum of pending qualifications and pending renewals
+  const totalPendingReviews = pendingApplicationCount.value + RenewalCount.value
+
+  const selfDirectedCPD = Math.round(pendingCpdCount.value * 0.7) // Example logic
+  const programApprovals = pendingCpdCount.value - selfDirectedCPD // Example logic
   const cpdPercentage =
     pendingCpdCount.value > 0 ? Math.round((selfDirectedCPD / pendingCpdCount.value) * 100) : 0
 
   return {
     pendingReviews: totalPendingReviews,
-    newRegistrations,
-    renewals,
-    additionalQuals,
+    newRegistrations: pendingNewRegCount.value,
+    renewals: RenewalCount.value,
+    additionalQuals: pendingAdditionalQualsCount.value,
     pendingCPD: pendingCpdCount.value,
     selfDirectedCPD,
     programApprovals,
     cogsRequests: pendingCogsCount.value,
-    cogsCompletionRate: 68, // Static Value - Dynamic rate needs more data
+    cogsCompletionRate: 68, // Static Value
     cpdPercentage,
-    renewalsTotal: RenewalCount.value, // For progress bar denominator if needed
   }
 })
 
 onMounted(async () => {
   try {
-    const applicantsResponse = await apiService.getEpcNewQualifications()
-    const applicantsData = applicantsResponse.data.results || []
+    // --- Primary Data Fetching ---
+    // This one call now provides all registration and qualification data.
+    const applicationsResponse = await apiService.getEpcNewApplications()
+    const applicationsData = applicationsResponse.data.results || []
 
-    totalApplicationsCount.value = applicantsData.length
-    approvedApplicationsTodayCount.value = applicantsData.filter(
-      (app) => app.endorsement_decision === 'Approved',
+    // --- Calculations based on top-level applications ---
+    RegisterCount.value = applicationsData.length
+    ActiveCount.value = applicationsData.filter((app) => app.is_active === true).length
+
+    // --- Flatten all nested user_qualifications into a single array ---
+    const allQualifications = applicationsData.flatMap(app => app.user_qualifications || [])
+
+    // --- Calculations based on the flattened qualifications list ---
+    totalApplicationsCount.value = allQualifications.length
+
+    approvedApplicationsTodayCount.value = allQualifications.filter(
+      (qual) => qual.endorsement_decision === 'Approved',
     ).length
 
-    pendingApplicationCount.value = applicantsData.filter(
-      (app) => app.endorsement_decision === 'Pending',
+    // Count all qualifications with a 'Pending' endorsement decision
+    const pendingQualifications = allQualifications.filter(
+      (qual) => qual.endorsement_decision === 'Pending'
+    )
+    pendingApplicationCount.value = pendingQualifications.length
+
+    // Count all qualifications with a 'Pending' physical review status
+    pendingPhysicalCount.value = allQualifications.filter(
+      (qual) => qual.physical_review_status === 'Pending'
     ).length
-    pendingPhysicalCount.value = applicantsData.filter(
-      (app) => app.physical_review_status === 'Pending',
-    ).length
+
+    // --- Update Priority Task Counts ---
     priorityTasks.value[0].pending_Counts = pendingApplicationCount.value
+    priorityTasks.value[2].pending_Counts = pendingPhysicalCount.value
 
-    // Register count and active count
-    const activeResponse = await apiService.getEpcNewApplications()
-    const activeData = activeResponse.data.results || []
-    ActiveCount.value = activeData.filter((app) => app.is_active === true).length
-    RegisterCount.value = activeData.length
+    // --- Breakdown for "Pending Reviews" Card ---
+    // These now use real data instead of estimates.
+    pendingNewRegCount.value = pendingQualifications.filter(
+      q => q.registration_type_name === 'New registration'
+    ).length;
+    pendingAdditionalQualsCount.value = pendingQualifications.filter(
+      q => q.registration_type_name === 'Additional Qualification'
+    ).length;
 
-    // Renewal counts
+    // --- Renewal Data (Unmodified as requested) ---
     const RenwalResponse = await apiService.getEpcRenewals()
     const RenewalData = RenwalResponse.data.results || []
     RenewalCount.value = RenewalData.filter(
       (app) => app.renewal_endorsement_decision === 'Pending',
     ).length
 
-    // CPD
+    // --- CPD Data ---
     const cpdRecordsResponse = await apiService.getEpcCpdRecords()
     const cpdData = cpdRecordsResponse.data.results || []
     pendingCpdCount.value = cpdData.filter((cpd) => cpd.review_status === 'Pending').length
     priorityTasks.value[1].pending_Counts = pendingCpdCount.value
 
-    // Physical verification
-    priorityTasks.value[2].pending_Counts = pendingPhysicalCount.value
-
-    // CoGS
+    // --- CoGS Data ---
     const cogsRecordsResponse = await apiService.getEpcCogs()
     const cogsData = cogsRecordsResponse.data.results || []
     pendingCogsCount.value = cogsData.filter((cogs) => cogs.review_status === 'Pending').length
     priorityTasks.value[3].pending_Counts = pendingCogsCount.value
+
   } catch (error) {
-    console.error('Error fetching data:', error)
+    console.error('Error fetching dashboard data:', error)
   }
 })
 

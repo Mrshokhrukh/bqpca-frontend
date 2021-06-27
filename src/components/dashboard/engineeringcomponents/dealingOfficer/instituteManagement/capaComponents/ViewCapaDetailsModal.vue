@@ -39,8 +39,8 @@
               </label>
               <div class="flex items-center">
                 <span :class="capa.physical_verification_status
-                    ? 'bg-green-100 text-green-800 border-green-300'
-                    : 'bg-red-100 text-red-800 border-red-300'
+                  ? 'bg-green-100 text-green-800 border-green-300'
+                  : 'bg-red-100 text-red-800 border-red-300'
                   " class="inline-flex items-center px-3 py-1 rounded-md text-sm font-medium border">
                   <component :is="capa.physical_verification_status ? BadgeCheck : BadgeX" class="h-4 w-4 mr-2" />
                   {{ capa.physical_verification_status ? 'Verified' : 'Not Verified' }}
@@ -124,9 +124,15 @@
               <div class="col-span-2" v-if="capa.status === 'R'">
                 <dt class="text-sm font-medium text-gray-500 mb-1">Dealing Officer Remarks</dt>
                 <dd>
-                  <div class="text-sm text-gray-900 bg-gray-50 p-3 rounded-md border border-gray-200">
-                    {{ capa?.DO_remarks || 'N/A' }}
+                  <div class="text-sm text-gray-900 bg-gray-50 p-3 rounded-md border border-gray-200 mb-2">
+                    <textarea v-model="editableRemarks"
+                      class="w-full bg-transparent border-none resize-none focus:ring-0" rows="2"
+                      :readonly="false"></textarea>
                   </div>
+                  <button type="button" @click="updateRemarks"
+                    class="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+                    Save Remarks
+                  </button>
                 </dd>
               </div>
             </div>
