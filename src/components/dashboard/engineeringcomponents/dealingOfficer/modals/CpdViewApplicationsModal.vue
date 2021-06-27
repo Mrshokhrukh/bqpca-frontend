@@ -1,3 +1,4 @@
+```vue
 <template>
   <TransitionRoot appear :show="application !== null" as="template">
     <Dialog as="div" @close="$emit('close')" class="relative z-50">
@@ -20,7 +21,7 @@
                   {
                     'bg-yellow-50 border-yellow-100': getApplicationStatus() === 'Pending',
                     'bg-green-50 border-green-100': getApplicationStatus() === 'Approved',
-                    'bg-red-50 border-red-100': getApplicationStatus() === 'Rejected',
+                    'bg-red-50 border-red-100': getApplicationStatus() === 'Regretted',
                   },
                 ]">
                   <div class="flex items-center justify-between relative z-10">
@@ -43,13 +44,13 @@
                         {
                           'bg-yellow-100 text-yellow-800': getApplicationStatus() === 'Pending',
                           'bg-green-100 text-green-800': getApplicationStatus() === 'Approved',
-                          'bg-red-100 text-red-800': getApplicationStatus() === 'Rejected',
+                          'bg-red-100 text-red-800': getApplicationStatus() === 'Regretted',
                         },
                       ]">
                         <Circle class="h-4 w-4" :class="{
                           'text-yellow-500': getApplicationStatus() === 'Pending',
                           'text-green-500': getApplicationStatus() === 'Approved',
-                          'text-red-500': getApplicationStatus() === 'Rejected',
+                          'text-red-500': getApplicationStatus() === 'Regretted',
                         }" />
                         <span>{{ getApplicationStatus() }}</span>
                       </span>
@@ -192,7 +193,7 @@
                               <p class="text-sm font-medium text-gray-500">CPD Providing Agency</p>
                               <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
                                 <UserCheck class="h-4 w-4 text-gray-400" />
-                                <span>{{ application.cpd_providing_agency || 'Not provided' }}</span>
+                                <span>{{ getCpdProvidingAgencyName(application.cpd_providing_agency) }}</span>
                               </p>
                             </div>
                             <div class="p-4 bg-gray-50 rounded-lg">
@@ -213,7 +214,7 @@
                               <p class="text-sm font-medium text-gray-500">Duration (Hours)</p>
                               <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
                                 <Clock class="h-4 w-4 text-gray-400" />
-                                <span>{{ application.duration_in_hours || 'Not provided' }}</span>
+                                <span>{{ application.total_duration_hours || application.duration_in_hours || 'Not provided' }}</span>
                               </p>
                             </div>
                             <div class="p-4 bg-gray-50 rounded-lg">
@@ -241,7 +242,7 @@
                               <p class="text-sm font-medium text-gray-500">Reason for Conducting</p>
                               <p class="text-sm text-gray-900 mt-2 flex items-start space-x-2">
                                 <MessageSquare class="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
-                                <span>{{ application.reason_for_conducting || 'Not provided' }}</span>
+                                <span>{{ getReasonForConductingName(application.reason_for_conducting) }}</span>
                               </p>
                             </div>
                             <div v-if="application.reason_for_details" class="md:col-span-2 p-4 bg-gray-50 rounded-lg">
@@ -249,6 +250,13 @@
                               <p class="text-sm text-gray-900 mt-2 flex items-start space-x-2">
                                 <MessageSquare class="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
                                 <span>{{ application.reason_for_details }}</span>
+                              </p>
+                            </div>
+                            <div v-if="application.activities_summary" class="md:col-span-2 p-4 bg-gray-50 rounded-lg">
+                              <p class="text-sm font-medium text-gray-500">Activities Summary</p>
+                              <p class="text-sm text-gray-900 mt-2 flex items-start space-x-2">
+                                <Activity class="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                                <span>{{ application.activities_summary }}</span>
                               </p>
                             </div>
                           </div>
@@ -311,6 +319,13 @@
                                         <p class="text-xs text-gray-600">
                                           Reg. No: {{ resource.resource_person_reg_no || 'Not specified' }}
                                         </p>
+                                        <div v-if="resource.resource_document" class="mt-2">
+                                          <a :href="resource.resource_document" target="_blank"
+                                            class="inline-flex items-center px-2 py-1 text-xs font-medium text-blue-600 bg-blue-50 border border-blue-300 rounded hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
+                                            <FileText class="h-3 w-3 mr-1" />
+                                            View Document
+                                          </a>
+                                        </div>
                                       </div>
                                     </div>
                                     <div>
@@ -341,9 +356,6 @@
                                     <div class="flex-1">
                                       <p class="text-sm font-medium text-gray-900">
                                         {{ getMethodologyName(methodology.methodology_name) }}
-                                      </p>
-                                      <p class="text-xs text-gray-600">
-                                        Method ID: {{ methodology.methodology_name }}
                                       </p>
                                     </div>
                                   </div>
@@ -465,6 +477,7 @@
 
                           <div v-if="showApprovalForm"
                             class="p-6 bg-green-50 rounded-xl border border-green-200 mb-4 transition-all">
+                            ```vue
                             <h5 class="text-base font-medium text-green-800 mb-4 flex items-center space-x-2">
                               <CheckCircle class="h-4 w-4 text-green-600" />
                               <span>Approve Application</span>
@@ -582,69 +595,69 @@
     </Dialog>
   </TransitionRoot>
 </template>
-
 <script setup>
 import { ref, watch } from 'vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import {
-  Activity,
-  AlertCircle,
-  Award,
-  Badge,
-  BookOpen,
-  Calendar,
-  Check,
-  CheckCircle,
-  Circle,
-  ClipboardCheck,
-  Clock,
-  FileText,
-  Hash,
-  Link,
-  MessageSquare,
-  Paperclip,
-  Pencil,
-  User,
-  UserCheck,
-  UserCircle,
-  Users,
-  X,
-  XCircle,
+ Activity,
+ AlertCircle,
+ Award,
+ Badge,
+ BookOpen,
+ Calendar,
+ Check,
+ CheckCircle,
+ Circle,
+ ClipboardCheck,
+ Clock,
+ FileText,
+ Hash,
+ Link,
+ MessageSquare,
+ Paperclip,
+ Pencil,
+ User,
+ UserCheck,
+ UserCircle,
+ Users,
+ X,
+ XCircle,
 } from 'lucide-vue-next'
 
 const props = defineProps({
-  application: {
-    type: Object,
-    required: true,
-    default: () => ({
-      registration_no: '',
-      cid_no: '',
-      full_name: '',
-      title_of_cpd: '',
-      expected_outcome: '',
-      from_date: '',
-      to_date: '',
-      venue: '',
-      credit: 0,
-      duration_in_hours: 0,
-      number_of_participants: 0,
-      course_document: '',
-      document_supporting_expertise: '',
-      attendance_sheet_attachment: '',
-      participants: [],
-      status: false,
-      is_cpd_approved: false,
-      type_of_cpd: null,
-      proposed_training_location: '',
-      cpd_providing_agency: '',
-      relevance_to_topic: '',
-      reason_for_conducting: '',
-      reason_for_details: '',
-      learning_methods: [],
-      resources: [],
-      methodologies: [],
-    }),
-  },
+ application: {
+   type: Object,
+   required: true,
+   default: () => ({
+     registration_no: '',
+     cid_no: '',
+     full_name: '',
+     title_of_cpd: '',
+     expected_outcome: '',
+     from_date: '',
+     to_date: '',
+     venue: '',
+     credit: 0,
+     duration_in_hours: 0,
+     total_duration_hours: 0,
+     number_of_participants: 0,
+     course_document: '',
+     document_supporting_expertise: '',
+     attendance_sheet_attachment: '',
+     participants: [],
+     status: 'pending',
+     type_of_cpd: null,
+     proposed_training_location: '',
+     cpd_providing_agency: null,
+     reason_for_conducting: null,
+     relevance_to_topic: '',
+     reason_for_details: '',
+     learning_methods: [],
+     resources: [],
+     methodologies: [],
+     activities_summary: '',
+   }),
+ },
 })
 
 const emit = defineEmits(['close', 'save', 'approve', 'reject', 'updateParticipant'])
@@ -664,171 +677,207 @@ const participantCredits = ref({})
 
 // CPD Type mapping
 const cpdTypeMap = {
-  1: 'Workshop',
-  2: 'Seminar',
-  3: 'Online Course',
-  4: 'Conference',
-  5: 'Training Program',
-  6: 'Other'
+ 1: 'Workshop',
+ 2: 'Seminar',
+ 3: 'Online Course',
+ 4: 'Conference',
+ 5: 'Training Program',
+ 6: 'Other'
 }
 
 const getCpdTypeName = (typeId) => {
-  if (!typeId) return 'Not specified'
-  return cpdTypeMap[typeId] || `Unknown Type (ID: ${typeId})`
+ if (!typeId) return 'Not specified'
+ return cpdTypeMap[typeId] || `Unknown Type (ID: ${typeId})`
+}
+
+// CPD Providing Agency mapping
+const cpdProvidingAgencyMap = {
+ 1: 'Royal University of Bhutan',
+ 2: 'Engineers Australia',
+ 3: 'Institution of Engineers Singapore',
+ 4: 'Institution of Civil Engineers (ICE)',
+ 5: 'American Society of Civil Engineers (ASCE)',
+ 6: 'Institute of Electrical and Electronics Engineers (IEEE)',
+ 7: 'Other'
+}
+
+const getCpdProvidingAgencyName = (agencyId) => {
+ if (!agencyId) return 'Not specified'
+ return cpdProvidingAgencyMap[agencyId] || `Unknown Agency (ID: ${agencyId})`
+}
+
+// Reason for Conducting mapping
+const reasonForConductingMap = {
+ 1: 'Professional Development',
+ 2: 'Regulatory Requirement',
+ 3: 'Skill Enhancement',
+ 4: 'Career Advancement',
+ 5: 'Industry Updates',
+ 6: 'Knowledge Sharing',
+ 7: 'Other'
+}
+
+const getReasonForConductingName = (reasonId) => {
+ if (!reasonId) return 'Not specified'
+ return reasonForConductingMap[reasonId] || `Unknown Reason (ID: ${reasonId})`
 }
 
 // Methodology mapping
 const methodologyMap = {
-  1: 'Lecture/Presentation',
-  2: 'Interactive Workshop',
-  3: 'Group Discussion',
-  4: 'Case Study Analysis',
-  5: 'Hands-on Practice',
-  6: 'Role Playing',
-  7: 'Simulation',
-  8: 'E-Learning',
-  9: 'Field Work',
-  10: 'Other'
+ 1: 'Lecture/Presentation',
+ 2: 'Interactive Workshop',
+ 3: 'Group Discussion',
+ 4: 'Case Study Analysis',
+ 5: 'Hands-on Practice',
+ 6: 'Role Playing',
+ 7: 'Simulation',
+ 8: 'E-Learning',
+ 9: 'Field Work',
+ 10: 'Other'
 }
 
 const getMethodologyName = (methodologyId) => {
-  if (!methodologyId) return 'Not specified'
-  return methodologyMap[methodologyId] || `Unknown Methodology (ID: ${methodologyId})`
+ if (!methodologyId) return 'Not specified'
+ return methodologyMap[methodologyId] || `Unknown Methodology (ID: ${methodologyId})`
 }
 
 watch(
-  () => props.application,
-  (newApplication) => {
-    if (newApplication) {
-      editedApplication.value = { ...newApplication }
-      approvalCredits.value = newApplication.credit || 0
-      isEditing.value = false
-      showApprovalForm.value = false
-      showRejectionForm.value = false
-      approvalMessage.value = ''
-      rejectionMessage.value = ''
-      rejectionError.value = ''
-      editingParticipant.value = null
-      participantCredits.value = {}
-    }
-  },
-  { immediate: true }
+ () => props.application,
+ (newApplication) => {
+   if (newApplication) {
+     editedApplication.value = { ...newApplication }
+     approvalCredits.value = newApplication.credit || 0
+     isEditing.value = false
+     showApprovalForm.value = false
+     showRejectionForm.value = false
+     approvalMessage.value = ''
+     rejectionMessage.value = ''
+     rejectionError.value = ''
+     editingParticipant.value = null
+     participantCredits.value = {}
+   }
+ },
+ { immediate: true }
 )
 
 const getApplicationStatus = () => {
-  if (props.application?.is_cpd_approved === true) {
-    return 'Approved'
-  } else if (props.application?.is_cpd_approved === false) {
-    return 'Rejected'
-  }
-  return 'Pending'
+ const status = props.application?.status || 'pending'
+ // Convert status to proper case
+ switch (status.toLowerCase()) {
+   case 'approved':
+     return 'Approved'
+   case 'regretted':
+     return 'Regretted'
+   case 'pending':
+   default:
+     return 'Pending'
+ }
 }
 
 const formatDate = (dateString) => {
-  if (!dateString) return 'Not provided'
-  try {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    })
-  } catch (error) {
-    return dateString
-  }
+ if (!dateString) return 'Not provided'
+ try {
+   return new Date(dateString).toLocaleDateString('en-US', {
+     year: 'numeric',
+     month: 'short',
+     day: 'numeric'
+   })
+ } catch (error) {
+   return dateString
+ }
 }
 
 const startEditing = () => {
-  editedApplication.value = { ...props.application }
-  isEditing.value = true
-  showApprovalForm.value = false
-  showRejectionForm.value = false
+ editedApplication.value = { ...props.application }
+ isEditing.value = true
+ showApprovalForm.value = false
+ showRejectionForm.value = false
 }
 
 const saveChanges = () => {
-  const creditsToSave = Number(editedApplication.value.credit)
-  if (isNaN(creditsToSave) || creditsToSave < 0) {
-    editedApplication.value.credit = 0
-  } else {
-    editedApplication.value.credit = creditsToSave
-  }
+ const creditsToSave = Number(editedApplication.value.credit)
+ if (isNaN(creditsToSave) || creditsToSave < 0) {
+   editedApplication.value.credit = 0
+ } else {
+   editedApplication.value.credit = creditsToSave
+ }
 
-  emit('save', {
-    id: props.application.id,
-    credit: editedApplication.value.credit,
-  })
-  isEditing.value = false
+ emit('save', {
+   id: props.application.id,
+   credit: editedApplication.value.credit,
+ })
+ isEditing.value = false
 }
 
 const startEditingParticipant = (participant) => {
-  editingParticipant.value = participant.id
-  participantCredits.value[participant.id] = participant.cpd_credits || 0
+ editingParticipant.value = participant.id
+ participantCredits.value[participant.id] = participant.cpd_credits || 0
 }
 
 const cancelEditingParticipant = () => {
-  editingParticipant.value = null
-  participantCredits.value = {}
+ editingParticipant.value = null
+ participantCredits.value = {}
 }
 
 const saveParticipant = (participant) => {
-  const credits = Number(participantCredits.value[participant.id])
-  if (isNaN(credits) || credits < 0) {
-    participantCredits.value[participant.id] = 0
-  }
+ const credits = Number(participantCredits.value[participant.id])
+ if (isNaN(credits) || credits < 0) {
+   participantCredits.value[participant.id] = 0
+ }
 
-  emit('updateParticipant', {
-    id: participant.id,
-    cpd_credits: participantCredits.value[participant.id],
-    review_status: 'Approved'
-  })
+ emit('updateParticipant', {
+   id: participant.id,
+   cpd_credits: participantCredits.value[participant.id],
+   review_status: 'Approved'
+ })
 
-  editingParticipant.value = null
-  participantCredits.value = {}
+ editingParticipant.value = null
+ participantCredits.value = {}
 }
 
 const approveApplication = () => {
-  if (approvalCredits.value < 0) {
-    approvalCredits.value = 0
-  }
+ if (approvalCredits.value < 0) {
+   approvalCredits.value = 0
+ }
 
-  emit('approve', {
-    id: props.application.id,
-    credit: approvalCredits.value,
-    is_cpd_approved: true,
-    status: true,
-    remarks: approvalMessage.value || 'Application approved',
-  })
-  showApprovalForm.value = false
-  approvalMessage.value = ''
+ emit('approve', {
+   id: props.application.id,
+   credit: approvalCredits.value,
+   status: 'approved', // Changed to use status field
+   is_draft: false,
+   remarks: approvalMessage.value || 'Application approved',
+ })
+ showApprovalForm.value = false
+ approvalMessage.value = ''
 }
 
 const rejectApplication = () => {
-  if (!rejectionMessage.value.trim()) {
-    rejectionError.value = 'Please provide a reason for rejection'
-    return
-  }
-  rejectionError.value = ''
+ if (!rejectionMessage.value.trim()) {
+   rejectionError.value = 'Please provide a reason for rejection'
+   return
+ }
+ rejectionError.value = ''
 
-  emit('reject', {
-    id: props.application.id,
-    status: false,
-    is_cpd_approved: false,
-    remarks: rejectionMessage.value,
-  })
-  showRejectionForm.value = false
-  rejectionMessage.value = ''
+ emit('reject', {
+   id: props.application.id,
+   status: 'regretted', // Changed to use status field
+   is_draft: false,
+   remarks: rejectionMessage.value,
+ })
+ showRejectionForm.value = false
+ rejectionMessage.value = ''
 }
 
 const handleApprovalClick = () => {
-  showApprovalForm.value = true
-  showRejectionForm.value = false
+ showApprovalForm.value = true
+ showRejectionForm.value = false
 }
 
 const handleRejectionClick = () => {
-  showRejectionForm.value = true
-  showApprovalForm.value = false
+ showRejectionForm.value = true
+ showApprovalForm.value = false
 }
 </script>
-
 <style scoped>
 .overflow-y-auto {
   scrollbar-width: thin;
