@@ -1058,7 +1058,7 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/institutions/${serviceType}/site_visit_schedule`,
           },
           {
-            name: 'Track & Renew Teaching Hospital',
+            name: 'Renew Teaching Hospital',
             icon: getIconComponent('RefreshCw'),
             route: (serviceType) => `/admin/institutions/${serviceType}/renewal_teaching_hospital`,
           },
@@ -1084,11 +1084,7 @@ const serviceSpecificMenuItems = {
             icon: getIconComponent('Users'),
             route: (serviceType) => `/admin/institutions/${serviceType}/staff_management`,
           },
-          {
-            name: 'Module Management',
-            icon: getIconComponent('GraduationCap'),
-            route: (serviceType) => `/admin/institutions/${serviceType}/course_management`,
-          },
+          
         ],
       },
     ],

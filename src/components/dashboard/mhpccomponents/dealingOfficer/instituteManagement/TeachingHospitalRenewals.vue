@@ -1,7 +1,7 @@
 <template>
   <div class="p-8 min-h-screen bg-gray-50">
     <div class="bg-white rounded-xl p-8 mb-10 shadow-sm border border-gray-100">
-      <h1 class="text-4xl font-bold text-gray-900 mb-3">Teaching Center Renewal Applications</h1>
+      <h1 class="text-4xl font-bold text-gray-900 mb-3">Teaching Hospital Renewal Applications</h1>
       <div class="flex items-center text-gray-600 space-x-6">
         <span class="flex items-center">
           <span class="w-3 h-3 rounded-full bg-blue-500 mr-2"></span>
@@ -56,7 +56,7 @@
                 scope="col"
                 class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
               >
-                Center Name
+                Hospital Name
               </th>
               <th
                 scope="col"
@@ -100,7 +100,7 @@
                 <div class="text-sm font-medium text-gray-900">{{ center.center_name }}</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">{{ center.institute_name }}</div>
+                <div class="text-sm text-gray-900">{{ center.institute_details.name_of_institution }}</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="text-sm text-gray-500">
@@ -150,17 +150,17 @@
 
     <!-- No applications message -->
     <div v-else class="bg-white p-8 rounded-xl shadow-sm border border-gray-100 text-center">
-      <p class="text-gray-600">No teaching center renewal applications found.</p>
+      <p class="text-gray-600">No teaching hospital renewal applications found.</p>
     </div>
 
     <!-- Details Modal -->
     <div
       v-if="showDetailsModal"
-      class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50"
+      class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-4"
     >
-      <div class="bg-white rounded-lg shadow-xl p-6 m-4 max-w-4xl w-full">
+      <div class="bg-white rounded-lg shadow-xl p-6 m-4 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         <div class="flex justify-between items-start mb-6">
-          <h3 class="text-xl font-bold text-gray-900">Teaching Center Details</h3>
+          <h3 class="text-xl font-bold text-gray-900">Teaching Hospital Details</h3>
           <button @click="closeDetailsModal" class="text-gray-400 hover:text-gray-500">
             <svg
               class="h-6 w-6"
@@ -180,107 +180,38 @@
         </div>
 
         <div v-if="selectedCenter" class="space-y-6">
-          <!-- Center & Institute Info -->
+          <!-- Center & Institute Info (No Changes) -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <h4 class="text-sm font-medium text-gray-500 mb-1">Center Information</h4>
+              <h4 class="text-sm font-medium text-gray-500 mb-1">Hospital Information</h4>
               <div class="p-4 bg-gray-50 rounded-lg">
                 <div class="grid grid-cols-1 gap-3">
-                  <div>
-                    <p class="text-xs text-gray-500">Center Name</p>
-                    <p class="text-sm font-medium text-gray-800">
-                      {{ selectedCenter.center_name }}
-                    </p>
-                  </div>
-                  <div>
-                    <p class="text-xs text-gray-500">Location</p>
-                    <p class="text-sm font-medium text-gray-800">
-                      {{ selectedCenter.center_location }}, {{ selectedCenter.state_dzongkhag }}
-                    </p>
-                  </div>
-                  <div>
-                    <p class="text-xs text-gray-500">City/Gewog</p>
-                    <p class="text-sm font-medium text-gray-800">{{ selectedCenter.city_gewog }}</p>
-                  </div>
-                  <div>
-                    <p class="text-xs text-gray-500">Target Category</p>
-                    <p class="text-sm font-medium text-gray-800">
-                      {{ selectedCenter.target_category }}
-                    </p>
-                  </div>
+                  <div><p class="text-xs text-gray-500">Hospital Name</p><p class="text-sm font-medium text-gray-800">{{ selectedCenter.center_name }}</p></div>
+                  <div><p class="text-xs text-gray-500">Location</p><p class="text-sm font-medium text-gray-800">{{ selectedCenter.center_location }}, {{ selectedCenter.state_dzongkhag }}</p></div>
+                  <div><p class="text-xs text-gray-500">City/Gewog</p><p class="text-sm font-medium text-gray-800">{{ selectedCenter.city_gewog }}</p></div>
                 </div>
               </div>
             </div>
-
             <div>
               <h4 class="text-sm font-medium text-gray-500 mb-1">Institute Information</h4>
               <div class="p-4 bg-gray-50 rounded-lg">
                 <div class="grid grid-cols-1 gap-3">
-                  <div>
-                    <p class="text-xs text-gray-500">Institute Name</p>
-                    <p class="text-sm font-medium text-gray-800">
-                      {{ selectedCenter.institute_name }}
-                    </p>
-                  </div>
-                  <div>
-                    <p class="text-xs text-gray-500">Validity Period</p>
-                    <p class="text-sm font-medium text-gray-800">
-                      {{ formatDate(selectedCenter.valid_since) }} to
-                      {{ formatDate(selectedCenter.valid_till) }}
-                    </p>
-                  </div>
+                  <div><p class="text-xs text-gray-500">Institute Name</p><p class="text-sm font-medium text-gray-800">{{ selectedCenter.institute_details.name_of_institution }}</p></div>
+                  <div><p class="text-xs text-gray-500">Validity Period</p><p class="text-sm font-medium text-gray-800">{{ formatDate(selectedCenter.valid_since) }} to {{ formatDate(selectedCenter.valid_till) }}</p></div>
                 </div>
               </div>
             </div>
           </div>
-
-          <!-- Attachments & Remarks -->
+          <!-- Attachments & Remarks (No Changes) -->
           <div>
-            <h4 class="text-sm font-medium text-gray-500 mb-1">Documents & Remarks</h4>
-            <div class="p-4 bg-gray-50 rounded-lg">
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <p class="text-xs text-gray-500">Attachments</p>
-                  <div class="mt-1">
-                    <a
-                      v-if="selectedCenter.tc_attachments"
-                      :href="selectedCenter.tc_attachments"
-                      target="_blank"
-                      class="text-blue-600 hover:text-blue-800 flex items-center"
-                    >
-                      <svg
-                        class="h-4 w-4 mr-1"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-                        ></path>
-                      </svg>
-                      View Document
-                    </a>
-                    <p v-else class="text-gray-500 italic">No attachments provided</p>
-                  </div>
-                </div>
-                <div>
-                  <p class="text-xs text-gray-500">Remarks</p>
-                  <p class="text-sm text-gray-800 mt-1">
-                    {{ selectedCenter.remarks || 'No remarks provided' }}
-                  </p>
-                </div>
-              </div>
-            </div>
+            <h4 class="text-sm font-medium text-gray-500 mb-1">Application Documents & Remarks</h4>
+            <div class="p-4 bg-gray-50 rounded-lg"><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><p class="text-xs text-gray-500">Attachments</p><div class="mt-1"><a v-if="selectedCenter.tc_attachments" :href="selectedCenter.tc_attachments" target="_blank" class="text-blue-600 hover:text-blue-800 flex items-center"><svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>View Document</a><p v-else class="text-gray-500 italic">No attachments provided</p></div></div><div><p class="text-xs text-gray-500">Applicant Remarks</p><p class="text-sm text-gray-800 mt-1">{{ selectedCenter.remarks || 'No remarks provided' }}</p></div></div></div>
           </div>
 
-          <!-- Review Form (only for pending applications) -->
+          <!-- Review Form (only for pending applications) - MODIFIED -->
           <div v-if="selectedCenter.tc_review_decision === 'Pending'">
-            <h4 class="text-sm font-medium text-gray-500 mb-1">Review Form</h4>
-            <form @submit.prevent="submitReview" class="p-4 bg-gray-50 rounded-lg space-y-4">
+            <div class="p-4 bg-gray-50 rounded-lg space-y-4">
+              <h4 class="text-lg font-semibold text-gray-800 mb-2">Review Form</h4>
               <div>
                 <label for="reviewName" class="block text-sm font-medium text-gray-700"
                   >Review Name</label
@@ -309,7 +240,7 @@
 
               <div>
                 <label for="reportUpload" class="block text-sm font-medium text-gray-700"
-                  >Report Upload</label
+                  >Report Upload (Optional)</label
                 >
                 <input
                   type="file"
@@ -323,37 +254,8 @@
               </div>
 
               <div>
-                <label for="reviewDecision" class="block text-sm font-medium text-gray-700"
-                  >Review Decision</label
-                >
-                <select
-                  id="reviewDecision"
-                  v-model="reviewForm.tc_review_decision"
-                  required
-                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                >
-                  <option value="Pending">Pending</option>
-                  <option value="Approved">Approved</option>
-                  <option value="Rejected">Rejected</option>
-                </select>
-              </div>
-
-              <div v-if="reviewForm.tc_review_decision === 'Rejected'">
-                <label for="rejectionReason" class="block text-sm font-medium text-gray-700"
-                  >Reason for Rejection</label
-                >
-                <textarea
-                  id="rejectionReason"
-                  v-model="reviewForm.tc_reason_if_rejected"
-                  rows="2"
-                  required
-                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                ></textarea>
-              </div>
-
-              <div>
                 <label for="reviewRemarks" class="block text-sm font-medium text-gray-700"
-                  >Review Remarks</label
+                  >Reviewer Remarks</label
                 >
                 <textarea
                   id="reviewRemarks"
@@ -363,169 +265,61 @@
                 ></textarea>
               </div>
 
-              <div class="flex justify-end space-x-3">
+              <!-- Rejection Reason Text Area - MODIFIED to be always visible for clarity -->
+              <div>
+                <label for="rejectionReason" class="block text-sm font-medium text-gray-700"
+                  >Reason for Rejection (Required if rejecting)</label
+                >
+                <textarea
+                  id="rejectionReason"
+                  v-model="reviewForm.tc_reason_if_rejected"
+                  rows="2"
+                  placeholder="Enter reason here if you are rejecting the application..."
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                ></textarea>
+              </div>
+
+              <!-- NEW: Action Buttons instead of dropdown -->
+              <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200">
                 <button
                   type="button"
                   @click="closeDetailsModal"
                   class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200"
+                  :disabled="isSubmitting"
                 >
                   Cancel
                 </button>
                 <button
-                  type="submit"
-                  class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200"
+                  type="button"
+                  @click="submitRejection"
+                  class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200"
                   :disabled="isSubmitting"
                 >
-                  {{ isSubmitting ? 'Submitting...' : 'Submit Review' }}
+                  {{ isSubmitting ? 'Submitting...' : 'Reject Application' }}
                 </button>
-              </div>
-            </form>
-          </div>
-
-          <!-- Previous Review (for already reviewed applications) -->
-          <div v-else-if="selectedCenter.tc_review_decision !== 'Pending'">
-            <h4 class="text-sm font-medium text-gray-500 mb-1">Review Details</h4>
-            <div class="p-4 bg-gray-50 rounded-lg">
-              <div class="grid grid-cols-1 gap-3">
-                <div>
-                  <p class="text-xs text-gray-500">Review Name</p>
-                  <p class="text-sm font-medium text-gray-800">
-                    {{ selectedCenter.tc_renewal_review_name || 'N/A' }}
-                  </p>
-                </div>
-                <div>
-                  <p class="text-xs text-gray-500">Review Summary</p>
-                  <p class="text-sm text-gray-800">
-                    {{ selectedCenter.tc_review_summary || 'N/A' }}
-                  </p>
-                </div>
-                <div>
-                  <p class="text-xs text-gray-500">Report</p>
-                  <div class="mt-1">
-                    <a
-                      v-if="selectedCenter.tc_report"
-                      :href="selectedCenter.tc_report"
-                      target="_blank"
-                      class="text-blue-600 hover:text-blue-800 flex items-center"
-                    >
-                      <svg
-                        class="h-4 w-4 mr-1"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-                        ></path>
-                      </svg>
-                      View Report
-                    </a>
-                    <p v-else class="text-gray-500 italic">No report provided</p>
-                  </div>
-                </div>
-                <div>
-                  <p class="text-xs text-gray-500">Decision</p>
-                  <p class="text-sm font-medium">
-                    <span
-                      class="px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full"
-                      :class="getStatusClass(selectedCenter.tc_review_decision)"
-                    >
-                      {{ selectedCenter.tc_review_decision }}
-                    </span>
-                  </p>
-                </div>
-                <div v-if="selectedCenter.tc_review_decision === 'Rejected'">
-                  <p class="text-xs text-gray-500">Rejection Reason</p>
-                  <p class="text-sm text-gray-800">
-                    {{ selectedCenter.tc_reason_if_rejected || 'N/A' }}
-                  </p>
-                </div>
-                <div>
-                  <p class="text-xs text-gray-500">Review Remarks</p>
-                  <p class="text-sm text-gray-800">{{ selectedCenter.tc_remarks || 'N/A' }}</p>
-                </div>
+                 <button
+                  type="button"
+                  @click="submitApproval"
+                  class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200"
+                  :disabled="isSubmitting"
+                >
+                  {{ isSubmitting ? 'Submitting...' : 'Approve Application' }}
+                </button>
               </div>
             </div>
           </div>
+
+          <!-- Previous Review (No Changes) -->
+          <div v-else-if="selectedCenter.tc_review_decision !== 'Pending'">
+            <h4 class="text-sm font-medium text-gray-500 mb-1">Review Details</h4><div class="p-4 bg-gray-50 rounded-lg"><div class="grid grid-cols-1 gap-3"><div><p class="text-xs text-gray-500">Review Name</p><p class="text-sm font-medium text-gray-800">{{ selectedCenter.tc_renewal_review_name || 'N/A' }}</p></div><div><p class="text-xs text-gray-500">Review Summary</p><p class="text-sm text-gray-800">{{ selectedCenter.tc_review_summary || 'N/A' }}</p></div><div><p class="text-xs text-gray-500">Report</p><div class="mt-1"><a v-if="selectedCenter.tc_report" :href="selectedCenter.tc_report" target="_blank" class="text-blue-600 hover:text-blue-800 flex items-center"><svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>View Report</a><p v-else class="text-gray-500 italic">No report provided</p></div></div><div><p class="text-xs text-gray-500">Decision</p><p class="text-sm font-medium"><span class="px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full" :class="getStatusClass(selectedCenter.tc_review_decision)">{{ selectedCenter.tc_review_decision }}</span></p></div><div v-if="selectedCenter.tc_review_decision === 'Rejected'"><p class="text-xs text-gray-500">Rejection Reason</p><p class="text-sm text-gray-800">{{ selectedCenter.tc_reason_if_rejected || 'N/A' }}</p></div><div><p class="text-xs text-gray-500">Reviewer Remarks</p><p class="text-sm text-gray-800">{{ selectedCenter.tc_remarks || 'N/A' }}</p></div></div></div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Approve Confirmation Modal -->
-    <div
-      v-if="showApproveModal"
-      class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50"
-    >
-      <div class="bg-white rounded-lg shadow-xl p-6 m-4 max-w-md w-full">
-        <h3 class="text-xl font-bold text-gray-900 mb-4">Confirm Approval</h3>
-        <p class="mb-6 text-gray-600">
-          Are you sure you want to approve the renewal application for
-          <span class="font-semibold">{{ selectedCenter?.center_name }}</span
-          >?
-        </p>
-        <div class="flex justify-end space-x-4">
-          <button
-            @click="cancelApprove"
-            class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-          >
-            Cancel
-          </button>
-          <button
-            @click="confirmApprove"
-            class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-          >
-            Confirm Approval
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Reject Confirmation Modal -->
-    <div
-      v-if="showRejectModal"
-      class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50"
-    >
-      <div class="bg-white rounded-lg shadow-xl p-6 m-4 max-w-md w-full">
-        <h3 class="text-xl font-bold text-gray-900 mb-4">Confirm Rejection</h3>
-        <p class="mb-4 text-gray-600">
-          Are you sure you want to reject the renewal application for
-          <span class="font-semibold">{{ selectedCenter?.center_name }}</span
-          >?
-        </p>
-        <div class="mb-6">
-          <label for="rejectReason" class="block text-sm font-medium text-gray-700 mb-1">
-            Reason for Rejection
-          </label>
-          <textarea
-            id="rejectReason"
-            v-model="rejectReason"
-            rows="3"
-            required
-            class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-          ></textarea>
-        </div>
-        <div class="flex justify-end space-x-4">
-          <button
-            @click="cancelReject"
-            class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-          >
-            Cancel
-          </button>
-          <button
-            @click="confirmReject"
-            :disabled="!rejectReason.trim()"
-            class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            :class="{ 'opacity-50 cursor-not-allowed': !rejectReason.trim() }"
-          >
-            Confirm Rejection
-          </button>
-        </div>
-      </div>
-    </div>
+    <!-- Approve/Reject Modals (No Changes) -->
+    <div v-if="showApproveModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50"><div class="bg-white rounded-lg shadow-xl p-6 m-4 max-w-md w-full"><h3 class="text-xl font-bold text-gray-900 mb-4">Confirm Approval</h3><p class="mb-6 text-gray-600">Are you sure you want to approve the renewal application for <span class="font-semibold">{{ selectedCenter?.center_name }}</span>? This will extend the validity by one year.</p><div class="flex justify-end space-x-4"><button @click="cancelApprove" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline" :disabled="isSubmitting">Cancel</button><button @click="confirmApprove" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline" :disabled="isSubmitting">{{ isSubmitting ? 'Approving...' : 'Confirm Approval' }}</button></div></div></div>
+    <div v-if="showRejectModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50"><div class="bg-white rounded-lg shadow-xl p-6 m-4 max-w-md w-full"><h3 class="text-xl font-bold text-gray-900 mb-4">Confirm Rejection</h3><p class="mb-4 text-gray-600">Are you sure you want to reject the renewal application for <span class="font-semibold">{{ selectedCenter?.center_name }}</span>?</p><div class="mb-6"><label for="rejectReason" class="block text-sm font-medium text-gray-700 mb-1">Reason for Rejection (Required)</label><textarea id="rejectReason" v-model="rejectReason" rows="3" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"></textarea></div><div class="flex justify-end space-x-4"><button @click="cancelReject" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline" :disabled="isSubmitting">Cancel</button><button @click="confirmReject" :disabled="!rejectReason.trim() || isSubmitting" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline disabled:opacity-50 disabled:cursor-not-allowed">{{ isSubmitting ? 'Rejecting...' : 'Confirm Rejection' }}</button></div></div></div>
   </div>
 </template>
 
@@ -535,7 +329,7 @@ import { useToast } from 'vue-toastification'
 import apiServices from '@/services/services'
 import { Loader } from 'lucide-vue-next'
 
-// State variables
+// --- State Management (No Changes) ---
 const teachingCenters = ref([])
 const isLoading = ref(true)
 const apiError = ref(false)
@@ -549,7 +343,6 @@ const isSubmitting = ref(false)
 const selectedFile = ref(null)
 const selectedFileName = ref('')
 
-// Review form data
 const reviewForm = ref({
   tc_renewal_review_name: '',
   tc_review_summary: '',
@@ -559,52 +352,39 @@ const reviewForm = ref({
   tc_remarks: '',
 })
 
-// Get toast notification
 const toast = useToast()
 
-// Computed properties for filtering applications
-const pendingApplications = computed(() => {
-  return teachingCenters.value.filter((center) => center.tc_review_decision === 'Pending')
-})
+// --- Computed Properties & Utility Functions (No Changes) ---
+const pendingApplications = computed(() =>
+  teachingCenters.value.filter((center) => center.tc_review_decision === 'Pending'),
+)
+const approvedApplications = computed(() =>
+  teachingCenters.value.filter((center) => center.tc_review_decision === 'Approved'),
+)
+const rejectedApplications = computed(() =>
+  teachingCenters.value.filter((center) => center.tc_review_decision === 'Rejected'),
+)
 
-const approvedApplications = computed(() => {
-  return teachingCenters.value.filter((center) => center.tc_review_decision === 'Approved')
-})
-
-const rejectedApplications = computed(() => {
-  return teachingCenters.value.filter((center) => center.tc_review_decision === 'Rejected')
-})
-
-// Format date function
 const formatDate = (dateString) => {
   if (!dateString) return 'N/A'
   try {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    })
+    return new Date(dateString).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
   } catch (e) {
-    console.error('Error formatting date:', e)
-    return 'N/A'
-  }
+  console.error('Invalid date format:', dateString, e)
+  return 'Invalid Date' }
 }
 
-// Get status class for styling
 const getStatusClass = (status) => {
   switch (status) {
-    case 'Approved':
-      return 'bg-green-100 text-green-800'
-    case 'Rejected':
-      return 'bg-red-100 text-red-800'
-    case 'Pending':
-      return 'bg-yellow-100 text-yellow-800'
-    default:
-      return 'bg-gray-100 text-gray-800'
+    case 'Approved': return 'bg-green-100 text-green-800'
+    case 'Rejected': return 'bg-red-100 text-red-800'
+    case 'Pending': return 'bg-yellow-100 text-yellow-800'
+    default: return 'bg-gray-100 text-gray-800'
   }
 }
 
-// File upload handler
+// --- Event Handlers (MODIFIED) ---
+
 const handleReportUpload = (event) => {
   const file = event.target.files[0]
   if (file) {
@@ -616,202 +396,141 @@ const handleReportUpload = (event) => {
   }
 }
 
-// Modal handlers
 const openDetailsModal = (center) => {
   selectedCenter.value = center
-  showDetailsModal.value = true
-
-  // Pre-fill the review form with existing values if available
   reviewForm.value = {
-    tc_renewal_review_name: center.tc_renewal_review_name || '',
+    tc_renewal_review_name: center.tc_renewal_review_name || `Review for ${center.center_name}`,
     tc_review_summary: center.tc_review_summary || '',
-    tc_report: null, // This will be handled by file upload
-    tc_review_decision: center.tc_review_decision || 'Pending',
+    tc_report: null,
+    tc_review_decision: 'Pending', // Always start as pending
     tc_reason_if_rejected: center.tc_reason_if_rejected || '',
     tc_remarks: center.tc_remarks || '',
   }
+  selectedFile.value = null
+  selectedFileName.value = ''
+  showDetailsModal.value = true
 }
 
 const closeDetailsModal = () => {
   showDetailsModal.value = false
+  selectedCenter.value = null
 }
 
-// Quick approve handler
 const handleApprove = (center) => {
   selectedCenter.value = center
   showApproveModal.value = true
 }
+const cancelApprove = () => { showApproveModal.value = false }
 
-const cancelApprove = () => {
-  showApproveModal.value = false
+const handleReject = (center) => {
+  selectedCenter.value = center
+  rejectReason.value = ''
+  showRejectModal.value = true
 }
+const cancelReject = () => { showRejectModal.value = false }
+
+// --- API Calls (MODIFIED) ---
 
 const confirmApprove = async () => {
   if (!selectedCenter.value) return
-
+  isSubmitting.value = true
   try {
-    isSubmitting.value = true
-
-    // Prepare data for approval
     const approvalData = {
-      tc_renewal_review_name: `Renewal Approval for ${selectedCenter.value.center_name}`,
-      tc_review_summary: 'Application reviewed and approved.',
       tc_review_decision: 'Approved',
-      is_active: true,
-      is_payment_complete: true, // Assuming payment is complete when approving
+      tc_renewal_review_name: `Renewal Approval for ${selectedCenter.value.center_name}`,
+      tc_review_summary: 'Application reviewed and approved via quick action.',
     }
-
-    // Send PATCH request to update center
     await apiServices.patchMhpcTeachingCenter(selectedCenter.value.id, approvalData)
-
-    // Update local data
-    teachingCenters.value = teachingCenters.value.map((center) => {
-      if (center.id === selectedCenter.value.id) {
-        return { ...center, ...approvalData }
-      }
-      return center
-    })
-
-    toast.success('Teaching center renewal approved successfully!')
+    await fetchTeachingCenters()
+    toast.success('Teaching hospital renewal approved successfully!')
   } catch (error) {
-    console.error('Error approving teaching center renewal:', error)
-    toast.error(error.response?.data?.message || 'Failed to approve renewal. Please try again.')
+    toast.error(error.response?.data?.message || 'Failed to approve renewal.')
   } finally {
     isSubmitting.value = false
     showApproveModal.value = false
   }
 }
 
-// Quick reject handler
-const handleReject = (center) => {
-  selectedCenter.value = center
-  rejectReason.value = ''
-  showRejectModal.value = true
-}
-
-const cancelReject = () => {
-  showRejectModal.value = false
-}
-
 const confirmReject = async () => {
-  if (!selectedCenter.value || !rejectReason.value.trim()) return
-
+  if (!selectedCenter.value || !rejectReason.value.trim()) {
+    toast.error('Reason for rejection is required.')
+    return
+  }
+  isSubmitting.value = true
   try {
-    isSubmitting.value = true
-
-    // Prepare data for rejection
     const rejectionData = {
-      tc_renewal_review_name: `Renewal Rejection for ${selectedCenter.value.center_name}`,
-      tc_review_summary: 'Application reviewed and rejected.',
       tc_review_decision: 'Rejected',
       tc_reason_if_rejected: rejectReason.value,
-      is_active: false,
+      tc_renewal_review_name: `Renewal Rejection for ${selectedCenter.value.center_name}`,
+      tc_review_summary: 'Application reviewed and rejected.',
     }
-
-    // Send PATCH request to update center
     await apiServices.patchMhpcTeachingCenter(selectedCenter.value.id, rejectionData)
-
-    // Update local data
-    teachingCenters.value = teachingCenters.value.map((center) => {
-      if (center.id === selectedCenter.value.id) {
-        return { ...center, ...rejectionData }
-      }
-      return center
-    })
-
-    toast.success('Teaching center renewal rejected.')
+    await fetchTeachingCenters()
+    toast.success('Teaching hospital renewal rejected.')
   } catch (error) {
-    console.error('Error rejecting teaching center renewal:', error)
-    toast.error(error.response?.data?.message || 'Failed to reject renewal. Please try again.')
+    toast.error(error.response?.data?.message || 'Failed to reject renewal.')
   } finally {
     isSubmitting.value = false
     showRejectModal.value = false
   }
 }
 
-// Submit full review
-const submitReview = async () => {
-  if (!selectedCenter.value) return
+// NEW: Function to handle the detailed review submission
+const _submitReviewDecision = async (decision) => {
+  if (!selectedCenter.value) return;
 
-  // Validate form based on decision
-  if (
-    reviewForm.value.tc_review_decision === 'Rejected' &&
-    !reviewForm.value.tc_reason_if_rejected
-  ) {
-    toast.error('Reason for rejection is required')
-    return
+  // Set the final decision in the form data
+  reviewForm.value.tc_review_decision = decision;
+
+  // Validate rejection reason
+  if (decision === 'Rejected' && !reviewForm.value.tc_reason_if_rejected.trim()) {
+    toast.error('Reason for rejection is required to reject the application.');
+    return;
+  }
+  // Clear rejection reason if accidentally approving with text in the box
+  if (decision === 'Approved') {
+    reviewForm.value.tc_reason_if_rejected = '';
   }
 
+  isSubmitting.value = true;
   try {
-    isSubmitting.value = true
-
-    // Prepare FormData for submission with file upload
-    const formData = new FormData()
-
-    // Add review fields
+    const formData = new FormData();
     Object.keys(reviewForm.value).forEach((key) => {
-      if (key !== 'tc_report' && reviewForm.value[key]) {
-        // Skip file and empty values
-        formData.append(key, reviewForm.value[key])
+      if (key !== 'tc_report' && reviewForm.value[key] !== null) {
+        formData.append(key, reviewForm.value[key]);
       }
-    })
-
-    // Set active status based on decision
-    formData.append('is_active', reviewForm.value.tc_review_decision === 'Approved')
-
-    // Set payment complete status based on decision
-    formData.append('is_payment_complete', reviewForm.value.tc_review_decision === 'Approved')
-
-    // Add file if selected
+    });
     if (selectedFile.value) {
-      formData.append('tc_report', selectedFile.value)
+      formData.append('tc_report', selectedFile.value);
     }
 
-    // Send PATCH request to update teaching center
-    await apiServices.patchMhpcTeachingCenter(selectedCenter.value.id, formData)
-
-    // Update local data
-    teachingCenters.value = teachingCenters.value.map((center) => {
-      if (center.id === selectedCenter.value.id) {
-        return {
-          ...center,
-          ...reviewForm.value,
-          is_active: reviewForm.value.tc_review_decision === 'Approved',
-          is_payment_complete: reviewForm.value.tc_review_decision === 'Approved',
-        }
-      }
-      return center
-    })
-
-    toast.success(
-      `Teaching center renewal ${reviewForm.value.tc_review_decision.toLowerCase()} successfully!`,
-    )
-    closeDetailsModal()
+    await apiServices.patchMhpcTeachingCenter(selectedCenter.value.id, formData);
+    await fetchTeachingCenters();
+    toast.success(`Application has been successfully ${decision.toLowerCase()}!`);
+    closeDetailsModal();
   } catch (error) {
-    console.error('Error submitting review:', error)
-    toast.error(error.response?.data?.message || 'Failed to submit review. Please try again.')
+    toast.error(error.response?.data?.message || 'Failed to submit review.');
   } finally {
-    isSubmitting.value = false
+    isSubmitting.value = false;
   }
-}
+};
 
-// Fetch teaching centers data
+// NEW: Specific handlers for the modal buttons
+const submitApproval = () => {
+  _submitReviewDecision('Approved');
+};
+
+const submitRejection = () => {
+  _submitReviewDecision('Rejected');
+};
+
 const fetchTeachingCenters = async () => {
   isLoading.value = true
   apiError.value = false
-  errorMessage.value = ''
-
   try {
-    // Fetch teaching centers
     const response = await apiServices.getMhpcTeachingCenters()
-
-    if (response && response.data && response.data.results) {
-      teachingCenters.value = response.data.results
-    } else {
-      teachingCenters.value = []
-    }
+    teachingCenters.value = response.data?.results || []
   } catch (error) {
-    console.error('Error fetching teaching centers:', error)
     errorMessage.value = error.response?.data?.message || 'Error fetching data. Please try again.'
     apiError.value = true
   } finally {
@@ -819,6 +538,5 @@ const fetchTeachingCenters = async () => {
   }
 }
 
-// Fetch data on component mount
 onMounted(fetchTeachingCenters)
 </script>

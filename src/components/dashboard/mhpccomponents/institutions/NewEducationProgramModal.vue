@@ -446,7 +446,7 @@ const handleSubmit = async () => {
         // Payload for creating the ModuleFacultyAssignment junction record
         const assignmentPayload = {
           module_id: createdModuleInstanceId,
-          faculty_id: moduleItem.facultyId,       
+          faculty_id: moduleItem.facultyId,
         };
         console.log("Faculty Assignment Payload:", JSON.stringify(assignmentPayload, null, 2));
         await apiServices.createMhpcFacultyAssignment(assignmentPayload);

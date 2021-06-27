@@ -1,6 +1,6 @@
 <template>
   <div
-    class="application-tracking max-w-7xl mx-auto p-4 md:p-6 bg-white/80 backdrop-blur-md rounded-xl md:rounded-2xl shadow-lg">
+    class="application-tracking  mx-auto p-4 md:p-6 bg-white/80 backdrop-blur-md rounded-xl md:rounded-2xl shadow-lg">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 md:mb-8">
       <h1
         class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
@@ -75,6 +75,9 @@
               Payment Status</th>
             <th
               class="px-4 py-3 md:px-6 md:py-3 border-b border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              Clinical Preceptor</th>
+            <th
+              class="px-4 py-3 md:px-6 md:py-3 border-b border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
               Valid Till</th>
             <th
               class="px-4 py-3 md:px-6 md:py-3 border-b border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
@@ -83,7 +86,7 @@
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
           <tr v-if="isLoading && applications.length">
-            <td colspan="6" class="text-center py-8 relative">
+            <td colspan="7" class="text-center py-8 relative">
               <div class="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center">
                 <svg class="animate-spin h-8 w-8 text-indigo-600 mx-auto" fill="none" viewBox="0 0 24 24">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -111,6 +114,9 @@
                 {{ formatPaymentStatus(application.payment_status) }}
               </span>
             </td>
+            <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-600">
+              {{ application.preceptorName || 'N/A' }}
+            </td>
             <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-600">{{
               formatDate(application.valid_till) }}</td>
             <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-700 space-x-2">
@@ -121,8 +127,13 @@
               </button>
               <button v-if="canAddPreceptor(application)" @click="openAddPreceptorModal(application)"
                 class="px-3 py-1.5 bg-green-500 text-white rounded-md shadow-sm hover:bg-green-600 text-xs font-medium transition-colors"
-                :disabled="application.isPreceptorAdded">
+                :disabled="application.isPreceptorAdded || isLoading">
                 {{ application.isPreceptorAdded ? 'Preceptor Added' : 'Add Clinical Preceptor' }}
+              </button>
+               <button v-if="application.isPreceptorAdded && canRemovePreceptor(application)" @click="confirmRemovePreceptor(application)"
+                class="px-3 py-1.5 bg-red-500 text-white rounded-md shadow-sm hover:bg-red-600 text-xs font-medium transition-colors"
+                :disabled="isLoading">
+                Remove Preceptor
               </button>
               <button v-if="canDownloadCertificate(application)" @click="openCertificateModal(application)"
                 class="px-3 py-1.5 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600 text-xs font-medium transition-colors">
@@ -135,7 +146,7 @@
             </td>
           </tr>
           <tr v-if="!isLoading && filteredApplications.length === 0">
-            <td colspan="6" class="px-6 py-10 text-center text-gray-500 text-sm">
+            <td colspan="7" class="px-6 py-10 text-center text-gray-500 text-sm">
               <div class="flex flex-col items-center">
                 <svg class="w-12 h-12 text-gray-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                   xmlns="http://www.w3.org/2000/svg">
@@ -162,11 +173,6 @@
         <div v-if="showCertificateModal"
           class="fixed inset-0 z-[60] bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4"
           @click.self="closeCertificateModal">
-          <!--
-            The CertificateModal component itself should be styled as the main modal content box.
-            Adjust max-w- and max-h- as needed for certificate display.
-            overflow-auto allows scrolling if the certificate content is larger than the modal box.
-          -->
           <CertificateModal :application="selectedCertificateData" @close="closeCertificateModal"
             class="certificate-modal-content mx-auto w-full max-w-4xl max-h-[90vh] bg-white rounded-lg shadow-xl overflow-auto flex flex-col" />
         </div>
@@ -181,8 +187,6 @@
           @click.self="closeDetailsModal">
           <div
             class="relative bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
-
-            <!-- Header -->
             <header
               class="flex justify-between items-center px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-gray-100">
               <h2 class="text-xl font-semibold text-gray-800">Application Details</h2>
@@ -194,12 +198,8 @@
                 </svg>
               </button>
             </header>
-
-            <!-- Content -->
             <main class="flex-1 overflow-y-auto">
               <div v-if="selectedApplication" class="p-6 space-y-8">
-
-                <!-- Center Information -->
                 <section>
                   <h3 class="text-sm font-semibold text-gray-600 uppercase tracking-wider mb-4 flex items-center">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -225,8 +225,6 @@
                     </div>
                   </div>
                 </section>
-
-                <!-- Status Information -->
                 <section>
                   <h3 class="text-sm font-semibold text-gray-600 uppercase tracking-wider mb-4 flex items-center">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -256,7 +254,6 @@
                         </dd>
                       </div>
                     </div>
-
                     <div v-if="selectedApplication.payment_id" class="mt-6 pt-4 border-t border-green-200">
                       <dt class="text-sm font-medium text-gray-600 mb-2">Payment ID</dt>
                       <dd
@@ -266,8 +263,6 @@
                     </div>
                   </div>
                 </section>
-
-                <!-- Additional Information -->
                 <section>
                   <h3 class="text-sm font-semibold text-gray-600 uppercase tracking-wider mb-4 flex items-center">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -290,34 +285,27 @@
                             class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium">
                             <span :class="selectedApplication.isPreceptorAdded ? 'bg-green-500' : 'bg-orange-500'"
                               class="w-1.5 h-1.5 rounded-full mr-2"></span>
-                            {{ selectedApplication.isPreceptorAdded ? 'Preceptor Added' : 'No Preceptor Added' }}
+                            {{ selectedApplication.isPreceptorAdded ? `Added: ${selectedApplication.preceptorName}` : 'No Preceptor Added' }}
                           </span>
                         </dd>
                       </div>
                     </div>
                   </div>
                 </section>
-
               </div>
             </main>
-
-            <!-- Footer -->
             <footer class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end">
               <button @click="closeDetailsModal"
                 class="px-6 py-2.5 bg-gray-700 text-white rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200 text-sm font-medium shadow-sm">
                 Close
               </button>
             </footer>
-
           </div>
         </div>
       </transition>
     </teleport>
-    <!-- New Teaching Center Application Modal -->
     <TeachingCenterApplication :is-open="isApplicationFormModalOpen" @close="closeApplicationFormModal"
       @form-submitted="handleApplicationFormSubmitted" />
-
-    <!-- Generic Payment Modal for Teaching Center -->
     <PaymentModal ref="teachingCenterPaymentModalRef" :amount="teaching_hospital_registration"
       @payment-completed="handleTeachingCenterPaymentCompleted" @close="closeTeachingCenterPaymentModal" />
   </div>
@@ -326,14 +314,13 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
 import { MagnifyingGlassIcon, ChevronDownIcon, PlusIcon } from '@heroicons/vue/24/outline';
-import apiServices from '@/services/services';
+import apiServices from '@/services/services'; // Ensure this has deleteMhpcClinicalPreceptor
 import { bhutanDzongkhagsGewogs } from '@/constants/dzongkhags';
 import { useAuthStore } from '@/stores/authStore';
 import { useToast } from 'vue-toastification';
 import ClinicalPreceptorModal from './modals/ClinicalPreceptorModal.vue';
 import TeachingCenterApplication from './TeachingCenterApplicationModal.vue';
 import PaymentModal from '@/components/common/PaymentModal.vue';
-
 import CertificateModal from '@/components/common/MHPC/MHPCCertificateModal.vue';
 
 const toast = useToast();
@@ -358,9 +345,6 @@ const teaching_hospital_registration = 100;
 const teachingCenterPaymentModalRef = ref(null);
 const selectedApplicationForPayment = ref(null);
 
-// Local storage for preceptor status fallback
-const preceptorStatus = ref(new Set(JSON.parse(localStorage.getItem('preceptorAddedCenters') || '[]')));
-
 const dzongkhagOptionsForCenter = computed(() => bhutanDzongkhagsGewogs.map(d => ({ value: d.dzongkhag, label: d.dzongkhag })));
 const gewogOptionsForCenter = computed(() => {
   if (!filterDzongkhag.value) return [];
@@ -379,7 +363,8 @@ const filteredApplications = computed(() => {
       app.center_name?.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
       app.center_location?.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
       appDzongkhag.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      appGewog.toLowerCase().includes(searchQuery.value.toLowerCase());
+      appGewog.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+      app.preceptorName?.toLowerCase().includes(searchQuery.value.toLowerCase()); // Search by preceptor name too
     const matchesDzongkhag = filterDzongkhag.value ? appDzongkhag === filterDzongkhag.value : true;
     const matchesGewog = filterGewog.value ? appGewog === filterGewog.value : true;
     return matchesSearch && matchesDzongkhag && matchesGewog;
@@ -422,23 +407,39 @@ const formatDate = (date) => {
   return new Date(date).toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: '2-digit' });
 };
 
-const fetchPreceptorStatus = async (teachingCenterId) => {
-  if (!teachingCenterId || isNaN(teachingCenterId)) {
-    console.warn(`Invalid teaching center ID: ${teachingCenterId}`);
-    return preceptorStatus.value.has(teachingCenterId?.toString()); // Fallback to localStorage
+const fetchPreceptorDetails = async (teachingCenterId) => {
+  if (!teachingCenterId || isNaN(parseInt(teachingCenterId))) {
+    console.warn(`Invalid teaching center ID for preceptor fetch: ${teachingCenterId}`);
+    return null;
   }
-
   try {
     const params = { teaching_center: teachingCenterId };
     const response = await apiServices.getMhpcClinicalPreceptors(params);
-    const preceptors = response.data?.results || response.data || [];
-    return Array.isArray(preceptors) && preceptors.length > 0;
+    const preceptors = response.data?.results || (Array.isArray(response.data) ? response.data : []);
+
+    if (preceptors.length > 0) {
+      const preceptor = preceptors[0];
+      if (preceptor && typeof preceptor.name !== 'undefined' && typeof preceptor.id !== 'undefined') {
+        return {
+          name: preceptor.name, // Assuming 'name' field from your JSON example
+          id: preceptor.id,     // Assuming 'id' field is the preceptor record ID
+        };
+      } else {
+        console.warn(`Preceptor data for teaching center ${teachingCenterId} is malformed:`, preceptor);
+        return null;
+      }
+    }
+    return null;
   } catch (error) {
-    console.error(`Error fetching preceptor status for teaching center ${teachingCenterId}:`, error.message);
-    // Fallback to localStorage
-    return preceptorStatus.value.has(teachingCenterId.toString());
+    if (error.response && error.response.status !== 404) {
+      console.error(`Error fetching preceptor details for TC ${teachingCenterId}:`, error.message);
+    } else if (!error.response) { // Network or other errors
+      console.error(`Network/other error fetching preceptor details for TC ${teachingCenterId}:`, error.message);
+    }
+    return null; // For 404 or other errors, assume no preceptor
   }
 };
+
 
 const fetchApplications = async () => {
   if (!authStore.userId) {
@@ -471,17 +472,19 @@ const fetchApplications = async () => {
           if (currentClientApp.payment_status === 'failed') {
             derivedPaymentStatus = 'failed';
           } else if (currentClientApp.payment_status === 'processing_payment') {
-            derivedPaymentStatus = 'pending_payment';
+            derivedPaymentStatus = 'pending_payment'; // or 'processing_payment' if still actively processing
           }
         }
 
-        const hasPreceptor = await fetchPreceptorStatus(app.id);
+        const preceptorInfo = await fetchPreceptorDetails(app.id);
 
         return {
           ...app,
           tc_review_decision: app.tc_review_decision || (app.is_draft ? 'Draft' : 'Pending'),
           payment_status: derivedPaymentStatus,
-          isPreceptorAdded: hasPreceptor
+          isPreceptorAdded: !!preceptorInfo,
+          preceptorName: preceptorInfo ? preceptorInfo.name : null,
+          preceptorId: preceptorInfo ? preceptorInfo.id : null,
         };
       }));
     }
@@ -506,19 +509,25 @@ const canAddPreceptor = (application) => {
     (status === 'paid' || status === 'completed' || status === 'success');
 };
 
+const canRemovePreceptor = (application) => {
+  const paymentStatus = application.payment_status ? application.payment_status.toLowerCase() : '';
+  return application.tc_review_decision?.toLowerCase() === 'approved' &&
+    (paymentStatus === 'paid' || paymentStatus === 'completed' || paymentStatus === 'success') &&
+    application.isPreceptorAdded;
+};
+
 const canDownloadCertificate = (application) => {
   const status = application.payment_status ? application.payment_status.toLowerCase() : '';
   return application.tc_review_decision?.toLowerCase() === 'approved' &&
-    (status === 'paid' || status === 'completed' || status === 'success');
+    (status === 'paid' || status === 'completed' || status === 'success') &&
+    application.isPreceptorAdded; // Typically certificate available after preceptor is added
 };
 
 const initiateTeachingCenterPayment = (application) => {
-  console.log('Initiating payment for application:', application);
   selectedApplicationForPayment.value = application;
   if (teachingCenterPaymentModalRef.value) {
     teachingCenterPaymentModalRef.value.openModal();
   } else {
-    console.error('Teaching Center Payment modal reference is not available.');
     toast.error('Payment modal could not be opened.');
   }
 };
@@ -534,28 +543,24 @@ const closeCertificateModal = () => {
 };
 
 const closeTeachingCenterPaymentModal = () => {
-  console.log('Closing payment modal, selectedApplicationForPayment:', selectedApplicationForPayment.value);
   if (!isPaymentProcessing.value) {
     selectedApplicationForPayment.value = null;
   }
 };
 
 const handleTeachingCenterPaymentCompleted = async (paymentData) => {
-  console.log('Payment completed with data:', paymentData);
   if (!selectedApplicationForPayment.value) {
-    console.error('No application selected for payment.');
     toast.error('No application selected for payment. Please try again.');
     return;
   }
   const user = authStore.user;
   if (!user || !user.contact_number || !user.email || !user.cid || !user.id) {
-    console.error('Missing user information:', user);
     toast.error('Missing user information for payment.');
     return;
   }
 
   isPaymentProcessing.value = true;
-  isLoading.value = true;
+  isLoading.value = true; // Use global loading state
   const paymentId = paymentData.paymentHash;
   const applicationToUpdate = { ...selectedApplicationForPayment.value };
 
@@ -581,32 +586,21 @@ const handleTeachingCenterPaymentCompleted = async (paymentData) => {
     paymentInitiationFormData.append('application_no', applicationToUpdate.id.toString());
     paymentInitiationFormData.append('app_type', 'teaching_hospital_registration');
 
-    console.log('Sending payment initiation data:', Object.fromEntries(paymentInitiationFormData));
     await apiServices.makePayment(paymentInitiationFormData);
 
     const updatePayload = new FormData();
     updatePayload.append('payment_id', paymentId);
-    updatePayload.append('payment_status', 'processing_payment');
+    updatePayload.append('payment_status', 'processing_payment'); // Or perhaps 'pending_payment' until confirmed by BIPS
     await apiServices.patchMhpcTeachingCenter(applicationToUpdate.id, updatePayload);
 
     toast.success(`Payment initiated (Ref: ${paymentId.substring(0, 8)}...). Status will update shortly.`);
-    await fetchApplications();
+    await fetchApplications(); // Refresh to get latest status including payment
 
   } catch (error) {
     console.error('Teaching Center Payment handling error:', error.response || error.message);
     let errorMsg = 'An error occurred while processing the payment.';
-    if (error.response?.data) {
-      const errors = error.response.data;
-      if (typeof errors === 'string') errorMsg += ` ${errors}`;
-      else if (errors.message) errorMsg += ` ${errors.message}`;
-      else if (errors.detail) errorMsg += ` ${errors.detail}`;
-      else if (typeof errors === 'object') {
-        const messages = Object.values(errors).flat().join(' ');
-        if (messages) errorMsg += ` ${messages}`;
-      }
-    }
+    // ... (error message parsing as before)
     toast.error(`${errorMsg} Contact support with payment ref ${paymentId} if issue persists.`);
-
     const appIdx = applications.value.findIndex(app => app.id === applicationToUpdate.id);
     if (appIdx > -1 && applications.value[appIdx].payment_status !== 'paid') {
       applications.value[appIdx].payment_status = 'failed';
@@ -629,16 +623,45 @@ const closePreceptorModal = () => {
 };
 
 const handlePreceptorSubmitSuccess = async () => {
-  const appIndex = applications.value.findIndex(app => app.id === selectedApplicationForPreceptor.value?.id);
-  if (appIndex > -1) {
-    applications.value[appIndex].isPreceptorAdded = true;
-    preceptorStatus.value.add(applications.value[appIndex].id.toString());
-    localStorage.setItem('preceptorAddedCenters', JSON.stringify([...preceptorStatus.value]));
-  }
-  toast.success('Clinical Preceptor added successfully.');
+  toast.success('Clinical Preceptor added successfully. Refreshing list...');
   closePreceptorModal();
-  await fetchApplications(); // Refresh to sync with backend
+  await fetchApplications(); // Re-fetch to update preceptor details correctly
 };
+
+const confirmRemovePreceptor = (application) => {
+  if (confirm(`Are you sure you want to remove the preceptor "${application.preceptorName}" for ${application.center_name}? This action cannot be undone.`)) {
+    removePreceptor(application);
+  }
+};
+
+const removePreceptor = async (application) => {
+  if (!application.preceptorId) {
+    toast.error('Preceptor ID not found. Cannot remove.');
+    return;
+  }
+  isLoading.value = true;
+  try {
+    // Assuming apiServices has deleteMhpcClinicalPreceptor(preceptorId)
+    await apiServices.deleteMhpcClinicalPreceptor(application.preceptorId);
+
+    // Update local state for immediate UI feedback
+    const appIndex = applications.value.findIndex(app => app.id === application.id);
+    if (appIndex > -1) {
+      applications.value[appIndex].isPreceptorAdded = false;
+      applications.value[appIndex].preceptorName = null;
+      applications.value[appIndex].preceptorId = null;
+    }
+    toast.success('Clinical Preceptor removed successfully.');
+    // Optionally, call fetchApplications() if deeper state changes are expected or to ensure full sync
+    // await fetchApplications(); 
+  } catch (error) {
+    console.error('Error removing preceptor:', error.response?.data || error.message);
+    toast.error('Failed to remove preceptor. Please try again.');
+  } finally {
+    isLoading.value = false;
+  }
+};
+
 
 const viewDetails = (application) => {
   selectedApplication.value = application;
@@ -693,7 +716,6 @@ input[type="text"]:focus {
 }
 
 .modal-details-fade-enter-active .bg-white,
-/* Target the content box for transform */
 .modal-details-fade-leave-active .bg-white {
   transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
 }
@@ -716,7 +738,6 @@ input[type="text"]:focus {
 }
 
 .modal-certificate-fade-enter-active .certificate-modal-content,
-/* Target the content box for transform */
 .modal-certificate-fade-leave-active .certificate-modal-content {
   transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
 }

@@ -4,7 +4,7 @@
       <!-- Institute Information -->
       <div class="border border-gray-200 rounded-lg p-6 bg-gray-50">
         <h3 class="text-xl font-semibold text-gray-700 mb-4 pb-2 border-b-2 border-gray-200">
-          Institution Information
+         Institution Information
         </h3>
         <div class="mb-6">
           <label for="institute" class="block text-gray-700 font-medium mb-2">Institute <span class="text-red-500">*</span></label>
@@ -15,7 +15,7 @@
             disabled
             class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-600 cursor-not-allowed"
           />
-          <p class="text-sm text-gray-500 mt-1">Auto-populated</p>
+          <p class="text-sm text-gray-500 mt-1">Auto-populated based on your user profile.</p>
         </div>
         <div class="mb-0">
           <label for="teachingCenter" class="block text-gray-700 font-medium mb-2">Teaching Center <span class="text-red-500">*</span></label>
@@ -41,7 +41,7 @@
             </div>
           </div>
           <p v-if="availableTeachingCenters.length === 0 && !loadingInstituteData" class="text-sm text-red-500 mt-1">
-            No teaching centers available for this institute.
+            No active teaching centers found for your institute. Please add one first.
           </p>
         </div>
       </div>
@@ -83,7 +83,7 @@
             type="text"
             id="specificProgramTitle"
             v-model.trim="formData.specific_program_title"
-            placeholder="e.g., Clinical Psychology"
+            placeholder="e.g., Bachelor of Science in Clinical Psychology"
             required
             maxlength="200"
             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -244,14 +244,17 @@ const selectedProgramDetails = computed(() => {
 });
 
 const isFormValid = computed(() => {
-  const filesValid = isEditing.value ||
-    (formData.value.curriculum_validation_letter_file &&
-      formData.value.curriculum_document_file);
-  return formData.value.institute_id &&
+  const filesValid = isEditing.value ?
+    (formData.value.existing_validation_letter_url || formData.value.curriculum_validation_letter_file) &&
+    (formData.value.existing_document_url || formData.value.curriculum_document_file)
+    :
+    (formData.value.curriculum_validation_letter_file && formData.value.curriculum_document_file);
+
+  return !!(formData.value.institute_id &&
     formData.value.program_master_id &&
     formData.value.specific_program_title.trim() &&
     formData.value.teaching_center_id &&
-    filesValid;
+    filesValid);
 });
 
 const fetchInstituteAndTeachingCenters = async (instituteIdToUse) => {
@@ -262,28 +265,38 @@ const fetchInstituteAndTeachingCenters = async (instituteIdToUse) => {
   }
   formData.value.institute_id = instituteIdToUse;
   loadingInstituteData.value = true;
-  try {
-    const instituteResponse = await apiServices.getMhpcInstitutes({ id: instituteIdToUse });
-    const instituteData = instituteResponse.data.results?.[0] || instituteResponse.data;
+  availableTeachingCenters.value = [];
 
+  try {
+    const [instituteResponse, teachingCentersResponse] = await Promise.all([
+      apiServices.getMhpcInstitutes({ id: instituteIdToUse }),
+      apiServices.getMhpcTeachingCenters()
+    ]);
+
+    const instituteData = instituteResponse.data.results?.[0] || instituteResponse.data;
     if (instituteData) {
       formData.value.institute_name = instituteData.name_of_institution || authStore.user.organization_name || `Institute ID: ${instituteIdToUse}`;
-      if (instituteData.teaching_centers && Array.isArray(instituteData.teaching_centers)) {
-        availableTeachingCenters.value = instituteData.teaching_centers
-          .filter(center => center.is_active)
-          .sort((a, b) => a.center_name.localeCompare(b.center_name));
-      } else {
-        availableTeachingCenters.value = [];
-        toast.warn('No teaching centers available for this institute.');
-      }
     } else {
       toast.error(`Could not retrieve details for Institute ID: ${instituteIdToUse}.`);
       formData.value.institute_name = authStore.user.organization_name || `Institute ID: ${instituteIdToUse}`;
     }
+
+    const allCenters = teachingCentersResponse.data.results || teachingCentersResponse.data || [];
+    if (allCenters.length > 0) {
+      availableTeachingCenters.value = allCenters.filter(center => {
+        const centerInstituteId = (typeof center.institute === 'object' && center.institute !== null)
+          ? center.institute.id
+          : center.institute;
+
+        return centerInstituteId == instituteIdToUse && center.is_active;
+      }).sort((a, b) => a.center_name.localeCompare(b.center_name));
+    }
   } catch (error) {
-    console.error('Error fetching institute details:', error);
-    toast.error('Failed to load institution information.');
-    formData.value.institute_name = authStore.user.organization_name || `Institute ID: ${instituteIdToUse}`;
+    console.error('Error fetching institution or teaching center data:', error);
+    toast.error('Failed to load institution data. Please check the network and try again.');
+    if (!formData.value.institute_name) {
+       formData.value.institute_name = authStore.user.organization_name || `Institute ID: ${instituteIdToUse}`;
+    }
   } finally {
     loadingInstituteData.value = false;
   }
@@ -294,7 +307,8 @@ const fetchProgramMastersData = async () => {
   try {
     const response = await apiServices.getMhpcProgramMasters();
     programMasters.value = (response.data.results || response.data || []).sort((a, b) => a.program_name.localeCompare(b.program_name));
-  } catch (error) {
+  } catch (error)
+ {
     console.error('Error fetching program masters:', error);
     toast.error('Failed to load program categories.');
   } finally {
@@ -305,7 +319,7 @@ const fetchProgramMastersData = async () => {
 const populateFormForEdit = (appData) => {
   formData.value.id = appData.id;
   formData.value.institute_id = appData.institute?.id || authStore.user.institute_id;
-  formData.value.institute_name = appData.institute?.name_of_institution || formData.value.institute_name;
+  formData.value.institute_name = appData.name_of_institution || appData.institute?.name_of_institution || formData.value.institute_name;
   formData.value.teaching_center_id = appData.teaching_center;
   formData.value.program_master_id = appData.program_master?.id || appData.program_master;
   formData.value.specific_program_title = appData.specific_program_title;
@@ -336,7 +350,7 @@ const initializeForEdit = async (appData) => {
 const initializeForNew = async () => {
   resetForm();
   if (!authStore.isAuthenticated || !authStore.user) {
-    toast.error('You must be logged in.');
+    toast.error('You must be logged in to create a new program.');
     return;
   }
   let instituteIdToUse = authStore.user.institute_id || (authStore.role === 'institutions' && authStore.userId ? authStore.userId : null);
@@ -349,28 +363,27 @@ const initializeForNew = async () => {
 
 const handleFileChange = (event, fileType) => {
   const file = event.target.files[0];
+  const targetKey = fileType === 'validationLetter' ? 'curriculum_validation_letter_file' : 'curriculum_document_file';
+
   if (!file) {
-    if (fileType === 'validationLetter') formData.value.curriculum_validation_letter_file = null;
-    else if (fileType === 'document') formData.value.curriculum_document_file = null;
+    formData.value[targetKey] = null;
     return;
   }
   if (file.type !== 'application/pdf') {
     toast.error('Only PDF files are allowed.');
     event.target.value = '';
-    if (fileType === 'validationLetter') formData.value.curriculum_validation_letter_file = null;
-    else if (fileType === 'document') formData.value.curriculum_document_file = null;
+    formData.value[targetKey] = null;
     return;
   }
   const maxSize = 10 * 1024 * 1024; // 10MB
   if (file.size > maxSize) {
     toast.error('File size must be less than 10MB.');
     event.target.value = '';
-    if (fileType === 'validationLetter') formData.value.curriculum_validation_letter_file = null;
-    else if (fileType === 'document') formData.value.curriculum_document_file = null;
+    formData.value[targetKey] = null;
     return;
   }
-  if (fileType === 'validationLetter') formData.value.curriculum_validation_letter_file = file;
-  else if (fileType === 'document') formData.value.curriculum_document_file = file;
+
+  formData.value[targetKey] = file;
 };
 
 const removeFile = (fileType) => {
@@ -389,21 +402,24 @@ const removeFile = (fileType) => {
 
 const handleSubmit = async () => {
   if (!isFormValid.value) {
-    toast.error('Please fill in all required fields and ensure files are valid PDFs under 10MB.');
+    toast.error('Please fill in all required fields and ensure valid PDF files are attached.');
     return;
   }
   isSubmitting.value = true;
   const submissionPayload = new FormData();
+
   submissionPayload.append('institute_id', formData.value.institute_id);
   submissionPayload.append('program_master_id', formData.value.program_master_id);
   submissionPayload.append('specific_program_title', formData.value.specific_program_title.trim());
   submissionPayload.append('teaching_center', formData.value.teaching_center_id);
+
   if (formData.value.curriculum_validation_letter_file) {
     submissionPayload.append('curriculum_validation_letter', formData.value.curriculum_validation_letter_file);
   }
   if (formData.value.curriculum_document_file) {
     submissionPayload.append('curriculum_document', formData.value.curriculum_document_file);
   }
+
   try {
     if (isEditing.value) {
       await apiServices.patchMhpcProgramOffered(formData.value.id, submissionPayload);
@@ -439,12 +455,9 @@ const clearFileInputsDOM = () => {
 const resetForm = () => {
   formData.value = initialFormData();
   clearFileInputsDOM();
-  if (!isEditing.value && authStore.user?.teaching_center_id && availableTeachingCenters.value.some(tc => tc.id === authStore.user.teaching_center_id)) {
-    formData.value.teaching_center_id = authStore.user.teaching_center_id;
-  }
 };
 
-defineExpose({ initializeForEdit, resetForm });
+defineExpose({ initializeForEdit, initializeForNew, resetForm });
 
 onMounted(() => {
   if (props.applicationToEdit) {

@@ -7,39 +7,33 @@
         @click.self="handleCancel"
       >
         <div class="relative bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 rounded-xl shadow-2xl w-full max-w-5xl mx-auto my-8 max-h-[90vh] flex flex-col" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-          <!-- Modal Header -->
           <div class="flex items-center justify-between p-5 md:p-6 border-b border-slate-200/70 rounded-t-xl bg-white/50 sticky top-0 z-10">
             <h3 id="modal-title" class="text-xl md:text-2xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-              New Teaching Center Application
+              New Teaching Hospital Application
             </h3>
             <button @click="handleCancel" class="text-slate-400 hover:text-slate-600 transition-colors p-1.5 -m-1.5 rounded-full hover:bg-slate-200/70" aria-label="Close modal">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
           </div>
 
-          <!-- Modal Body (Scrollable) -->
           <div class="p-5 md:p-8 overflow-y-auto flex-grow">
-            <!-- Background decorative elements (toned down for modal) -->
             <div class="absolute inset-0 overflow-hidden pointer-events-none -z-10 opacity-50">
               <div class="absolute -top-20 -right-20 w-60 h-60 bg-gradient-to-br from-blue-400/10 to-indigo-600/10 rounded-full blur-2xl"></div>
               <div class="absolute -bottom-20 -left-20 w-60 h-60 bg-gradient-to-tr from-purple-400/10 to-pink-600/10 rounded-full blur-2xl"></div>
               <div class="absolute top-1/3 left-1/3 transform -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-gradient-to-r from-cyan-400/5 to-blue-600/5 rounded-full blur-2xl"></div>
             </div>
 
-            <!-- Header with glassmorphism effect - simplified within modal -->
             <div class="text-center mb-8 relative">
               <div class="relative p-2">
                 <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl mb-4 shadow-sm transform hover:scale-105 transition-transform duration-300">
                   <AcademicCapIcon class="w-8 h-8 text-white" />
                 </div>
-                <!-- Title is now modal header, this is descriptive text -->
                 <p class="text-md text-slate-600 max-w-2xl mx-auto leading-relaxed">
                   Complete the form below to apply. Required fields are marked with an asterisk.
                 </p>
               </div>
             </div>
 
-            <!-- Success Message Display -->
             <div v-if="isShowingSuccessMessage" class="mb-8 p-4 md:p-6 bg-gradient-to-r from-green-400/30 to-emerald-600/30 border-2 border-green-500/50 rounded-2xl shadow-xl text-center backdrop-blur-md">
               <div class="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full mb-4 shadow-md ring-4 ring-white/50">
                 <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
@@ -58,7 +52,6 @@
               class="space-y-6"
               enctype="multipart/form-data"
             >
-              <!-- Proponent Details Section -->
               <div class="group relative">
                 <div class="absolute inset-0 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-2xl opacity-10 group-hover:opacity-20 transition-opacity duration-500 blur-lg"></div>
                 <div class="relative bg-white/70 backdrop-blur-lg border border-white/20 rounded-2xl shadow-sm overflow-hidden transform transition-all duration-500 hover:shadow-xl hover:-translate-y-0.5">
@@ -72,16 +65,15 @@
                           Proponent Details
                         </h3>
                         <p class="text-slate-500 mt-0.5 text-xs">
-                          Information about the training institute
+                          Information about the Teaching Hospital
                         </p>
                       </div>
                     </div>
                   </div>
                   <div class="p-6 grid grid-cols-1 lg:grid-cols-2 gap-x-6 gap-y-4">
-                    <!-- Training Institute Name -->
                     <div class="lg:col-span-2">
                       <label for="modal-trainingInstituteName" class="form-label required-label">
-                        Training Institute Name
+                        Teaching Hospital Name
                       </label>
                       <div class="relative">
                         <select
@@ -109,32 +101,26 @@
                         </div>
                       </div>
                     </div>
-                    <!-- Country -->
                     <div>
                         <label for="modal-country" class="form-label">Country</label>
                         <input type="text" id="modal-country" v-model="formData.country" disabled class="form-input disabled-input"/>
                     </div>
-                    <!-- Dzongkhag -->
                     <div>
                         <label for="modal-dzongkhag" class="form-label">Dzongkhag/Thromde</label>
                         <input type="text" id="modal-dzongkhag" v-model="formData.dzongkhag" disabled class="form-input disabled-input"/>
                     </div>
-                    <!-- City/Gewog Proponent -->
                     <div>
                         <label for="modal-cityGewogProponent" class="form-label">City/Gewog</label>
                         <input type="text" id="modal-cityGewogProponent" v-model="formData.cityGewog" disabled class="form-input disabled-input"/>
                     </div>
-                    <!-- Address/Location -->
                     <div>
                         <label for="modal-addressLocation" class="form-label">Address/Location</label>
                         <input type="text" id="modal-addressLocation" v-model="formData.addressLocation" class="form-input" placeholder="Enter address or location"/>
                     </div>
-                    <!-- Contact No -->
                     <div>
                         <label for="modal-contactNo" class="form-label">Contact No.</label>
                         <input type="text" id="modal-contactNo" v-model="formData.contactNo" class="form-input" placeholder="Enter contact number"/>
                     </div>
-                    <!-- Email Address -->
                     <div>
                         <label for="modal-emailAddress" class="form-label">Email Address</label>
                         <input type="email" id="modal-emailAddress" v-model="formData.emailAddress" class="form-input" placeholder="Enter email address"/>
@@ -143,7 +129,6 @@
                 </div>
               </div>
 
-              <!-- Teaching Center Details Section -->
               <div class="group relative">
                 <div class="absolute inset-0 bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-500 rounded-2xl opacity-10 group-hover:opacity-20 transition-opacity duration-500 blur-lg"></div>
                 <div class="relative bg-white/70 backdrop-blur-lg border border-white/20 rounded-2xl shadow-sm overflow-hidden transform transition-all duration-500 hover:shadow-xl hover:-translate-y-0.5">
@@ -154,7 +139,7 @@
                       </div>
                       <div class="ml-4">
                         <h3 class="text-lg font-bold bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent">
-                          Teaching Center Details
+                          Teaching Hospital Details
                         </h3>
                         <p class="text-slate-500 mt-0.5 text-xs">
                           Specifics of the proposed teaching center
@@ -163,17 +148,14 @@
                     </div>
                   </div>
                    <div class="p-6 grid grid-cols-1 lg:grid-cols-2 gap-x-6 gap-y-4">
-                        <!-- Center Name -->
                         <div>
-                            <label for="modal-centerName" class="form-label required-label">Center Name</label>
+                            <label for="modal-centerName" class="form-label required-label">Teaching Hospital Name</label>
                             <input type="text" id="modal-centerName" v-model="formData.center_name" class="form-input" required placeholder="Enter center name"/>
                         </div>
-                        <!-- Center Location -->
                         <div>
-                            <label for="modal-centerLocation" class="form-label required-label">Center Location</label>
+                            <label for="modal-centerLocation" class="form-label required-label">Hospital Location</label>
                             <input type="text" id="modal-centerLocation" v-model="formData.center_location" class="form-input" required placeholder="Enter center location"/>
                         </div>
-                        <!-- State/Dzongkhag -->
                         <div>
                             <label for="modal-stateDzongkhag" class="form-label required-label">State/Dzongkhag</label>
                             <div class="relative">
@@ -186,7 +168,6 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- City/Gewog Center -->
                         <div>
                             <label for="modal-cityGewogCenter" class="form-label required-label">City/Gewog</label>
                             <div class="relative">
@@ -195,36 +176,22 @@
                                     <option v-for="city in gewogOptionsForCenter" :key="city.value" :value="city.value">{{ city.label }}</option>
                                 </select>
                                 <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                                     <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
                                 </div>
                             </div>
                         </div>
-                        <!-- Target Category -->
                         <div>
                             <label for="modal-targetCategory" class="form-label required-label">Target Category</label>
                             <input type="text" id="modal-targetCategory" v-model="formData.target_category" class="form-input" required placeholder="Enter target category"/>
                         </div>
-                        <!-- Renewal Review Name -->
-                        <div>
-                            <label for="modal-tcRenewalReviewName" class="form-label required-label">Renewal Review Name</label>
-                            <input type="text" id="modal-tcRenewalReviewName" v-model="formData.tc_renewal_review_name" class="form-input" required placeholder="Enter renewal review name"/>
-                        </div>
-                        <!-- Review Summary -->
-                        <div class="lg:col-span-2">
-                            <label for="modal-tcReviewSummary" class="form-label required-label">Review Summary</label>
-                            <textarea id="modal-tcReviewSummary" v-model="formData.tc_review_summary" rows="3" class="form-textarea" required placeholder="Enter review summary..."></textarea>
-                        </div>
-                        <!-- Valid Till -->
                         <div>
                             <label for="modal-validTill" class="form-label required-label">Valid Till</label>
                             <input type="date" id="modal-validTill" v-model="formData.valid_till" class="form-input" required :min="todayDate"/>
                         </div>
-                        <!-- Teaching Center Remarks -->
                         <div class="lg:col-span-2">
-                            <label for="modal-tcRemarks" class="form-label required-label">Teaching Center Remarks</label>
+                            <label for="modal-tcRemarks" class="form-label required-label">Teaching Hospital Remarks</label>
                             <textarea id="modal-tcRemarks" v-model="formData.tc_remarks" rows="3" class="form-textarea" required placeholder="Enter teaching center remarks..."></textarea>
                         </div>
-                        <!-- General Remarks -->
                         <div class="lg:col-span-2">
                             <label for="modal-remarks" class="form-label">Remarks (General)</label>
                             <textarea id="modal-remarks" v-model="formData.remarks" rows="2" class="form-textarea" placeholder="Enter general remarks..."></textarea>
@@ -233,7 +200,6 @@
                 </div>
               </div>
 
-              <!-- Declaration Section -->
               <div class="group relative">
                 <div class="absolute inset-0 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 rounded-2xl opacity-10 group-hover:opacity-20 transition-opacity duration-500 blur-lg"></div>
                 <div class="relative bg-white/70 backdrop-blur-lg border border-white/20 rounded-2xl shadow-sm p-6 transform transition-all duration-500 hover:shadow-xl hover:-translate-y-0.5">
@@ -260,7 +226,6 @@
                 </div>
               </div>
 
-              <!-- Action Buttons (Sticky Footer for Modal) -->
               <div class="flex flex-col sm:flex-row justify-end items-center space-y-3 sm:space-y-0 sm:space-x-4 pt-4 sticky bottom-0 bg-gradient-to-t from-indigo-100 via-blue-50/80 to-transparent pb-5 md:pb-8 px-5 md:px-8 -mx-5 md:-mx-8 rounded-b-xl">
                 <button
                   type="button"
@@ -352,12 +317,8 @@ const initialFormData = {
   city_gewog: '',
   state_dzongkhag: '',
   target_category: '',
-  // tc_attachments: null, // REMOVED
-  // tc_report: null,      // REMOVED
   remarks: '',
   tc_remarks: '',
-  tc_renewal_review_name: '',
-  tc_review_summary: '',
   valid_till: '',
   declaration: false,
 }
@@ -471,15 +432,10 @@ watch(
   }
 )
 
-// REMOVED handleAttachmentChange
-// REMOVED handleReportFileChange
-
 const resetForm = () => {
   formData.value = { ...initialFormData }
   const formElement = document.querySelector('form[enctype="multipart/form-data"]');
   if (formElement) {
-    // This will reset any remaining file inputs if there were any, but now there are none.
-    // It's good practice to keep it generic if other file inputs might be added later.
     const fileInputs = formElement.querySelectorAll('input[type="file"]');
     fileInputs.forEach(input => {
         if (input) input.value = '';
@@ -502,26 +458,13 @@ const createPayload = (isDraft = false) => {
 
     Object.keys(dataToSubmit).forEach((key) => {
         if (key === 'payment_id') return;
-        // The following keys are no longer part of formData, so these checks are effectively removed
-        // if (key === 'tc_attachments') return;
-        // if (key === 'tc_report') return;
-
+        
         const value = dataToSubmit[key];
 
-        // The following blocks for tc_attachments and tc_report are now effectively removed
-        // as these keys won't be in dataToSubmit (initialFormData doesn't have them)
-        /*
-        if (key === 'tc_attachments' && value) {
-            // ...
-        }
-        else if (key === 'tc_report' && value) {
-            // ...
-        }
-        */
-        if (value !== null && value !== undefined) { // This will handle all other fields
+        if (value !== null && value !== undefined) {
             const backendKey = (key === 'institute_id') ? 'institute' : key;
             if (typeof value === 'boolean') {
-                 formPayload.append(backendKey, value.toString());
+                    formPayload.append(backendKey, value.toString());
             } else {
                 formPayload.append(backendKey, value);
             }
@@ -532,25 +475,23 @@ const createPayload = (isDraft = false) => {
 
 
 const validateForm = () => {
-    if (!formData.value.institute_id) { alert('Please select Training Institute Name.'); return false; }
-    if (!formData.value.center_name.trim()) { alert('Please enter Center Name.'); return false; }
-    if (!formData.value.center_location.trim()) { alert('Please enter Center Location.'); return false; }
+    if (!formData.value.institute_id) { alert('Please select Teaching Hospital Name.'); return false; }
+    if (!formData.value.center_name.trim()) { alert('Please enter Teaching Hospital Name.'); return false; }
+    if (!formData.value.center_location.trim()) { alert('Please enter Hospital Location.'); return false; }
     if (!formData.value.state_dzongkhag) { alert('Please select State/Dzongkhag for the center.'); return false; }
     if (!formData.value.city_gewog) { alert('Please select City/Gewog for the center.'); return false; }
     if (!formData.value.target_category.trim()) { alert('Please enter Target Category.'); return false; }
-    if (!formData.value.tc_renewal_review_name.trim()) { alert('Please enter Renewal Review Name.'); return false; }
-    if (!formData.value.tc_review_summary.trim()) { alert('Please enter Review Summary.'); return false; }
     if (!formData.value.valid_till) { alert('Please select Valid Till date.'); return false; }
-    // REMOVED Attachment validation
-    // if (!formData.value.tc_attachments || formData.value.tc_attachments.length === 0) { alert('Please attach required documents.'); return false; }
-    // REMOVED Report file validation
-    // if (!formData.value.tc_report) { alert('Please attach the report file.'); return false; }
-    if (!formData.value.tc_remarks.trim()) { alert('Please enter Teaching Center Remarks.'); return false; }
+    if (!formData.value.tc_remarks.trim()) { alert('Please enter Teaching Hospital Remarks.'); return false; }
     if (!formData.value.declaration) { alert('Please accept the declaration.'); return false; }
     return true;
 }
 
 const handleFormSubmit = async () => {
+  if (isSubmitting.value) {
+      console.warn('Form submission already in progress. Ignoring additional attempt.');
+      return;
+  }
   if (!validateForm()) {
       return;
   }
@@ -561,6 +502,7 @@ const handleFormSubmit = async () => {
       if (authStore.userId) {
         formPayloadForApp.append('user_id', authStore.userId);
       }
+      console.log('Submitting teaching center application:', Object.fromEntries(formPayloadForApp));
       await apiServices.createMhpcTeachingCenter(formPayloadForApp);
 
       isShowingSuccessMessage.value = true;
@@ -576,15 +518,15 @@ const handleFormSubmit = async () => {
             if (typeof errors === 'string') {
                 errorMessage += errors;
             } else if (typeof errors === 'object') {
-                 const messages = Object.entries(errors).map(([key, value]) => {
-                    const fieldName = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                    return `${fieldName}: ${Array.isArray(value) ? value.join(', ') : value}`;
-                 }).join('\n');
-                 if (messages) errorMessage += `Details:\n${messages}`;
-                 else if (errors.detail) errorMessage += errors.detail;
-                 else errorMessage += 'An unexpected error occurred.'
+                   const messages = Object.entries(errors).map(([key, value]) => {
+                     const fieldName = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                     return `${fieldName}: ${Array.isArray(value) ? value.join(', ') : value}`;
+                   }).join('\n');
+                   if (messages) errorMessage += `Details:\n${messages}`;
+                   else if (errors.detail) errorMessage += errors.detail;
+                   else errorMessage += 'An unexpected error occurred.'
             } else {
-                 errorMessage += 'An unexpected error occurred.'
+                   errorMessage += 'An unexpected error occurred.'
             }
         } else {
             errorMessage += error.message || 'An unexpected network or server error occurred.';
@@ -608,8 +550,12 @@ const handleCancel = () => {
 }
 
 const handleSaveDraft = async () => {
+  if (isSubmittingDraft.value) {
+      console.warn('Draft save already in progress.');
+      return;
+  }
   if (!formData.value.institute_id || !formData.value.center_name.trim()) {
-      alert('Please provide at least Training Institute Name and Center Name to save a draft.');
+      alert('Please provide at least Teaching Hospital Name and Hospital Name to save a draft.');
       return;
   }
   isSubmittingDraft.value = true;
@@ -617,33 +563,34 @@ const handleSaveDraft = async () => {
   if (authStore.userId) {
     formPayload.append('user_id', authStore.userId);
   }
+  console.log('Saving teaching center draft:', Object.fromEntries(formPayload));
   try {
       await apiServices.createMhpcTeachingCenter(formPayload)
       alert('Draft saved successfully!')
   } catch (error) {
       console.error('Error saving draft:', error.response?.data || error.message || error)
       let errorMessage = 'Error saving draft. ';
-       if (error.response?.data) {
+        if (error.response?.data) {
             const errors = error.response.data;
             if (typeof errors === 'string') {
                 errorMessage += errors;
             } else if (typeof errors === 'object') {
-                 const messages = Object.entries(errors).map(([key, value]) => {
-                    const fieldName = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                    return `${fieldName}: ${Array.isArray(value) ? value.join(', ') : value}`;
-                 }).join('\n');
-                 if (messages) errorMessage += `Details:\n${messages}`;
-                 else if (errors.detail) errorMessage += errors.detail;
-                 else errorMessage += 'An unexpected error occurred.'
+                   const messages = Object.entries(errors).map(([key, value]) => {
+                     const fieldName = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                     return `${fieldName}: ${Array.isArray(value) ? value.join(', ') : value}`;
+                   }).join('\n');
+                   if (messages) errorMessage += `Details:\n${messages}`;
+                   else if (errors.detail) errorMessage += errors.detail;
+                   else errorMessage += 'An unexpected error occurred.'
             } else {
-                 errorMessage += 'An unexpected error occurred.'
+                   errorMessage += 'An unexpected error occurred.'
             }
         } else {
             errorMessage += error.message || 'An unexpected network or server error occurred.';
         }
       alert(errorMessage);
   } finally {
-      isSubmittingDraft.value = false
+    isSubmittingDraft.value = false
   }
 }
 </script>
