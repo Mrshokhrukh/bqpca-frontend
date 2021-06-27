@@ -186,7 +186,7 @@
               enter-to="opacity-100 scale-100" leave="duration-200 ease-in" leave-from="opacity-100 scale-100"
               leave-to="opacity-0 scale-95">
               <DialogPanel
-                class="max-w-7xl transform overflow-hidden rounded-2xl bg-white p-6 shadow-xl transition-all">
+                class="max-w-md w-full transform overflow-hidden rounded-2xl bg-white p-6 shadow-xl transition-all">
                 <div class="flex items-center justify-between mb-6">
                   <DialogTitle class="text-xl font-semibold text-slate-900">Register as CPD Provider</DialogTitle>
                   <button @click="closeCPDProviderModal" class="rounded-full p-1 hover:bg-slate-100 transition-colors">
@@ -199,32 +199,39 @@
                     <label for="organization_name" class="block text-sm font-medium text-slate-700">Organization
                       Name</label>
                     <input type="text" id="organization_name" v-model="cpdProviderForm.organization_name" required
-                      class="mt-1 block max-w-7xl rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500" />
+                      class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500" />
+                  </div>
+
+                  <div>
+                    <label for="license_number" class="block text-sm font-medium text-slate-700">Provider License
+                      Number</label>
+                    <input type="text" id="license_number" v-model="cpdProviderForm.license_number"
+                      class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500" />
                   </div>
 
                   <div>
                     <label for="contact_number" class="block text-sm font-medium text-slate-700">Contact Number</label>
                     <input type="tel" id="contact_number" v-model="cpdProviderForm.contact_number"
-                      class="mt-1 block max-w-7xl rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500" />
+                      class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500" />
                   </div>
 
                   <div>
                     <label for="email" class="block text-sm font-medium text-slate-700">Email</label>
                     <input type="email" id="email" v-model="cpdProviderForm.email" required
-                      class="mt-1 block max-w-7xl rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500" />
+                      class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500" />
                   </div>
 
                   <div>
                     <label for="password" class="block text-sm font-medium text-slate-700">Password</label>
                     <input type="password" id="password" v-model="cpdProviderForm.password" required
-                      class="mt-1 block max-w-7xl rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500" />
+                      class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500" />
                   </div>
 
                   <div>
                     <label for="confirm_password" class="block text-sm font-medium text-slate-700">Confirm
                       Password</label>
                     <input type="password" id="confirm_password" v-model="cpdProviderForm.confirm_password" required
-                      class="mt-1 block max-w-7xl rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500" />
+                      class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500" />
                   </div>
 
                   <div class="flex justify-end space-x-3 mt-6">
@@ -401,6 +408,7 @@ const cpdProviderForm = reactive({
   password: '',
   confirm_password: '',
   contact_number: '',
+  license_number: '',
 })
 
 const showCPDProviderModal = ref(false)
@@ -418,6 +426,7 @@ const closeCPDProviderModal = () => {
     password: '',
     confirm_password: '',
     contact_number: '',
+    license_number: '',
   })
 }
 
@@ -442,6 +451,7 @@ const handleCPDProviderRegistration = async () => {
       contact_number: cpdProviderForm.contact_number,
       role: 'cme_cpd_provider',
       service_type: serviceType.value,
+      cid: cpdProviderForm.license_number || null,
     }
 
     await apiService.register(payload)
@@ -460,7 +470,7 @@ const engineeringInstitutionForm = reactive({
   password: '',
   confirm_password: '',
   contact_number: '',
-  license_number: '', // This will be shown to user as License Number but sent as CID
+  license_number: '',
 })
 
 const openEngineeringInstitutionModal = () => {
