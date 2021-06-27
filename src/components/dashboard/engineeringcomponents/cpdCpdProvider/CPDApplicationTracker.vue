@@ -440,10 +440,10 @@
                   <tr v-for="(participant, index) in selectedApplication.participants"
                     :key="`participant-${participant.id || index}`">
                     <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-800">
-                      {{ participant.participant_reg_no || 'N/A' }}
+                      {{ getParticipantRegNo(participant) }}
                     </td>
                     <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-800">
-                      {{ participant.participant_name || 'N/A' }}
+                      {{ getParticipantName(participant) }}
                     </td>
                     <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-800">
                       {{ participant.cpd_credits || 'N/A' }}
@@ -527,6 +527,66 @@ const getCpdProvidingAgencyName = (agencyId) => {
   if (!agencyId) return 'Not specified'
   return cpdProvidingAgencyMap[agencyId] || `Unknown Agency (ID: ${agencyId})`
 }
+
+// Helper functions to handle different field name variations for participants
+const getParticipantName = (participant) => {
+  // For CPD task participants, we only have participant_reg_no
+  // We need to look up the actual user data from the participants list
+  if (participant.participant_reg_no && !participant.first_name && !participant.full_name) {
+    // Try to find the user data from the participants list loaded on page mount
+    const userData = findUserByRegNo(participant.participant_reg_no)
+    if (userData) {
+      return getParticipantName(userData)
+    }
+    // If not found in loaded data, return a formatted version
+    return `User ${participant.participant_reg_no}`
+  }
+
+  // Check if this is from the application list (getEpcFullApplicationListByCid)
+  if (participant.full_name) {
+    return participant.full_name
+  }
+
+  // Handle first_name + last_name combination
+  if (participant.first_name || participant.last_name) {
+    const firstName = participant.first_name || ''
+    const middleName = participant.middle_name ? ` ${participant.middle_name}` : ''
+    const lastName = participant.last_name || ''
+    return `${firstName}${middleName} ${lastName}`.trim()
+  }
+
+  // Check if participant has a nested user object
+  if (participant.user) {
+    return getParticipantName(participant.user)
+  }
+
+  // Fallback to other possible name fields
+  return participant.name || participant.participant_name || participant.username || 'Unknown Name'
+}
+
+const getParticipantRegNo = (participant) => {
+  // Check nested objects first
+  if (participant.user && participant.user.cid) {
+    return participant.user.cid
+  }
+
+  // Check direct fields - for CPD task participants, participant_reg_no is the main field
+  return participant.participant_reg_no || participant.cid || participant.registration_no || participant.reg_no || participant.registrationNo || 'N/A'
+}
+
+// Helper function to find user data by registration number
+const findUserByRegNo = (regNo) => {
+  // This will be populated when we fetch participants data
+  return allParticipants.value.find(p =>
+    p.cid === regNo ||
+    p.registration_no === regNo ||
+    p.reg_no === regNo ||
+    p.participant_reg_no === regNo
+  )
+}
+
+// Add a new reactive variable to store all participants data
+const allParticipants = ref([])
 
 // --- Status Logic ---
 
@@ -621,29 +681,34 @@ const fetchApplications = async () => {
   error.value = null
   console.log('Fetching CPD Tasks using apiService...')
   try {
-    // Using the imported apiService object
-    const response = await apiService.getEpcCpdTasks()
+    // Fetch both applications and participants data
+    const [response, participantsResponse] = await Promise.all([
+      apiService.getEpcCpdTasks(),
+      apiService.getEpcFullApplicationListByCid('')
+    ])
 
     if (response.data && Array.isArray(response.data.results)) {
-      // Assuming backend filters by logged-in provider automatically
-      // If not, add frontend filtering here using providerIdentifier
       applications.value = response.data.results.sort(
         (a, b) =>
-          // Sort by updated_at or created_at descending (newest first)
           new Date(b.updated_at || b.created_at) - new Date(a.updated_at || a.created_at),
       )
       console.log(`Loaded ${applications.value.length} applications.`)
-      // console.log('Sample Application Data:', applications.value.length > 0 ? applications.value[0] : 'N/A');
     } else {
       console.warn('No application data received or format is incorrect:', response.data)
       applications.value = []
-      // Optional: Set a user-friendly message if response is ok but results are empty/null
       if (response.status === 200 && !response.data?.results) {
         error.value = 'No applications found for your account.'
       } else {
         error.value = 'Received invalid data format from server.'
       }
     }
+
+    // Store participants data for lookup
+    if (participantsResponse.data) {
+      allParticipants.value = participantsResponse.data.results || participantsResponse.data || []
+      console.log(`Loaded ${allParticipants.value.length} participants for lookup.`)
+    }
+
   } catch (err) {
     console.error('Error fetching applications:', err)
     error.value =
@@ -651,6 +716,7 @@ const fetchApplications = async () => {
       err.message ||
       'An unexpected error occurred while loading applications.'
     applications.value = []
+    allParticipants.value = []
     toast.error(`Error: ${error.value}`)
   } finally {
     loading.value = false
