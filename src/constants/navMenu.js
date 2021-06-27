@@ -1031,7 +1031,7 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/institutions/${serviceType}/track_dpr`,
 
       },
-      
+
       {
         name: 'Institute Profile',
         icon: getIconComponent('Building'),
@@ -1084,7 +1084,7 @@ const serviceSpecificMenuItems = {
             icon: getIconComponent('Users'),
             route: (serviceType) => `/admin/institutions/${serviceType}/staff_management`,
           },
-          
+
         ],
       },
     ],
@@ -1241,10 +1241,10 @@ const serviceSpecificMenuItems = {
             name: 'New Applications',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/application_lists`,
           },
-          {
-            name: 'Additional Applications',
-            route: (serviceType) => `/admin/dealing_officer/${serviceType}/additional_application`,
-          },
+          // {
+          //   name: 'Additional Applications',
+          //   route: (serviceType) => `/admin/dealing_officer/${serviceType}/additional_application`,
+          // },
           {
             name: 'Renewal Applications',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/renewal_lists`,
