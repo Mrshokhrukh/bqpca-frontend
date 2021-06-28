@@ -107,8 +107,8 @@
               <label class="block text-sm font-medium text-gray-700">Authorization Letter</label>
               <div class="flex items-center space-x-2">
                 <input type="text" :value="eventDetails.supportingDocument
-                    ? eventDetails.supportingDocument
-                    : 'No file chosen'
+                  ? eventDetails.supportingDocument
+                  : 'No file chosen'
                   " readonly
                   class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
                 <label
@@ -119,32 +119,106 @@
               </div>
             </div>
           </div>
-    </div>
+        </section>
 
-    <!-- NEW: Add Representative Button -->
-    <div class="mt-8 mb-8">
-      <button type="button" @click="addRepresentative"
-        class="w-full px-6 py-3 text-base font-medium text-white bg-green-600 rounded-md hover:bg-green-700 border-2 border-dashed border-green-700 hover:border-green-800">
-        + Add Another Representative
-      </button>
-    </div>
+        <!-- NEW: Add Representative Button -->
+        <!-- Representatives List -->
+        <div class="mb-8">
+          <h2 class="text-lg font-medium mb-4 text-gray-700">Representatives</h2>
+          <div v-for="(rep, index) in representatives" :key="rep.id" class="mb-6 p-4 border rounded-lg bg-gray-50">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700">Name</label>
+                <input type="text" v-model="rep.name"
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700">Passport No.</label>
+                <input type="text" v-model="rep.passport_no"
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700">Nationality</label>
+                <input type="text" v-model="rep.nationality"
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700">Arrival Date</label>
+                <input type="date" v-model="rep.arrival_date"
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700">Departure Date</label>
+                <input type="date" v-model="rep.departure_date"
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700">CV</label>
+                <div class="flex items-center space-x-2">
+                  <input type="text" :value="rep.cv_filename ? rep.cv_filename : 'No file chosen'" readonly
+                    class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
+                  <label
+                    class="cursor-pointer px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
+                    <input type="file" @change="event => handleCvUpload(event, index)" class="hidden" />
+                    <span>Upload</span>
+                  </label>
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700">ID Document</label>
+                <div class="flex items-center space-x-2">
+                  <input type="text" :value="rep.id_doc_filename ? rep.id_doc_filename : 'No file chosen'" readonly
+                    class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
+                  <label
+                    class="cursor-pointer px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
+                    <input type="file" @change="event => handleIdDocUpload(event, index)" class="hidden" />
+                    <span>Upload</span>
+                  </label>
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700">Authorization Letter</label>
+                <div class="flex items-center space-x-2">
+                  <input type="text" :value="rep.auth_letter_filename ? rep.auth_letter_filename : 'No file chosen'"
+                    readonly
+                    class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
+                  <label
+                    class="cursor-pointer px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
+                    <input type="file" @change="event => handleAuthLetterUpload(event, index)" class="hidden" />
+                    <span>Upload</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div class="flex justify-end mt-4">
+              <button type="button" @click="removeRepresentative(index)"
+                class="px-3 py-1 text-xs font-medium text-white bg-red-500 rounded hover:bg-red-600"
+                v-if="representatives.length > 1">
+                Remove
+              </button>
+            </div>
+          </div>
+          <button type="button" @click="addRepresentative"
+            class="w-full px-6 py-3 text-base font-medium text-white bg-green-600 rounded-md hover:bg-green-700 border-2 border-dashed border-green-700 hover:border-green-800">
+            + Add Another Representative
+          </button>
+        </div>
+        <!-- Remarks -->
+        <section class="mb-8">
+          <h2 class="text-lg font-medium mb-4 text-gray-700">Remarks</h2>
+          <textarea v-model="remarks" rows="4"
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"></textarea>
+        </section>
 
-    <!-- Remarks -->
-    <section class="mb-8">
-      <h2 class="text-lg font-medium mb-4 text-gray-700">Remarks</h2>
-      <textarea v-model="remarks" rows="4"
-        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"></textarea>
-    </section>
-
-    <!-- Submit Button -->
-    <div class="mt-6 flex justify-end">
-      <button type="submit"
-        class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700">
-        Register Event
-      </button>
+        <!-- Submit Button -->
+        <div class="mt-6 flex justify-end">
+          <button type="submit"
+            class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700">
+            Register Event
+          </button>
+        </div>
+      </form>
     </div>
-    </form>
-  </div>
   </div>
 </template>
 
@@ -170,6 +244,7 @@ const ecpfDetails = reactive({
 
 const selectedInstitute = ref('') // Single institute selection
 const availableInstitutes = ref([]) // Array to hold institutes fetched from API
+const countryOptions = ref([]) // Array to hold country options
 
 const eventDetails = reactive({
   programDetail: '',
@@ -179,6 +254,8 @@ const eventDetails = reactive({
   toDate: '',
   others: '',
 })
+
+const remarks = ref('')
 
 // --- NEW: Dynamic Data for multiple representatives ---
 let nextRepId = 1
@@ -286,7 +363,7 @@ const submitForm = async () => {
 
   // API call
   try {
-    const response = await apiServices.createEcpfPromotionalHeiVisit(formData)
+    const response = await apiService.createEcpfPromotionalHeiVisit(formData)
     console.log('Registration successful:', response.data)
     toast.success('HEI visit promotion registered successfully!')
     // Reset form or redirect as needed
