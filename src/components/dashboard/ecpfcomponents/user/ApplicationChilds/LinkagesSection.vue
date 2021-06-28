@@ -14,37 +14,48 @@
       </button>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <div>
-          <label :for="'linkName-' + index" class="block text-sm font-medium text-gray-700">Name</label>
-          <input type="text" :id="'linkName-' + index" v-model="linkage.name"
+          <label :for="'institutionName-' + index" class="block text-sm font-medium text-gray-700">Institution Name
+            <span class="text-red-500">*</span></label>
+          <input type="text" :id="'institutionName-' + index" v-model="linkage.institution_name" required
             class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
         </div>
         <div>
-          <label :for="'linkLocation-' + index" class="block text-sm font-medium text-gray-700">Location</label>
-          <input type="text" :id="'linkLocation-' + index" v-model="linkage.location"
+          <label :for="'linkLocation-' + index" class="block text-sm font-medium text-gray-700">Location <span
+              class="text-red-500">*</span></label>
+          <input type="text" :id="'linkLocation-' + index" v-model="linkage.location" required
             class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
         </div>
         <div>
-          <label :for="'linkCountry-' + index" class="block text-sm font-medium text-gray-700">Country</label>
-          <input type="text" :id="'linkCountry-' + index" v-model="linkage.country"
+          <label :for="'linkCountry-' + index" class="block text-sm font-medium text-gray-700">Country <span
+              class="text-red-500">*</span></label>
+          <input type="text" :id="'linkCountry-' + index" v-model="linkage.country" required
             class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
         </div>
         <div class="md:col-span-2 lg:col-span-1">
-          <label :for="'linkRecognition-' + index"
-            class="block text-sm font-medium text-gray-700">Recognition/Accreditation</label>
-          <input type="text" :id="'linkRecognition-' + index" v-model="linkage.recognition"
-            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
+          <label :for="'recognitionDoc-' + index" class="block text-sm font-medium text-gray-700">Recognition Document
+            (PDF)</label>
+          <input type="file" :id="'recognitionDoc-' + index" accept=".pdf"
+            @change="handleRecognitionFileChange($event, index)"
+            class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+          <p v-if="linkage.recognition_doc_name" class="text-xs text-gray-600 mt-1">
+            Selected: {{ linkage.recognition_doc_name }}
+          </p>
         </div>
         <div class="md:col-span-2">
-          <label :for="'linkApproval-' + index" class="block text-sm font-medium text-gray-700">Approval from
-            University</label>
-          <input type="text" :id="'linkApproval-' + index" v-model="linkage.approval"
-            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
+          <label :for="'approvalDoc-' + index" class="block text-sm font-medium text-gray-700">Approval Document
+            (PDF)</label>
+          <input type="file" :id="'approvalDoc-' + index" accept=".pdf"
+            @change="handleApprovalFileChange($event, index)"
+            class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+          <p v-if="linkage.approval_doc_name" class="text-xs text-gray-600 mt-1">
+            Selected: {{ linkage.approval_doc_name }}
+          </p>
         </div>
       </div>
     </div>
     <button type="button" @click="addLinkage"
       class="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-      add institute
+      Add Institute
     </button>
   </section>
 </template>
@@ -57,13 +68,20 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['update:linkages'])
-// End Change
+const emit = defineEmits(['update:linkages', 'update:file'])
 
 const addLinkage = () => {
   emit('update:linkages', [
     ...props.linkages,
-    { name: '', location: '', country: '', recognition: '', approval: '' },
+    {
+      institution_name: '',
+      location: '',
+      country: '',
+      recognition_doc: null,
+      recognition_doc_name: '',
+      approval_doc: null,
+      approval_doc_name: ''
+    },
   ])
 }
 
@@ -72,5 +90,47 @@ const removeLinkage = (index) => {
     'update:linkages',
     props.linkages.filter((_, i) => i !== index),
   )
+}
+
+const handleRecognitionFileChange = (event, index) => {
+  const file = event.target.files[0]
+  if (file) {
+    const updatedLinkages = [...props.linkages]
+    updatedLinkages[index] = {
+      ...updatedLinkages[index],
+      recognition_doc: file,
+      recognition_doc_name: file.name
+    }
+    emit('update:linkages', updatedLinkages)
+
+    // Emit file update for parent to handle file storage
+    emit('update:file', {
+      file,
+      field: `linkage_${index}_recognition_doc`,
+      index,
+      type: 'recognition_doc'
+    })
+  }
+}
+
+const handleApprovalFileChange = (event, index) => {
+  const file = event.target.files[0]
+  if (file) {
+    const updatedLinkages = [...props.linkages]
+    updatedLinkages[index] = {
+      ...updatedLinkages[index],
+      approval_doc: file,
+      approval_doc_name: file.name
+    }
+    emit('update:linkages', updatedLinkages)
+
+    // Emit file update for parent to handle file storage
+    emit('update:file', {
+      file,
+      field: `linkage_${index}_approval_doc`,
+      index,
+      type: 'approval_doc'
+    })
+  }
 }
 </script>
