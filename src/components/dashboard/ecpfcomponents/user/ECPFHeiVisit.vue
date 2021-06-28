@@ -2,12 +2,22 @@
   <div class="p-8 min-h-screen bg-gray-50">
     <!-- Header -->
     <div class="bg-white rounded-xl p-8 mb-10 shadow-sm border border-gray-100">
-      <h1 class="text-4xl font-bold text-gray-900 mb-3">HEI Representative Visit Promotion Registration</h1>
-      <p class="text-gray-600">Register a promotional visit for one or more representatives from a single institute.</p>
+      <h1 class="text-4xl font-bold text-gray-900 mb-3">HEI Visit Promotion Registration</h1>
+      <p class="text-gray-600">Register for an HEI visit promotional event.</p>
     </div>
 
     <div class="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
       <form @submit.prevent="submitForm">
+        <!-- Event Type -->
+        <section class="mb-8">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Promotional Event Type</label>
+              <input type="text" v-model="eventType" readonly
+                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
+            </div>
+          </div>
+        </section>
         <!-- Current ECPF Details -->
         <section class="mb-8">
           <h2 class="text-lg font-medium mb-4 text-gray-700">Current ECPF Details</h2>
@@ -49,22 +59,22 @@
 
         <!-- Proposed Promotion Event - HEI Visit -->
         <section class="mb-8">
-          <h2 class="text-2xl font-semibold mb-6 text-gray-800">
-            Proposed Promotion Event Details
+          <h2 class="text-lg font-medium mb-4 text-gray-700">
+            Proposed Promotion Event - HEI Visit
           </h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="md:col-span-2">
               <label class="block text-sm font-medium text-gray-700">Institute</label>
               <select v-model="selectedInstitute"
                 class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
-                <option value="">Select an institute</option>
+                <option value="" disabled>Select an institute</option>
                 <option v-for="institute in availableInstitutes" :key="institute.id" :value="institute.id">
-                  {{ institute.InstituteCollegeUniversityName }}
+                  {{ institute.name }}
                 </option>
               </select>
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700">Programme Detail (Visit Detail)</label>
+              <label class="block text-sm font-medium text-gray-700">Programme Detail (visit detail)</label>
               <input type="text" v-model="eventDetails.programDetail"
                 class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
             </div>
@@ -79,133 +89,62 @@
                 class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700">Others (Specify)</label>
-              <input type="text" v-model="eventDetails.others"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Event Start Date</label>
+              <label class="block text-sm font-medium text-gray-700">From Date</label>
               <input type="date" v-model="eventDetails.fromDate"
                 class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700">Event End Date</label>
+              <label class="block text-sm font-medium text-gray-700">To Date</label>
               <input type="date" v-model="eventDetails.toDate"
                 class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
             </div>
-          </div>
-        </section>
-
-        <hr class="my-8" />
-
-        <!-- NEW: Repeating section for each Representative -->
-        <div v-for="(representative, index) in representatives" :key="representative.id"
-          class="mb-6 p-6 border border-gray-300 rounded-xl relative bg-gray-50/50">
-
-          <!-- Block Header with Remove Button -->
-          <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-semibold text-gray-800">Representative #{{ index + 1 }}</h2>
-            <button v-if="representatives.length > 1" type="button" @click="removeRepresentative(index)"
-              class="px-3 py-1.5 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700">
-              Remove
-            </button>
-          </div>
-
-          <!-- Representative Details -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label class="block text-sm font-medium text-gray-700">Name</label>
-              <input type="text" v-model="representative.name"
+              <label class="block text-sm font-medium text-gray-700">Others (specify)</label>
+              <input type="text" v-model="eventDetails.others"
                 class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Passport No.</label>
-              <input type="text" v-model="representative.passport_no"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Nationality</label>
-              <select v-model="representative.nationality"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
-                <option value="">Select Nationality</option>
-                <option v-for="country in countryOptions" :key="country.code" :value="country.code">
-                  {{ country.name }}
-                </option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Arrival Date</label>
-              <input type="date" v-model="representative.arrival_date"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Departure Date</label>
-              <input type="date" v-model="representative.departure_date"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700">CV of Representative</label>
-              <div class="flex items-center space-x-2">
-                <input type="text" :value="representative.cv_filename || 'No file chosen'" readonly
-                  class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
-                <label
-                  class="cursor-pointer px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
-                  <input type="file" @change="handleCvUpload($event, index)" class="hidden" />
-                  <span>Upload</span>
-                </label>
-              </div>
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Passport copy or Identification Document</label>
-              <div class="flex items-center space-x-2">
-                <input type="text" :value="representative.id_doc_filename || 'No file chosen'" readonly
-                  class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
-                <label
-                  class="cursor-pointer px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
-                  <input type="file" @change="handleIdDocUpload($event, index)" class="hidden" />
-                  <span>Upload</span>
-                </label>
-              </div>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">Authorization Letter</label>
               <div class="flex items-center space-x-2">
-                <input type="text" :value="representative.auth_letter_filename || 'No file chosen'" readonly
+                <input type="text" :value="eventDetails.supportingDocument
+                    ? eventDetails.supportingDocument
+                    : 'No file chosen'
+                  " readonly
                   class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
                 <label
                   class="cursor-pointer px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
-                  <input type="file" @change="handleAuthLetterUpload($event, index)" class="hidden" />
+                  <input type="file" @change="handleSupportingDocumentUpload" class="hidden" />
                   <span>Upload</span>
                 </label>
               </div>
             </div>
           </div>
-        </div>
-
-        <!-- NEW: Add Representative Button -->
-        <div class="mt-8 mb-8">
-          <button type="button" @click="addRepresentative"
-            class="w-full px-6 py-3 text-base font-medium text-white bg-green-600 rounded-md hover:bg-green-700 border-2 border-dashed border-green-700 hover:border-green-800">
-            + Add Another Representative
-          </button>
-        </div>
-
-        <!-- Remarks -->
-        <section class="mb-8">
-          <h2 class="text-lg font-medium mb-4 text-gray-700">Remarks</h2>
-          <textarea v-model="remarks" rows="4"
-            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"></textarea>
-        </section>
-
-        <!-- Submit Button -->
-        <div class="mt-6 flex justify-end">
-          <button type="submit"
-            class="px-6 py-3 text-base font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700">
-            Register Event
-          </button>
-        </div>
-      </form>
     </div>
+
+    <!-- NEW: Add Representative Button -->
+    <div class="mt-8 mb-8">
+      <button type="button" @click="addRepresentative"
+        class="w-full px-6 py-3 text-base font-medium text-white bg-green-600 rounded-md hover:bg-green-700 border-2 border-dashed border-green-700 hover:border-green-800">
+        + Add Another Representative
+      </button>
+    </div>
+
+    <!-- Remarks -->
+    <section class="mb-8">
+      <h2 class="text-lg font-medium mb-4 text-gray-700">Remarks</h2>
+      <textarea v-model="remarks" rows="4"
+        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"></textarea>
+    </section>
+
+    <!-- Submit Button -->
+    <div class="mt-6 flex justify-end">
+      <button type="submit"
+        class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700">
+        Register Event
+      </button>
+    </div>
+    </form>
+  </div>
   </div>
 </template>
 
@@ -216,14 +155,22 @@ import apiService from '@/services/ecpfServices.js' // Assuming your API service
 
 const toast = useToast()
 
-// --- Static Data ---
-const ecpfDetails = reactive({ name: '', location: '', proprietor: '', cid: '', contactNo: '', email: '' })
-const availableInstitutes = ref([])
-const countryOptions = ref([])
-const remarks = ref('')
+const eventType = ref('HEI Visit') // Set the fixed event type
 
-// --- Event Data ---
-const selectedInstitute = ref('')
+// --- Data ---
+const ecpfDetails = reactive({
+  // Replace with actual data fetching if needed
+  name: 'Example ECPF', // Replace with actual ECPF data source
+  location: 'Thimphu',
+  proprietor: 'John Doe',
+  cid: '1234567890',
+  contactNo: '+975-17123456',
+  email: 'john.doe@example.com',
+})
+
+const selectedInstitute = ref('') // Single institute selection
+const availableInstitutes = ref([]) // Array to hold institutes fetched from API
+
 const eventDetails = reactive({
   programDetail: '',
   description: '',
@@ -339,11 +286,11 @@ const submitForm = async () => {
 
   // API call
   try {
-    // Ensure you have an API endpoint that can handle this FormData structure
-    await apiService.createEcpfPromotionalHeiVisit(formData)
-    toast.success('HEI Representative Visit promotion registered successfully!')
-
-    // Reset form to initial state
+    const response = await apiServices.createEcpfPromotionalHeiVisit(formData)
+    console.log('Registration successful:', response.data)
+    toast.success('HEI visit promotion registered successfully!')
+    // Reset form or redirect as needed
+    // Reset form example:
     selectedInstitute.value = ''
     Object.assign(eventDetails, { programDetail: '', description: '', purpose: '', fromDate: '', toDate: '', others: '' })
     representatives.splice(0, representatives.length, createNewRepresentative())
@@ -351,7 +298,7 @@ const submitForm = async () => {
 
   } catch (error) {
     console.error('Error submitting form:', error)
-    toast.error('Failed to register the promotion.')
+    toast.error('Failed to register the HEI visit promotion.')
     if (error.response) {
       console.error('Error details:', error.response.data)
       toast.error(`Error: ${JSON.stringify(error.response.data)}`)
