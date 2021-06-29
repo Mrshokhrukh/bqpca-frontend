@@ -15,14 +15,7 @@
       class="mb-4 p-4 bg-blue-100 border border-blue-400 text-blue-700 rounded">
       <p>Loading initial data...</p>
     </div>
-    <div v-if="formMessage.text" :class="[
-      'mb-4 p-4 border rounded break-words',
-      formMessage.type === 'error'
-        ? 'bg-red-100 border-red-400 text-red-700'
-        : 'bg-green-100 border-green-400 text-green-700',
-    ]">
-      <p v-html="formMessage.text.replace(/\n/g, '<br />')"></p>
-    </div>
+
 
     <!-- Form Section -->
     <div class="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
@@ -69,6 +62,7 @@
             </div>
           </div>
         </section>
+
 
         <!-- Residential/Present Address -->
         <section class="mb-8">
@@ -168,18 +162,17 @@
               <label for="existing_ecpf_name" class="block text-sm font-medium text-gray-700">Existing ECPF Name
                 (Institute):</label>
               <input id="existing_ecpf_name" type="text" v-model="formData.existing_ecpf_name"
-                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-not-allowed"
-                readonly />
+                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-not-allowed" />
             </div>
             <div>
               <label for="existing_license_number" class="block text-sm font-medium text-gray-700">Existing License
                 Number of ECPF:</label>
               <input id="existing_license_number" type="text" v-model="formData.existing_license_number"
-                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-not-allowed"
-                readonly />
+                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-not-allowed" />
             </div>
             <div>
-              <label for="proposed_ecpf_name" class="block text-sm font-medium text-gray-700">Proposed Name of ECPF (for
+              <label for="proposed_ecpf_name" class="block text-sm font-medium text-gray-700">Proposed Name of ECPF
+                (for
                 Collaboration):<span class="text-red-500">*</span></label>
               <input id="proposed_ecpf_name" type="text" v-model="formData.proposed_ecpf_name" required
                 class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
@@ -217,20 +210,22 @@
               </select>
             </div>
             <div>
-              <label for="external_party_state" class="block text-sm font-medium text-gray-700">External Party Based in
+              <label for="external_party_state" class="block text-sm font-medium text-gray-700">External Party Based
+                in
                 (State):<span class="text-red-500">*</span></label>
               <input id="external_party_state" type="text" v-model="formData.external_party_state" required
                 class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
             </div>
             <div>
-              <label for="firm_registration_number" class="block text-sm font-medium text-gray-700">Firm’s Registration
+              <label for="firm_registration_number" class="block text-sm font-medium text-gray-700">Firm’s
+                Registration
                 Number:<span class="text-red-500">*</span></label>
               <input id="firm_registration_number" type="text" v-model="formData.firm_registration_number" required
                 class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
             </div>
             <div>
-              <label for="proprietor_name" class="block text-sm font-medium text-gray-700">Name of the Proprietor:<span
-                  class="text-red-500">*</span></label>
+              <label for="proprietor_name" class="block text-sm font-medium text-gray-700">Name of the
+                Proprietor:<span class="text-red-500">*</span></label>
               <input id="proprietor_name" type="text" v-model="formData.proprietor_name" required
                 class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
             </div>
@@ -319,7 +314,7 @@
                 accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
                 class="mt-1 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer" />
               <span v-if="getFileName('mou')" class="text-xs text-gray-600 mt-1 block">Selected: {{ getFileName('mou')
-                }}</span>
+              }}</span>
             </div>
           </div>
         </section>
@@ -338,6 +333,14 @@
             </label>
           </div>
         </section>
+        <div v-if="formMessage.text" :class="[
+          'mb-4 p-4 border rounded break-words',
+          formMessage.type === 'error'
+            ? 'bg-red-100 border-red-400 text-red-700'
+            : 'bg-green-100 border-green-400 text-green-700',
+        ]">
+          <p v-html="formMessage.text.replace(/\n/g, '<br />')"></p>
+        </div>
 
         <!-- Action Buttons -->
         <div class="flex justify-end space-x-4 mt-10 pt-6 border-t border-gray-200">
