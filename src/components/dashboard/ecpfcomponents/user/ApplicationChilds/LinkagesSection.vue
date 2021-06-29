@@ -68,69 +68,69 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['update:linkages', 'update:file'])
+// The only emit needed is to update the linkages array itself.
+const emit = defineEmits(['update:linkages'])
 
 const addLinkage = () => {
+  // Add the new linkage object to the array in the parent
   emit('update:linkages', [
     ...props.linkages,
     {
       institution_name: '',
       location: '',
       country: '',
-      recognition_doc: null,
+      // Use camelCase keys for the file objects to match the parent's expectation
+      recognitionDocFile: null,
+      approvalDocFile: null,
+      // Keep doc_name for display purposes if you like
       recognition_doc_name: '',
-      approval_doc: null,
       approval_doc_name: ''
     },
   ])
 }
 
 const removeLinkage = (index) => {
-  emit(
-    'update:linkages',
-    props.linkages.filter((_, i) => i !== index),
-  )
+  // Filter out the linkage and update the parent's array
+  const updatedLinkages = props.linkages.filter((_, i) => i !== index)
+  emit('update:linkages', updatedLinkages)
 }
 
 const handleRecognitionFileChange = (event, index) => {
   const file = event.target.files[0]
   if (file) {
+    // Create a mutable copy of the parent's array
     const updatedLinkages = [...props.linkages]
+
+    // Update the specific linkage object at the given index
     updatedLinkages[index] = {
       ...updatedLinkages[index],
-      recognition_doc: file,
-      recognition_doc_name: file.name
+      // **FIX:** Store the file object under the key the parent expects
+      recognitionDocFile: file,
+      recognition_doc_name: file.name // This is fine for display
     }
-    emit('update:linkages', updatedLinkages)
 
-    // Emit file update for parent to handle file storage
-    emit('update:file', {
-      file,
-      field: `linkage_${index}_recognition_doc`,
-      index,
-      type: 'recognition_doc'
-    })
+    // Emit the entire updated array back to the parent.
+    // The parent now has the complete linkage object, including the file.
+    emit('update:linkages', updatedLinkages)
   }
 }
 
 const handleApprovalFileChange = (event, index) => {
   const file = event.target.files[0]
   if (file) {
+    // Create a mutable copy of the parent's array
     const updatedLinkages = [...props.linkages]
+
+    // Update the specific linkage object at the given index
     updatedLinkages[index] = {
       ...updatedLinkages[index],
-      approval_doc: file,
-      approval_doc_name: file.name
+      // **FIX:** Store the file object under the key the parent expects
+      approvalDocFile: file,
+      approval_doc_name: file.name // This is fine for display
     }
-    emit('update:linkages', updatedLinkages)
 
-    // Emit file update for parent to handle file storage
-    emit('update:file', {
-      file,
-      field: `linkage_${index}_approval_doc`,
-      index,
-      type: 'approval_doc'
-    })
+    // Emit the entire updated array back to the parent.
+    emit('update:linkages', updatedLinkages)
   }
 }
 </script>

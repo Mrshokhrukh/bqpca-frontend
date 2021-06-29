@@ -164,30 +164,94 @@ const dzongkhagOptions = ref([
 
 // --- Initial Form State ---
 const getInitialFormData = () => ({
-  applicant: { cid: '', name: '', gender: '', dob: '' },
-  contact: { contactNo: '', email: '' },
-  presentAddress: {
-    officeNumber: '',
-    flatNo: '',
-    buildingNo: '',
-    location: '',
-    gewogThrom: '',
-    dzongkhagThromde: '',
+  // Basic applicant info
+  applicant: {
+    cid: '',           // maps to: cid_no
+    name: '',          // maps to: applicants_name  
+    gender: '',        // maps to: gender
+    dob: ''           // maps to: date_of_birth
   },
-  permanentAddress: { villageChiwog: '', gewog: '', dungkhag: '', dzongkhagThromde: '' },
-  education: { qualification: '', instituteName: '', universityName: '' },
-  proposal: { name: '', address: '', location: '', firmType: '' },
-  purpose: { vision: '', mission: '', objective: '' },
-  linkages: [],
-  financial: { sourceOfFunding: '' },
-  swot: { strengths: '', weaknesses: '', opportunities: '', threats: '' },
-  fees: [{ breakup: '', description: '', amount: null }],
-  guarantor: { fullName: '', cidNumber: '', relation: '', contactNumber: '' },
-  financialStatementFile: null,
-  budgetPlanFile: null,
-  guarantorCidCopyFile: null,
-  cvFile: null,
-  declarationAgreed: false,
+
+  // Contact info
+  contact: {
+    contactNo: '',     // maps to: contact_no
+    email: ''          // maps to: email
+  },
+
+  // Present address  
+  presentAddress: {
+    officeNumber: '',  // maps to: office_number
+    flatNo: '',        // maps to: flat_no
+    buildingNo: '',    // maps to: building_no
+    location: '',      // maps to: location
+    gewogThrom: '',    // maps to: gewog_throm
+    dzongkhagThromde: '', // maps to: dzongkhag_thromde
+  },
+
+  // Permanent address
+  permanentAddress: {
+    villageChiwog: '', // maps to: permanent_village
+    gewog: '',         // maps to: permanent_gewog
+    dungkhag: '',      // maps to: permanent_dungkhag
+    dzongkhagThromde: '' // maps to: permanent_dzongkhag
+  },
+
+  // Education
+  education: {
+    qualification: '', // maps to: qualification
+    instituteName: '', // maps to: institute_name
+    universityName: '' // maps to: university_name
+  },
+
+  // Proposal
+  proposal: {
+    name: '',          // maps to: proposed_firm_name
+    address: '',       // maps to: firm_address
+    location: '',      // maps to: firm_location
+    firmType: ''       // maps to: type_of_firm (ID)
+  },
+
+  // Purpose/Strategic info
+  purpose: {
+    vision: '',        // maps to: vision
+    mission: '',       // maps to: mission
+    objective: ''      // maps to: objective
+  },
+
+  // Financial
+  financial: {
+    sourceOfFunding: '' // maps to: finance_plan
+  },
+
+  // SWOT
+  swot: {
+    strengths: '',     // maps to: strengths
+    weaknesses: '',    // maps to: weaknesses
+    opportunities: '', // maps to: opportunities
+    threats: ''        // maps to: threats
+  },
+
+  // Guarantor
+  guarantor: {
+    fullName: '',      // maps to: guarantor_name
+    cidNumber: '',     // maps to: guarantor_cid
+    relation: '',      // maps to: guarantor_relation
+    contactNumber: ''  // maps to: guarantor_contact
+  },
+
+  // Nested data structures (these are the important ones!)
+  linkages: [],        // maps to: ecpf_linkages (nested)
+  qualifications: [],  // maps to: ecpf_qualifications (nested)  
+  services: [],        // maps to: ecpf_services (nested)
+  fees: [],           // maps to: fee_charges (nested)
+  infrastructure: [], // maps to: ecpf_infrastructure (nested)
+
+  // Files
+  guarantorCidCopyFile: null, // maps to: guarantor_cid_copy
+  cvFile: null,              // maps to: cv
+
+  // Declaration
+  declarationAgreed: false,  // maps to: declaration
 })
 
 // --- Reactive Form Data ---
@@ -287,14 +351,19 @@ const handleChildFileUpload = ({ file, field }) => {
 }
 
 /** Prepares the FormData object for API submission */
-const prepareFormData = (status) => {
+const prepareFormData = (status) => { // status is 'draft' or 'submitted'
   const submissionData = new FormData()
 
-  // Append standard fields (USING BACKEND EXPECTED KEYS)
+  // --- 1. FLAT FIELDS (Your existing code is perfect here) ---
   submissionData.append('cid_no', formData.applicant.cid)
   submissionData.append('applicants_name', formData.applicant.name)
   submissionData.append('gender', formData.applicant.gender)
-  submissionData.append('date_of_birth', formData.applicant.dob)
+  // Ensure DOB is in a format DRF can parse, like 'YYYY-MM-DD' or ISO 8601.
+  // If your date picker gives a different format, you might need to reformat it here.
+  if (formData.applicant.dob) {
+    // Assuming dob is already in 'YYYY-MM-DDTHH:mm:ss' or similar ISO format
+    submissionData.append('date_of_birth', formData.applicant.dob)
+  }
   submissionData.append('contact_no', formData.contact.contactNo)
   submissionData.append('email', formData.contact.email)
   submissionData.append('office_number', formData.presentAddress.officeNumber)
@@ -309,11 +378,11 @@ const prepareFormData = (status) => {
   submissionData.append('permanent_dzongkhag', formData.permanentAddress.dzongkhagThromde)
   submissionData.append('qualification', formData.education.qualification)
   submissionData.append('institute_name', formData.education.instituteName)
-  submissionData.append('university_name', formData.education.universityName || '')
+  submissionData.append('university_name', formData.education.universityName)
   submissionData.append('proposed_firm_name', formData.proposal.name)
   submissionData.append('firm_address', formData.proposal.address)
   submissionData.append('firm_location', formData.proposal.location)
-  submissionData.append('type_of_firm', formData.proposal.firmType)
+  submissionData.append('type_of_firm', formData.proposal.firmType) // This correctly sends the ID
   submissionData.append('vision', formData.purpose.vision)
   submissionData.append('mission', formData.purpose.mission)
   submissionData.append('objective', formData.purpose.objective)
@@ -326,35 +395,50 @@ const prepareFormData = (status) => {
   submissionData.append('guarantor_cid', formData.guarantor.cidNumber)
   submissionData.append('guarantor_relation', formData.guarantor.relation)
   submissionData.append('guarantor_contact', formData.guarantor.contactNumber)
-  submissionData.append('linkages', JSON.stringify(formData.linkages))
-  submissionData.append('fees', JSON.stringify(formData.fees))
-  submissionData.append('service_category', formData.serviceCategory) // or whatever your field is
-  submissionData.append('service_category_details', formData.serviceCategoryDetails) // if needed
 
-  // Append Files (USING BACKEND EXPECTED KEYS)
-  if (formData.financialStatementFile) {
-    submissionData.append(
-      'financial_statement_file',
-      formData.financialStatementFile,
-      formData.financialStatementFile.name,
-    )
-  }
-  if (formData.budgetPlanFile) {
-    submissionData.append('budget_plan_file', formData.budgetPlanFile, formData.budgetPlanFile.name)
-  }
+  // --- 2. NESTED JSON DATA & FILES (CORRECTED) ---
+
+  // Handle Linkages: Stringify metadata and append files separately
+  const linkagesForJson = formData.linkages.map(link => {
+    // Create a copy of the linkage object without the file objects
+    const { recognitionDocFile, approvalDocFile, ...rest } = link;
+    return rest;
+  });
+  submissionData.append('linkages', JSON.stringify(linkagesForJson));
+
+  // Now, append the linkage files with indexed keys
+  formData.linkages.forEach((link, index) => {
+    if (link.recognitionDocFile) {
+      submissionData.append(`linkages[${index}][recognition_doc]`, link.recognitionDocFile);
+    }
+    if (link.approvalDocFile) {
+      submissionData.append(`linkages[${index}][approval_doc]`, link.approvalDocFile);
+    }
+  });
+
+  // Other nested data as JSON strings
+  submissionData.append('qualifications', JSON.stringify(formData.qualifications))
+  submissionData.append('services', JSON.stringify(formData.services))
+
+  // *** CORRECTION 3: Use 'fees' key for the special JSON handling in the serializer ***
+  submissionData.append('fees', JSON.stringify(formData.fees))
+
+  submissionData.append('infrastructure', JSON.stringify(formData.infrastructure))
+
+
+  // --- 3. TOP-LEVEL FILES (Your existing code is perfect here) ---
   if (formData.guarantorCidCopyFile) {
-    submissionData.append(
-      'guarantor_cid_copy',
-      formData.guarantorCidCopyFile,
-      formData.guarantorCidCopyFile.name,
-    )
+    submissionData.append('guarantor_cid_copy', formData.guarantorCidCopyFile)
   }
   if (formData.cvFile) {
-    submissionData.append('cv', formData.cvFile, formData.cvFile.name)
+    submissionData.append('cv', formData.cvFile)
   }
 
+  // --- 4. STATUS & DECLARATION (CORRECTED) ---
+  // The serializer expects a 'status' field ('draft' or 'submitted')
   submissionData.append('status', status)
-  submissionData.append('declaration_agreed', formData.declarationAgreed ? 'true' : 'false')
+  // The serializer expects a 'declaration_agreed' field
+  submissionData.append('declaration_agreed', formData.declarationAgreed) // Will be sent as string "true" or "false"
 
   return submissionData
 }
