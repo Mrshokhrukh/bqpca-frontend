@@ -83,6 +83,8 @@ import AccreUserProfile from '@/components/dashboard/accredcomponent/users/Accre
 import CoIConfirmation from '@/components/dashboard/accredcomponent/users/CoIConfirmation.vue'
 import SiteVisitConfirmation from '@/components/dashboard/accredcomponent/users/SiteVisitConfirmation.vue'
 import CreateInstituteProfile from '@/components/dashboard/accredcomponent/users/CreateInstituteProfile.vue'
+import IsarReport from '@/components/dashboard/accredcomponent/users/IsarReport.vue'
+import TrackAccreditation from '@/components/dashboard/accredcomponent/users/TrackAccreditation.vue'
 
 // Import Dealing Officer Components
 import AccreDealingdashboard from '@/components/dashboard/accredcomponent/dealingOfficer/AccreDealingdashboard.vue'
@@ -200,9 +202,9 @@ const dealingOfficerComponent = computed(() => {
     case path.endsWith('/accreditation/accreditation_assessment'):
       return AccreditationAssessment
     case path.endsWith('/accreditation/initial_accreditation_application'):
-      return InitialAccreditaionApplication  
+      return InitialAccreditaionApplication
     case path.endsWith('/accreditation/manage_accreditation_schedule'):
-      return ManageAccreditationSchedule  
+      return ManageAccreditationSchedule
 
     default:
       return null
@@ -252,6 +254,10 @@ const userComponent = computed(() => {
       return SiteVisitConfirmation
     case path.endsWith('/accreditation/institute_profile'):
       return CreateInstituteProfile
+    case path.endsWith('/accreditation/isar_report'):
+      return IsarReport
+    case path.endsWith('/accreditation/track_accreditation'):
+      return TrackAccreditation 
     default:
       return null
   }

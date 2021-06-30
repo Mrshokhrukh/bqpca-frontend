@@ -1621,6 +1621,16 @@ const serviceSpecificMenuItems = {
             icon: getIconComponent('FilePlus'),
             route: (serviceType) => `/admin/user/${serviceType}/apply_for_accreditation`,
           },
+          {
+            name: 'Track Accreditation',
+            icon: getIconComponent('FilePlus'),
+            route: (serviceType) => `/admin/user/${serviceType}/track_accreditation`,
+          },
+          {
+            name: 'Submit ISAR Report',
+            icon: getIconComponent('FilePlus'),
+            route: (serviceType) => `/admin/user/${serviceType}/isar_report`,
+          },
         ],
       },
       {

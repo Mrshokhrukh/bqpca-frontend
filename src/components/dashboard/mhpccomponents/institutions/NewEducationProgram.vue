@@ -57,7 +57,7 @@
       <div class="text-6xl mb-4">🏫</div>
       <p class="text-xl font-semibold">Institute Not Found</p>
       <p class="mt-2 text-sm">Institute profile (ID: {{ SPECIFIC_INSTITUTE_ID }}) could not be loaded.</p>
-      <p class="mt-1 text-sm">Please check the API connection and ensure the institute exists.</p>
+      <p class="mt-1 text-sm">Please check the API connection and ensure an institute with this ID exists.</p>
       <button @click="fetchInstitute" class="mt-4 px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
         Retry Loading Institute
       </button>
@@ -86,7 +86,7 @@
     <div v-else-if="moduleFacultyAssignments.length === 0" class="text-center text-gray-500 py-10">
       <div class="text-6xl mb-4">📚</div>
       <p class="text-xl font-semibold">No Faculty Assignments Found</p>
-      <p class="mt-2">You haven't created any module faculty assignments yet.</p>
+      <p class="mt-2">No module faculty assignments have been created for this institute yet.</p>
       <p class="mt-1 text-sm">Get started by configuring a program and assigning faculty members to modules.</p>
       <button
         @click="openAddProgramModal"
@@ -131,7 +131,7 @@
         <tbody class="bg-white divide-y divide-gray-200">
           <tr v-for="assignment in moduleFacultyAssignments" :key="assignment.id" class="hover:bg-gray-50">
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-              {{ assignment.module?.semester?.program_name || 'Program ID: ' + (assignment.module?.semester?.program_offered || 'N/A') }}
+              {{ assignment.module?.semester?.program_offered?.program_master?.program_name || 'N/A' }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
               {{ assignment.module?.semester?.name || 'N/A' }}
@@ -193,7 +193,7 @@
               class="px-4 py-2 bg-red-600 text-white text-base font-medium rounded-md w-24 mr-2 hover:bg-red-700 disabled:opacity-50"
               :disabled="isPerformingAction"
             >
-              {{ isPerformingAction ? '...' : 'Delete' }}
+              {{ isPerformingAction ? '...' : 'Deleting' }}
             </button>
             <button
               @click="cancelDelete"
@@ -228,12 +228,21 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
+import { useRoute } from 'vue-router';
 import apiServices from '@/services/services';
 import NewEducationProgramModal from './NewEducationProgramModal.vue';
 import EditFacultyAssignmentModal from './EditFacultyAssignmentModal.vue';
 
-const SPECIFIC_INSTITUTE_ID = 3;
+// --- DYNAMIC INSTITUTE ID ---
+// Get the current route object to access URL parameters
+const route = useRoute();
+// Create a computed property to get the institute ID from the URL.
+// This is more robust than a simple const as it's reactive.
+// parseInt ensures we are working with a number.
+const SPECIFIC_INSTITUTE_ID = computed(() => parseInt(route.params.instituteId, 10));
+
+// --- STATE MANAGEMENT ---
 const currentUserInstitute = ref(null);
 const instituteName = ref('');
 const isLoadingInstitute = ref(true);
@@ -250,15 +259,11 @@ const showConfirmModal = ref(false);
 const confirmData = ref(null);
 const notifications = ref([]);
 
-// Notification system
+// --- NOTIFICATION SYSTEM ---
 const addNotification = (message, type = 'info', duration = 5000) => {
   const id = Date.now() + Math.random();
-  const notification = { id, message, type };
-  notifications.value.push(notification);
-
-  setTimeout(() => {
-    removeNotification(id);
-  }, duration);
+  notifications.value.push({ id, message, type });
+  setTimeout(() => removeNotification(id), duration);
 };
 
 const removeNotification = (id) => {
@@ -268,10 +273,16 @@ const removeNotification = (id) => {
   }
 };
 
+// --- DATA FETCHING ---
 const fetchInstitute = async () => {
+  if (!SPECIFIC_INSTITUTE_ID.value) {
+    console.error("No Institute ID found in URL.");
+    isLoadingInstitute.value = false;
+    return;
+  }
   isLoadingInstitute.value = true;
   try {
-    const response = await apiServices.getMhpcInstitute(SPECIFIC_INSTITUTE_ID);
+    const response = await apiServices.getMhpcInstitute(SPECIFIC_INSTITUTE_ID.value);
     if (response.data) {
       currentUserInstitute.value = {
         id: response.data.id,
@@ -284,9 +295,9 @@ const fetchInstitute = async () => {
   } catch (error) {
     console.error('Error fetching institute:', error);
     currentUserInstitute.value = null;
-    instituteName.value = 'Unknown Institute';
-    fetchError.value = 'Failed to load institute profile';
-    addNotification(`Failed to load institute (ID: ${SPECIFIC_INSTITUTE_ID}). Please check your connection.`, 'error');
+    instituteName.value = '';
+    fetchError.value = 'Failed to load institute profile.';
+    addNotification(`Failed to load institute (ID: ${SPECIFIC_INSTITUTE_ID.value}). Please check the ID and your connection.`, 'error');
   } finally {
     isLoadingInstitute.value = false;
   }
@@ -294,12 +305,11 @@ const fetchInstitute = async () => {
 
 const fetchFacultyList = async () => {
   try {
-    const response = await apiServices.getMhpcTeachingFaculties({ institute: SPECIFIC_INSTITUTE_ID });
+    const response = await apiServices.getMhpcTeachingFaculties({ institute: SPECIFIC_INSTITUTE_ID.value });
     facultyList.value = response.data.results || response.data || [];
   } catch (error) {
     console.error('Error fetching faculty list:', error);
-    facultyList.value = [{ id: 13, faculty_name: 'Good Faculty' }]; // Fallback
-    addNotification('Failed to load faculty list. Using fallback data.', 'warning');
+    addNotification('Failed to load faculty list.', 'warning');
   }
 };
 
@@ -312,17 +322,17 @@ const fetchAssignments = async () => {
   fetchError.value = null;
   try {
     const params = {
+      // Expanding related fields to get all necessary data in one request
       expand: 'module.semester.program_offered.program_master,module.semester.program_offered.institute,module.module_master,faculty',
     };
     const response = await apiServices.getMhpcFacultyAssignments(params);
     const allAssignments = response.data.results || response.data || [];
 
-    moduleFacultyAssignments.value = allAssignments.filter(
-      asgn => {
-        const instituteId = asgn.module?.semester?.program_offered?.institute?.id;
-        const programOfferedId = asgn.module?.semester?.program_offered;
-        return instituteId === SPECIFIC_INSTITUTE_ID || programOfferedId === 7;
-      }
+    // --- CORRECTED FILTERING LOGIC ---
+    // Filter assignments to only show those belonging to the current institute.
+    // Optional chaining (?.) prevents errors if the nested data path doesn't exist.
+    moduleFacultyAssignments.value = allAssignments.filter(asgn =>
+      asgn.module?.semester?.program_offered?.institute?.id === SPECIFIC_INSTITUTE_ID.value
     );
 
     console.log('Filtered Assignments:', moduleFacultyAssignments.value);
@@ -336,17 +346,15 @@ const fetchAssignments = async () => {
   }
 };
 
+// --- MODAL AND ACTION HANDLERS ---
 const openAddProgramModal = () => {
   if (!currentUserInstitute.value?.id) {
-    addNotification(`Cannot configure program: Institute profile (ID: ${SPECIFIC_INSTITUTE_ID}) not loaded.`, 'error');
+    addNotification(`Cannot configure program: Institute profile (ID: ${SPECIFIC_INSTITUTE_ID.value}) not loaded.`, 'error');
     return;
   }
   isModalOpen.value = true;
 };
-
-const closeAddProgramModal = () => {
-  isModalOpen.value = false;
-};
+const closeAddProgramModal = () => isModalOpen.value = false;
 
 const handleProgramConfigured = (event) => {
   console.log('Program configuration saved/updated:', event);
@@ -364,7 +372,6 @@ const openEditModal = async (assignment) => {
   }
   isEditModalOpen.value = true;
 };
-
 const closeEditModal = () => {
   isEditModalOpen.value = false;
   selectedAssignment.value = null;
@@ -373,7 +380,6 @@ const closeEditModal = () => {
 const saveAssignment = async (updatedData) => {
   isPerformingAction.value = true;
   actionMessage.value = 'Saving assignment changes...';
-
   try {
     const payload = {
       faculty: updatedData.faculty_id,
@@ -381,18 +387,12 @@ const saveAssignment = async (updatedData) => {
     };
     await apiServices.patchMhpcFacultyAssignment(updatedData.id, payload);
 
-    // Update module.student_count if changed
     if (updatedData.student_count !== selectedAssignment.value.module.student_count) {
-      try {
         actionMessage.value = 'Updating student count...';
         await apiServices.patchMhpcModule(selectedAssignment.value.module.id, {
           student_count: updatedData.student_count,
         });
         addNotification('Assignment and student count updated successfully!', 'success');
-      } catch (error) {
-        console.warn('Module update not supported; student_count not updated:', error);
-        addNotification('Assignment saved successfully, but student count update failed.', 'warning');
-      }
     } else {
       addNotification('Assignment updated successfully!', 'success');
     }
@@ -401,7 +401,7 @@ const saveAssignment = async (updatedData) => {
     await fetchAssignments();
   } catch (error) {
     console.error('Error saving assignment:', error);
-    addNotification('Failed to save assignment. Please try again.', 'error');
+    addNotification(`Failed to save assignment: ${error.message || 'Please try again.'}`, 'error');
   } finally {
     isPerformingAction.value = false;
     actionMessage.value = '';
@@ -412,7 +412,6 @@ const confirmDeleteAssignment = (assignment) => {
   confirmData.value = assignment;
   showConfirmModal.value = true;
 };
-
 const cancelDelete = () => {
   showConfirmModal.value = false;
   confirmData.value = null;
@@ -420,19 +419,13 @@ const cancelDelete = () => {
 
 const executeDelete = async () => {
   if (!confirmData.value) return;
-
   isPerformingAction.value = true;
   actionMessage.value = 'Deleting assignment...';
-
   try {
     await apiServices.deleteMhpcFacultyAssignment(confirmData.value.id);
-    addNotification(
-      `Successfully deleted assignment for ${confirmData.value.module?.module_master?.module_name || 'module'}`,
-      'success'
-    );
-    showConfirmModal.value = false;
-    confirmData.value = null;
-    await fetchAssignments();
+    addNotification(`Successfully deleted assignment for ${confirmData.value.module?.module_master?.module_name || 'module'}.`, 'success');
+    cancelDelete(); // Closes modal and resets data
+    await fetchAssignments(); // Refresh the list
   } catch (error) {
     console.error('Error deleting assignment:', error);
     addNotification('Failed to delete assignment. Please try again.', 'error');
@@ -442,12 +435,16 @@ const executeDelete = async () => {
   }
 };
 
-
-
+// --- LIFECYCLE HOOK ---
 onMounted(async () => {
   await fetchInstitute();
+  // Only proceed if the institute was successfully loaded
   if (currentUserInstitute.value?.id) {
-    await Promise.all([fetchFacultyList(), fetchAssignments()]);
+    // Fetch assignments and the faculty list in parallel for efficiency
+    await Promise.all([
+        fetchFacultyList(),
+        fetchAssignments()
+    ]);
   }
 });
 </script>

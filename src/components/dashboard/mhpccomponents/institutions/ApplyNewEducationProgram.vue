@@ -200,7 +200,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useAuthStore } from '@/stores/authStore';
 import apiServices from '@/services/services';
 import { useToast } from 'vue-toastification';
@@ -257,46 +257,54 @@ const isFormValid = computed(() => {
     filesValid);
 });
 
+// --- DATA FETCHING ---
+
 const fetchInstituteAndTeachingCenters = async (instituteIdToUse) => {
   if (!instituteIdToUse) {
-    toast.error('Institute ID not found. Cannot populate institution information.');
-    formData.value.institute_name = 'Unknown Institute (ID missing)';
+    console.error('No instituteIdToUse provided');
+    toast.error('Institute ID not found.');
+    formData.value.institute_name = 'Unknown Institute';
     return;
   }
-  formData.value.institute_id = instituteIdToUse;
+
+  console.log('Fetching for instituteIdToUse:', instituteIdToUse);
+  formData.value.institute_id = Number(instituteIdToUse);
   loadingInstituteData.value = true;
   availableTeachingCenters.value = [];
 
   try {
-    const [instituteResponse, teachingCentersResponse] = await Promise.all([
-      apiServices.getMhpcInstitutes({ id: instituteIdToUse }),
-      apiServices.getMhpcTeachingCenters()
-    ]);
-
+    const instituteResponse = await apiServices.getMhpcInstitutes({ id: instituteIdToUse });
     const instituteData = instituteResponse.data.results?.[0] || instituteResponse.data;
-    if (instituteData) {
-      formData.value.institute_name = instituteData.name_of_institution || authStore.user.organization_name || `Institute ID: ${instituteIdToUse}`;
-    } else {
-      toast.error(`Could not retrieve details for Institute ID: ${instituteIdToUse}.`);
-      formData.value.institute_name = authStore.user.organization_name || `Institute ID: ${instituteIdToUse}`;
-    }
+    console.log('Institute Response:', instituteData);
+    formData.value.institute_name = instituteData?.name_of_institution || `Institute ID: ${instituteIdToUse}`;
 
+    const teachingCentersResponse = await apiServices.getMhpcTeachingCenters();
+    console.log('Raw Teaching Centers Response:', JSON.stringify(teachingCentersResponse.data, null, 2));
     const allCenters = teachingCentersResponse.data.results || teachingCentersResponse.data || [];
-    if (allCenters.length > 0) {
-      availableTeachingCenters.value = allCenters.filter(center => {
-        const centerInstituteId = (typeof center.institute === 'object' && center.institute !== null)
-          ? center.institute.id
-          : center.institute;
+    console.log('Processed Teaching Centers:', allCenters);
 
-        return centerInstituteId == instituteIdToUse && center.is_active;
-      }).sort((a, b) => a.center_name.localeCompare(b.center_name));
+    availableTeachingCenters.value = allCenters
+      .filter(center => {
+        // Handle institute as object, institute_details, or ID
+        const centerInstituteId = center.institute_details?.id
+          ? Number(center.institute_details.id)
+          : center.institute?.id
+            ? Number(center.institute.id)
+            : Number(center.institute);
+        const isMatch = center.is_active && centerInstituteId === Number(instituteIdToUse);
+        console.log(`Center: ${center.center_name}, is_active: ${center.is_active}, institute_id: ${centerInstituteId}, instituteIdToUse: ${instituteIdToUse}, match: ${isMatch}`);
+        return isMatch;
+      })
+      .sort((a, b) => a.center_name.localeCompare(b.center_name));
+
+    console.log('Filtered Teaching Centers:', availableTeachingCenters.value);
+    if (availableTeachingCenters.value.length === 0) {
+      console.warn('No active teaching centers found for institute ID:', instituteIdToUse);
+      toast.warning('No active teaching centers found for your institute.');
     }
   } catch (error) {
-    console.error('Error fetching institution or teaching center data:', error);
-    toast.error('Failed to load institution data. Please check the network and try again.');
-    if (!formData.value.institute_name) {
-       formData.value.institute_name = authStore.user.organization_name || `Institute ID: ${instituteIdToUse}`;
-    }
+    console.error('Error fetching data:', error);
+    toast.error('Failed to load institution data.');
   } finally {
     loadingInstituteData.value = false;
   }
@@ -307,8 +315,7 @@ const fetchProgramMastersData = async () => {
   try {
     const response = await apiServices.getMhpcProgramMasters();
     programMasters.value = (response.data.results || response.data || []).sort((a, b) => a.program_name.localeCompare(b.program_name));
-  } catch (error)
- {
+  } catch (error) {
     console.error('Error fetching program masters:', error);
     toast.error('Failed to load program categories.');
   } finally {
@@ -316,90 +323,67 @@ const fetchProgramMastersData = async () => {
   }
 };
 
-const populateFormForEdit = (appData) => {
+
+// --- INITIALIZATION LOGIC ---
+
+const initializeForEdit = async (appData) => {
+  resetForm();
+  if (!appData) return initializeForNew();
+
+  const instituteId = appData.institute?.id || authStore.user?.id;
+  await Promise.all([
+      fetchInstituteAndTeachingCenters(instituteId),
+      fetchProgramMastersData()
+  ]);
+
+  // Populate form after data is loaded
   formData.value.id = appData.id;
-  formData.value.institute_id = appData.institute?.id || authStore.user.institute_id;
-  formData.value.institute_name = appData.name_of_institution || appData.institute?.name_of_institution || formData.value.institute_name;
   formData.value.teaching_center_id = appData.teaching_center;
   formData.value.program_master_id = appData.program_master?.id || appData.program_master;
   formData.value.specific_program_title = appData.specific_program_title;
   formData.value.existing_validation_letter_url = appData.curriculum_validation_letter;
   formData.value.existing_document_url = appData.curriculum_document;
-  formData.value.curriculum_validation_letter_file = null;
-  formData.value.curriculum_document_file = null;
-  clearFileInputsDOM();
-};
-
-const initializeForEdit = async (appData) => {
-  resetForm();
-  if (appData) {
-    const instituteIdForForm = appData.institute?.id || authStore.user.institute_id;
-    if (instituteIdForForm) {
-      await fetchInstituteAndTeachingCenters(instituteIdForForm);
-    }
-    await fetchProgramMastersData();
-    populateFormForEdit(appData);
-    if (appData.teaching_center && availableTeachingCenters.value.some(tc => tc.id === appData.teaching_center)) {
-      formData.value.teaching_center_id = appData.teaching_center;
-    }
-  } else {
-    initializeForNew();
-  }
 };
 
 const initializeForNew = async () => {
   resetForm();
-  if (!authStore.isAuthenticated || !authStore.user) {
-    toast.error('You must be logged in to create a new program.');
+  if (!authStore.user?.id) {
+    // This case is handled by the watcher, but good to have a guard
+    toast.info("Waiting for user information...");
     return;
   }
-  let instituteIdToUse = authStore.user.institute_id || (authStore.role === 'institutions' && authStore.userId ? authStore.userId : null);
-  await fetchInstituteAndTeachingCenters(instituteIdToUse);
-  await fetchProgramMastersData();
-  if (authStore.user.teaching_center_id && availableTeachingCenters.value.some(tc => tc.id === authStore.user.teaching_center_id)) {
-    formData.value.teaching_center_id = authStore.user.teaching_center_id;
-  }
+  await Promise.all([
+      fetchInstituteAndTeachingCenters(authStore.user.id),
+      fetchProgramMastersData()
+  ]);
 };
 
-const handleFileChange = (event, fileType) => {
-  const file = event.target.files[0];
-  const targetKey = fileType === 'validationLetter' ? 'curriculum_validation_letter_file' : 'curriculum_document_file';
+// WATCHER: This is the key to solving the race condition.
+// It watches the `applicationToEdit` prop to decide whether to run `initializeForEdit` or `initializeForNew`.
+// It only runs ONCE the data is actually available.
+watch(() => props.applicationToEdit, (appData) => {
+    if (appData) {
+        initializeForEdit(appData);
+    } else {
+        // For new applications, we must also wait for the user to be loaded
+        if (authStore.user?.id) {
+            initializeForNew();
+        } else {
+            // If the user isn't loaded yet, watch for them to become available
+            const unwatch = watch(() => authStore.user, (newUser) => {
+                if (newUser?.id) {
+                    initializeForNew();
+                    unwatch(); // Stop watching once we've initialized
+                }
+            }, { immediate: true });
+        }
+    }
+}, { immediate: true }); // `immediate: true` makes it run on component mount
 
-  if (!file) {
-    formData.value[targetKey] = null;
-    return;
-  }
-  if (file.type !== 'application/pdf') {
-    toast.error('Only PDF files are allowed.');
-    event.target.value = '';
-    formData.value[targetKey] = null;
-    return;
-  }
-  const maxSize = 10 * 1024 * 1024; // 10MB
-  if (file.size > maxSize) {
-    toast.error('File size must be less than 10MB.');
-    event.target.value = '';
-    formData.value[targetKey] = null;
-    return;
-  }
 
-  formData.value[targetKey] = file;
-};
-
-const removeFile = (fileType) => {
-  if (fileType === 'validationLetter') {
-    formData.value.curriculum_validation_letter_file = null;
-    formData.value.existing_validation_letter_url = null;
-    const input = document.getElementById('validationLetter');
-    if (input) input.value = '';
-  } else if (fileType === 'document') {
-    formData.value.curriculum_document_file = null;
-    formData.value.existing_document_url = null;
-    const input = document.getElementById('curriculumDocument');
-    if (input) input.value = '';
-  }
-};
-
+// --- FORM HANDLING ---
+// (The rest of your handleSubmit, removeFile, etc. functions go here, they don't need to change)
+// ... [Your existing handleSubmit, handleFileChange, removeFile, resetForm functions] ...
 const handleSubmit = async () => {
   if (!isFormValid.value) {
     toast.error('Please fill in all required fields and ensure valid PDF files are attached.');
@@ -445,6 +429,31 @@ const handleSubmit = async () => {
   }
 };
 
+const handleFileChange = (event, fileType) => {
+  const file = event.target.files[0];
+  const targetKey = fileType === 'validationLetter' ? 'curriculum_validation_letter_file' : 'curriculum_document_file';
+
+  if (!file) {
+    formData.value[targetKey] = null;
+    return;
+  }
+  if (file.type !== 'application/pdf') {
+    toast.error('Only PDF files are allowed.');
+    event.target.value = '';
+    formData.value[targetKey] = null;
+    return;
+  }
+  const maxSize = 10 * 1024 * 1024; // 10MB
+  if (file.size > maxSize) {
+    toast.error('File size must be less than 10MB.');
+    event.target.value = '';
+    formData.value[targetKey] = null;
+    return;
+  }
+
+  formData.value[targetKey] = file;
+};
+
 const clearFileInputsDOM = () => {
   const validationInput = document.getElementById('validationLetter');
   if (validationInput) validationInput.value = '';
@@ -452,26 +461,26 @@ const clearFileInputsDOM = () => {
   if (documentInput) documentInput.value = '';
 };
 
+const removeFile = (fileType) => {
+  if (fileType === 'validationLetter') {
+    formData.value.curriculum_validation_letter_file = null;
+    formData.value.existing_validation_letter_url = null;
+    const input = document.getElementById('validationLetter');
+    if (input) input.value = '';
+  } else if (fileType === 'document') {
+    formData.value.curriculum_document_file = null;
+    formData.value.existing_document_url = null;
+    const input = document.getElementById('curriculumDocument');
+    if (input) input.value = '';
+  }
+};
+
 const resetForm = () => {
   formData.value = initialFormData();
+  availableTeachingCenters.value = [];
+  programMasters.value = [];
   clearFileInputsDOM();
 };
 
 defineExpose({ initializeForEdit, initializeForNew, resetForm });
-
-onMounted(() => {
-  if (props.applicationToEdit) {
-    initializeForEdit(props.applicationToEdit);
-  } else {
-    initializeForNew();
-  }
-});
-
-watch(() => props.applicationToEdit, (newVal, oldVal) => {
-  if (newVal && newVal.id !== oldVal?.id) {
-    initializeForEdit(newVal);
-  } else if (!newVal && oldVal) {
-    initializeForNew();
-  }
-}, { deep: true });
 </script>

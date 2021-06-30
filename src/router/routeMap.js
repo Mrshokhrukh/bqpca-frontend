@@ -153,6 +153,8 @@ export default {
       results: accredDashboard,
       profile: accredDashboard,
       institute_profile: accredDashboard,
+      isar_report: accredDashboard,
+      track_accreditation: accredDashboard,
     },
     engineering_certification: {
       dashboard: engineeringDashboard,
@@ -442,7 +444,7 @@ export default {
       teaching_center_tracking: mhpcDashboard,
       new_education_program_application : mhpcDashboard,
       institute_dashboard: mhpcDashboard,
-      
+
 
       // ... other Health Certification routes for director
     },

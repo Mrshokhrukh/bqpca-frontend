@@ -18,6 +18,7 @@
         <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
       </div>
 
+      <!-- This message will now display correctly when no profile is found -->
       <div v-else-if="!profileId && isEditing && !loading" class="mb-4 p-4 bg-blue-50 text-blue-700 rounded-md">
         No institute profile found. Please fill in the details below to create one.
       </div>
@@ -517,30 +518,29 @@ select.input-field:disabled {
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useToast } from 'vue-toastification';
-import apiService from '@/services/services'; // Ensure this path is correct
+import apiService from '@/services/services'; 
 
 const toast = useToast();
 
 const loading = ref(true);
 const submitting = ref(false);
 const profileId = ref(null);
-const isEditing = ref(false); // Controls edit/view mode
+
+const isEditing = ref(false);
 
 const instituteTypes = ref([]);
 const fundingSources = ref([]);
 
-const existingLandRegistration = ref(null); // Stores URL/filename of existing server file
-const existingTaxDetails = ref(null);       // Stores URL/filename of existing server file
+const existingLandRegistration = ref(null);
+const existingTaxDetails = ref(null);
 
 const getFileName = (filePathOrUrl) => {
-  if (!filePathOrUrl || typeof filePathOrUrl !== 'string') return 'file'; // Default or error
-  // Attempt to decode URI component in case of encoded characters
+  if (!filePathOrUrl || typeof filePathOrUrl !== 'string') return 'file';
   try {
     const decodedPath = decodeURIComponent(filePathOrUrl);
     return decodedPath.split('/').pop().split('?')[0] || 'file';
   } catch (e) {
     console.error('Failed to decode file path:', e);
-    // If decoding fails, use the original path
     return filePathOrUrl.split('/').pop().split('?')[0] || 'file';
   }
 };
@@ -565,6 +565,7 @@ const formData = ref({
   students_other_male: 0, students_other_female: 0,
 });
 
+// Storing an initial clean state is good practice for reset/create logic
 const initialFormData = JSON.parse(JSON.stringify(formData.value));
 
 // Computed properties for totals (unchanged)
@@ -621,9 +622,7 @@ const handleFileUpload = (field, event) => {
 const resetForm = async () => {
   if (confirm('Are you sure you want to reset changes? This will revert to the last saved state or clear the form if creating a new profile.')) {
     loading.value = true;
-    // Dropdowns are likely already loaded, but re-fetching won't harm if they could change
-    // await Promise.all([loadInstituteTypes(), loadFundingSources()]); // Optional: re-fetch dropdowns
-    await loadProfile(); // This will set formData, profileId, isEditing, and loading=false
+    await loadProfile(); // This will reset to the last saved state or a blank state if new.
   }
 };
 
@@ -631,13 +630,18 @@ const handleEditClick = () => {
   isEditing.value = true;
 };
 
+// ========================================================================
+// === MODIFIED FUNCTION: loadProfile (This is the core of the fix) =====
+// ========================================================================
 const loadProfile = async () => {
   try {
     loading.value = true;
     const response = await apiService.getMyInstituteProfile();
 
-    if (response && response.data && Object.keys(response.data).length > 0) {
+    // SUCCESS CASE: Profile exists and was returned successfully
+    if (response && response.data && Object.keys(response.data).length > 0 && response.data.id) {
       profileId.value = response.data.id;
+      // Populate form data from response
       Object.keys(formData.value).forEach(key => {
         if (Object.prototype.hasOwnProperty.call(response.data, key)) {
           if (key.endsWith('_file')) {
@@ -655,39 +659,41 @@ const loadProfile = async () => {
             formData.value[key] = null;
         }
       });
-      // Store existing file URLs/names from response (adjust field names as per your API)
       existingLandRegistration.value = response.data.land_registration || null;
       existingTaxDetails.value = response.data.tax_details || null;
-      isEditing.value = false; // Profile exists, start in view mode
+      // Profile exists, so start in VIEW mode.
+      isEditing.value = false;
     } else {
-      // No profile exists, reset to initial blank state for creation
+      // UNEXPECTED SUCCESS: API returned 200 OK but with no data. Treat as "create new".
       Object.assign(formData.value, JSON.parse(JSON.stringify(initialFormData)));
       profileId.value = null;
       existingLandRegistration.value = null;
       existingTaxDetails.value = null;
-      isEditing.value = true; // No profile, start in edit mode
+      // No profile, so start in EDIT (create) mode.
+      isEditing.value = true;
     }
   } catch (error) {
-    if (error.response && error.response.status === 404) {
+    // This now robustly checks for the "No Profile" state, either by a 404 status
+    // or by the specific payload the API sends.
+    const isCreateProfileError = error.response && (
+        error.response.status === 404 ||
+        error.response.data?.action_required === 'create_or_update_profile'
+    );
+
+    if (isCreateProfileError) {
+        // STATE: NO PROFILE FOUND. Set up the form for creation.
         Object.assign(formData.value, JSON.parse(JSON.stringify(initialFormData)));
         profileId.value = null;
         existingLandRegistration.value = null;
         existingTaxDetails.value = null;
-        isEditing.value = true; // No profile (404), start in edit mode
+        // This is the most important part: enable editing so the user can create a profile.
+        isEditing.value = true;
     } else {
-        toast.error('Failed to load institute profile.');
+        // STATE: A REAL, UNEXPECTED ERROR OCCURRED (e.g., Server 500, network error).
+        toast.error('An unexpected error occurred while loading the institute profile.');
         console.error('Error loading profile:', error);
-        // If profileId was already set (editing an existing one that failed to reload)
-        // stay in view mode. If it's an initial load error for a new profile, allow creation.
-        if (!profileId.value) {
-             Object.assign(formData.value, JSON.parse(JSON.stringify(initialFormData)));
-             existingLandRegistration.value = null;
-             existingTaxDetails.value = null;
-             isEditing.value = true;
-             toast.info('You can attempt to create a new profile.', {timeout: 6000});
-        } else {
-            isEditing.value = false; // Error loading existing profile, revert to view
-        }
+        // In case of a true error, it's safer to lock the form.
+        isEditing.value = false;
     }
   } finally {
     loading.value = false;
@@ -715,14 +721,14 @@ const submitForm = async () => {
     } else {
       await apiService.createInstituteProfile(dataToSubmit);
       toast.success('Institute profile created successfully!');
-      // No need to set profileId.value here, loadProfile will do it.
     }
-    await loadProfile(); // Reload data and set isEditing = false
+    // After a successful save (create or update), reload the profile.
+    // This will fetch the latest data and set isEditing to false.
+    await loadProfile();
 
   } catch (error) {
     let errorMessage = 'Failed to save institute profile.';
     if (error.response && error.response.data) {
-        // ... (error message parsing remains the same)
          if (typeof error.response.data === 'object' && error.response.data !== null) {
             const messages = [];
             for (const field in error.response.data) {
@@ -743,7 +749,6 @@ const submitForm = async () => {
     }
     toast.error(errorMessage, { timeout: 7000 });
     console.error('Error saving profile:', error.response?.data || error);
-    // isEditing remains true so user can correct errors
   } finally {
     submitting.value = false;
   }
@@ -755,6 +760,7 @@ onMounted(async () => {
     loadInstituteTypes(),
     loadFundingSources()
   ]);
-  await loadProfile(); // This function will set loading.value = false and isEditing appropriately.
+  // This will now correctly set the isEditing state based on whether a profile exists.
+  await loadProfile();
 });
 </script>
