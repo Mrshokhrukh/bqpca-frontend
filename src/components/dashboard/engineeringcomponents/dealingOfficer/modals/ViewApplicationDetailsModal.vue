@@ -1,6 +1,6 @@
 <!-- Main Application Details Modal -->
 <template>
-  <TransitionRoot appear :show="isOpen" as="template">
+  <TransitionRoot appear :show="isOpen && !isCertificateModalOpen" as="template">
     <Dialog as="div" @close="closeModalHandler" class="relative z-50">
       <TransitionChild as="template" enter="duration-300 ease-out" enter-from="opacity-0" enter-to="opacity-100"
         leave="duration-200 ease-in" leave-from="opacity-100" leave-to="opacity-0">
@@ -13,7 +13,7 @@
             enter-to="opacity-100 scale-100" leave="duration-200 ease-in" leave-from="opacity-100 scale-100"
             leave-to="opacity-0 scale-95">
             <DialogPanel
-              class="w-full w-full transform overflow-hidden rounded-2xl bg-gray-50 shadow-2xl transition-all max-h-screen sm:max-h-[calc(100vh-80px)] overflow-y-auto">
+              class="w-full transform overflow-hidden rounded-2xl bg-gray-50 shadow-2xl transition-all max-h-screen sm:max-h-[calc(100vh-80px)] overflow-y-auto">
               <ApplicationStatus v-if="application" :overallStatus="overallStatus" @close="closeModal" />
 
               <div v-if="application" class="px-8 py-6 bg-white">
@@ -61,12 +61,15 @@
       </div>
     </Dialog>
   </TransitionRoot>
-  <EPCCertificateModal v-if="isCertificateModalOpen" :application="application" @close="closeCertificateModal" />
+
+  <!-- Certificate Modal - Completely separate from main dialog -->
+  <EPCCertificateModal v-if="isCertificateModalOpen" :qualification="formattedApplicationData"
+    :show-modal="isCertificateModalOpen" @close="closeCertificateModal" />
 </template>
 
 <script setup>
 import { Dialog, DialogPanel, TransitionRoot, TransitionChild } from '@headlessui/vue'
-import { ref, computed, nextTick, } from 'vue'
+import { ref, computed, nextTick } from 'vue'
 import apiServices from '@/services/services'
 import EPCCertificateModal from '@/components/common/EPC/EPCCertificateModal.vue'
 import PersonalInformation from './applicationDetailsComponents/PersonalInformation.vue'
@@ -101,15 +104,29 @@ const props = defineProps({
   },
 })
 
+const formattedApplicationData = computed(() => {
+  if (!props.application) return null
+
+  // Format the data to match what the certificate expects
+  return {
+    results: [props.application]  // Wrap the application in a results array
+  }
+})
+
 const emit = defineEmits(['close', 'update'])
 const isLoading = ref(false)
-const isCertificateModalOpen = ref(false) // Use a single ref for modal visibility
+const isCertificateModalOpen = ref(false)
 
 const closeModal = () => {
+  // Close certificate modal first if it's open
+  if (isCertificateModalOpen.value) {
+    isCertificateModalOpen.value = false
+  }
   emit('close')
 }
+
 const closeModalHandler = () => {
-  emit('close')
+  closeModal()
 }
 
 const overallStatus = computed(() => {
@@ -129,16 +146,14 @@ const overallStatus = computed(() => {
 })
 
 const refreshApplication = async () => {
-  // Centralized refresh logic.  Called by child components after successful updates.
-  if (!props.application?.id) return // Ensure application ID exists
+  if (!props.application?.id) return
   isLoading.value = true
   try {
     const response = await apiServices.getEpcNewApplications(props.application.id)
     emit('update', response.data)
-    await nextTick() // Ensure DOM updates
+    await nextTick()
   } catch (error) {
     console.error('Error refreshing application:', error)
-    // Handle error appropriately (e.g., show a global error message)
   } finally {
     isLoading.value = false
   }
@@ -151,8 +166,6 @@ const openCertificateModal = () => {
 const closeCertificateModal = () => {
   isCertificateModalOpen.value = false
 }
-
-
 </script>
 
 <style scoped>
