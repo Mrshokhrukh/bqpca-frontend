@@ -167,7 +167,7 @@ const getInitialFormData = () => ({
   // Basic applicant info
   applicant: {
     cid: '',           // maps to: cid_no
-    name: '',          // maps to: applicants_name  
+    name: '',          // maps to: applicants_name
     gender: '',        // maps to: gender
     dob: ''           // maps to: date_of_birth
   },
@@ -178,7 +178,7 @@ const getInitialFormData = () => ({
     email: ''          // maps to: email
   },
 
-  // Present address  
+  // Present address
   presentAddress: {
     officeNumber: '',  // maps to: office_number
     flatNo: '',        // maps to: flat_no
@@ -241,7 +241,7 @@ const getInitialFormData = () => ({
 
   // Nested data structures (these are the important ones!)
   linkages: [],        // maps to: ecpf_linkages (nested)
-  qualifications: [],  // maps to: ecpf_qualifications (nested)  
+  qualifications: [],  // maps to: ecpf_qualifications (nested)
   services: [],        // maps to: ecpf_services (nested)
   fees: [],           // maps to: fee_charges (nested)
   infrastructure: [], // maps to: ecpf_infrastructure (nested)
@@ -351,97 +351,116 @@ const handleChildFileUpload = ({ file, field }) => {
 }
 
 /** Prepares the FormData object for API submission */
-const prepareFormData = (status) => { // status is 'draft' or 'submitted'
-  const submissionData = new FormData()
+const prepareFormData = (submissionType) => {
+  const data = new FormData();
 
-  // --- 1. FLAT FIELDS (Your existing code is perfect here) ---
-  submissionData.append('cid_no', formData.applicant.cid)
-  submissionData.append('applicants_name', formData.applicant.name)
-  submissionData.append('gender', formData.applicant.gender)
-  // Ensure DOB is in a format DRF can parse, like 'YYYY-MM-DD' or ISO 8601.
-  // If your date picker gives a different format, you might need to reformat it here.
+  // --- 1. Top-Level Simple & File Fields (No changes here) ---
+  data.append('cid_no', formData.applicant.cid);
+  data.append('applicants_name', formData.applicant.name);
+  data.append('gender', formData.applicant.gender);
   if (formData.applicant.dob) {
-    // Assuming dob is already in 'YYYY-MM-DDTHH:mm:ss' or similar ISO format
-    submissionData.append('date_of_birth', formData.applicant.dob)
+    data.append('date_of_birth', new Date(formData.applicant.dob).toISOString());
   }
-  submissionData.append('contact_no', formData.contact.contactNo)
-  submissionData.append('email', formData.contact.email)
-  submissionData.append('office_number', formData.presentAddress.officeNumber)
-  submissionData.append('flat_no', formData.presentAddress.flatNo)
-  submissionData.append('building_no', formData.presentAddress.buildingNo)
-  submissionData.append('location', formData.presentAddress.location)
-  submissionData.append('gewog_throm', formData.presentAddress.gewogThrom)
-  submissionData.append('dzongkhag_thromde', formData.presentAddress.dzongkhagThromde)
-  submissionData.append('permanent_village', formData.permanentAddress.villageChiwog)
-  submissionData.append('permanent_gewog', formData.permanentAddress.gewog)
-  submissionData.append('permanent_dungkhag', formData.permanentAddress.dungkhag)
-  submissionData.append('permanent_dzongkhag', formData.permanentAddress.dzongkhagThromde)
-  submissionData.append('qualification', formData.education.qualification)
-  submissionData.append('institute_name', formData.education.instituteName)
-  submissionData.append('university_name', formData.education.universityName)
-  submissionData.append('proposed_firm_name', formData.proposal.name)
-  submissionData.append('firm_address', formData.proposal.address)
-  submissionData.append('firm_location', formData.proposal.location)
-  submissionData.append('type_of_firm', formData.proposal.firmType) // This correctly sends the ID
-  submissionData.append('vision', formData.purpose.vision)
-  submissionData.append('mission', formData.purpose.mission)
-  submissionData.append('objective', formData.purpose.objective)
-  submissionData.append('finance_plan', formData.financial.sourceOfFunding)
-  submissionData.append('strengths', formData.swot.strengths)
-  submissionData.append('weaknesses', formData.swot.weaknesses)
-  submissionData.append('opportunities', formData.swot.opportunities)
-  submissionData.append('threats', formData.swot.threats)
-  submissionData.append('guarantor_name', formData.guarantor.fullName)
-  submissionData.append('guarantor_cid', formData.guarantor.cidNumber)
-  submissionData.append('guarantor_relation', formData.guarantor.relation)
-  submissionData.append('guarantor_contact', formData.guarantor.contactNumber)
+  data.append('contact_no', formData.contact.contactNo);
+  data.append('email', formData.contact.email);
+  data.append('office_number', formData.presentAddress.officeNumber);
+  data.append('flat_no', formData.presentAddress.flatNo);
+  data.append('building_no', formData.presentAddress.buildingNo);
+  data.append('location', formData.presentAddress.location);
+  data.append('gewog_throm', formData.presentAddress.gewogThrom);
+  data.append('dzongkhag_thromde', formData.presentAddress.dzongkhagThromde);
+  data.append('permanent_village', formData.permanentAddress.villageChiwog);
+  data.append('permanent_gewog', formData.permanentAddress.gewog);
+  data.append('permanent_dungkhag', formData.permanentAddress.dungkhag);
+  data.append('permanent_dzongkhag', formData.permanentAddress.dzongkhagThromde);
+  data.append('qualification', formData.education.qualification);
+  data.append('institute_name', formData.education.instituteName);
+  data.append('university_name', formData.education.universityName);
+  data.append('proposed_firm_name', formData.proposal.name);
+  data.append('firm_address', formData.proposal.address);
+  data.append('firm_location', formData.proposal.location);
+  if (formData.proposal.firmType) {
+    data.append('type_of_firm', formData.proposal.firmType);
+  }
+  data.append('vision', formData.purpose.vision);
+  data.append('mission', formData.purpose.mission);
+  data.append('objective', formData.purpose.objective);
+  data.append('finance_plan', formData.financial.sourceOfFunding);
+  data.append('strengths', formData.swot.strengths);
+  data.append('weaknesses', formData.swot.weaknesses);
+  data.append('opportunities', formData.swot.opportunities);
+  data.append('threats', formData.swot.threats);
+  data.append('guarantor_name', formData.guarantor.fullName);
+  data.append('guarantor_cid', formData.guarantor.cidNumber);
+  data.append('guarantor_relation', formData.guarantor.relation);
+  data.append('guarantor_contact', formData.guarantor.contactNumber);
 
-  // --- 2. NESTED JSON DATA & FILES (CORRECTED) ---
-
-  // Handle Linkages: Stringify metadata and append files separately
-  const linkagesForJson = formData.linkages.map(link => {
-    // Create a copy of the linkage object without the file objects
-    const { recognitionDocFile, approvalDocFile, ...rest } = link;
-    return rest;
-  });
-  submissionData.append('linkages', JSON.stringify(linkagesForJson));
-
-  // Now, append the linkage files with indexed keys
-  formData.linkages.forEach((link, index) => {
-    if (link.recognitionDocFile) {
-      submissionData.append(`linkages[${index}][recognition_doc]`, link.recognitionDocFile);
-    }
-    if (link.approvalDocFile) {
-      submissionData.append(`linkages[${index}][approval_doc]`, link.approvalDocFile);
-    }
-  });
-
-  // Other nested data as JSON strings
-  submissionData.append('qualifications', JSON.stringify(formData.qualifications))
-  submissionData.append('services', JSON.stringify(formData.services))
-
-  // *** CORRECTION 3: Use 'fees' key for the special JSON handling in the serializer ***
-  submissionData.append('fees', JSON.stringify(formData.fees))
-
-  submissionData.append('infrastructure', JSON.stringify(formData.infrastructure))
-
-
-  // --- 3. TOP-LEVEL FILES (Your existing code is perfect here) ---
   if (formData.guarantorCidCopyFile) {
-    submissionData.append('guarantor_cid_copy', formData.guarantorCidCopyFile)
+    data.append('guarantor_cid_copy', formData.guarantorCidCopyFile);
   }
   if (formData.cvFile) {
-    submissionData.append('cv', formData.cvFile)
+    data.append('cv', formData.cvFile);
   }
 
-  // --- 4. STATUS & DECLARATION (CORRECTED) ---
-  // The serializer expects a 'status' field ('draft' or 'submitted')
-  submissionData.append('status', status)
-  // The serializer expects a 'declaration_agreed' field
-  submissionData.append('declaration_agreed', formData.declarationAgreed) // Will be sent as string "true" or "false"
+  // --- 2. Nested Data Structures (CORRECTED & ROBUST) ---
 
-  return submissionData
-}
+  // a) LINKAGES
+  // **FIX 1: Filter out empty/incomplete linkages to prevent validation errors.**
+  const validLinkages = formData.linkages.filter(link =>
+    link.institution_name && link.institution_name.trim() !== '' &&
+    link.location && link.location.trim() !== '' &&
+    link.country && link.country.trim() !== '' &&
+    link.recognitionDocFile instanceof File && // Must be a File object
+    link.approvalDocFile instanceof File      // Must be a File object
+  );
+
+  // Create metadata ONLY from the valid linkages.
+  const linkagesMetadata = validLinkages.map(link => ({
+    institution_name: link.institution_name,
+    location: link.location,
+    country: link.country,
+  }));
+  data.append('linkages', JSON.stringify(linkagesMetadata));
+
+  // Now, append files ensuring their index matches the metadata index.
+  validLinkages.forEach((link, i) => {
+    data.append(`linkages[${i}][recognition_doc]`, link.recognitionDocFile);
+    data.append(`linkages[${i}][approval_doc]`, link.approvalDocFile);
+  });
+
+
+  // b) OTHER NESTED DATA (Apply same filtering logic for robustness)
+  const validQualifications = formData.qualifications.filter(q => q.cid);
+  const validServices = formData.services.filter(s => s.service_category);
+  const validInfrastructure = formData.infrastructure.filter(i => i.particular);
+
+  data.append('qualifications', JSON.stringify(validQualifications));
+  data.append('services', JSON.stringify(validServices));
+  data.append('infrastructure', JSON.stringify(validInfrastructure));
+  // Note: If qualifications also have files, apply the same pattern as linkages.
+
+
+  // c) FEES
+  // **FIX 2: Use the 'fees' key as expected by the backend's custom JSON handling.**
+  const validFees = formData.fees.filter(f => f.breakup && f.amount);
+  // The backend's create_fees_from_json expects `breakup`, `description`, `amount`.
+  const feesPayload = validFees.map(fee => ({
+    breakup: fee.breakup,
+    description: fee.description,
+    amount: fee.amount
+  }));
+  data.append('fees', JSON.stringify(feesPayload));
+
+
+  // --- 3. Status & Declaration Fields (Backend handles these) ---
+  data.append('status', submissionType); // 'draft' or 'submitted'
+  data.append('declaration_agreed', String(formData.declarationAgreed));
+
+  // Omit ForeignKey fields like 'verification_decision' if they are 0/null.
+  // Your backend will handle the defaults.
+
+  return data;
+};
 
 /** Handles the final form submission */
 const handleSubmit = async () => {
@@ -475,29 +494,42 @@ const handleSubmit = async () => {
     resetForm() // <-- 5. Reset form after navigation starts
     // --- END SUCCESS ACTION ---
   } catch (error) {
-    console.error('Error submitting form:', error)
-    const errorData = error.response?.data
-    let detailMessage = 'An unexpected error occurred during submission.'
+    console.error('Error submitting form:', error.response);
 
-    // Extract specific error details if available (same logic as before)
+    // **FIX 3: Build a user-friendly error message for the toast.**
+    let detailMessage = 'Submission failed. Please check the form for errors.'; // Default message
+    const errorData = error.response?.data;
+
     if (typeof errorData === 'object' && errorData !== null) {
-      const fieldErrors = Object.entries(errorData)
-        .map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(', ') : value}`)
-        .join('; ')
-      if (fieldErrors) detailMessage = `Submission failed: ${fieldErrors}`
-      else if (errorData.detail) detailMessage = errorData.detail
-    } else if (typeof errorData === 'string' && errorData.length > 0 && errorData.length < 200) {
-      detailMessage = errorData
-    } else if (error.message) {
-      detailMessage = error.message
+      // Find the first error to display.
+      const firstErrorKey = Object.keys(errorData)[0];
+      const firstErrorValue = errorData[firstErrorKey];
+
+      let errorText = '';
+      if (Array.isArray(firstErrorValue)) {
+        // Handle nested errors like for 'linkages'
+        if (typeof firstErrorValue[0] === 'object') {
+          const nestedErrorKey = Object.keys(firstErrorValue[0])[0];
+          errorText = `${firstErrorKey}: ${firstErrorValue[0][nestedErrorKey][0]}`;
+        } else {
+          errorText = `${firstErrorKey}: ${firstErrorValue[0]}`;
+        }
+      } else if (typeof firstErrorValue === 'string') {
+        errorText = firstErrorValue;
+      }
+
+      if (errorText) {
+        detailMessage = errorText;
+      }
+    } else if (typeof errorData === 'string') {
+      detailMessage = errorData;
     }
 
-    // --- ERROR ACTION ---
-    toast.error(`Error: ${detailMessage}`) // <-- 3. Use toast instance
-    window.scrollTo(0, 0)
-    // --- END ERROR ACTION ---
+    toast.error(`Error: ${detailMessage}`); // This will now show a clean string.
+    window.scrollTo(0, 0);
+
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
 }
 
@@ -531,28 +563,42 @@ const handleSaveDraft = async () => {
     window.scrollTo(0, 0)
     // --- END DRAFT SUCCESS ACTION ---
   } catch (error) {
-    console.error('Error saving draft:', error)
-    const errorData = error.response?.data
-    let detailMessage = 'An unexpected error occurred while saving the draft.'
-    // Extract specific error details (same logic as before)
+    console.error('Error submitting form:', error.response);
+
+    // **FIX 3: Build a user-friendly error message for the toast.**
+    let detailMessage = 'Submission failed. Please check the form for errors.'; // Default message
+    const errorData = error.response?.data;
+
     if (typeof errorData === 'object' && errorData !== null) {
-      const fieldErrors = Object.entries(errorData)
-        .map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(', ') : value}`)
-        .join('; ')
-      if (fieldErrors) detailMessage = `Draft save failed: ${fieldErrors}`
-      else if (errorData.detail) detailMessage = errorData.detail
-    } else if (typeof errorData === 'string' && errorData.length > 0 && errorData.length < 200) {
-      detailMessage = errorData
-    } else if (error.message) {
-      detailMessage = error.message
+      // Find the first error to display.
+      const firstErrorKey = Object.keys(errorData)[0];
+      const firstErrorValue = errorData[firstErrorKey];
+
+      let errorText = '';
+      if (Array.isArray(firstErrorValue)) {
+        // Handle nested errors like for 'linkages'
+        if (typeof firstErrorValue[0] === 'object') {
+          const nestedErrorKey = Object.keys(firstErrorValue[0])[0];
+          errorText = `${firstErrorKey}: ${firstErrorValue[0][nestedErrorKey][0]}`;
+        } else {
+          errorText = `${firstErrorKey}: ${firstErrorValue[0]}`;
+        }
+      } else if (typeof firstErrorValue === 'string') {
+        errorText = firstErrorValue;
+      }
+
+      if (errorText) {
+        detailMessage = errorText;
+      }
+    } else if (typeof errorData === 'string') {
+      detailMessage = errorData;
     }
 
-    // --- DRAFT ERROR ACTION ---
-    toast.error(`Error: ${detailMessage}`) // <-- Use toast instance
-    window.scrollTo(0, 0)
-    // --- END DRAFT ERROR ACTION ---
+    toast.error(`Error: ${detailMessage}`); // This will now show a clean string.
+    window.scrollTo(0, 0);
+
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
 }
 </script>
