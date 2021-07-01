@@ -48,7 +48,7 @@
           <tbody class="bg-white divide-y divide-gray-200">
             <tr v-for="record in userCoiRecords" :key="record.id" class="hover:bg-gray-50">
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ record.assessor_details.name
-                }}</td>
+              }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{
                 record.application_details.application_uid }}</td>
               <td class="px-6 py-4 whitespace-nowrap">
@@ -125,40 +125,39 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import apiService from '@/services/services'; // Your API service
+import apiService from '@/services/services';
 
-// --- STATE MANAGEMENT ---
+
 const allCoiRecords = ref([]);
 const loading = ref(true);
 const error = ref(null);
 const currentUser = ref(null);
 
-// Modal State
+
 const isConflictModalOpen = ref(false);
 const selectedRecord = ref(null);
 const conflictRemarks = ref('');
 const isSubmitting = ref(false);
 const submissionError = ref(null);
 
-// --- COMPUTED PROPERTIES ---
-// Filters the full list to only show records for the logged-in user
+
 const userCoiRecords = computed(() => {
   if (!currentUser.value || !allCoiRecords.value) {
     return [];
   }
-  // This filter is the core of the user-specific view
+
   return allCoiRecords.value.filter(record =>
     record.application_details.institute_profile_details.user_liaison_username === currentUser.value.username
   );
 });
 
-// --- LIFECYCLE HOOK ---
+
 onMounted(() => {
-  // 1. Get user info from localStorage
+
   const userString = localStorage.getItem('user');
   if (userString) {
     currentUser.value = JSON.parse(userString);
-    // 2. Fetch data from the API
+
     fetchCoiRecords();
   } else {
     error.value = 'Could not find user information. Please log in again.';
@@ -166,7 +165,7 @@ onMounted(() => {
   }
 });
 
-// --- DATA FETCHING ---
+
 const fetchCoiRecords = async () => {
   loading.value = true;
   error.value = null;
@@ -181,9 +180,9 @@ const fetchCoiRecords = async () => {
   }
 };
 
-// --- UI HELPER FUNCTIONS ---
+
 const getCoiStatusClass = (hasConflict) => {
-  if (hasConflict === null) return 'bg-yellow-100 text-yellow-800'; // Pending
+  if (hasConflict === null) return 'bg-yellow-100 text-yellow-800';
   return hasConflict ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800';
 };
 
@@ -197,9 +196,9 @@ const formatDate = (dateString) => {
   return new Date(dateString).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 };
 
-// --- ACTION HANDLERS ---
+
 const handleNoConflict = async (record) => {
-  // Optimistically update UI
+
   record.institute_has_coi_with_assessor = false;
   record.institute_coi_declared_at = new Date().toISOString();
 
@@ -211,10 +210,10 @@ const handleNoConflict = async (record) => {
     await apiService.updateApplicationAssessorCOI(record.id, payload);
   } catch (err) {
     console.error('Failed to update "No Conflict":', err);
-    // Rollback UI on failure
+
     record.institute_has_coi_with_assessor = null;
     record.institute_coi_declared_at = null;
-    // You could show a toast error here
+
   }
 };
 
@@ -245,8 +244,6 @@ const handleConflictSubmit = async () => {
       institute_coi_declared_at: new Date().toISOString()
     };
     await apiService.patchApplicationAssessorCOI(selectedRecord.value.id, payload);
-
-    // Refresh local data to show the change
     const recordInList = allCoiRecords.value.find(r => r.id === selectedRecord.value.id);
     if (recordInList) {
       recordInList.institute_has_coi_with_assessor = true;

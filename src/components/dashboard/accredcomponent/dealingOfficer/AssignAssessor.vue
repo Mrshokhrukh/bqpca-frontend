@@ -187,7 +187,7 @@
                 </option>
               </select>
             </div>
-            <!-- NOTE: The COI status and remarks are set by the institute/assessor later, not during assignment. Removed them from this form. -->
+
             <div v-if="assignError" class="bg-red-50 border border-red-200 text-sm text-red-700 rounded-lg p-3">{{
               assignError }}</div>
           </div>
@@ -210,20 +210,19 @@
 import { ref, onMounted, computed } from 'vue';
 import apiService from '@/services/services';
 
-// Reactive data for the main table
+
 const coiData = ref([]);
 const loading = ref(true);
 const error = ref(null);
 
-// Reactive data for dropdowns (loaded once for efficiency)
 const applications = ref([]);
 const assessors = ref([]);
 
-// View Details Modal state
+
 const isModalOpen = ref(false);
 const selectedItem = ref(null);
 
-// Assign Assessor Modal state
+
 const isAssignModalOpen = ref(false);
 const assignLoading = ref(false);
 const assignError = ref(null);
@@ -232,7 +231,7 @@ const newCoiForm = ref({
   assessor: null,
 });
 
-// Pagination state
+
 const currentPage = ref(1);
 const itemsPerPage = 10;
 const paginatedData = computed(() => {
@@ -240,18 +239,17 @@ const paginatedData = computed(() => {
   return coiData.value.slice(start, start + itemsPerPage);
 });
 
-// --- LIFECYCLE HOOK ---
+
 onMounted(() => {
-  // Fetch all necessary data in parallel for faster loading
+
   fetchAllData();
 });
 
-// --- DATA FETCHING METHODS ---
+
 const fetchAllData = async () => {
   loading.value = true;
   error.value = null;
   try {
-    // Run all initial API calls concurrently
     const [coiResponse, appResponse, assessorResponse] = await Promise.all([
       apiService.getApplicationAssessorCOIs(),
       apiService.getAccreditationApplications(),
@@ -275,14 +273,12 @@ const refreshCoiTable = async () => {
     const response = await apiService.getApplicationAssessorCOIs();
     coiData.value = response.data.results || [];
   } catch (err) {
-    // Handle error without blocking the whole page
+
     console.error('Failed to refresh COI table:', err);
-    // Maybe show a toast notification here
+
   }
 };
 
-
-// --- HELPER METHODS ---
 const getCoiStatusClass = (hasConflict) => {
   if (hasConflict === null || hasConflict === undefined) return 'bg-yellow-100 text-yellow-800'; // Pending
   return hasConflict ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800';
@@ -300,7 +296,6 @@ const formatDate = (dateString) => {
   });
 };
 
-// --- VIEW DETAILS MODAL ---
 const viewDetails = (item) => {
   selectedItem.value = item;
   isModalOpen.value = true;
@@ -311,7 +306,7 @@ const closeModal = () => {
   selectedItem.value = null;
 };
 
-// --- ASSIGN ASSESSOR MODAL ---
+
 const resetAssignForm = () => {
   newCoiForm.value = { application: null, assessor: null };
   assignError.value = null;
@@ -336,11 +331,11 @@ const handleAssignSubmit = async () => {
   assignError.value = null;
 
   try {
-    // The payload only needs the IDs. The backend handles the rest.
+
     await apiService.createApplicationAssessorCOI(newCoiForm.value);
     closeAssignModal();
-    await refreshCoiTable(); // Refresh just the table data
-    // Optionally: show a success notification/toast
+    await refreshCoiTable();
+
   } catch (err) {
     let userFriendlyError = 'An unexpected error occurred. Please try again.';
     if (err.response?.data) {

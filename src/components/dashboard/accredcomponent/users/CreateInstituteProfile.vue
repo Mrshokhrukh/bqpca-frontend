@@ -86,7 +86,7 @@
                 :disabled="!isEditing">
                 <option value="">Select funding source</option>
                 <option v-for="sourceObj in fundingSources" :key="sourceObj.id" :value="sourceObj.id">{{ sourceObj.name
-                  }}</option>
+                }}</option>
               </select>
             </div>
 
@@ -636,18 +636,17 @@ const loadProfile = async () => {
     );
 
     if (isCreateProfileError) {
-      // STATE: NO PROFILE FOUND. Set up the form for creation.
+
       Object.assign(formData.value, JSON.parse(JSON.stringify(initialFormData)));
       profileId.value = null;
       existingLandRegistration.value = null;
       existingTaxDetails.value = null;
-      // This is the most important part: enable editing so the user can create a profile.
+
       isEditing.value = true;
     } else {
-      // STATE: A REAL, UNEXPECTED ERROR OCCURRED (e.g., Server 500, network error).
+
       toast.error('An unexpected error occurred while loading the institute profile.');
       console.error('Error loading profile:', error);
-      // In case of a true error, it's safer to lock the form.
       isEditing.value = false;
     }
   } finally {
