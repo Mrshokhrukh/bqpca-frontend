@@ -1,269 +1,265 @@
 <template>
-  <div class="min-h-screen bg-gray-50 py-8">
-    <div class="mx-auto p-6">
-      <div class="bg-white rounded-xl shadow-md overflow-hidden">
-        <!-- Header -->
-        <div
-          class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-t-xl p-8 mb-6"
-        >
-          <h2 class="text-3xl font-bold text-gray-900 text-center">
-            Conflict of Interest Confirmation
-          </h2>
-          <p class="text-gray-600 text-center max-w-2xl mx-auto">
-            Review the assigned assessors and confirm the absence of any conflicts of interest for
-            each assessor. You can declare a conflict, provide remarks, and upload supporting
-            documents if necessary.
-          </p>
-        </div>
+  <div class="container mx-auto px-4 py-8">
+    <!-- Header -->
+    <div class="mb-8 text-center">
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">Conflict of Interest Declaration</h1>
+      <p class="text-gray-600 max-w-3xl mx-auto">
+        Review the assessors assigned to your application. For each assessor, please declare whether a conflict of
+        interest exists.
+      </p>
+    </div>
 
-        <!-- Assessors List as Table -->
-        <div class="p-8">
-          <div v-if="loading" class="text-center text-gray-600 py-4">Loading assessors...</div>
-          <div v-else-if="assessors.length > 0">
-            <div class="overflow-x-auto">
-              <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                  <tr>
-                    <th
-                      scope="col"
-                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                      Name
-                    </th>
-                    <th
-                      scope="col"
-                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                      Affiliation
-                    </th>
-                    <th
-                      scope="col"
-                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                      Specialization
-                    </th>
-                    <th
-                      scope="col"
-                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                      Action
-                    </th>
-                  </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                  <tr v-for="assessor in assessors" :key="assessor.id">
-                    <td class="px-6 py-4 whitespace-nowrap">
-                      <div class="text-sm font-medium text-gray-900">{{ assessor.name }}</div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                      <div class="text-sm text-gray-500">{{ assessor.affiliation }}</div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                      <div class="text-sm text-gray-500">{{ assessor.specialization }}</div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-right font-medium">
-                      <div v-if="assessor.coiStatus === 'Pending' || assessor.coiStatus === null">
-                        <button
-                          @click="confirmNoConflict(assessor)"
-                          class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md transition-colors mr-2 text-xs"
-                        >
-                          No Conflict
-                        </button>
-                        <button
-                          @click="declareConflict(assessor)"
-                          class="px-4 py-2 border border-red-500 text-red-500 hover:bg-red-50 rounded-md transition-colors text-xs"
-                        >
-                          Conflict
-                        </button>
-                      </div>
-                      <div
-                        v-else
-                        class="text-sm text-gray-700"
-                        :class="{
-                          'text-green-600': assessor.coiStatus === 'No Conflict',
-                          'text-red-600': assessor.coiStatus === 'Conflict',
-                        }"
-                      >
-                        {{ assessor.coiStatus }} Confirmed
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+    <!-- Loading State -->
+    <div v-if="loading" class="flex justify-center items-center py-12">
+      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      <span class="ml-3 text-gray-600">Loading your assigned assessors...</span>
+    </div>
+
+    <!-- Error State -->
+    <div v-else-if="error" class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+      <div class="flex items-center">
+        <div class="flex-shrink-0"><svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+              clip-rule="evenodd" />
+          </svg></div>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-red-800">{{ error }}</h3>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Table for Applicant -->
+    <div v-else class="bg-white shadow-lg rounded-lg overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Assessor Name</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Application ID</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Declaration Status</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Actions</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <tr v-for="record in userCoiRecords" :key="record.id" class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ record.assessor_details.name
+                }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{
+                record.application_details.application_uid }}</td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span :class="getCoiStatusClass(record.institute_has_coi_with_assessor)"
+                  class="inline-flex px-2 py-1 text-xs font-semibold rounded-full">
+                  {{ getCoiStatusText(record.institute_has_coi_with_assessor) }}
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <!-- Actions are only available if declaration is pending -->
+                <div v-if="record.institute_has_coi_with_assessor === null">
+                  <button @click="handleNoConflict(record)"
+                    class="px-3 py-1.5 bg-green-100 text-green-800 rounded-md hover:bg-green-200 text-xs font-semibold mr-2">No
+                    Conflict</button>
+                  <button @click="openConflictModal(record)"
+                    class="px-3 py-1.5 bg-red-100 text-red-800 rounded-md hover:bg-red-200 text-xs font-semibold">Declare
+                    Conflict</button>
+                </div>
+                <div v-else class="text-sm text-gray-400">
+                  Declared on {{ formatDate(record.institute_coi_declared_at) }}
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- Empty State for the specific user -->
+      <div v-if="!loading && userCoiRecords.length === 0" class="text-center py-12">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        <h3 class="mt-2 text-sm font-medium text-gray-900">No Assessors Found</h3>
+        <p class="mt-1 text-sm text-gray-500">There are no assessors assigned to your applications requiring a COI
+          declaration.</p>
+      </div>
+    </div>
+
+    <!-- Declare Conflict Modal -->
+    <div v-if="isConflictModalOpen" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+      <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 lg:w-1/3 shadow-lg rounded-md bg-white">
+        <form @submit.prevent="handleConflictSubmit">
+          <div class="flex items-center justify-between pb-4 border-b">
+            <h3 class="text-lg font-medium text-gray-900">Declare Conflict of Interest</h3>
+            <button @click="closeConflictModal" type="button" class="text-gray-400 hover:text-gray-600">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+          <div v-if="selectedRecord" class="mt-4 space-y-4">
+            <p class="text-sm text-gray-600">You are declaring a conflict with assessor: <strong
+                class="text-gray-800">{{ selectedRecord.assessor_details.name }}</strong></p>
+            <div>
+              <label for="remarks" class="block text-sm font-medium text-gray-700">Remarks (Required)</label>
+              <textarea id="remarks" v-model="conflictRemarks" rows="4" required
+                class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"></textarea>
             </div>
+            <div v-if="submissionError" class="text-sm text-red-600">{{ submissionError }}</div>
           </div>
-          <div v-else class="text-center text-gray-600 py-4">
-            No assessors assigned for this application yet.
-          </div>
-        </div>
-
-        <!-- Conflict Details Section (moved outside table for better structure, but can be within table row if preferred) -->
-        <div v-if="selectedAssessorForConflict" class="p-8 border-t mt-4 rounded-md bg-gray-50">
-          <h3 class="text-lg font-semibold text-gray-700 mb-4">
-            Declare Conflict of Interest for: {{ selectedAssessorForConflict.name }}
-          </h3>
-
-          <div class="mb-4">
-            <label for="remarks" class="block text-sm font-medium text-gray-700"
-              >Remarks (Reason for Conflict):</label
-            >
-            <textarea
-              id="remarks"
-              v-model="selectedAssessorForConflict.conflictRemarks"
-              rows="3"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-            ></textarea>
-          </div>
-
-          <div class="mb-4">
-            <label for="supporting-doc" class="block text-sm font-medium text-gray-700"
-              >Supporting Document (Optional):</label
-            >
-            <input
-              type="file"
-              id="supporting-doc"
-              @change="handleFileUpload"
-              class="mt-1 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
-            />
-          </div>
-
-          <div class="flex justify-end">
-            <button
-              @click="cancelConflictDeclaration"
-              class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors mr-2 text-sm"
-            >
-              Cancel
-            </button>
-            <button
-              @click="submitConflictDeclaration"
-              class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors text-sm"
-            >
-              Submit Conflict Declaration
+          <div class="flex items-center justify-end pt-4 mt-4 border-t">
+            <button @click="closeConflictModal" type="button"
+              class="px-4 py-2 bg-gray-200 text-gray-800 text-sm font-medium rounded-md hover:bg-gray-300 mr-3">Cancel</button>
+            <button type="submit" :disabled="isSubmitting"
+              class="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 disabled:bg-gray-400">
+              <span v-if="isSubmitting">Submitting...</span><span v-else>Submit Declaration</span>
             </button>
           </div>
-        </div>
-
-        <!-- Confirmation Message -->
-        <div v-if="coiConfirmationSubmitted" class="p-8 border-t text-center text-gray-700">
-          <p>COI Confirmation Submitted Successfully!</p>
-          <!-- You can display a summary of COI decisions here if needed -->
-        </div>
-
-        <!-- Submit All COI Confirmation Button -->
-        <div
-          v-if="assessors.length > 0 && !coiConfirmationSubmitted && !selectedAssessorForConflict"
-          class="p-8 border-t"
-        >
-          <div class="flex justify-end">
-            <button
-              @click="submitAllCoiConfirmation"
-              :disabled="!isCoiDecisionsMadeForAll"
-              class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
-              :class="{ 'opacity-50 cursor-not-allowed': !isCoiDecisionsMadeForAll }"
-            >
-              Submit COI Confirmation
-            </button>
-          </div>
-        </div>
+        </form>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed } from 'vue';
+import apiService from '@/services/services'; // Your API service
 
-const assessors = ref([])
-const loading = ref(true)
-const selectedAssessorForConflict = ref(null) // To track which assessor's conflict details are being entered
-const coiConfirmationSubmitted = ref(false)
+// --- STATE MANAGEMENT ---
+const allCoiRecords = ref([]);
+const loading = ref(true);
+const error = ref(null);
+const currentUser = ref(null);
 
-const fetchAssessors = async () => {
-  setTimeout(() => {
-    assessors.value = [
-      {
-        id: 1,
-        name: 'Dr. Alice Smith',
-        affiliation: 'University A',
-        specialization: 'Curriculum Development',
-        coiStatus: null,
-        conflictRemarks: '',
-        supportingDocument: null,
-      },
-      {
-        id: 2,
-        name: 'Prof. Bob Johnson',
-        affiliation: 'Consulting Firm B',
-        specialization: 'Quality Assurance',
-        coiStatus: null,
-        conflictRemarks: '',
-        supportingDocument: null,
-      },
-      {
-        id: 3,
-        name: 'Dr. Charlie Davis',
-        affiliation: 'Research Institute C',
-        specialization: 'Institutional Effectiveness',
-        coiStatus: null,
-        conflictRemarks: '',
-        supportingDocument: null,
-      },
-    ]
-    loading.value = false
-  }, 500)
-}
+// Modal State
+const isConflictModalOpen = ref(false);
+const selectedRecord = ref(null);
+const conflictRemarks = ref('');
+const isSubmitting = ref(false);
+const submissionError = ref(null);
 
-const confirmNoConflict = (assessor) => {
-  assessor.coiStatus = 'No Conflict'
-  assessor.conflictRemarks = '' // Clear remarks if any
-  assessor.supportingDocument = null // Clear document if any
-  selectedAssessorForConflict.value = null // Hide conflict details section if it was open
-}
-
-const declareConflict = (assessor) => {
-  selectedAssessorForConflict.value = assessor
-  // Initialize remarks and document if needed, or leave them to be entered.
-}
-
-const cancelConflictDeclaration = () => {
-  selectedAssessorForConflict.value = null // Just close the conflict details section
-}
-
-const submitConflictDeclaration = () => {
-  if (selectedAssessorForConflict.value) {
-    selectedAssessorForConflict.value.coiStatus = 'Conflict'
-    console.log(
-      'Conflict declared for:',
-      selectedAssessorForConflict.value.name,
-      'Reason:',
-      selectedAssessorForConflict.value.conflictRemarks,
-      'Document:',
-      selectedAssessorForConflict.value.supportingDocument,
-    )
-    selectedAssessorForConflict.value = null // Close the conflict details section after submission.
+// --- COMPUTED PROPERTIES ---
+// Filters the full list to only show records for the logged-in user
+const userCoiRecords = computed(() => {
+  if (!currentUser.value || !allCoiRecords.value) {
+    return [];
   }
-}
+  // This filter is the core of the user-specific view
+  return allCoiRecords.value.filter(record =>
+    record.application_details.institute_profile_details.user_liaison_username === currentUser.value.username
+  );
+});
 
-const handleFileUpload = (event) => {
-  if (selectedAssessorForConflict.value) {
-    const file = event.target.files[0]
-    selectedAssessorForConflict.value.supportingDocument = file // Store the File object
-    // In a real application, you might want to upload the file immediately or handle it upon form submission.
-    console.log('File uploaded:', file.name)
+// --- LIFECYCLE HOOK ---
+onMounted(() => {
+  // 1. Get user info from localStorage
+  const userString = localStorage.getItem('user');
+  if (userString) {
+    currentUser.value = JSON.parse(userString);
+    // 2. Fetch data from the API
+    fetchCoiRecords();
+  } else {
+    error.value = 'Could not find user information. Please log in again.';
+    loading.value = false;
   }
-}
+});
 
-const isCoiDecisionsMadeForAll = computed(() => {
-  return assessors.value.every((assessor) => assessor.coiStatus !== null)
-})
-
-const submitAllCoiConfirmation = () => {
-  if (isCoiDecisionsMadeForAll.value) {
-    coiConfirmationSubmitted.value = true
-    console.log('Final COI Confirmation Submitted:', assessors.value)
-    // Here you would typically send the 'assessors.value' array with COI statuses, remarks, and documents to your backend.
+// --- DATA FETCHING ---
+const fetchCoiRecords = async () => {
+  loading.value = true;
+  error.value = null;
+  try {
+    const response = await apiService.getApplicationAssessorCOIs();
+    allCoiRecords.value = response.data.results || [];
+  } catch (err) {
+    error.value = 'Failed to load COI data. Please try again later.';
+    console.error('Error fetching COI data:', err);
+  } finally {
+    loading.value = false;
   }
-}
+};
 
-onMounted(fetchAssessors)
+// --- UI HELPER FUNCTIONS ---
+const getCoiStatusClass = (hasConflict) => {
+  if (hasConflict === null) return 'bg-yellow-100 text-yellow-800'; // Pending
+  return hasConflict ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800';
+};
+
+const getCoiStatusText = (hasConflict) => {
+  if (hasConflict === null) return 'Pending Declaration';
+  return hasConflict ? 'Conflict Declared' : 'No Conflict';
+};
+
+const formatDate = (dateString) => {
+  if (!dateString) return 'N/A';
+  return new Date(dateString).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+};
+
+// --- ACTION HANDLERS ---
+const handleNoConflict = async (record) => {
+  // Optimistically update UI
+  record.institute_has_coi_with_assessor = false;
+  record.institute_coi_declared_at = new Date().toISOString();
+
+  try {
+    const payload = {
+      institute_has_coi_with_assessor: false,
+      institute_coi_declared_at: record.institute_coi_declared_at
+    };
+    await apiService.updateApplicationAssessorCOI(record.id, payload);
+  } catch (err) {
+    console.error('Failed to update "No Conflict":', err);
+    // Rollback UI on failure
+    record.institute_has_coi_with_assessor = null;
+    record.institute_coi_declared_at = null;
+    // You could show a toast error here
+  }
+};
+
+const openConflictModal = (record) => {
+  selectedRecord.value = record;
+  conflictRemarks.value = '';
+  submissionError.value = null;
+  isConflictModalOpen.value = true;
+};
+
+const closeConflictModal = () => {
+  isConflictModalOpen.value = false;
+  selectedRecord.value = null;
+};
+
+const handleConflictSubmit = async () => {
+  if (!conflictRemarks.value.trim()) {
+    submissionError.value = 'Remarks are required to declare a conflict.';
+    return;
+  }
+  isSubmitting.value = true;
+  submissionError.value = null;
+
+  try {
+    const payload = {
+      institute_has_coi_with_assessor: true,
+      institute_coi_remarks: conflictRemarks.value,
+      institute_coi_declared_at: new Date().toISOString()
+    };
+    await apiService.patchApplicationAssessorCOI(selectedRecord.value.id, payload);
+
+    // Refresh local data to show the change
+    const recordInList = allCoiRecords.value.find(r => r.id === selectedRecord.value.id);
+    if (recordInList) {
+      recordInList.institute_has_coi_with_assessor = true;
+      recordInList.institute_coi_remarks = payload.institute_coi_remarks;
+      recordInList.institute_coi_declared_at = payload.institute_coi_declared_at;
+    }
+
+    closeConflictModal();
+  } catch (err) {
+    submissionError.value = 'Failed to submit declaration. Please try again.';
+    console.error('Failed to update "Conflict":', err);
+  } finally {
+    isSubmitting.value = false;
+  }
+};
 </script>

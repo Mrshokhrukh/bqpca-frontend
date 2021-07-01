@@ -4,11 +4,8 @@
       <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold text-gray-800">Institute Profile</h1>
         <div v-if="!isEditing && profileId && !loading">
-          <button
-            type="button"
-            @click="handleEditClick"
-            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >
+          <button type="button" @click="handleEditClick"
+            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
             Edit Profile
           </button>
         </div>
@@ -30,128 +27,88 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label for="name" class="block text-sm font-medium text-gray-700">Institute Name</label>
-              <input
-                type="text"
-                id="name"
-                v-model="formData.name"
+              <input type="text" id="name" v-model="formData.name"
                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
-                :disabled="!isEditing"
-                required
-              >
+                :disabled="!isEditing" required>
             </div>
 
             <div>
               <label for="type" class="block text-sm font-medium text-gray-700">Institute Type</label>
-              <select
-                id="type"
-                v-model="formData.type"
+              <select id="type" v-model="formData.type"
                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
-                :disabled="!isEditing"
-                required
-              >
+                :disabled="!isEditing" required>
                 <option value="">Select type</option>
-                <option v-for="typeObj in instituteTypes" :key="typeObj.id" :value="typeObj.id">{{ typeObj.name }}</option>
+                <option v-for="typeObj in instituteTypes" :key="typeObj.id" :value="typeObj.id">{{ typeObj.name }}
+                </option>
               </select>
             </div>
 
             <div>
               <label for="year_established" class="block text-sm font-medium text-gray-700">Year Established</label>
-              <input
-                type="number"
-                id="year_established"
-                v-model="formData.year_established"
-                min="1900"
+              <input type="number" id="year_established" v-model="formData.year_established" min="1900"
                 :max="new Date().getFullYear()"
                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
-                :disabled="!isEditing"
-                required
-              >
+                :disabled="!isEditing" required>
             </div>
 
             <div>
               <label for="website" class="block text-sm font-medium text-gray-700">Website</label>
-              <input
-                type="url"
-                id="website"
-                v-model="formData.website"
+              <input type="url" id="website" v-model="formData.website"
                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
-                placeholder="https://example.com"
-                :disabled="!isEditing"
-              >
+                placeholder="https://example.com" :disabled="!isEditing">
             </div>
 
             <div class="md:col-span-2">
               <label for="address" class="block text-sm font-medium text-gray-700">Address</label>
-              <textarea
-                id="address"
-                v-model="formData.address"
-                rows="2"
+              <textarea id="address" v-model="formData.address" rows="2"
                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
-                :disabled="!isEditing"
-                required
-              ></textarea>
+                :disabled="!isEditing" required></textarea>
             </div>
 
             <div>
               <label for="dzongkhag" class="block text-sm font-medium text-gray-700">Dzongkhag/Thromde</label>
-              <input
-                type="text"
-                id="dzongkhag"
-                v-model="formData.dzongkhag"
+              <input type="text" id="dzongkhag" v-model="formData.dzongkhag"
                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
-                :disabled="!isEditing"
-                required
-              >
+                :disabled="!isEditing" required>
             </div>
 
             <div>
               <label for="affiliated_to" class="block text-sm font-medium text-gray-700">Affiliated To</label>
-              <input
-                type="text"
-                id="affiliated_to"
-                v-model="formData.affiliated_to"
+              <input type="text" id="affiliated_to" v-model="formData.affiliated_to"
                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
-                :disabled="!isEditing"
-              >
+                :disabled="!isEditing">
             </div>
 
             <div>
               <label for="source_of_funding" class="block text-sm font-medium text-gray-700">Source of Funding</label>
-              <select
-                id="source_of_funding"
-                v-model="formData.source_of_funding"
+              <select id="source_of_funding" v-model="formData.source_of_funding"
                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
-                :disabled="!isEditing"
-              >
+                :disabled="!isEditing">
                 <option value="">Select funding source</option>
-                <option v-for="sourceObj in fundingSources" :key="sourceObj.id" :value="sourceObj.id">{{ sourceObj.name }}</option>
+                <option v-for="sourceObj in fundingSources" :key="sourceObj.id" :value="sourceObj.id">{{ sourceObj.name
+                  }}</option>
               </select>
             </div>
 
             <div>
               <label for="total_area" class="block text-sm font-medium text-gray-700">Total Area (acres)</label>
-              <input
-                type="number"
-                id="total_area"
-                v-model="formData.total_area"
-                min="0"
+              <input type="number" id="total_area" v-model="formData.total_area" min="0"
                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
-                :disabled="!isEditing"
-              >
+                :disabled="!isEditing">
             </div>
 
             <div>
-              <label for="land_registration" class="block text-sm font-medium text-gray-700">Land Registration Certificate</label>
-              <input
-                v-if="isEditing"
-                type="file"
-                id="land_registration"
+              <label for="land_registration" class="block text-sm font-medium text-gray-700">Land Registration
+                Certificate</label>
+              <input v-if="isEditing" type="file" id="land_registration"
                 @change="handleFileUpload('land_registration', $event)"
-                class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-              >
-              <p v-if="existingLandRegistration && (!isEditing || (isEditing && !formData.land_registration_file))" class="mt-1 text-sm text-gray-500">
-                Current file: <a :href="existingLandRegistration" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">{{ getFileName(existingLandRegistration) }}</a>
-                <span v-if="isEditing && !formData.land_registration_file" class="ml-2 text-xs text-gray-400">(select a new file to replace)</span>
+                class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+              <p v-if="existingLandRegistration && (!isEditing || (isEditing && !formData.land_registration_file))"
+                class="mt-1 text-sm text-gray-500">
+                Current file: <a :href="existingLandRegistration" target="_blank" rel="noopener noreferrer"
+                  class="text-blue-600 hover:underline">{{ getFileName(existingLandRegistration) }}</a>
+                <span v-if="isEditing && !formData.land_registration_file" class="ml-2 text-xs text-gray-400">(select a
+                  new file to replace)</span>
               </p>
               <p v-if="formData.land_registration_file && isEditing" class="mt-1 text-sm text-green-600">
                 New file selected: {{ formData.land_registration_file.name }}
@@ -163,16 +120,14 @@
 
             <div>
               <label for="tax_details" class="block text-sm font-medium text-gray-700">Latest Tax Details</label>
-              <input
-                v-if="isEditing"
-                type="file"
-                id="tax_details"
-                @change="handleFileUpload('tax_details', $event)"
-                class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-              >
-              <p v-if="existingTaxDetails && (!isEditing || (isEditing && !formData.tax_details_file))" class="mt-1 text-sm text-gray-500">
-                Current file: <a :href="existingTaxDetails" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">{{ getFileName(existingTaxDetails) }}</a>
-                <span v-if="isEditing && !formData.tax_details_file" class="ml-2 text-xs text-gray-400">(select a new file to replace)</span>
+              <input v-if="isEditing" type="file" id="tax_details" @change="handleFileUpload('tax_details', $event)"
+                class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+              <p v-if="existingTaxDetails && (!isEditing || (isEditing && !formData.tax_details_file))"
+                class="mt-1 text-sm text-gray-500">
+                Current file: <a :href="existingTaxDetails" target="_blank" rel="noopener noreferrer"
+                  class="text-blue-600 hover:underline">{{ getFileName(existingTaxDetails) }}</a>
+                <span v-if="isEditing && !formData.tax_details_file" class="ml-2 text-xs text-gray-400">(select a new
+                  file to replace)</span>
               </p>
               <p v-if="formData.tax_details_file && isEditing" class="mt-1 text-sm text-green-600">
                 New file selected: {{ formData.tax_details_file.name }}
@@ -190,51 +145,31 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label for="telephone" class="block text-sm font-medium text-gray-700">Telephone</label>
-              <input
-                type="tel"
-                id="telephone"
-                v-model="formData.telephone"
+              <input type="tel" id="telephone" v-model="formData.telephone"
                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
-                :disabled="!isEditing"
-                required
-              >
+                :disabled="!isEditing" required>
             </div>
 
             <div>
               <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-              <input
-                type="email"
-                id="email"
-                v-model="formData.email"
+              <input type="email" id="email" v-model="formData.email"
                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
-                :disabled="!isEditing"
-                required
-              >
+                :disabled="!isEditing" required>
             </div>
 
             <div>
               <label for="focal_person" class="block text-sm font-medium text-gray-700">Focal Person for IQA</label>
-              <input
-                type="text"
-                id="focal_person"
-                v-model="formData.focal_person"
+              <input type="text" id="focal_person" v-model="formData.focal_person"
                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
-                :disabled="!isEditing"
-                required
-              >
+                :disabled="!isEditing" required>
             </div>
 
             <div>
-              <label for="focal_person_contact" class="block text-sm font-medium text-gray-700">Focal Person Contact</label>
-              <input
-                type="tel"
-                id="focal_person_contact"
-                v-model="formData.focal_person_contact"
+              <label for="focal_person_contact" class="block text-sm font-medium text-gray-700">Focal Person
+                Contact</label>
+              <input type="tel" id="focal_person_contact" v-model="formData.focal_person_contact"
                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
-                :disabled="!isEditing"
-                required
-                maxlength="15"
-              >
+                :disabled="!isEditing" required maxlength="15">
             </div>
           </div>
         </div>
@@ -245,51 +180,30 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label for="head_name" class="block text-sm font-medium text-gray-700">Name</label>
-              <input
-                type="text"
-                id="head_name"
-                v-model="formData.head_name"
+              <input type="text" id="head_name" v-model="formData.head_name"
                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
-                :disabled="!isEditing"
-                required
-              >
+                :disabled="!isEditing" required>
             </div>
 
             <div>
               <label for="head_position" class="block text-sm font-medium text-gray-700">Position</label>
-              <input
-                type="text"
-                id="head_position"
-                v-model="formData.head_position"
+              <input type="text" id="head_position" v-model="formData.head_position"
                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
-                :disabled="!isEditing"
-                required
-              >
+                :disabled="!isEditing" required>
             </div>
 
             <div>
               <label for="head_email" class="block text-sm font-medium text-gray-700">Email</label>
-              <input
-                type="email"
-                id="head_email"
-                v-model="formData.head_email"
+              <input type="email" id="head_email" v-model="formData.head_email"
                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
-                :disabled="!isEditing"
-                required
-              >
+                :disabled="!isEditing" required>
             </div>
 
             <div>
               <label for="head_contact" class="block text-sm font-medium text-gray-700">Contact</label>
-              <input
-                type="tel"
-                id="head_contact"
-                v-model="formData.head_contact"
+              <input type="tel" id="head_contact" v-model="formData.head_contact"
                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
-                :disabled="!isEditing"
-                required
-                maxlength="15"
-              >
+                :disabled="!isEditing" required maxlength="15">
             </div>
           </div>
         </div>
@@ -300,87 +214,67 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div>
               <label for="departments" class="block text-sm font-medium text-gray-700">Number of Departments</label>
-              <input
-                type="number"
-                id="departments"
-                v-model="formData.departments"
-                min="0"
-                class="input-field"
-                :disabled="!isEditing"
-              >
+              <input type="number" id="departments" v-model="formData.departments" min="0" class="input-field"
+                :disabled="!isEditing">
             </div>
             <div>
-              <label for="programs_total" class="block text-sm font-medium text-gray-700">Total Number of Programs</label>
-              <input
-                type="number"
-                id="programs_total"
-                v-model="formData.programs_total"
-                min="0"
-                class="input-field"
-                :disabled="!isEditing"
-              >
+              <label for="programs_total" class="block text-sm font-medium text-gray-700">Total Number of
+                Programs</label>
+              <input type="number" id="programs_total" v-model="formData.programs_total" min="0" class="input-field"
+                :disabled="!isEditing">
             </div>
           </div>
           <h3 class="text-md font-medium text-gray-700 mb-3">Program Breakdown</h3>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
             <div>
               <label for="programs_ug">Undergraduate</label>
-              <input type="number" id="programs_ug" v-model="formData.programs_ug" min="0" class="input-field" :disabled="!isEditing">
+              <input type="number" id="programs_ug" v-model="formData.programs_ug" min="0" class="input-field"
+                :disabled="!isEditing">
             </div>
             <div>
               <label for="programs_pg">Postgraduate</label>
-              <input type="number" id="programs_pg" v-model="formData.programs_pg" min="0" class="input-field" :disabled="!isEditing">
+              <input type="number" id="programs_pg" v-model="formData.programs_pg" min="0" class="input-field"
+                :disabled="!isEditing">
             </div>
             <div>
               <label for="programs_doctoral">Doctoral</label>
-              <input type="number" id="programs_doctoral" v-model="formData.programs_doctoral" min="0" class="input-field" :disabled="!isEditing">
+              <input type="number" id="programs_doctoral" v-model="formData.programs_doctoral" min="0"
+                class="input-field" :disabled="!isEditing">
             </div>
             <div>
               <label for="programs_other">Other</label>
-              <input type="number" id="programs_other" v-model="formData.programs_other" min="0" class="input-field" :disabled="!isEditing">
+              <input type="number" id="programs_other" v-model="formData.programs_other" min="0" class="input-field"
+                :disabled="!isEditing">
             </div>
           </div>
           <div class="mb-6">
             <label for="new_programs">New Programs Introduced (Last 5 Years)</label>
-            <textarea
-              id="new_programs"
-              v-model="formData.new_programs"
-              rows="3"
-              class="input-field"
-              placeholder="List new programs with introduction years"
-              :disabled="!isEditing"
-            ></textarea>
+            <textarea id="new_programs" v-model="formData.new_programs" rows="3" class="input-field"
+              placeholder="List new programs with introduction years" :disabled="!isEditing"></textarea>
           </div>
           <div class="mb-6">
             <label for="programs_with_electives">Number of Programs with Electives</label>
-            <input
-              type="number"
-              id="programs_with_electives"
-              v-model="formData.programs_with_electives"
-              min="0"
-              class="input-field"
-              :disabled="!isEditing"
-            >
-            <div v-if="Number(formData.programs_with_electives) > 0 || (isEditing && Number(formData.programs_with_electives) > 0)" class="mt-2">
+            <input type="number" id="programs_with_electives" v-model="formData.programs_with_electives" min="0"
+              class="input-field" :disabled="!isEditing">
+            <div
+              v-if="Number(formData.programs_with_electives) > 0 || (isEditing && Number(formData.programs_with_electives) > 0)"
+              class="mt-2">
               <label for="electives_details">Electives Details</label>
-              <textarea
-                id="electives_details"
-                v-model="formData.electives_details"
-                rows="2"
-                class="input-field"
+              <textarea id="electives_details" v-model="formData.electives_details" rows="2" class="input-field"
                 placeholder="Specify electives"
-                :disabled="!isEditing || Number(formData.programs_with_electives) === 0"
-              ></textarea>
+                :disabled="!isEditing || Number(formData.programs_with_electives) === 0"></textarea>
             </div>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label for="working_days">Working Days (Last Academic Year)</label>
-              <input type="number" id="working_days" v-model="formData.working_days" min="0" max="365" class="input-field" :disabled="!isEditing">
+              <input type="number" id="working_days" v-model="formData.working_days" min="0" max="365"
+                class="input-field" :disabled="!isEditing">
             </div>
             <div>
               <label for="teaching_days">Teaching Days (Last Academic Year)</label>
-              <input type="number" id="teaching_days" v-model="formData.teaching_days" min="0" max="365" class="input-field" :disabled="!isEditing">
+              <input type="number" id="teaching_days" v-model="formData.teaching_days" min="0" max="365"
+                class="input-field" :disabled="!isEditing">
             </div>
           </div>
         </div>
@@ -390,27 +284,47 @@
           <h2 class="text-lg font-medium text-gray-900 mb-4">Faculty Information</h2>
           <h3 class="text-md font-medium text-gray-700 mb-3">Faculty by Gender</h3>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-            <div><label for="faculty_female">Female</label><input type="number" id="faculty_female" v-model="formData.faculty_female" min="0" class="input-field" :disabled="!isEditing"></div>
-            <div><label for="faculty_male">Male</label><input type="number" id="faculty_male" v-model="formData.faculty_male" min="0" class="input-field" :disabled="!isEditing"></div>
-            <div><label for="faculty_total">Total</label><input type="number" id="faculty_total" v-model="facultyTotal" class="input-field-readonly" readonly></div>
+            <div><label for="faculty_female">Female</label><input type="number" id="faculty_female"
+                v-model="formData.faculty_female" min="0" class="input-field" :disabled="!isEditing"></div>
+            <div><label for="faculty_male">Male</label><input type="number" id="faculty_male"
+                v-model="formData.faculty_male" min="0" class="input-field" :disabled="!isEditing"></div>
+            <div><label for="faculty_total">Total</label><input type="number" id="faculty_total" v-model="facultyTotal"
+                class="input-field-readonly" readonly></div>
           </div>
           <h3 class="text-md font-medium text-gray-700 mb-3">Faculty by Employment Type</h3>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-            <div><label for="regular_faculty_female">Regular (Female)</label><input type="number" id="regular_faculty_female" v-model="formData.regular_faculty_female" min="0" class="input-field" :disabled="!isEditing"></div>
-            <div><label for="regular_faculty_male">Regular (Male)</label><input type="number" id="regular_faculty_male" v-model="formData.regular_faculty_male" min="0" class="input-field" :disabled="!isEditing"></div>
-            <div><label for="regular_faculty_total">Regular Total</label><input type="number" id="regular_faculty_total" v-model="regularFacultyTotal" class="input-field-readonly" readonly></div>
-            <div><label for="contract_faculty_female">Contract (Female)</label><input type="number" id="contract_faculty_female" v-model="formData.contract_faculty_female" min="0" class="input-field" :disabled="!isEditing"></div>
-            <div><label for="contract_faculty_male">Contract (Male)</label><input type="number" id="contract_faculty_male" v-model="formData.contract_faculty_male" min="0" class="input-field" :disabled="!isEditing"></div>
-            <div><label for="contract_faculty_total">Contract Total</label><input type="number" id="contract_faculty_total" v-model="contractFacultyTotal" class="input-field-readonly" readonly></div>
-            <div><label for="visiting_faculty_female">Visiting (Female)</label><input type="number" id="visiting_faculty_female" v-model="formData.visiting_faculty_female" min="0" class="input-field" :disabled="!isEditing"></div>
-            <div><label for="visiting_faculty_male">Visiting (Male)</label><input type="number" id="visiting_faculty_male" v-model="formData.visiting_faculty_male" min="0" class="input-field" :disabled="!isEditing"></div>
-            <div><label for="visiting_faculty_total">Visiting Total</label><input type="number" id="visiting_faculty_total" v-model="visitingFacultyTotal" class="input-field-readonly" readonly></div>
+            <div><label for="regular_faculty_female">Regular (Female)</label><input type="number"
+                id="regular_faculty_female" v-model="formData.regular_faculty_female" min="0" class="input-field"
+                :disabled="!isEditing"></div>
+            <div><label for="regular_faculty_male">Regular (Male)</label><input type="number" id="regular_faculty_male"
+                v-model="formData.regular_faculty_male" min="0" class="input-field" :disabled="!isEditing"></div>
+            <div><label for="regular_faculty_total">Regular Total</label><input type="number" id="regular_faculty_total"
+                v-model="regularFacultyTotal" class="input-field-readonly" readonly></div>
+            <div><label for="contract_faculty_female">Contract (Female)</label><input type="number"
+                id="contract_faculty_female" v-model="formData.contract_faculty_female" min="0" class="input-field"
+                :disabled="!isEditing"></div>
+            <div><label for="contract_faculty_male">Contract (Male)</label><input type="number"
+                id="contract_faculty_male" v-model="formData.contract_faculty_male" min="0" class="input-field"
+                :disabled="!isEditing"></div>
+            <div><label for="contract_faculty_total">Contract Total</label><input type="number"
+                id="contract_faculty_total" v-model="contractFacultyTotal" class="input-field-readonly" readonly></div>
+            <div><label for="visiting_faculty_female">Visiting (Female)</label><input type="number"
+                id="visiting_faculty_female" v-model="formData.visiting_faculty_female" min="0" class="input-field"
+                :disabled="!isEditing"></div>
+            <div><label for="visiting_faculty_male">Visiting (Male)</label><input type="number"
+                id="visiting_faculty_male" v-model="formData.visiting_faculty_male" min="0" class="input-field"
+                :disabled="!isEditing"></div>
+            <div><label for="visiting_faculty_total">Visiting Total</label><input type="number"
+                id="visiting_faculty_total" v-model="visitingFacultyTotal" class="input-field-readonly" readonly></div>
           </div>
           <h3 class="text-md font-medium text-gray-700 mb-3">Faculty by Qualification</h3>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div><label for="faculty_doctoral">Doctoral Degree</label><input type="number" id="faculty_doctoral" v-model="formData.faculty_doctoral" min="0" class="input-field" :disabled="!isEditing"></div>
-            <div><label for="faculty_masters">Masters Degree</label><input type="number" id="faculty_masters" v-model="formData.faculty_masters" min="0" class="input-field" :disabled="!isEditing"></div>
-            <div><label for="faculty_bachelors">Bachelors Degree</label><input type="number" id="faculty_bachelors" v-model="formData.faculty_bachelors" min="0" class="input-field" :disabled="!isEditing"></div>
+            <div><label for="faculty_doctoral">Doctoral Degree</label><input type="number" id="faculty_doctoral"
+                v-model="formData.faculty_doctoral" min="0" class="input-field" :disabled="!isEditing"></div>
+            <div><label for="faculty_masters">Masters Degree</label><input type="number" id="faculty_masters"
+                v-model="formData.faculty_masters" min="0" class="input-field" :disabled="!isEditing"></div>
+            <div><label for="faculty_bachelors">Bachelors Degree</label><input type="number" id="faculty_bachelors"
+                v-model="formData.faculty_bachelors" min="0" class="input-field" :disabled="!isEditing"></div>
           </div>
         </div>
 
@@ -419,25 +333,35 @@
           <h2 class="text-lg font-medium text-gray-900 mb-4">Non-Teaching Staff</h2>
           <h3 class="text-md font-medium text-gray-700 mb-3">Technical Staff</h3>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            <div><label for="technical_staff_male">Male</label><input type="number" id="technical_staff_male" v-model="formData.technical_staff_male" min="0" class="input-field" :disabled="!isEditing"></div>
-            <div><label for="technical_staff_female">Female</label><input type="number" id="technical_staff_female" v-model="formData.technical_staff_female" min="0" class="input-field" :disabled="!isEditing"></div>
-            <div><label for="technical_staff_total">Total</label><input type="number" id="technical_staff_total" v-model="technicalStaffTotal" class="input-field-readonly" readonly></div>
+            <div><label for="technical_staff_male">Male</label><input type="number" id="technical_staff_male"
+                v-model="formData.technical_staff_male" min="0" class="input-field" :disabled="!isEditing"></div>
+            <div><label for="technical_staff_female">Female</label><input type="number" id="technical_staff_female"
+                v-model="formData.technical_staff_female" min="0" class="input-field" :disabled="!isEditing"></div>
+            <div><label for="technical_staff_total">Total</label><input type="number" id="technical_staff_total"
+                v-model="technicalStaffTotal" class="input-field-readonly" readonly></div>
           </div>
           <h3 class="text-md font-medium text-gray-700 mb-3">Administrative Staff</h3>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            <div><label for="admin_staff_male">Male</label><input type="number" id="admin_staff_male" v-model="formData.admin_staff_male" min="0" class="input-field" :disabled="!isEditing"></div>
-            <div><label for="admin_staff_female">Female</label><input type="number" id="admin_staff_female" v-model="formData.admin_staff_female" min="0" class="input-field" :disabled="!isEditing"></div>
-            <div><label for="admin_staff_total">Total</label><input type="number" id="admin_staff_total" v-model="adminStaffTotal" class="input-field-readonly" readonly></div>
+            <div><label for="admin_staff_male">Male</label><input type="number" id="admin_staff_male"
+                v-model="formData.admin_staff_male" min="0" class="input-field" :disabled="!isEditing"></div>
+            <div><label for="admin_staff_female">Female</label><input type="number" id="admin_staff_female"
+                v-model="formData.admin_staff_female" min="0" class="input-field" :disabled="!isEditing"></div>
+            <div><label for="admin_staff_total">Total</label><input type="number" id="admin_staff_total"
+                v-model="adminStaffTotal" class="input-field-readonly" readonly></div>
           </div>
           <h3 class="text-md font-medium text-gray-700 mb-3">Support Staff</h3>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div><label for="support_staff_male">Male</label><input type="number" id="support_staff_male" v-model="formData.support_staff_male" min="0" class="input-field" :disabled="!isEditing"></div>
-            <div><label for="support_staff_female">Female</label><input type="number" id="support_staff_female" v-model="formData.support_staff_female" min="0" class="input-field" :disabled="!isEditing"></div>
-            <div><label for="support_staff_total">Total</label><input type="number" id="support_staff_total" v-model="supportStaffTotal" class="input-field-readonly" readonly></div>
+            <div><label for="support_staff_male">Male</label><input type="number" id="support_staff_male"
+                v-model="formData.support_staff_male" min="0" class="input-field" :disabled="!isEditing"></div>
+            <div><label for="support_staff_female">Female</label><input type="number" id="support_staff_female"
+                v-model="formData.support_staff_female" min="0" class="input-field" :disabled="!isEditing"></div>
+            <div><label for="support_staff_total">Total</label><input type="number" id="support_staff_total"
+                v-model="supportStaffTotal" class="input-field-readonly" readonly></div>
           </div>
           <div class="mt-6">
             <label for="non_teaching_staff_total">Total Non-Teaching Staff</label>
-            <input type="number" id="non_teaching_staff_total" v-model="nonTeachingStaffTotal" class="input-field-readonly" readonly>
+            <input type="number" id="non_teaching_staff_total" v-model="nonTeachingStaffTotal"
+              class="input-field-readonly" readonly>
           </div>
         </div>
 
@@ -446,18 +370,38 @@
           <h2 class="text-lg font-medium text-gray-900 mb-4">Student Information</h2>
           <h3 class="text-md font-medium text-gray-700 mb-3">Students by Program Level</h3>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            <div><label for="students_diploma_male">Diploma (Male)</label><input type="number" id="students_diploma_male" v-model="formData.students_diploma_male" min="0" class="input-field" :disabled="!isEditing"></div>
-            <div><label for="students_diploma_female">Diploma (Female)</label><input type="number" id="students_diploma_female" v-model="formData.students_diploma_female" min="0" class="input-field" :disabled="!isEditing"></div>
-            <div><label for="students_diploma_total">Diploma Total</label><input type="number" id="students_diploma_total" v-model="studentsDiplomaTotal" class="input-field-readonly" readonly></div>
-            <div><label for="students_bachelors_male">Bachelors (Male)</label><input type="number" id="students_bachelors_male" v-model="formData.students_bachelors_male" min="0" class="input-field" :disabled="!isEditing"></div>
-            <div><label for="students_bachelors_female">Bachelors (Female)</label><input type="number" id="students_bachelors_female" v-model="formData.students_bachelors_female" min="0" class="input-field" :disabled="!isEditing"></div>
-            <div><label for="students_bachelors_total">Bachelors Total</label><input type="number" id="students_bachelors_total" v-model="studentsBachelorsTotal" class="input-field-readonly" readonly></div>
-            <div><label for="students_masters_male">Masters (Male)</label><input type="number" id="students_masters_male" v-model="formData.students_masters_male" min="0" class="input-field" :disabled="!isEditing"></div>
-            <div><label for="students_masters_female">Masters (Female)</label><input type="number" id="students_masters_female" v-model="formData.students_masters_female" min="0" class="input-field" :disabled="!isEditing"></div>
-            <div><label for="students_masters_total">Masters Total</label><input type="number" id="students_masters_total" v-model="studentsMastersTotal" class="input-field-readonly" readonly></div>
-            <div><label for="students_other_male">Other (Male)</label><input type="number" id="students_other_male" v-model="formData.students_other_male" min="0" class="input-field" :disabled="!isEditing"></div>
-            <div><label for="students_other_female">Other (Female)</label><input type="number" id="students_other_female" v-model="formData.students_other_female" min="0" class="input-field" :disabled="!isEditing"></div>
-            <div><label for="students_other_total">Other Total</label><input type="number" id="students_other_total" v-model="studentsOtherTotal" class="input-field-readonly" readonly></div>
+            <div><label for="students_diploma_male">Diploma (Male)</label><input type="number"
+                id="students_diploma_male" v-model="formData.students_diploma_male" min="0" class="input-field"
+                :disabled="!isEditing"></div>
+            <div><label for="students_diploma_female">Diploma (Female)</label><input type="number"
+                id="students_diploma_female" v-model="formData.students_diploma_female" min="0" class="input-field"
+                :disabled="!isEditing"></div>
+            <div><label for="students_diploma_total">Diploma Total</label><input type="number"
+                id="students_diploma_total" v-model="studentsDiplomaTotal" class="input-field-readonly" readonly></div>
+            <div><label for="students_bachelors_male">Bachelors (Male)</label><input type="number"
+                id="students_bachelors_male" v-model="formData.students_bachelors_male" min="0" class="input-field"
+                :disabled="!isEditing"></div>
+            <div><label for="students_bachelors_female">Bachelors (Female)</label><input type="number"
+                id="students_bachelors_female" v-model="formData.students_bachelors_female" min="0" class="input-field"
+                :disabled="!isEditing"></div>
+            <div><label for="students_bachelors_total">Bachelors Total</label><input type="number"
+                id="students_bachelors_total" v-model="studentsBachelorsTotal" class="input-field-readonly" readonly>
+            </div>
+            <div><label for="students_masters_male">Masters (Male)</label><input type="number"
+                id="students_masters_male" v-model="formData.students_masters_male" min="0" class="input-field"
+                :disabled="!isEditing"></div>
+            <div><label for="students_masters_female">Masters (Female)</label><input type="number"
+                id="students_masters_female" v-model="formData.students_masters_female" min="0" class="input-field"
+                :disabled="!isEditing"></div>
+            <div><label for="students_masters_total">Masters Total</label><input type="number"
+                id="students_masters_total" v-model="studentsMastersTotal" class="input-field-readonly" readonly></div>
+            <div><label for="students_other_male">Other (Male)</label><input type="number" id="students_other_male"
+                v-model="formData.students_other_male" min="0" class="input-field" :disabled="!isEditing"></div>
+            <div><label for="students_other_female">Other (Female)</label><input type="number"
+                id="students_other_female" v-model="formData.students_other_female" min="0" class="input-field"
+                :disabled="!isEditing"></div>
+            <div><label for="students_other_total">Other Total</label><input type="number" id="students_other_total"
+                v-model="studentsOtherTotal" class="input-field-readonly" readonly></div>
           </div>
           <div class="mt-6">
             <label for="students_total">Total Students</label>
@@ -467,22 +411,20 @@
 
         <!-- Form Actions -->
         <div v-if="isEditing" class="flex justify-end space-x-4 pt-4 border-t border-gray-200">
-          <button
-            type="button"
-            @click="resetForm"
-            class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >
+          <button type="button" @click="resetForm"
+            class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
             Reset
           </button>
-          <button
-            type="submit"
+          <button type="submit"
             class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            :disabled="submitting"
-          >
+            :disabled="submitting">
             <span v-if="submitting" class="inline-flex items-center">
-              <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+                viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <path class="opacity-75" fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                </path>
               </svg>
               Saving...
             </span>
@@ -498,18 +440,26 @@
 .input-field {
   @apply mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm;
 }
-.input-field:disabled { /* Tailwind applies styles for :disabled automatically, but you can override */
+
+.input-field:disabled {
+  /* Tailwind applies styles for :disabled automatically, but you can override */
   @apply bg-gray-100 cursor-not-allowed text-gray-500;
 }
-.input-field-readonly { /* For computed total fields */
-   @apply mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm bg-gray-100 text-gray-700;
+
+.input-field-readonly {
+  /* For computed total fields */
+  @apply mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm bg-gray-100 text-gray-700;
 }
-label { /* Added to ensure all labels have consistent styling from the abbreviated sections */
+
+label {
+  /* Added to ensure all labels have consistent styling from the abbreviated sections */
   @apply block text-sm font-medium text-gray-700;
 }
+
 textarea.input-field:disabled {
   @apply bg-gray-100 cursor-not-allowed text-gray-500;
 }
+
 select.input-field:disabled {
   @apply bg-gray-100 cursor-not-allowed text-gray-500;
 }
@@ -518,7 +468,7 @@ select.input-field:disabled {
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useToast } from 'vue-toastification';
-import apiService from '@/services/services'; 
+import apiService from '@/services/services';
 
 const toast = useToast();
 
@@ -592,7 +542,12 @@ const loadInstituteTypes = async () => {
     }));
   } catch (error) {
     console.error('Error loading institute types:', error);
-    toast.error('Failed to load institute types.');
+    // Provide a more specific error message based on the status code
+    if (error.response && error.response.status === 403) {
+      toast.error('Permission denied: You do not have access to load institute types.');
+    } else {
+      toast.error('Failed to load institute types. Please try again.');
+    }
     instituteTypes.value = [];
   }
 };
@@ -656,7 +611,7 @@ const loadProfile = async () => {
             formData.value[key] = response.data[key];
           }
         } else if (key.endsWith('_file')) {
-            formData.value[key] = null;
+          formData.value[key] = null;
         }
       });
       existingLandRegistration.value = response.data.land_registration || null;
@@ -676,24 +631,24 @@ const loadProfile = async () => {
     // This now robustly checks for the "No Profile" state, either by a 404 status
     // or by the specific payload the API sends.
     const isCreateProfileError = error.response && (
-        error.response.status === 404 ||
-        error.response.data?.action_required === 'create_or_update_profile'
+      error.response.status === 404 ||
+      error.response.data?.action_required === 'create_or_update_profile'
     );
 
     if (isCreateProfileError) {
-        // STATE: NO PROFILE FOUND. Set up the form for creation.
-        Object.assign(formData.value, JSON.parse(JSON.stringify(initialFormData)));
-        profileId.value = null;
-        existingLandRegistration.value = null;
-        existingTaxDetails.value = null;
-        // This is the most important part: enable editing so the user can create a profile.
-        isEditing.value = true;
+      // STATE: NO PROFILE FOUND. Set up the form for creation.
+      Object.assign(formData.value, JSON.parse(JSON.stringify(initialFormData)));
+      profileId.value = null;
+      existingLandRegistration.value = null;
+      existingTaxDetails.value = null;
+      // This is the most important part: enable editing so the user can create a profile.
+      isEditing.value = true;
     } else {
-        // STATE: A REAL, UNEXPECTED ERROR OCCURRED (e.g., Server 500, network error).
-        toast.error('An unexpected error occurred while loading the institute profile.');
-        console.error('Error loading profile:', error);
-        // In case of a true error, it's safer to lock the form.
-        isEditing.value = false;
+      // STATE: A REAL, UNEXPECTED ERROR OCCURRED (e.g., Server 500, network error).
+      toast.error('An unexpected error occurred while loading the institute profile.');
+      console.error('Error loading profile:', error);
+      // In case of a true error, it's safer to lock the form.
+      isEditing.value = false;
     }
   } finally {
     loading.value = false;
@@ -729,23 +684,23 @@ const submitForm = async () => {
   } catch (error) {
     let errorMessage = 'Failed to save institute profile.';
     if (error.response && error.response.data) {
-         if (typeof error.response.data === 'object' && error.response.data !== null) {
-            const messages = [];
-            for (const field in error.response.data) {
-                if (Array.isArray(error.response.data[field])) {
-                    messages.push(`Validation error for ${field.replace(/_/g, ' ')}: ${error.response.data[field].join(', ')}`);
-                } else {
-                     messages.push(`Validation error for ${field.replace(/_/g, ' ')}: ${error.response.data[field]}`);
-                }
-            }
-            errorMessage = messages.join(' | ') || 'Error saving profile.';
-        } else if (error.response.data.message) {
-             errorMessage = error.response.data.message;
-        } else if (typeof error.response.data === 'string') {
-            errorMessage = error.response.data;
+      if (typeof error.response.data === 'object' && error.response.data !== null) {
+        const messages = [];
+        for (const field in error.response.data) {
+          if (Array.isArray(error.response.data[field])) {
+            messages.push(`Validation error for ${field.replace(/_/g, ' ')}: ${error.response.data[field].join(', ')}`);
+          } else {
+            messages.push(`Validation error for ${field.replace(/_/g, ' ')}: ${error.response.data[field]}`);
+          }
         }
+        errorMessage = messages.join(' | ') || 'Error saving profile.';
+      } else if (error.response.data.message) {
+        errorMessage = error.response.data.message;
+      } else if (typeof error.response.data === 'string') {
+        errorMessage = error.response.data;
+      }
     } else if (error.message) {
-        errorMessage = error.message;
+      errorMessage = error.message;
     }
     toast.error(errorMessage, { timeout: 7000 });
     console.error('Error saving profile:', error.response?.data || error);
