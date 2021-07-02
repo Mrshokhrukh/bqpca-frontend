@@ -158,7 +158,6 @@ const sectors = ref([])
 const registrationTypes = ref([])
 const toast = useToast()
 
-// Filter options for the DOPageHeader
 const statusFilterOptions = ref([
   { value: 'all', text: 'All Statuses' },
   { value: 'Pending', text: 'Pending' },
@@ -167,9 +166,6 @@ const statusFilterOptions = ref([
 ])
 
 const pendingCount = computed(() => {
-  // Note: This calculation needs to use the UNFILTERED applications
-  // if you want the total pending count regardless of search/status filter.
-  // If you want pending count *within the current filter*, use filteredApplications.value
   return applications.value
     .filter(
       (app) =>
@@ -180,7 +176,6 @@ const pendingCount = computed(() => {
     .filter((app) => getStatus(app) === 'Pending').length
 })
 
-// Computed property for header description based on counts
 const headerDescription = computed(() => {
   return `Total New: ${filteredApplications.value.length} | Pending Review: ${pendingCount.value}`
 })
@@ -197,7 +192,7 @@ const filteredApplications = computed(() => {
       if (filterStatus.value && filterStatus.value !== 'all') {
         return getStatus(app) === filterStatus.value
       }
-      return true // Show all if filter is 'all' or empty
+      return true
     })
     .filter((app) => {
       if (searchQuery.value) {
@@ -292,7 +287,6 @@ const fetchMasterData = async () => {
     ])
 
     personnelCategories.value = categoriesRes.data.results || []
-    console.log('Categories:', personnelCategories.value)
     personnelSubcategories.value = subcategoriesRes.data.results || []
     sectors.value = sectorsRes.data.results || []
   } catch (error) {
@@ -312,7 +306,7 @@ const fetchRegistrationTypes = async () => {
 const fetchApplications = async () => {
   try {
     const response = await apiServices.getEpcNewApplications()
-    applications.value = response.data.results || [] // Use .results directly
+    applications.value = response.data.results || []
   } catch (error) {
     console.error('Error fetching applications:', error)
   }
@@ -320,7 +314,7 @@ const fetchApplications = async () => {
 
 const viewDetails = async (application) => {
   try {
-    // Fetch user details along with the application details
+
     const response = await apiServices.getAllUsers()
     const users = response.data.results || []
     const matchingUser = users.find((user) => user.cid === application.cid_no)
@@ -334,7 +328,7 @@ const viewDetails = async (application) => {
     isModalOpen.value = true
   } catch (error) {
     console.error('Error fetching details:', error)
-    // Still open the modal, but with a fallback
+
     selectedApplication.value = { ...application, is_counselor: false, userDetails: null }
     isModalOpen.value = true
   }

@@ -5,9 +5,6 @@
         <GraduationCap class="h-5 w-5 text-gray-500" />
         <span>Qualification Details</span>
       </h4>
-
-      <!-- i want to show Qualificatio type  Name here by registration type here -->
-
       <div v-if="qualifications && qualifications.length > 0" class="space-y-8">
         <div v-for="qualification in qualifications" :key="qualification.id"
           class="bg-gray-50 rounded-xl border border-gray-200 overflow-hidden">
@@ -22,11 +19,10 @@
 
           <div class="p-6">
             <ApplicationReview :qualification="qualification" :applicationId="applicationId"
-              @update="$emit('update')" />
+              :mainApplicationPaymentStatus="props.mainApplicationPaymentStatus" @update="$emit('update')" />
           </div>
         </div>
       </div>
-
       <div v-else class="p-6 bg-gray-50 rounded-lg text-center">
         <p class="text-sm text-gray-500 flex items-center justify-center space-x-2">
           <CircleAlert class="h-4 w-4" />
@@ -54,6 +50,11 @@ const props = defineProps({
   registrationTypes: {
     type: Array,
     default: () => [],
+  },
+
+  mainApplicationPaymentStatus: {
+    type: String,
+    default: 'pending',
   },
 })
 

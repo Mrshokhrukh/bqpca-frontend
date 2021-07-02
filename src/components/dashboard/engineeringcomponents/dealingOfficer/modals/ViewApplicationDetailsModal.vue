@@ -48,7 +48,8 @@
                       :personnelSubcategories="personnelSubcategories" :sectors="sectors"
                       @update="refreshApplication" />
                     <QualificationList :qualifications="application.user_qualifications" :applicationId="application.id"
-                      :registrationTypes="registrationTypes" @update="refreshApplication" />
+                      :mainApplicationPaymentStatus="application.payment_status" :registrationTypes="registrationTypes"
+                      @update="refreshApplication" />
                   </div>
                 </div>
               </div>
@@ -78,7 +79,6 @@ import ApplicationStatus from './applicationDetailsComponents/ApplicationStatus.
 import ApplicationDetailsSection from './applicationDetailsComponents/ApplicationDetailsSection.vue'
 import QualificationList from './applicationDetailsComponents/QualificationList.vue'
 import FooterButtons from './applicationDetailsComponents/FooterButtons.vue'
-// import CounselorStatus from './applicationDetailsComponents/CounselorStatus.vue'
 
 const props = defineProps({
   isOpen: Boolean,
@@ -106,10 +106,8 @@ const props = defineProps({
 
 const formattedApplicationData = computed(() => {
   if (!props.application) return null
-
-  // Format the data to match what the certificate expects
   return {
-    results: [props.application]  // Wrap the application in a results array
+    results: [props.application],
   }
 })
 
@@ -118,7 +116,6 @@ const isLoading = ref(false)
 const isCertificateModalOpen = ref(false)
 
 const closeModal = () => {
-  // Close certificate modal first if it's open
   if (isCertificateModalOpen.value) {
     isCertificateModalOpen.value = false
   }
@@ -169,7 +166,6 @@ const closeCertificateModal = () => {
 </script>
 
 <style scoped>
-/* Enhanced scrollbar styles */
 .overflow-y-auto {
   scrollbar-width: thin;
   scrollbar-color: #cbd5e1 transparent;
