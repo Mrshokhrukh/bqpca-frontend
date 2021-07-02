@@ -44,7 +44,7 @@
                     <div class="grid gap-6 md:grid-cols-2">
                       <div>
                         <label for="CID" class="form-label required-label flex items-center">
-                          License Number
+                          License Number/CID
                           <InformationCircleIcon class="w-4 h-4 ml-1 text-gray-400 cursor-help"
                             title="Your Institute License Number" />
                         </label>
@@ -63,7 +63,7 @@
                         </p>
                       </div>
                       <div>
-                        <label for="gender" class="form-label required-label">Gender</label>
+                        <label for="gender" class="form-label ">Gender</label>
                         <input id="gender" v-model="formData.gender" class="form-input" disabled
                           aria-describedby="gender-error" />
                         <p v-if="validationErrors.gender" class="form-error" id="gender-error">
@@ -71,7 +71,7 @@
                         </p>
                       </div>
                       <div>
-                        <label for="contact_no" class="form-label required-label">Contact Number</label>
+                        <label for="contact_no" class="form-label ">Contact Number</label>
                         <input type="tel" id="contact_no" v-model="formData.contact_no" class="form-input" disabled
                           aria-describedby="contact_no-error" />
                         <p v-if="validationErrors.contact_no" class="form-error" id="contact_no-error">
@@ -79,7 +79,7 @@
                         </p>
                       </div>
                       <div>
-                        <label for="email_address" class="form-label required-label">Email Address</label>
+                        <label for="email_address" class="form-label">Email Address</label>
                         <input type="email" id="email_address" v-model="formData.email_address" class="form-input" disabled
                           aria-describedby="email_address-error" />
                         <p v-if="validationErrors.email_address" class="form-error" id="email_address-error">
