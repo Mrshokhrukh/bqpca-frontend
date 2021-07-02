@@ -9,17 +9,16 @@
           <h3 class="text-xl font-semibold">Application History</h3>
       </div>
 
-      <!-- Loading state for the table -->
+      <!-- Loading, Error, etc. states remain unchanged -->
       <div v-if="loadingApplicationsList" class="text-center py-8">
         <div class="animate-spin inline-block w-8 h-8 border-2 border-gray-400 border-t-transparent rounded-full" role="status"></div>
         <p class="mt-3 text-gray-600">Loading your application history...</p>
       </div>
-
-      <!-- Error state for the table -->
       <div v-else-if="errors.applicationsList" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
         <strong class="font-bold">Error!</strong>
         <span class="block sm:inline ml-2">{{ errors.applicationsList }}</span>
       </div>
+
 
       <!-- Table of applications -->
       <div v-else-if="userApplications.length > 0" class="overflow-x-auto">
@@ -29,7 +28,7 @@
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Application ID</th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Accreditation Cycle</th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Submitted On</th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ISAR Deadline</th>
+              <!-- REMOVED: ISAR Deadline header -->
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
             </tr>
@@ -39,12 +38,9 @@
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#{{ app.id }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ formatAccreditationCycle(app.accreditation_cycle) }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ new Date(app.created_at).toLocaleDateString() }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                <span v-if="app.isar_submission_deadline">{{ new Date(app.isar_submission_deadline).toLocaleDateString() }}</span>
-                <span v-else class="text-gray-400">N/A</span>
-              </td>
+              <!-- REMOVED: ISAR Deadline data cell -->
               <td class="px-6 py-4 whitespace-nowrap text-sm">
-                <span :class="['px-3 py-1.5 rounded-full text-xs font-semibold inline-flex items-center', statusBadgeClass(app.status)]" v-html="statusIconChar(app.status) + ' ' + (app.status_display || app.status)"></span>
+                <span :class="['px-3 py-1.5 rounded-full text-xs font-semibold inline-flex items-center', statusBadgeClass(app.status)]" v-html="statusIconChar(app.status) + ' ' + getDisplayStatus(app)"></span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                  <button @click="handleViewDetails(app.id)"
@@ -58,7 +54,7 @@
         </table>
       </div>
 
-      <!-- Empty state for the table -->
+      <!-- Empty state remains unchanged -->
       <div v-else class="text-center py-8 bg-blue-50 rounded-lg">
           <p class="text-gray-600">You have not created any accreditation applications yet.</p>
           <p class="text-gray-500 text-sm mt-1">
@@ -107,50 +103,61 @@ const formatAccreditationCycle = (cycleKey) => {
   return mapping[cycleKey] || cycleKey || 'N/A';
 };
 
+// Provides human-friendly text for specific status keys
+const getDisplayStatus = (app) => {
+  const friendlyTextMapping = {
+    'submitted_awaits_isar': 'Initial Application Submitted',
+    'initial_app_approved_awaiting_isar': 'Approved (Awaiting ISAR)',
+    'initial_app_submitted_heqc_review': 'Under HEQC Review'
+  };
+
+  if (friendlyTextMapping[app.status]) {
+    return friendlyTextMapping[app.status];
+  }
+  return app.status_display || app.status.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+};
+
+
 const statusBadgeClass = (statusKey) => {
   const mapping = {
-    // Initial Application Statuses
-    'draft_initial': 'bg-gray-200 text-gray-800 border border-gray-300',
-    'pending_payment': 'bg-yellow-100 text-yellow-800 border border-yellow-300',
-    'initial_app_submitted_heqc_review': 'bg-blue-100 text-blue-800 border border-blue-300',
-    'initial_app_rejected': 'bg-red-100 text-red-800 border border-red-300',
-    // Awaiting ISAR Status
-    'initial_app_approved_awaiting_isar': 'bg-teal-100 text-teal-800 border border-teal-300',
-    // ISAR and Assessment Statuses
-    'isar_submitted_heqc_review': 'bg-sky-100 text-sky-800 border border-sky-300',
-    'assessment_scheduled': 'bg-indigo-100 text-indigo-800 border border-indigo-300',
-    'assessment_completed': 'bg-purple-100 text-purple-800 border border-purple-300',
-    // Final Decision Statuses
-    'approved_accredited': 'bg-green-100 text-green-800 border border-green-300',
-    'approved_conditional': 'bg-lime-100 text-lime-800 border border-lime-300',
-    'rejected_not_accredited': 'bg-red-200 text-red-900 border border-red-400',
-    'appealed': 'bg-orange-100 text-orange-800 border border-orange-300',
-    // Closed Statuses
-    'closed_withdrawn': 'bg-gray-300 text-gray-900 border border-gray-400',
-    'closed_completed': 'bg-gray-300 text-gray-900 border border-gray-400',
+    'draft_initial': 'bg-gray-200 text-gray-800',
+    'pending_payment': 'bg-yellow-100 text-yellow-800',
+    'initial_app_submitted_heqc_review': 'bg-blue-100 text-blue-800',
+    'initial_app_rejected': 'bg-red-100 text-red-800',
+    'submitted_awaits_isar': 'bg-cyan-100 text-cyan-800',
+    'initial_app_approved_awaiting_isar': 'bg-teal-100 text-teal-800',
+    'isar_submitted_heqc_review': 'bg-sky-100 text-sky-800',
+    'assessment_scheduled': 'bg-indigo-100 text-indigo-800',
+    'assessment_completed': 'bg-purple-100 text-purple-800',
+    'approved_accredited': 'bg-green-100 text-green-800',
+    'approved_conditional': 'bg-lime-100 text-lime-800',
+    'rejected_not_accredited': 'bg-red-200 text-red-900',
+    'appealed': 'bg-orange-100 text-orange-800',
+    'closed_withdrawn': 'bg-gray-300 text-gray-900',
+    'closed_completed': 'bg-gray-300 text-gray-900',
   };
-  // Fallback for any unexpected status keys
-  return mapping[statusKey] || 'bg-gray-100 text-gray-700 border border-gray-200';
+  return mapping[statusKey] || 'bg-gray-100 text-gray-700';
 };
 
 const statusIconChar = (statusKey) => {
   const mapping = {
-    'draft_initial': '', // Draft
-    'pending_payment': '', // Payment
-    'initial_app_submitted_heqc_review': '⏳', // Review
-    'initial_app_rejected': '❌', // Rejected
-    'initial_app_approved_awaiting_isar': '', // ISAR Awaiting
-    'isar_submitted_heqc_review': '', // ISAR Submitted
-    'assessment_scheduled': '', // Scheduled
-    'assessment_completed': '', // Completed
-    'approved_accredited': '✅', // Approved
-    'approved_conditional': '✅', // Approved Conditional
-    'rejected_not_accredited': '⛔', // Not Accredited
-    'appealed': '⚖️', // Appealed
-    'closed_withdrawn': '', // Withdrawn/Closed
-    'closed_completed': '', // Completed/Closed
+    'draft_initial': '',
+    'pending_payment': '',
+    'initial_app_submitted_heqc_review': '⏳',
+    'initial_app_rejected': '❌',
+    'submitted_awaits_isar': '➡️',
+    'initial_app_approved_awaiting_isar': '',
+    'isar_submitted_heqc_review': '',
+    'assessment_scheduled': '',
+    'assessment_completed': '',
+    'approved_accredited': '✅',
+    'approved_conditional': '✅',
+    'rejected_not_accredited': '⛔',
+    'appealed': '⚖️',
+    'closed_withdrawn': '',
+    'closed_completed': '',
   };
-  return mapping[statusKey] || ''; // Default icon
+  return mapping[statusKey] || '';
 };
 
 onMounted(() => {
@@ -159,10 +166,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-.animate-spin {
-  animation: spin 1s linear infinite;
-}
+@keyframes spin { to { transform: rotate(360deg); } }
+.animate-spin { animation: spin 1s linear infinite; }
 </style>
