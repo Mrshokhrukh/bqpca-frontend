@@ -14,7 +14,6 @@
     </div>
 
     <div class="relative w-full mx-auto px-4 sm:px-6 lg:px-8 py-12 ">
-      <!-- Header with glassmorphism effect -->
       <div class="text-center mb-12 relative">
         <div class="absolute inset-0 bg-white/30 backdrop-blur-xl rounded-3xl border border-white/20 shadow-sm"></div>
         <div class="relative p-8">
@@ -31,8 +30,6 @@
           </p>
         </div>
       </div>
-
-      <!-- Success Message Display -->
       <div v-if="isShowingSuccessMessage"
         class="mb-10 p-6 bg-gradient-to-r from-green-400/30 to-emerald-600/30 border-2 border-green-500/50 rounded-3xl shadow-xl text-center backdrop-blur-md">
         <div
@@ -54,9 +51,7 @@
 
       <form v-if="!isShowingSuccessMessage" @submit.prevent="handleFormSubmit" class="space-y-8"
         enctype="multipart/form-data">
-        <!-- Proponent Details Section -->
         <div class="group relative">
-          <!-- Animated border -->
           <div
             class="absolute inset-0 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-3xl opacity-20 group-hover:opacity-30 transition-opacity duration-500 blur-xl">
           </div>
@@ -243,19 +238,9 @@
                   placeholder="Enter target category" />
               </div>
 
-              <!-- Renewal Review Name -->
-              <div>
-                <label for="tcRenewalReviewName" class="form-label required-label">Renewal Review Name</label>
-                <input type="text" id="tcRenewalReviewName" v-model="formData.tc_renewal_review_name" class="form-input"
-                  required placeholder="Enter renewal review name" />
-              </div>
 
-              <!-- Review Summary -->
-              <div class="lg:col-span-2">
-                <label for="tcReviewSummary" class="form-label required-label">Review Summary</label>
-                <textarea id="tcReviewSummary" v-model="formData.tc_review_summary" rows="4" class="form-textarea"
-                  required placeholder="Enter review summary..."></textarea>
-              </div>
+
+
 
               <!-- Valid Till -->
               <div>
@@ -280,21 +265,6 @@
                 </div>
               </div>
 
-              <!-- Report File -->
-              <div class="lg:col-span-2">
-                <label for="tcReportFile" class="form-label required-label">Report File</label>
-                <div class="relative">
-                  <input type="file" id="tcReportFile" @change="handleReportFileChange" class="form-file-input"
-                    required />
-                  <p class="mt-2 text-sm text-slate-500 flex items-center">
-                    <svg class="w-4 h-4 mr-2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    Attach the main report file.
-                  </p>
-                </div>
-              </div>
 
               <!-- Teaching Center Remarks -->
               <div class="lg:col-span-2">
@@ -373,8 +343,6 @@
         </div>
       </form>
 
-      <!-- PaymentModal is defined but not opened automatically on form submit anymore.
-           It would be triggered by a different flow after application approval. -->
       <PaymentModal ref="paymentModalRef" :amount="EPC_TEACHING_CENTER_FEE" @payment-completed="onPaymentCompleted"
         @close="onPaymentModalClose" />
     </div>
@@ -383,23 +351,23 @@
 
 <script setup>
 import { ref, watch, onMounted, computed } from 'vue'
-import apiServices from '@/services/services' // Ensure this path is correct
+import apiServices from '@/services/services'
 
-import PaymentModal from '@/components/common/PaymentModal.vue' // Ensure this path is correct
+import PaymentModal from '@/components/common/PaymentModal.vue'
 import { BuildingOffice2Icon, AcademicCapIcon } from '@heroicons/vue/24/outline'
 import { Loader } from 'lucide-vue-next'
-import { bhutanDzongkhagsGewogs } from '@/constants/dzongkhags.js' // Ensure this path is correct
-import { useAuthStore } from '@/stores/authStore' // Ensure this path is correct
+import { bhutanDzongkhagsGewogs } from '@/constants/dzongkhags.js'
+import { useAuthStore } from '@/stores/authStore'
 
 const isLoadingOptions = ref(true)
 const isSubmitting = ref(false)
 const isSubmittingDraft = ref(false)
-const paymentModalRef = ref(null) // Keep ref if PaymentModal might be used for other purposes
+const paymentModalRef = ref(null)
 const authStore = useAuthStore()
 
 const EPC_TEACHING_CENTER_FEE = 100
 
-const isShowingSuccessMessage = ref(false); // Controls visibility of the success message
+const isShowingSuccessMessage = ref(false);
 
 const initialFormData = {
   institute_id: '',
@@ -463,7 +431,6 @@ const todayDate = computed(() => {
 onMounted(async () => {
   isLoadingOptions.value = true
   try {
-    // UPDATED: Use EPC API instead of MHPC
     const institutesResponse = await apiServices.getEpcInstitutes()
     const institutesArray = institutesResponse.data?.results || institutesResponse.data || []
 
@@ -514,9 +481,7 @@ const handleAttachmentChange = (event) => {
   formData.value.tc_attachments = event.target.files
 }
 
-const handleReportFileChange = (event) => {
-  formData.value.tc_report = event.target.files[0]
-}
+
 
 const resetForm = () => {
   formData.value = { ...initialFormData }
@@ -526,8 +491,6 @@ const resetForm = () => {
     if (inputElement) inputElement.value = ''
   })
   formData.value.declaration = false;
-  // Optionally hide the success message if the user intends to submit another form
-  // isShowingSuccessMessage.value = false; // Or keep it visible until page reload/navigation
 }
 
 const createPayload = (isDraft = false) => {
@@ -545,7 +508,7 @@ const createPayload = (isDraft = false) => {
   Object.keys(dataToSubmit).forEach((key) => {
     const value = dataToSubmit[key];
 
-    // Handle file uploads
+
     if (key === 'tc_attachments' && value) {
       if (value.length > 0) {
         for (let i = 0; i < value.length; i++) {
@@ -553,17 +516,12 @@ const createPayload = (isDraft = false) => {
         }
       }
     }
-    else if (key === 'tc_report' && value) {
-      formPayload.append('tc_report', value);
-    }
-    // Handle regular fields
-    else if (value !== null && value !== undefined && value !== '') {
-      // Map frontend field names to backend field names
-      let backendKey = key;
 
-      // Map institute_id correctly for backend
+    else if (value !== null && value !== undefined && value !== '') {
+
+      let backendKey = key;
       if (key === 'institute_id') {
-        backendKey = 'institute_id'; // Keep as institute_id for the serializer
+        backendKey = 'institute_id';
       }
 
       if (typeof value === 'boolean') {
@@ -574,7 +532,7 @@ const createPayload = (isDraft = false) => {
     }
   });
 
-  // Ensure payment_id is always included (even if empty)
+
   if (!formPayload.has('payment_id')) {
     formPayload.append('payment_id', '');
   }
@@ -590,44 +548,35 @@ const validateForm = () => {
   if (!formData.value.state_dzongkhag) { alert('Please select State/Dzongkhag for the center.'); return false; }
   if (!formData.value.city_gewog) { alert('Please select City/Gewog for the center.'); return false; }
   if (!formData.value.target_category.trim()) { alert('Please enter Target Category.'); return false; }
-  if (!formData.value.tc_renewal_review_name.trim()) { alert('Please enter Renewal Review Name.'); return false; }
-  if (!formData.value.tc_review_summary.trim()) { alert('Please enter Review Summary.'); return false; }
   if (!formData.value.valid_till) { alert('Please select Valid Till date.'); return false; }
   if (!formData.value.tc_attachments || formData.value.tc_attachments.length === 0) { alert('Please attach required documents.'); return false; }
-  if (!formData.value.tc_report) { alert('Please attach the report file.'); return false; }
   if (!formData.value.tc_remarks.trim()) { alert('Please enter Teaching Center Remarks.'); return false; }
   if (!formData.value.declaration) { alert('Please accept the declaration.'); return false; }
   return true;
 }
 
-// Updated handleFormSubmit: No immediate payment modal
 const handleFormSubmit = async () => {
   if (!validateForm()) {
     return;
   }
   isSubmitting.value = true;
-  isShowingSuccessMessage.value = false; // Reset in case of re-submission attempt
+  isShowingSuccessMessage.value = false;
 
   try {
     const formPayloadForApp = createPayload(false);
-    // No payment_id appended for initial submission
-    // Backend should handle application as pending payment/approval
 
     if (authStore.userId) {
       formPayloadForApp.append('user_id', authStore.userId);
     }
-
-    // UPDATED: Use EPC API instead of MHPC
     await apiServices.createEpcTeachingCenter(formPayloadForApp);
 
-    isShowingSuccessMessage.value = true; // Show custom success message
+    isShowingSuccessMessage.value = true;
     resetForm();
-    window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top to see message
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 
   } catch (error) {
     console.error('Error during submission process:', error.response?.data || error.message || error);
     let errorMessage = 'Error submitting application. ';
-    // ... (error message formatting as before)
     if (error.response?.data) {
       const errors = error.response.data;
       if (typeof errors === 'string') {
@@ -646,42 +595,25 @@ const handleFormSubmit = async () => {
     } else {
       errorMessage += error.message || 'An unexpected network or server error occurred. Please check the console for details.';
     }
-    alert(errorMessage); // Keep alert for errors
+    alert(errorMessage);
   } finally {
     isSubmitting.value = false;
   }
 }
-
-// The onPaymentModalClose and onPaymentCompleted functions are no longer directly
-// called by handleFormSubmit. They are kept in case the PaymentModal is used
-// in a separate, post-approval payment flow.
 const onPaymentModalClose = () => {
-  // Logic if payment modal is closed (e.g., if used in a separate payment step)
+
   console.log('Payment modal closed.');
 }
 
 const onPaymentCompleted = async ({ paymentHash }) => {
-  // This function would be triggered if the PaymentModal completes a payment.
-  // It would need to be part of a separate workflow where an application_id
-  // is known and the payment needs to be linked to it.
   console.log('Payment completed with hash:', paymentHash);
-  // Example:
-  // isSubmitting.value = true;
-  // try {
-  //   await apiServices.linkPaymentToApplication(application_id_context, paymentHash);
-  //   alert('Payment successfully linked to your application!');
-  // } catch (error) {
-  //   alert('Failed to link payment. Please contact support.');
-  // } finally {
-  //   isSubmitting.value = false;
-  // }
 }
 
 
 const handleCancel = () => {
   if (confirm('Are you sure you want to cancel and reset the form? All unsaved changes will be lost.')) {
     resetForm();
-    isShowingSuccessMessage.value = false; // Also hide success message on cancel
+    isShowingSuccessMessage.value = false;
   }
 }
 
@@ -696,13 +628,13 @@ const handleSaveDraft = async () => {
     formPayload.append('user_id', authStore.userId);
   }
   try {
-    // UPDATED: Use EPC API instead of MHPC
+
     await apiServices.createEpcTeachingCenter(formPayload)
     alert('Draft saved successfully!')
   } catch (error) {
     console.error('Error saving draft:', error.response?.data || error.message || error)
     let errorMessage = 'Error saving draft. ';
-    // ... (error message formatting as before)
+
     if (error.response?.data) {
       const errors = error.response.data;
       if (typeof errors === 'string') {
