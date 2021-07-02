@@ -299,6 +299,16 @@
                 Re-apply / Renew
               </button>
             </div>
+            <div
+              v-else-if="center.is_active && getDaysUntilExpiration(center) > 90"
+              class="p-4 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm"
+            >
+              <h4 class="font-semibold">Sufficient time for renewal</h4>
+              <p class="mt-1">
+                Your registration is valid until {{ formatDate(center.valid_till) }}. There is no need
+                to renew at this time.
+              </p>
+            </div>
 
             <div class="flex justify-end items-center space-x-3 mt-4">
               <button

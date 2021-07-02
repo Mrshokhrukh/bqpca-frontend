@@ -7,7 +7,7 @@
         Manage and renew your teaching center registration
       </p>
     </div>
-
+    
     <!-- Loading State -->
     <div v-if="isLoading" class="flex justify-center my-8">
       <div class="inline-block animate-spin text-blue-600 text-3xl">⌛</div>
@@ -274,7 +274,7 @@
               v-if="
                 center.is_active &&
                 !isRenewalInProgress(center) &&
-                (getDaysUntilExpiration(center) <= 90 || getDaysUntilExpiration(center) <= 0)
+                getDaysUntilExpiration(center) <= 90
               "
               @click="openRenewalDialog(center)"
               class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg focus:outline-none focus:shadow-outline"
@@ -309,6 +309,18 @@
             <p class="mt-1 text-sm">
               Your renewal application has been submitted and is currently under review. You will be
               notified once the review is complete.
+            </p>
+          </div>
+
+          <!-- If it's too early to renew -->
+          <div
+            v-else-if="center.is_active && getDaysUntilExpiration(center) > 90"
+            class="mt-8 p-4 bg-green-50 border border-green-200 rounded-lg text-green-700"
+          >
+            <h4 class="font-medium">Sufficient time for renewal</h4>
+            <p class="mt-1 text-sm">
+              Your registration is valid until {{ formatDate(center.valid_till) }}. There is no need
+              to renew at this time.
             </p>
           </div>
 

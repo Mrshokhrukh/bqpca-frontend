@@ -50,7 +50,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div>
         <label for="medical-registration_type" class="form-label"
-          >Registration Type (from BMHC)</label
+          >Registration Type </label
         >
         <input
           type="text"
@@ -64,7 +64,7 @@
         </p>
       </div>
       <div>
-        <label for="medical-nationality" class="form-label">Nationality (from BMHC)</label>
+        <label for="medical-nationality" class="form-label">Nationality </label>
         <input
           type="text"
           id="medical-nationality"
@@ -77,7 +77,7 @@
     </div>
 
     <div>
-      <label for="medical-full_name" class="form-label">Full Name (from BMHC)</label>
+      <label for="medical-full_name" class="form-label">Full Name </label>
       <input
         type="text"
         id="medical-full_name"
@@ -90,7 +90,7 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div>
-        <label for="medical-date_of_birth" class="form-label">Date of Birth (from BMHC)</label>
+        <label for="medical-date_of_birth" class="form-label">Date of Birth </label>
         <input
           type="date"
           id="medical-date_of_birth"
@@ -103,7 +103,7 @@
         </p>
       </div>
       <div>
-        <label for="medical-contact_no" class="form-label">Contact Number (from BMHC)</label>
+        <label for="medical-contact_no" class="form-label">Contact Number </label>
         <input
           type="tel"
           id="medical-contact_no"
@@ -116,7 +116,7 @@
     </div>
 
     <div>
-      <label for="medical-email_address" class="form-label">Email Address (from BMHC)</label>
+      <label for="medical-email_address" class="form-label">Email Address </label>
       <input
         type="email"
         id="medical-email_address"
@@ -131,7 +131,7 @@
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <div>
-        <label for="medical-village" class="form-label">Village (from BMHC)</label>
+        <label for="medical-village" class="form-label">Village </label>
         <input
           type="text"
           id="medical-village"
@@ -142,7 +142,7 @@
         <p v-if="errors.village" class="mt-1 text-sm text-red-500">{{ errors.village }}</p>
       </div>
       <div>
-        <label for="medical-gewog" class="form-label">Gewog (from BMHC)</label>
+        <label for="medical-gewog" class="form-label">Gewog </label>
         <input
           type="text"
           id="medical-gewog"
@@ -153,7 +153,7 @@
         <p v-if="errors.gewog" class="mt-1 text-sm text-red-500">{{ errors.gewog }}</p>
       </div>
       <div>
-        <label for="medical-dzongkhag" class="form-label">Dzongkhag (from BMHC)</label>
+        <label for="medical-dzongkhag" class="form-label">Dzongkhag </label>
         <input
           type="text"
           id="medical-dzongkhag"
@@ -232,10 +232,10 @@
       </p>
     </div>
 
-    <!-- Education Details Section (from BMHC) -->
+    <!-- Education Details Section  -->
     <div class="border-t pt-6">
       <div class="flex items-center justify-between mb-4">
-        <label class="form-label text-lg">Education Details (from BMHC)</label>
+        <label class="form-label text-lg">Education Details </label>
       </div>
 
       <div v-if="form.education_details && form.education_details.length > 0" class="space-y-4">
@@ -598,6 +598,7 @@ const selectMedicalFaculty = (facultyData) => {
   showMedicalSearchDropdown.value = false
   medicalSearchResults.value = []
 
+  // This part mapping the qualifications is correct. No changes needed here.
   const educationDetails = (facultyData.user_qualifications || [])
     .filter(
       (q) =>
@@ -640,11 +641,14 @@ const selectMedicalFaculty = (facultyData) => {
     staff_name: facultyData.full_name || facultyData.applicants_name || '',
     registration_type:
       facultyData.registration_type_name || String(facultyData.registration_type || ''),
-    nationality: facultyData.nationality_display || facultyData.nationality || '',
+
+    // ✅ FIX: Use the correct field names directly from the API response.
+    nationality: facultyData.nationality || '',
     date_of_birth: facultyData.date_of_birth || '',
-    village: facultyData.village_name || facultyData.village || '',
-    gewog: facultyData.gewog_name || facultyData.gewog || '',
-    dzongkhag: facultyData.dzongkhag_name || facultyData.dzongkhag || '',
+    village: facultyData.village || '',
+    gewog: facultyData.gewog || '',
+    dzongkhag: facultyData.dzongkhag || '',
+
     contact_no: facultyData.contact_no || '',
     email_address: facultyData.email_address || '',
     registration_date: facultyData.registration_date || '',
@@ -655,6 +659,7 @@ const selectMedicalFaculty = (facultyData) => {
     date_of_joining: props.form.date_of_joining || new Date().toISOString().split('T')[0],
   }
 
+  // The rest of your function logic remains the same.
   const isDifferentFacultyInEditMode =
     props.mode === 'edit' &&
     props.form.id &&

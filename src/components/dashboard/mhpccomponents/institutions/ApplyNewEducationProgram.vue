@@ -279,9 +279,9 @@ const fetchInstituteAndTeachingCenters = async (instituteIdToUse) => {
     formData.value.institute_name = instituteData?.name_of_institution || `Institute ID: ${instituteIdToUse}`;
 
     const teachingCentersResponse = await apiServices.getMhpcTeachingCenters();
-    console.log('Raw Teaching Centers Response:', JSON.stringify(teachingCentersResponse.data, null, 2));
+    // console.log('Raw Teaching Centers Response:', JSON.stringify(teachingCentersResponse.data, null, 2));
     const allCenters = teachingCentersResponse.data.results || teachingCentersResponse.data || [];
-    console.log('Processed Teaching Centers:', allCenters);
+    // console.log('Processed Teaching Centers:', allCenters);
 
     availableTeachingCenters.value = allCenters
       .filter(center => {
@@ -292,12 +292,12 @@ const fetchInstituteAndTeachingCenters = async (instituteIdToUse) => {
             ? Number(center.institute.id)
             : Number(center.institute);
         const isMatch = center.is_active && centerInstituteId === Number(instituteIdToUse);
-        console.log(`Center: ${center.center_name}, is_active: ${center.is_active}, institute_id: ${centerInstituteId}, instituteIdToUse: ${instituteIdToUse}, match: ${isMatch}`);
+        // console.log(`Center: ${center.center_name}, is_active: ${center.is_active}, institute_id: ${centerInstituteId}, instituteIdToUse: ${instituteIdToUse}, match: ${isMatch}`);
         return isMatch;
       })
       .sort((a, b) => a.center_name.localeCompare(b.center_name));
 
-    console.log('Filtered Teaching Centers:', availableTeachingCenters.value);
+    // console.log('Filtered Teaching Centers:', availableTeachingCenters.value);
     if (availableTeachingCenters.value.length === 0) {
       console.warn('No active teaching centers found for institute ID:', instituteIdToUse);
       toast.warning('No active teaching centers found for your institute.');

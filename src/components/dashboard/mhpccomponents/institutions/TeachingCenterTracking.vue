@@ -1,12 +1,17 @@
 <template>
   <div
-    class="application-tracking  mx-auto p-4 md:p-6 bg-white/80 backdrop-blur-md rounded-xl md:rounded-2xl shadow-lg">
+    class="application-tracking mx-auto p-4 md:p-6 bg-white/80 backdrop-blur-md rounded-xl md:rounded-2xl shadow-lg"
+  >
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 md:mb-8">
       <h1
-        class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-        Track Your Learning Hospital Applications</h1>
-      <button @click="openApplicationFormModal"
-        class="mt-4 sm:mt-0 px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg shadow-md hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 flex items-center text-sm font-medium">
+        class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent"
+      >
+        Track Your Learning Hospital Applications
+      </h1>
+      <button
+        @click="openApplicationFormModal"
+        class="mt-4 sm:mt-0 px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg shadow-md hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 flex items-center text-sm font-medium"
+      >
         <PlusIcon class="w-5 h-5 mr-2" />
         Add New Hospital
       </button>
@@ -15,132 +20,213 @@
     <!-- Loading State -->
     <div v-if="isLoading && !applications.length" class="text-center py-8">
       <svg class="animate-spin h-8 w-8 text-indigo-600 mx-auto" fill="none" viewBox="0 0 24 24">
-        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <circle
+          class="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          stroke-width="4"
+        ></circle>
         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
       </svg>
       <p class="text-gray-600 mt-2">Loading applications...</p>
     </div>
 
     <!-- Filters -->
-    <div v-if="!isLoading || applications.length"
-      class="mb-6 flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
+    <div
+      v-if="!isLoading || applications.length"
+      class="mb-6 flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center"
+    >
       <div class="relative w-full sm:w-auto sm:flex-grow lg:flex-grow-0 lg:w-1/3">
-        <input type="text" v-model="searchQuery" placeholder="Search by center name or location"
-          class="block w-full px-4 py-2.5 border rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm bg-white/50 backdrop-blur-sm" />
-        <MagnifyingGlassIcon class="absolute top-1/2 right-3 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+        <input
+          type="text"
+          v-model="searchQuery"
+          placeholder="Search by center name or location"
+          class="block w-full px-4 py-2.5 border rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm bg-white/50 backdrop-blur-sm"
+        />
+        <MagnifyingGlassIcon
+          class="absolute top-1/2 right-3 transform -translate-y-1/2 h-5 w-5 text-gray-400"
+        />
       </div>
       <div class="flex gap-2 sm:gap-4 w-full sm:w-auto">
         <div class="relative w-full sm:w-40 md:w-48">
-          <select v-model="filterDzongkhag"
-            class="block w-full px-4 py-2.5 border rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm bg-white/50 backdrop-blur-sm appearance-none">
+          <select
+            v-model="filterDzongkhag"
+            class="block w-full px-4 py-2.5 border rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm bg-white/50 backdrop-blur-sm appearance-none"
+          >
             <option value="">All Dzongkhags</option>
-            <option v-for="dzongkhag in dzongkhagOptionsForCenter" :key="dzongkhag.value" :value="dzongkhag.value">
+            <option
+              v-for="dzongkhag in dzongkhagOptionsForCenter"
+              :key="dzongkhag.value"
+              :value="dzongkhag.value"
+            >
               {{ dzongkhag.label }}
             </option>
           </select>
           <ChevronDownIcon
-            class="absolute top-1/2 right-3 transform -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
+            class="absolute top-1/2 right-3 transform -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none"
+          />
         </div>
         <div class="relative w-full sm:w-40 md:w-48">
-          <select v-model="filterGewog"
+          <select
+            v-model="filterGewog"
             class="block w-full px-4 py-2.5 border rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm bg-white/50 backdrop-blur-sm appearance-none"
-            :disabled="!filterDzongkhag">
+            :disabled="!filterDzongkhag"
+          >
             <option value="">{{ filterDzongkhag ? 'All Gewogs' : 'Select Dzongkhag' }}</option>
             <option v-for="gewog in gewogOptionsForCenter" :key="gewog.value" :value="gewog.value">
               {{ gewog.label }}
             </option>
           </select>
           <ChevronDownIcon
-            class="absolute top-1/2 right-3 transform -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
+            class="absolute top-1/2 right-3 transform -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none"
+          />
         </div>
       </div>
     </div>
 
     <!-- Applications Table -->
-    <div v-if="!isLoading || applications.length" class="overflow-x-auto bg-white rounded-lg shadow">
+    <div
+      v-if="!isLoading || applications.length"
+      class="overflow-x-auto bg-white rounded-lg shadow"
+    >
       <table class="min-w-full border-collapse border border-gray-200">
         <thead class="bg-gradient-to-r from-indigo-50 to-purple-50">
           <tr>
             <th
-              class="px-4 py-3 md:px-6 md:py-3 border-b border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-              Hospital Name</th>
+              class="px-4 py-3 md:px-6 md:py-3 border-b border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+            >
+              Hospital Name
+            </th>
             <th
-              class="px-4 py-3 md:px-6 md:py-3 border-b border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-              Location</th>
+              class="px-4 py-3 md:px-6 md:py-3 border-b border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+            >
+              Location
+            </th>
             <th
-              class="px-4 py-3 md:px-6 md:py-3 border-b border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-              Status</th>
+              class="px-4 py-3 md:px-6 md:py-3 border-b border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+            >
+              Status
+            </th>
             <th
-              class="px-4 py-3 md:px-6 md:py-3 border-b border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-              Payment Status</th>
+              class="px-4 py-3 md:px-6 md:py-3 border-b border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+            >
+              Payment Status
+            </th>
             <th
-              class="px-4 py-3 md:px-6 md:py-3 border-b border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-              Clinical Preceptor</th>
+              class="px-4 py-3 md:px-6 md:py-3 border-b border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+            >
+              Clinical Preceptor
+            </th>
             <th
-              class="px-4 py-3 md:px-6 md:py-3 border-b border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-              Valid Till</th>
+              class="px-4 py-3 md:px-6 md:py-3 border-b border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+            >
+              Valid Till
+            </th>
             <th
-              class="px-4 py-3 md:px-6 md:py-3 border-b border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-              Actions</th>
+              class="px-4 py-3 md:px-6 md:py-3 border-b border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+            >
+              Actions
+            </th>
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
           <tr v-if="isLoading && applications.length">
             <td colspan="7" class="text-center py-8 relative">
               <div class="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center">
-                <svg class="animate-spin h-8 w-8 text-indigo-600 mx-auto" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <svg
+                  class="animate-spin h-8 w-8 text-indigo-600 mx-auto"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="4"
+                  ></circle>
                   <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
                 </svg>
               </div>
             </td>
           </tr>
-          <tr v-for="application in filteredApplications" :key="application.id"
-            class="hover:bg-gray-50/50 transition-colors duration-150">
-            <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{
-              application.center_name }}</td>
-            <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-600">{{ application.center_location
-              }} <span class="text-gray-400">({{ application.state_dzongkhag }}, {{ application.city_gewog }})</span>
+          <tr
+            v-for="application in filteredApplications"
+            :key="application.id"
+            class="hover:bg-gray-50/50 transition-colors duration-150"
+          >
+            <td
+              class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm font-medium text-gray-900"
+            >
+              {{ application.center_name }}
+            </td>
+            <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-600">
+              {{ application.center_location }}
+              <span class="text-gray-400"
+                >({{ application.state_dzongkhag }}, {{ application.city_gewog }})</span
+              >
             </td>
             <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm">
-              <span :class="statusClass(application.tc_review_decision)"
-                class="px-2.5 py-1 rounded-full text-xs font-semibold leading-tight">
+              <span
+                :class="statusClass(application.tc_review_decision)"
+                class="px-2.5 py-1 rounded-full text-xs font-semibold leading-tight"
+              >
                 {{ application.tc_review_decision || 'Unknown' }}
               </span>
             </td>
             <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm">
-              <span :class="paymentStatusClass(application.payment_status)"
-                class="px-2.5 py-1 rounded-full text-xs font-semibold leading-tight">
+              <span
+                :class="paymentStatusClass(application.payment_status)"
+                class="px-2.5 py-1 rounded-full text-xs font-semibold leading-tight"
+              >
                 {{ formatPaymentStatus(application.payment_status) }}
               </span>
             </td>
             <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-600">
               {{ application.preceptorName || 'N/A' }}
             </td>
-            <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-600">{{
-              formatDate(application.valid_till) }}</td>
+            <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-600">
+              {{ formatDate(application.valid_till) }}
+            </td>
             <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-700 space-x-2">
-              <button v-if="canMakePayment(application)" @click="initiateTeachingCenterPayment(application)"
+              <button
+                v-if="canMakePayment(application)"
+                @click="initiateTeachingCenterPayment(application)"
                 class="px-3 py-1.5 bg-yellow-500 text-white rounded-md shadow-sm hover:bg-yellow-600 text-xs font-medium transition-colors"
-                :disabled="isPaymentProcessing || isLoading">
+                :disabled="isPaymentProcessing || isLoading"
+              >
                 Make Payment
               </button>
-              <button v-if="canAddPreceptor(application)" @click="openAddPreceptorModal(application)"
+              <button
+                v-if="canAddPreceptor(application)"
+                @click="openAddPreceptorModal(application)"
                 class="px-3 py-1.5 bg-green-500 text-white rounded-md shadow-sm hover:bg-green-600 text-xs font-medium transition-colors"
-                :disabled="application.isPreceptorAdded || isLoading">
+                :disabled="application.isPreceptorAdded || isLoading"
+              >
                 {{ application.isPreceptorAdded ? 'Preceptor Added' : 'Add Clinical Preceptor' }}
               </button>
-               <button v-if="application.isPreceptorAdded && canRemovePreceptor(application)" @click="confirmRemovePreceptor(application)"
+              <button
+                v-if="application.isPreceptorAdded && canRemovePreceptor(application)"
+                @click="confirmRemovePreceptor(application)"
                 class="px-3 py-1.5 bg-red-500 text-white rounded-md shadow-sm hover:bg-red-600 text-xs font-medium transition-colors"
-                :disabled="isLoading">
+                :disabled="isLoading"
+              >
                 Remove Preceptor
               </button>
-              <button v-if="canDownloadCertificate(application)" @click="openCertificateModal(application)"
-                class="px-3 py-1.5 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600 text-xs font-medium transition-colors">
+              <button
+                v-if="canDownloadCertificate(application)"
+                @click="openCertificateModal(application)"
+                class="px-3 py-1.5 bg-blue-500 text-white rounded-md shadow-sm hover:bg-blue-600 text-xs font-medium transition-colors"
+              >
                 Download Certificate
               </button>
-              <button @click="viewDetails(application)"
-                class="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-md shadow-sm hover:bg-blue-200 text-xs font-medium transition-colors">
+              <button
+                @click="viewDetails(application)"
+                class="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-md shadow-sm hover:bg-blue-200 text-xs font-medium transition-colors"
+              >
                 View Details
               </button>
             </td>
@@ -148,14 +234,26 @@
           <tr v-if="!isLoading && filteredApplications.length === 0">
             <td colspan="7" class="px-6 py-10 text-center text-gray-500 text-sm">
               <div class="flex flex-col items-center">
-                <svg class="w-12 h-12 text-gray-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                    d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path>
+                <svg
+                  class="w-12 h-12 text-gray-300 mb-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.5"
+                    d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"
+                  ></path>
                 </svg>
                 No applications found.
-                <span v-if="searchQuery || filterDzongkhag || filterGewog" class="text-xs text-gray-400 mt-1">Try
-                  adjusting your filters or search.</span>
+                <span
+                  v-if="searchQuery || filterDzongkhag || filterGewog"
+                  class="text-xs text-gray-400 mt-1"
+                  >Try adjusting your filters or search.</span
+                >
               </div>
             </td>
           </tr>
@@ -164,17 +262,26 @@
     </div>
 
     <!-- Add Clinical Preceptor Modal -->
-    <ClinicalPreceptorModal v-if="isPreceptorModalOpen" :application-id="selectedApplicationForPreceptor?.id"
-      @close="closePreceptorModal" @submit-success="handlePreceptorSubmitSuccess" />
+    <ClinicalPreceptorModal
+      v-if="isPreceptorModalOpen"
+      :application-id="selectedApplicationForPreceptor?.id"
+      @close="closePreceptorModal"
+      @submit-success="handlePreceptorSubmitSuccess"
+    />
 
     <!-- Certificate Modal -->
     <teleport to="body">
       <transition name="modal-certificate-fade">
-        <div v-if="showCertificateModal"
+        <div
+          v-if="showCertificateModal"
           class="fixed inset-0 z-[60] bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4"
-          @click.self="closeCertificateModal">
-          <CertificateModal :application="selectedCertificateData" @close="closeCertificateModal"
-            class="certificate-modal-content mx-auto w-full max-w-4xl max-h-[90vh] bg-white rounded-lg shadow-xl overflow-auto flex flex-col" />
+          @click.self="closeCertificateModal"
+        >
+          <CertificateModal
+            :application="selectedCertificateData"
+            @close="closeCertificateModal"
+            class="certificate-modal-content mx-auto w-full max-w-4xl max-h-[90vh] bg-white rounded-lg shadow-xl overflow-auto flex flex-col"
+          />
         </div>
       </transition>
     </teleport>
@@ -182,64 +289,95 @@
     <!-- Application Details Modal -->
     <teleport to="body">
       <transition name="modal-details-fade">
-        <div v-if="isDetailsModalOpen"
+        <div
+          v-if="isDetailsModalOpen"
           class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
-          @click.self="closeDetailsModal">
+          @click.self="closeDetailsModal"
+        >
           <div
-            class="relative bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
+            class="relative bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col"
+          >
             <header
-              class="flex justify-between items-center px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-gray-100">
+              class="flex justify-between items-center px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-gray-100"
+            >
               <h2 class="text-xl font-semibold text-gray-800">Application Details</h2>
-              <button @click="closeDetailsModal"
+              <button
+                @click="closeDetailsModal"
                 class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-200 rounded-lg transition-all duration-200"
-                aria-label="Close modal">
+                aria-label="Close modal"
+              >
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  ></path>
                 </svg>
               </button>
             </header>
             <main class="flex-1 overflow-y-auto">
               <div v-if="selectedApplication" class="p-6 space-y-8">
                 <section>
-                  <h3 class="text-sm font-semibold text-gray-600 uppercase tracking-wider mb-4 flex items-center">
+                  <h3
+                    class="text-sm font-semibold text-gray-600 uppercase tracking-wider mb-4 flex items-center"
+                  >
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
-                      </path>
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                      ></path>
                     </svg>
                     Center Information
                   </h3>
-                  <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-5 border border-blue-100">
+                  <div
+                    class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-5 border border-blue-100"
+                  >
                     <div class="space-y-4">
                       <div>
                         <dt class="text-sm font-medium text-gray-600 mb-1">Center Name</dt>
-                        <dd class="text-gray-900 font-medium">{{ selectedApplication.center_name }}</dd>
+                        <dd class="text-gray-900 font-medium">
+                          {{ selectedApplication.center_name }}
+                        </dd>
                       </div>
                       <div>
                         <dt class="text-sm font-medium text-gray-600 mb-1">Location</dt>
                         <dd class="text-gray-900">{{ selectedApplication.center_location }}</dd>
                         <dd class="text-sm text-gray-500 mt-1">
-                          {{ selectedApplication.state_dzongkhag }}, {{ selectedApplication.city_gewog }}
+                          {{ selectedApplication.state_dzongkhag }},
+                          {{ selectedApplication.city_gewog }}
                         </dd>
                       </div>
                     </div>
                   </div>
                 </section>
                 <section>
-                  <h3 class="text-sm font-semibold text-gray-600 uppercase tracking-wider mb-4 flex items-center">
+                  <h3
+                    class="text-sm font-semibold text-gray-600 uppercase tracking-wider mb-4 flex items-center"
+                  >
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                      ></path>
                     </svg>
                     Status Information
                   </h3>
-                  <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-5 border border-green-100">
+                  <div
+                    class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-5 border border-green-100"
+                  >
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                       <div>
                         <dt class="text-sm font-medium text-gray-600 mb-2">Application Status</dt>
                         <dd>
-                          <span :class="statusClass(selectedApplication.tc_review_decision)"
-                            class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium">
+                          <span
+                            :class="statusClass(selectedApplication.tc_review_decision)"
+                            class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium"
+                          >
                             {{ selectedApplication.tc_review_decision || 'Unknown' }}
                           </span>
                         </dd>
@@ -247,45 +385,76 @@
                       <div>
                         <dt class="text-sm font-medium text-gray-600 mb-2">Payment Status</dt>
                         <dd>
-                          <span :class="paymentStatusClass(selectedApplication.payment_status)"
-                            class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium">
+                          <span
+                            :class="paymentStatusClass(selectedApplication.payment_status)"
+                            class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium"
+                          >
                             {{ formatPaymentStatus(selectedApplication.payment_status) }}
                           </span>
                         </dd>
                       </div>
                     </div>
-                    <div v-if="selectedApplication.payment_id" class="mt-6 pt-4 border-t border-green-200">
+                    <div
+                      v-if="selectedApplication.payment_id"
+                      class="mt-6 pt-4 border-t border-green-200"
+                    >
                       <dt class="text-sm font-medium text-gray-600 mb-2">Payment ID</dt>
                       <dd
-                        class="font-mono text-sm bg-white px-4 py-3 rounded-lg border border-gray-200 text-gray-800 select-all">
+                        class="font-mono text-sm bg-white px-4 py-3 rounded-lg border border-gray-200 text-gray-800 select-all"
+                      >
                         {{ formatPaymentId(selectedApplication.payment_id) }}
                       </dd>
                     </div>
                   </div>
                 </section>
                 <section>
-                  <h3 class="text-sm font-semibold text-gray-600 uppercase tracking-wider mb-4 flex items-center">
+                  <h3
+                    class="text-sm font-semibold text-gray-600 uppercase tracking-wider mb-4 flex items-center"
+                  >
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      ></path>
                     </svg>
                     Additional Information
                   </h3>
-                  <div class="bg-gradient-to-br from-purple-50 to-violet-50 rounded-xl p-5 border border-purple-100">
+                  <div
+                    class="bg-gradient-to-br from-purple-50 to-violet-50 rounded-xl p-5 border border-purple-100"
+                  >
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                       <div>
                         <dt class="text-sm font-medium text-gray-600 mb-1">Valid Till</dt>
-                        <dd class="text-gray-900 font-medium">{{ formatDate(selectedApplication.valid_till) }}</dd>
+                        <dd class="text-gray-900 font-medium">
+                          {{ formatDate(selectedApplication.valid_till) }}
+                        </dd>
                       </div>
                       <div>
                         <dt class="text-sm font-medium text-gray-600 mb-1">Preceptor Status</dt>
                         <dd class="flex items-center">
                           <span
-                            :class="selectedApplication.isPreceptorAdded ? 'text-green-700 bg-green-100' : 'text-orange-700 bg-orange-100'"
-                            class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium">
-                            <span :class="selectedApplication.isPreceptorAdded ? 'bg-green-500' : 'bg-orange-500'"
-                              class="w-1.5 h-1.5 rounded-full mr-2"></span>
-                            {{ selectedApplication.isPreceptorAdded ? `Added: ${selectedApplication.preceptorName}` : 'No Preceptor Added' }}
+                            :class="
+                              selectedApplication.isPreceptorAdded
+                                ? 'text-green-700 bg-green-100'
+                                : 'text-orange-700 bg-orange-100'
+                            "
+                            class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium"
+                          >
+                            <span
+                              :class="
+                                selectedApplication.isPreceptorAdded
+                                  ? 'bg-green-500'
+                                  : 'bg-orange-500'
+                              "
+                              class="w-1.5 h-1.5 rounded-full mr-2"
+                            ></span>
+                            {{
+                              selectedApplication.isPreceptorAdded
+                                ? `Added: ${selectedApplication.preceptorName}`
+                                : 'No Preceptor Added'
+                            }}
                           </span>
                         </dd>
                       </div>
@@ -295,8 +464,10 @@
               </div>
             </main>
             <footer class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end">
-              <button @click="closeDetailsModal"
-                class="px-6 py-2.5 bg-gray-700 text-white rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200 text-sm font-medium shadow-sm">
+              <button
+                @click="closeDetailsModal"
+                class="px-6 py-2.5 bg-gray-700 text-white rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200 text-sm font-medium shadow-sm"
+              >
                 Close
               </button>
             </footer>
@@ -304,10 +475,17 @@
         </div>
       </transition>
     </teleport>
-    <TeachingCenterApplication :is-open="isApplicationFormModalOpen" @close="closeApplicationFormModal"
-      @form-submitted="handleApplicationFormSubmitted" />
-    <PaymentModal ref="teachingCenterPaymentModalRef" :amount="teaching_hospital_registration"
-      @payment-completed="handleTeachingCenterPaymentCompleted" @close="closeTeachingCenterPaymentModal" />
+    <TeachingCenterApplication
+      :is-open="isApplicationFormModalOpen"
+      @close="closeApplicationFormModal"
+      @form-submitted="handleApplicationFormSubmitted"
+    />
+    <PaymentModal
+      ref="teachingCenterPaymentModalRef"
+      :amount="teaching_hospital_registration"
+      @payment-completed="handleTeachingCenterPaymentCompleted"
+      @close="closeTeachingCenterPaymentModal"
+    />
   </div>
 </template>
 
@@ -609,6 +787,11 @@ const handleTeachingCenterPaymentCompleted = async (paymentData) => {
     isLoading.value = false;
     isPaymentProcessing.value = false;
     selectedApplicationForPayment.value = null;
+
+    // Add this line to close the modal
+    if (teachingCenterPaymentModalRef.value) {
+      teachingCenterPaymentModalRef.value.closeModal();
+    }
   }
 };
 
@@ -653,7 +836,7 @@ const removePreceptor = async (application) => {
     }
     toast.success('Clinical Preceptor removed successfully.');
     // Optionally, call fetchApplications() if deeper state changes are expected or to ensure full sync
-    // await fetchApplications(); 
+    // await fetchApplications();
   } catch (error) {
     console.error('Error removing preceptor:', error.response?.data || error.message);
     toast.error('Failed to remove preceptor. Please try again.');
@@ -700,7 +883,7 @@ table th {
 }
 
 select:focus,
-input[type="text"]:focus {
+input[type='text']:focus {
   box-shadow: 0 0 0 2px theme('colors.indigo.300');
 }
 

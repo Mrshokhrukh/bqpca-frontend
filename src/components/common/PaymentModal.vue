@@ -381,7 +381,8 @@ onUnmounted(() => {
 
 defineExpose({
   openModal,
-})
+  closeModal
+});
 </script>
 
 <style scoped>
