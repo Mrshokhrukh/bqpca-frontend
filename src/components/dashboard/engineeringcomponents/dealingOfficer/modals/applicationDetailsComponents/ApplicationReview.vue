@@ -248,12 +248,16 @@ const errorMessage = ref('')
 const localLoading = ref(false)
 
 const currentPaymentStatus = computed(() => {
-  if (props.mainApplicationPaymentStatus?.toLowerCase() === 'completed') {
+  const isThisQualificationPaid =
+    props.qualification.payment_status?.toLowerCase() === 'completed'
+  const isPrimaryAndMainAppPaid =
+    props.qualification.is_primary_qualification &&
+    props.mainApplicationPaymentStatus?.toLowerCase() === 'completed'
+
+  if (isThisQualificationPaid || isPrimaryAndMainAppPaid) {
     return 'completed'
   }
-  if (props.qualification.payment_status?.toLowerCase() === 'completed') {
-    return 'completed'
-  }
+
 
   return props.qualification.payment_status?.toLowerCase() || 'pending'
 })
