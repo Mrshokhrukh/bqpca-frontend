@@ -527,7 +527,7 @@ const fetchApplications = async () => {
   try {
     loading.value = true
     error.value = null
-    const response = await apiServices.getMhpcCpdTaskById(userCid)
+    const response = await apiServices.getMhpcCpdTaskByCid(userCid)
 
     if (response.data && Array.isArray(response.data.results)) {
       applications.value = response.data.results

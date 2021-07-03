@@ -44,6 +44,7 @@
             {{ option.text }}
           </option>
         </select>
+        <slot name="actions"></slot>
       </div>
     </div>
   </div>

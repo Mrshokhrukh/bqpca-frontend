@@ -382,7 +382,6 @@
 
 <script setup>
 import { ref, computed, onMounted, watch, reactive, h } from 'vue';
-import { useToast } from 'vue-toastification';
 import apiServices from '@/services/services';
 import AcademicFacultyForm from './AcademicFacultyForm.vue';
 import MedicalFacultyForm from './MedicalFacultyForm.vue';
@@ -395,7 +394,6 @@ import {
 } from '@heroicons/vue/24/outline';
 // Assuming InstituteHeader is a global component or correctly imported elsewhere if needed.
 
-const toast = useToast();
 const currentYear = new Date().getFullYear();
 const minYear = currentYear - 70;
 
@@ -624,7 +622,7 @@ const fetchFaculty = async (page = 1) => {
         faculty_type: f.faculty_type || (f.registration_no ? 'medical' : (f.cid ? 'academic' : 'unknown')),
         designation: f.designation || null,
         date_of_joining: f.date_of_joining || null,
-        education_details: parseEducationDetails(f.education_details), 
+        education_details: parseEducationDetails(f.education_details),
         cv_name: f.cv && typeof f.cv === 'string' ? f.cv.split('/').pop() : '',
         passport_photo_name: f.passport_photo && typeof f.passport_photo === 'string' ? f.passport_photo.split('/').pop() : '',
       }));

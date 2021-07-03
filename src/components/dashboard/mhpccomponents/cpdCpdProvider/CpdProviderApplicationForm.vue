@@ -76,30 +76,29 @@
             </div>
           </div>
 
-                <div class="space-y-6">
-                  <div>
-                    <!-- Approval Letter: only if approved -->
-                    <div
-                      v-if="application.isApproved === 'true'"
-                      class="bg-indigo-50 p-4 rounded-lg border border-indigo-200"
+              <div class="space-y-6">
+                <div>
+                  <div
+                    v-if="application.isApproved === 'true'"
+                    class="bg-indigo-50 p-4 rounded-lg border border-indigo-200"
+                  >
+                    <label for="approvalLetter" class="form-label"
+                      >Attach Approval Letter (PDF, max 5MB)
+                      <span class="text-rose-500">*</span></label
                     >
-                      <label for="approvalLetter" class="form-label"
-                        >Attach Approval Letter (PDF, max 5MB)
-                        <span class="text-rose-500">*</span></label
-                      >
-                      <input
-                        type="file"
-                        id="approvalLetter"
-                        @change="handleApprovalLetterUpload"
-                        accept=".pdf"
-                        class="form-input-file"
-                      />
-                      <p v-if="applicationDetailsErrors.approvalLetter" class="form-error-text">
-                        {{ applicationDetailsErrors.approvalLetter }}
-                      </p>
-                    </div>
+                    <input
+                      type="file"
+                      id="approvalLetter"
+                      @change="handleApprovalLetterUpload"
+                      accept=".pdf"
+                      class="form-input-file"
+                    />
+                    <p v-if="applicationDetailsErrors.approvalLetter" class="form-error-text">
+                      {{ applicationDetailsErrors.approvalLetter }}
+                    </p>
                   </div>
                 </div>
+              </div>
 
           <div class="space-y-4">
             <div>
@@ -298,6 +297,9 @@
             class="text-sm text-blue-600 hover:text-blue-800 font-semibold py-2 px-4 border border-blue-500 rounded hover:bg-blue-50">
             + Add Activity/Duration
           </button>
+          <div class="mt-4 text-right font-semibold">
+            Total Duration: {{ totalHours.toFixed(2) }} hours
+          </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
@@ -455,7 +457,7 @@
         <div class="fixed inset-0 transition-opacity" aria-hidden="true">
           <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
         </div>
-        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true"> </span>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true"> </span>
         <div
           class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
           role="dialog" aria-modal="true" aria-labelledby="modal-headline">
@@ -501,7 +503,7 @@
 import { ref, reactive, onMounted, computed } from 'vue';
 import { useAuthStore } from '@/stores/authStore';
 import { useRouter } from 'vue-router';
-import apiService from '@/services/services'; // Your API service
+import apiService from '@/services/services';
 
 const authStore = useAuthStore();
 const router = useRouter();
@@ -510,9 +512,8 @@ const loading = ref(false);
 const currentAction = ref('');
 const showConfirmation = ref(false);
 const successMessage = ref('');
-const userRegistrations = ref([]); // To store fetched user/application lookups
+const userRegistrations = ref([]);
 
-// --- Reactive State ---
 const applicant = reactive({
   cidNumber: '',
   fullName: '',
@@ -520,7 +521,7 @@ const applicant = reactive({
 });
 
 const application = reactive({
-  isApproved: 'false', // Default to 'No'
+  isApproved: 'false',
   title: '',
   venue: '',
   fromDate: '',
@@ -536,10 +537,10 @@ const cpdProvider = reactive({
 
 const resourcePersons = ref([
   {
-    selectedPersonId: '', // ID of the selected user from userRegistrations
-    name: '', // Auto-filled or manually entered if not found
-    regNo: '', // Auto-filled or manually entered
-    certificate: null // File object
+    selectedPersonId: '',
+    name: '',
+    regNo: '',
+    certificate: null
   }
 ])
 
@@ -550,8 +551,8 @@ const teachingMethod = reactive({
 const selectedMethodologies = ref([]);
 const teachingMethods = ref([{ activity: '', duration: null }]);
 
-const totalHours = ref(0); // Calculated from teachingMethods durations
-const calculatedCredits = ref(0); // Often same as totalHours
+const totalHours = ref(0);
+const calculatedCredits = ref(0);
 
 const participantDetails = reactive({
   category: [],
@@ -560,14 +561,13 @@ const participantDetails = reactive({
   relevance: '',
 });
 
-const participants = ref([]); // For approved CPDs: { regNo: '', name: '' }
+const participants = ref([]);
 
-// File refs
 const approvalLetter = ref(null)
 const courseDocument = ref(null)
 const attendanceSheet = ref(null)
+const attachment = ref(null)
 
-// Dropdown options
 const agencyOptions = ref([]);
 const reasonOptions = ref([]);
 const cpdTypeOptions = ref([]);
@@ -576,27 +576,24 @@ const participationCategoryOptions = ref([]);
 const participantSubcategoryOptions = ref([]);
 const areOptionsLoaded = ref(false);
 
-// Error objects
-const validationErrors = ref([]); // General form errors
+const validationErrors = ref([]);
 const applicantDetailsErrors = ref({});
 const applicationDetailsErrors = ref({});
 const cpdProviderErrors = ref({});
-const resourcePersonsErrors = ref([]); // Array of error objects, one per resource person
+const resourcePersonsErrors = ref([]);
 const teachingLearningErrors = ref({});
 const participantDetailsErrors = ref({});
 const approvedCpdErrors = ref({});
 
-// --- Computed Properties ---
 const filteredSubcategoryOptions = computed(() => {
   if (!participantDetails.category || participantDetails.category.length === 0) {
     return [];
   }
   return participantSubcategoryOptions.value.filter(subOpt =>
-    participantDetails.category.includes(subOpt.categoryId) // Assumes subOpt has categoryId
+    participantDetails.category.includes(subOpt.categoryId)
   );
 });
 
-// --- Methods ---
 const getCategoryName = (categoryId) => {
   const category = participationCategoryOptions.value.find(cat => cat.value === categoryId);
   return category ? category.text : '';
@@ -604,7 +601,7 @@ const getCategoryName = (categoryId) => {
 
 const addResourcePerson = () => {
   resourcePersons.value.push({ selectedPersonId: '', name: '', regNo: '', certificate: null });
-  resourcePersonsErrors.value.push({}); // Add a corresponding error object
+  resourcePersonsErrors.value.push({});
 };
 
 const removeResourcePerson = (index) => {
@@ -625,13 +622,11 @@ const updateResourcePersonDetails = (person) => {
 
 const toggleApprovedFields = () => {
   const isNowApproved = application.isApproved === 'true';
-  // Clear fields specific to the other state
   if (!isNowApproved) {
-    // Means it was 'true' and now 'false'
     approvalLetter.value = null
     participants.value = []
     attendanceSheet.value = null
-    // Clear related errors
+    attachment.value = null
     if (applicationDetailsErrors.value.approvalLetter) delete applicationDetailsErrors.value.approvalLetter;
     approvedCpdErrors.value = {};
   }
@@ -651,7 +646,7 @@ const handleFileUpload = (event, fileRef, maxSizeMB = 5, errorFieldKey, errorObj
       fileRef.value = file;
     } else {
       fileRef.value = null;
-      event.target.value = ''; // Clear the input
+      event.target.value = '';
       const errorMsg = `Invalid file. Must be PDF and max ${maxSizeMB}MB.`;
       errorObjectRef.value[errorFieldKey] = errorMsg;
     }
@@ -703,12 +698,12 @@ const calculateTotalHours = () => {
   totalHours.value = teachingMethods.value.reduce((sum, method) => {
     return sum + (Number(method.duration) || 0);
   }, 0);
-  calculatedCredits.value = totalHours.value; // Or your specific credit calculation logic
+  calculatedCredits.value = totalHours.value;
 };
 
 const addParticipant = () => {
   participants.value.push({ regNo: '', name: '' });
-   if (approvedCpdErrors.value.participants && approvedCpdErrors.value.participants.length < participants.value.length) {
+    if (approvedCpdErrors.value.participants && approvedCpdErrors.value.participants.length < participants.value.length) {
     approvedCpdErrors.value.participants.push({});
   } else if (!approvedCpdErrors.value.participants) {
     approvedCpdErrors.value.participants = participants.value.map(() => ({}));
@@ -734,14 +729,13 @@ const fetchParticipantName = async (participant) => {
   }
   try {
     currentAction.value = 'fetch_participant'; loading.value = true;
-    // Assuming apiService.getMhpcFullApplicationListByCid can find by regNo or CID
     const response = await apiService.getMhpcFullApplicationListByCid(participant.regNo.trim());
     const foundUser = response.data?.results?.find(app => app.registration_no === participant.regNo.trim() || app.cid_no === participant.regNo.trim());
 
     if (foundUser) {
       participant.name = foundUser.full_name || 'Name not available';
       if (!userRegistrations.value.some(u => u.id === foundUser.id)) {
-        userRegistrations.value.push({ // Cache it
+        userRegistrations.value.push({
             id: foundUser.id,
             registration_no: foundUser.registration_no,
             full_name: foundUser.full_name,
@@ -761,7 +755,6 @@ const fetchParticipantName = async (participant) => {
 };
 
 const validateForm = (forDraft = false) => {
-  // Clear previous errors
   validationErrors.value = [];
   applicantDetailsErrors.value = {};
   applicationDetailsErrors.value = {};
@@ -776,7 +769,6 @@ const validateForm = (forDraft = false) => {
 
   let isValid = true;
 
-  // Section 1: Applicant Details
   if (!forDraft && !applicant.agencyTrainingLocation?.trim()) {
     console.log(
       '[Validation] Applicant Details: agencyTrainingLocation missing',
@@ -786,7 +778,6 @@ const validateForm = (forDraft = false) => {
     isValid = false
   }
 
-  // Section 2: Application Details
   if (!forDraft && !application.title?.trim()) {
     console.log('[Validation] Application Details: title missing', application.title)
     applicationDetailsErrors.value.title = 'Title of CPD is required.'
@@ -831,7 +822,6 @@ const validateForm = (forDraft = false) => {
     isValid = false
   }
 
-  // Section 3: CPD Providers Details
   if (!forDraft && !cpdProvider.agency) {
     console.log('[Validation] CPD Provider: agency missing', cpdProvider.agency)
     cpdProviderErrors.value.agency = 'CPD Providing Agency is required.'
@@ -853,7 +843,6 @@ const validateForm = (forDraft = false) => {
     isValid = false
   }
 
-  // Section 4: Resource Persons Details
   const hasAtLeastOneResourcePersonForNonDraft = resourcePersons.value.some(p => p.selectedPersonId && p.certificate);
   if (!forDraft && resourcePersons.value.length > 0 && !hasAtLeastOneResourcePersonForNonDraft) {
     console.log(
@@ -864,7 +853,6 @@ const validateForm = (forDraft = false) => {
       'At least one resource person with both selection and certificate is required for non-draft submissions.'
     )
     isValid = false
-    // Pinpoint which one is missing
     resourcePersons.value.forEach((person, index) => {
       if (person.selectedPersonId && !person.certificate) {
         console.log(`[Validation] Resource Person ${index + 1}: certificate missing`, person)
@@ -891,8 +879,6 @@ const validateForm = (forDraft = false) => {
     isValid = false
   }
 
-
-  // Section 5: Teaching Learning Method
   if (!forDraft && !teachingMethod.type) {
     console.log('[Validation] Teaching Method: type missing', teachingMethod.type)
     teachingLearningErrors.value.type = 'Type of CPD is required.'
@@ -945,7 +931,6 @@ const validateForm = (forDraft = false) => {
     isValid = false
   }
 
-  // Section 6: Target Audience
   if (!forDraft && areOptionsLoaded.value) {
     if (participantDetails.category.length === 0) {
       console.log('[Validation] Participants: category missing', participantDetails.category)
@@ -983,8 +968,13 @@ const validateForm = (forDraft = false) => {
     isValid = false
   }
 
-  // Section: Approved CPD
   if (application.isApproved === 'true' && !forDraft) {
+    if (!attachment.value) {
+      console.log('[Validation] Approved CPD: attachment (General Attachment) missing', attachment.value);
+      approvedCpdErrors.value.attachment = 'General Attachment is required for approved CPD.';
+      isValid = false;
+    }
+
     const validListedParticipants = participants.value.filter((p) => p.regNo?.trim())
     if (validListedParticipants.length > 0 && !attendanceSheet.value) {
       console.log(
@@ -1028,58 +1018,17 @@ const validateForm = (forDraft = false) => {
 const prepareFormData = (isDraft = false) => {
   const fd = new FormData();
 
-  // Applicant
-  fd.append('cid_no', applicant.cidNumber || ''); // Map to backend's expected field name e.g. applicant_cid_no
-  fd.append('full_name', applicant.fullName || ''); // Map to backend's e.g. applicant_full_name
+  fd.append('registration_no', '');
+  fd.append('cid_no', applicant.cidNumber || '');
+  fd.append('full_name', applicant.fullName || '');
   fd.append('proposed_training_location', applicant.agencyTrainingLocation?.trim() || '');
 
-  // Application
-  const isCpdApprovedFlag = application.isApproved === 'true';
-  fd.append('is_cpd_approved', isCpdApprovedFlag);
   fd.append('title_of_cpd', application.title?.trim() || '');
   fd.append('venue', application.venue?.trim() || '');
   fd.append('from_date', application.fromDate || '');
   fd.append('to_date', application.toDate || '');
 
-  if (!isCpdApprovedFlag) {
-    fd.append('total_calculated_credits', calculatedCredits.value);
-  }
-
-  // Conditional attachments based on approval status
-  if (isCpdApprovedFlag) {
-    if (approvalLetter.value) fd.append('approval_letter_attachment', approvalLetter.value)
-    else if (isDraft) fd.append('approval_letter_attachment', '')
-
-    const validListedParticipants = participants.value
-      .filter(p => p.regNo?.trim())
-      .map(p => ({
-        participant_reg_no: p.regNo.trim(),
-        review_status: 'Pending', // Default status
-      }));
-    if (validListedParticipants.length > 0) {
-      fd.append('participants', JSON.stringify(validListedParticipants));
-    } else if (isDraft) {
-      fd.append('participants', JSON.stringify([]));
-    }
-
-    if (attendanceSheet.value && validListedParticipants.length > 0) {
-      fd.append('attendance_sheet_attachment', attendanceSheet.value);
-    } else if (isDraft && attendanceSheet.value) { // Send if available even if no participants for draft
-      fd.append('attendance_sheet_attachment', attendanceSheet.value);
-    } else if (isDraft) {
-      fd.append('attendance_sheet_attachment', '');
-    }
-  } else { // Not CPD Approved
-    if (isDraft) { // Send empty placeholders for draft if backend expects them
-      fd.append('approval_letter_attachment', '');
-      fd.append('general_approved_cpd_attachment', '');
-      fd.append('participants', JSON.stringify([]));
-      fd.append('attendance_sheet_attachment', '');
-    }
-  }
-
-  // CPD Provider
-  fd.append('cpd_providing_agency', cpdProvider.agency === 'other' ? '' : (cpdProvider.agency || ''));
+  fd.append('cpd_providing_agency', cpdProvider.agency || '');
   if (cpdProvider.agency === 'other') {
     fd.append('if_others_specify', cpdProvider.otherAgency?.trim() || '');
   } else if (isDraft) {
@@ -1088,83 +1037,120 @@ const prepareFormData = (isDraft = false) => {
   fd.append('reason_for_conducting', cpdProvider.reason || '');
   fd.append('reason_for_details', cpdProvider.reasonDetails?.trim() || '');
 
-  // Resource Persons
-  const resourcePersonsToSend = resourcePersons.value
-    .filter(person => {
-      if (isDraft) { // For draft, include if any identifying info is present
-        return person.selectedPersonId || person.name?.trim() || person.regNo?.trim() || person.certificate;
-      }
-      // For non-draft, already validated by validateForm that selectedPersonId and certificate are present
-      return person.selectedPersonId && person.certificate;
-    });
-
-  if (resourcePersonsToSend.length > 0) {
-      resourcePersonsToSend.forEach((person, index) => {
-          const selectedUser = userRegistrations.value.find(u => u.id === person.selectedPersonId);
-          const regNoToUse = selectedUser ? (selectedUser.registration_no || selectedUser.cid_no) : (person.regNo || '');
-          const nameToUse = selectedUser ? selectedUser.full_name : (person.name || '');
-
-          fd.append(`resources[${index}][resource_person_reg_no]`, regNoToUse);
-          fd.append(`resources[${index}][resource_person_name]`, nameToUse);
-          if (person.certificate) {
-            fd.append(`resources[${index}][document_supporting_expertise]`, person.certificate);
-          }
-          // If draft and no certificate, key is not appended. Backend handles null FileField.
-      });
-  } else if (isDraft) {
-      // If it's a draft and no resource persons, you might not need to send an empty array indication
-      // unless backend strictness requires an empty 'resources' key.
-      // fd.append('resources', JSON.stringify([])); // Usually not needed for FormData files
-  }
-
-
-  // Teaching Learning Method
   fd.append('type_of_cpd', teachingMethod.type || '');
-  if (selectedMethodologies.value.length > 0) {
-    fd.append('methodologies', JSON.stringify(
-      selectedMethodologies.value.map(methodId => ({ methodology_name: methodId })) // Assuming methodId is what backend expects
-    ));
-  } else if (isDraft) {
-    fd.append('methodologies', JSON.stringify([]));
-  }
-
-  const learningMethodsToSubmit = teachingMethods.value
-    .filter(method => method.activity?.trim() || (isDraft && method.duration !== null && method.duration !== undefined))
-    .map(method => ({
-      activities: method.activity?.trim() || '',
-      duration: (method.duration !== null && method.duration !== undefined && Number(method.duration) > 0)
-        ? Number(method.duration)
-        : (isDraft ? (method.duration === null || method.duration === undefined ? '' : Number(method.duration)) : 0),
-    }));
-
-  if (learningMethodsToSubmit.length > 0) {
-    fd.append('learning_methods', JSON.stringify(learningMethodsToSubmit));
-  } else if (isDraft) {
-    fd.append('learning_methods', JSON.stringify([]));
-  }
-
   fd.append('expected_outcome', teachingMethod.expectedOutcome?.trim() || '');
+  fd.append('duration', totalHours.value || 0);
+  fd.append('duration_in_hours', totalHours.value || 0);
+  fd.append('credit', calculatedCredits.value || 0);
+
   if (courseDocument.value) {
     fd.append('course_document', courseDocument.value);
   } else if (isDraft) {
     fd.append('course_document', '');
   }
 
-  // Target Audience
-  if (areOptionsLoaded.value || isDraft) { // Send even if empty for drafts, if backend expects keys
-    fd.append('participation_category', JSON.stringify(participantDetails.category || []));
-    fd.append('participant_sub_category', JSON.stringify(participantDetails.subcategory || []));
-    fd.append('number_of_participants', (participantDetails.number !== null && participantDetails.number !== undefined) ? participantDetails.number : (isDraft ? '' : 0));
-    fd.append('relevance_to_topic', participantDetails.relevance?.trim() || '');
+  fd.append('number_of_participants', participantDetails.number || 0);
+  fd.append('relevance_to_topic', participantDetails.relevance?.trim() || '');
+
+  if (attachment.value) {
+    fd.append('attachment', attachment.value);
+  } else if (isDraft) {
+    fd.append('attachment', '');
   }
 
-  // Meta
+  if (attendanceSheet.value) {
+    fd.append('attendance_sheet_attachment', attendanceSheet.value);
+  } else if (isDraft) {
+    fd.append('attendance_sheet_attachment', '');
+  }
+
   fd.append('is_draft', isDraft);
-  if (authStore.user?.id) {
-    fd.append('user_id', authStore.user.id); // Or let backend derive from request.user
+  fd.append('application_status', isDraft ? 'DRAFT' : 'SUBMITTED');
+  fd.append('status_remarks', '');
+
+  const isCpdApprovedFlag = application.isApproved === 'true';
+  fd.append('is_cpd_approved', isCpdApprovedFlag);
+  if (isCpdApprovedFlag) {
+    if (approvalLetter.value) {
+      fd.append('approval_letter_attachment', approvalLetter.value);
+    } else if (isDraft) {
+      fd.append('approval_letter_attachment', '');
+    }
+
+    if (!isDraft) {
+        fd.append('approved_at', new Date().toISOString());
+    } else {
+        fd.append('approved_at', '');
+    }
+  } else {
+    if (isDraft) {
+      fd.append('approval_letter_attachment', '');
+      fd.append('approved_at', '');
+    }
   }
 
-  // Log FormData for debugging
+  const learningMethodsToSend = teachingMethods.value
+    .filter(method => method.activity?.trim() || (isDraft && method.duration !== null && method.duration !== undefined))
+    .map(method => ({
+      activities: method.activity?.trim() || '',
+      hole: (method.duration !== null && method.duration !== undefined && Number(method.duration) > 0)
+        ? Number(method.duration)
+        : (isDraft ? (method.duration === null || method.duration === undefined ? '' : Number(method.duration)) : 0),
+    }));
+  fd.append('learning_methods', JSON.stringify(learningMethodsToSend));
+
+  // Resource Persons
+  const resourcesToSend = resourcePersons.value
+    .filter(person => {
+      if (isDraft) {
+        return person.selectedPersonId || person.name?.trim() || person.regNo?.trim() || person.certificate;
+      }
+      return person.selectedPersonId && person.certificate;
+    })
+    .map((person) => { // Removed 'index' from here
+      const selectedUser = userRegistrations.value.find(u => u.id === person.selectedPersonId);
+      const regNoToUse = selectedUser ? (selectedUser.registration_no || selectedUser.cid_no) : (person.regNo || '');
+      const nameToUse = selectedUser ? selectedUser.full_name : (person.name || '');
+
+      return {
+        registration_no: regNoToUse,
+        full_name: nameToUse,
+        cid_no: selectedUser ? selectedUser.cid_no : (person.regNo || ''), // Ensure CID is also sent if available
+      };
+    });
+
+  fd.append('resources', JSON.stringify(resourcesToSend));
+
+  // Append resource person certificates with dynamic field names as your backend expects: resource_file_X
+  resourcePersons.value.forEach((person, index) => {
+    if (person.certificate) {
+      fd.append(`resource_file_${index}`, person.certificate); // CHANGED THIS KEY
+    }
+  });
+
+
+  const participantsToSend = participants.value
+    .filter(p => p.regNo?.trim())
+    .map(p => ({
+      registration_no: p.regNo?.trim() || '',
+      full_name: p.name?.trim() || '',
+    }));
+  fd.append('participants', JSON.stringify(participantsToSend));
+
+
+  const methodologiesToSend = selectedMethodologies.value.map(methodId => ({
+    methodology_name: methodId
+  }));
+  fd.append('methodologies', JSON.stringify(methodologiesToSend));
+
+  fd.append('target_participant_categories', JSON.stringify(participantDetails.category || []));
+  fd.append('target_participant_subcategories', JSON.stringify(participantDetails.subcategory || []));
+
+
+  if (authStore.user?.id) {
+    fd.append('user_id', authStore.user.id);
+  }
+
   console.log('--- FormData being sent (isDraft:', isDraft, ') ---');
   for (let pair of fd.entries()) {
     console.log(`${pair[0]}:`, pair[1] instanceof File ? pair[1].name : pair[1]);
@@ -1205,15 +1191,14 @@ const resetFormState = () => {
     participantDetails.number = null;
     participantDetails.relevance = '';
 
-    participants.value = []; // for approved CPD
-    attendanceSheet.value = null; // for approved CPD
+    participants.value = [];
+    attendanceSheet.value = null;
+    attachment.value = null;
 
-    // Clear all error objects
     validationErrors.value = [];
     applicantDetailsErrors.value = {};
     applicationDetailsErrors.value = {};
     cpdProviderErrors.value = {};
-    // resourcePersonsErrors already reset
     teachingLearningErrors.value = {};
     participantDetailsErrors.value = {};
     approvedCpdErrors.value = {};
@@ -1225,14 +1210,12 @@ const resetFormState = () => {
 
 const saveDraft = async () => {
   currentAction.value = 'draft';
-  // Minimal validation for draft: title or agency location
   if (!applicant.agencyTrainingLocation?.trim() && !application.title?.trim()) {
     validationErrors.value = ['Please fill in at least Agency/Training Location or Title of CPD to save a draft.'];
     window.scrollTo({ top: 0, behavior: 'smooth' });
     currentAction.value = '';
     return;
   }
-  // Clear all validation errors for draft attempt, as requirements are lax
   validationErrors.value = [];
   applicantDetailsErrors.value = {}; applicationDetailsErrors.value = {}; cpdProviderErrors.value = {};
   resourcePersonsErrors.value = resourcePersons.value.map(() => ({}));
@@ -1240,10 +1223,9 @@ const saveDraft = async () => {
 
   try {
     loading.value = true;
-    const fd = prepareFormData(true); // Pass true for isDraft
-    await apiService.createMhpcCpdTask(fd); // Use your actual API endpoint method
+    const fd = prepareFormData(true);
+    await apiService.createMhpcCpdTask(fd);
     successMessage.value = 'Draft saved successfully! You can complete and submit it later.';
-    // Optionally, reset parts of the form or navigate away after a delay
     setTimeout(() => { successMessage.value = ''; }, 5000);
   } catch (error) {
     console.error('Error saving draft:', error);
@@ -1261,7 +1243,7 @@ const saveDraft = async () => {
 };
 
 const handleSubmit = () => {
-  if (validateForm(false)) { // Full validation for submit
+  if (validateForm(false)) {
     showConfirmation.value = true;
   } else {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1270,9 +1252,9 @@ const handleSubmit = () => {
 
 const confirmSubmit = async () => {
   currentAction.value = 'submit';
-  showConfirmation.value = false; // Close confirmation modal
+  showConfirmation.value = false;
 
-  if (!validateForm(false)) { // Re-validate just in case, though unlikely to change
+  if (!validateForm(false)) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
     currentAction.value = '';
     return;
@@ -1291,10 +1273,10 @@ const confirmSubmit = async () => {
   } catch (error) {
     console.error('Error submitting application:', error);
     validationErrors.value = ['Submission failed. Please review the errors below.'];
-     if (error.response?.data) {
+      if (error.response?.data) {
         Object.entries(error.response.data).forEach(([key, value]) => {
             if (key === 'detail' && typeof value === 'string') {
-                 validationErrors.value.push(value);
+                validationErrors.value.push(value);
             } else if (Array.isArray(value)) {
                 validationErrors.value.push(`${key}: ${value.join(', ')}`);
             } else if (typeof value === 'object') {
@@ -1302,7 +1284,7 @@ const confirmSubmit = async () => {
                     validationErrors.value.push(`${key}.${subKey}: ${Array.isArray(subValue) ? subValue.join(', ') : subValue}`);
                 });
             } else {
-                 validationErrors.value.push(`${key}: ${value}`);
+                validationErrors.value.push(`${key}: ${value}`);
             }
         });
     } else {
@@ -1356,7 +1338,7 @@ const loadDropdownOptions = async () => {
 
     agencyOptions.value = agencyRes?.data?.results?.map(item => ({ text: item.name, value: item.id })) || [];
     reasonOptions.value = reasonRes?.data?.results?.map(item => ({ text: item.name, value: item.id })) || [];
-    cpdTypeOptions.value = cpdTypeRes?.data?.results?.map(item => ({ text: item.cpd_activity_name, value: item.id })) || [];
+    cpdTypeOptions.value = cpdTypeRes?.data?.results?.map(item => ({ text: item.cme_activity_name, value: item.id })) || [];
     methodologyOptions.value = methodologyRes?.data?.results?.map(item => ({ text: item.methodology_name, value: item.id })) || [];
 
     participationCategoryOptions.value = categoriesRes?.data?.results?.map(cat => ({ text: cat.category_name, value: cat.id })) || [];
@@ -1372,7 +1354,6 @@ const loadDropdownOptions = async () => {
   }
 };
 
-// --- Lifecycle Hooks ---
 onMounted(async () => {
   if (authStore.user) {
     applicant.cidNumber = authStore.user.cid || '';
@@ -1381,10 +1362,10 @@ onMounted(async () => {
   }
   resourcePersonsErrors.value = resourcePersons.value.map(() => ({}));
   if (application.isApproved === 'true') {
-     approvedCpdErrors.value.participants = participants.value.map(() => ({}));
+      approvedCpdErrors.value.participants = participants.value.map(() => ({}));
   }
 
-  calculateTotalHours(); // Initial calculation
+  calculateTotalHours();
   await fetchUserRegistrations();
   await loadDropdownOptions();
 });

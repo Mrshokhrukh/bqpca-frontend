@@ -763,6 +763,9 @@ export default {
   getMhpcCpdTaskById(id) {
     return apiClient.get(`/mhpc/mhpc-cpd-tasks/${id}/`)
   },
+  getMhpcCpdTaskByCid(id) {
+    return apiClient.get(`/mhpc/mhpc-cpd-tasks/?cid=${id}/`)
+  },
   updateMhpcCpdTask(id, data) {
     return apiClient.put(`/mhpc/mhpc-cpd-tasks/${id}/`, data)
   },

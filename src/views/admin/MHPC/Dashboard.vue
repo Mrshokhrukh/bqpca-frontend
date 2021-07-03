@@ -92,6 +92,8 @@ import TeachingHospitalRenewals from '@/components/dashboard/mhpccomponents/deal
 
 import ModuleManagement from '@/components/dashboard/mhpccomponents/dealingOfficer/instituteManagement/ModuleManagement.vue'
 import EducationProgram from '@/components/dashboard/mhpccomponents/dealingOfficer/instituteManagement/EducationProgram.vue'
+import InstituteReports from '@/components/dashboard/mhpccomponents/dealingOfficer/InstituteReports.vue'
+import TeachingHospitalReports from '@/components/dashboard/mhpccomponents/dealingOfficer/instituteManagement/TeachingHospitalReports.vue'
 
 //MHPC masters components
 import MastersCpdActivities from '@/components/dashboard/mhpccomponents/admin/MastersCpdActivities.vue'
@@ -304,6 +306,10 @@ const bmhDealingOfficerComponent = computed(() => {
       return ModuleManagement
     case path.endsWith('/health_certification/education_program_management'):
       return EducationProgram
+    case path.endsWith('/health_certification/institute_reports'):
+      return InstituteReports
+    case path.endsWith('/health_certification/teaching_hospital_reports'):
+      return TeachingHospitalReports
 
     default:
       return null

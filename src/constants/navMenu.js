@@ -980,14 +980,32 @@ const serviceSpecificMenuItems = {
       },
       {
         name: 'Reports',
-        icon: getIconComponent('FileBarChart'),
-        route: (serviceType) => `/admin/dealing_officer/${serviceType}/reports`,
+        icon: getIconComponent('BookOpen'),
+        children: [
+          {
+            name: 'Professional Reports',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/reports`,
+          },
+          {
+            name: 'Institute Reports',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/institute_reports`,
+          },
+          {
+            name: 'CPD Reports',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_reports`,
+          },
+          {
+            name: 'Teacching Hospital Reports',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/teaching_hospital_reports`,
+          },
+          {
+            name: 'Payment History',
+            icon: getIconComponent('CreditCard'),
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/payments`,
+          },
+        ],
       },
-      {
-        name: 'Payment History',
-        icon: getIconComponent('CreditCard'),
-        route: (serviceType) => `/admin/dealing_officer/${serviceType}/payments`,
-      },
+
     ],
     cme_cpd_provider: [
       {

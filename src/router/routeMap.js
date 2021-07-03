@@ -295,6 +295,8 @@ export default {
       complaints: mhpcDashboard,
       module_management: mhpcDashboard,
       education_program_management: mhpcDashboard,
+      institute_reports: mhpcDashboard,
+      teaching_hospital_reports: mhpcDashboard,
 
     },
   },
