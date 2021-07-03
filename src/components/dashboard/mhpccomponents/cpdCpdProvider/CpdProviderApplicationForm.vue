@@ -1119,6 +1119,9 @@ const prepareFormData = (isDraft = false) => {
       };
     });
 
+
+
+    
   fd.append('resources', JSON.stringify(resourcesToSend));
 
   // Append resource person certificates with dynamic field names as your backend expects: resource_file_X
