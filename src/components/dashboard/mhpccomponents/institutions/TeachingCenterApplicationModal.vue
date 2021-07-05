@@ -184,14 +184,6 @@
                             <label for="modal-targetCategory" class="form-label required-label">Target Category</label>
                             <input type="text" id="modal-targetCategory" v-model="formData.target_category" class="form-input" required placeholder="Enter target category"/>
                         </div>
-                        <div>
-                            <label for="modal-validTill" class="form-label required-label">Valid Till</label>
-                            <input type="date" id="modal-validTill" v-model="formData.valid_till" class="form-input" required :min="todayDate"/>
-                        </div>
-                        <div class="lg:col-span-2">
-                            <label for="modal-tcRemarks" class="form-label required-label">Teaching Hospital Remarks</label>
-                            <textarea id="modal-tcRemarks" v-model="formData.tc_remarks" rows="3" class="form-textarea" required placeholder="Enter teaching center remarks..."></textarea>
-                        </div>
                         <div class="lg:col-span-2">
                             <label for="modal-remarks" class="form-label">Remarks (General)</label>
                             <textarea id="modal-remarks" v-model="formData.remarks" rows="2" class="form-textarea" placeholder="Enter general remarks..."></textarea>
@@ -318,8 +310,6 @@ const initialFormData = {
   state_dzongkhag: '',
   target_category: '',
   remarks: '',
-  tc_remarks: '',
-  valid_till: '',
   declaration: false,
 }
 
@@ -349,14 +339,6 @@ watch(() => formData.value.state_dzongkhag, (newDzongkhag) => {
     if (newDzongkhag) {
         formData.value.city_gewog = ''
     }
-})
-
-const todayDate = computed(() => {
-  const today = new Date()
-  const yyyy = today.getFullYear()
-  const mm = String(today.getMonth() + 1).padStart(2, '0')
-  const dd = String(today.getDate()).padStart(2, '0')
-  return `${yyyy}-${mm}-${dd}`
 })
 
 const fetchInstituteOptions = async () => {
@@ -458,7 +440,7 @@ const createPayload = (isDraft = false) => {
 
     Object.keys(dataToSubmit).forEach((key) => {
         if (key === 'payment_id') return;
-        
+
         const value = dataToSubmit[key];
 
         if (value !== null && value !== undefined) {
@@ -481,8 +463,6 @@ const validateForm = () => {
     if (!formData.value.state_dzongkhag) { alert('Please select State/Dzongkhag for the center.'); return false; }
     if (!formData.value.city_gewog) { alert('Please select City/Gewog for the center.'); return false; }
     if (!formData.value.target_category.trim()) { alert('Please enter Target Category.'); return false; }
-    if (!formData.value.valid_till) { alert('Please select Valid Till date.'); return false; }
-    if (!formData.value.tc_remarks.trim()) { alert('Please enter Teaching Hospital Remarks.'); return false; }
     if (!formData.value.declaration) { alert('Please accept the declaration.'); return false; }
     return true;
 }
@@ -500,7 +480,8 @@ const handleFormSubmit = async () => {
   try {
       const formPayloadForApp = createPayload(false);
       if (authStore.userId) {
-        formPayloadForApp.append('user_id', authStore.userId);
+        // FIX: Changed 'user_id' to 'applicant_user_id' to match backend model field
+        formPayloadForApp.append('applicant_user_id', authStore.userId);
       }
       console.log('Submitting teaching center application:', Object.fromEntries(formPayloadForApp));
       await apiServices.createMhpcTeachingCenter(formPayloadForApp);
@@ -561,7 +542,8 @@ const handleSaveDraft = async () => {
   isSubmittingDraft.value = true;
   const formPayload = createPayload(true);
   if (authStore.userId) {
-    formPayload.append('user_id', authStore.userId);
+    // FIX: Changed 'user_id' to 'applicant_user_id' to match backend model field
+    formPayload.append('applicant_user_id', authStore.userId);
   }
   console.log('Saving teaching center draft:', Object.fromEntries(formPayload));
   try {

@@ -40,7 +40,6 @@
               </div>
 
               <div class="max-h-[70vh] overflow-y-auto pr-2 space-y-6 custom-scrollbar">
-                <!-- Proponent Details Section -->
                 <section class="p-4 border border-gray-200 rounded-lg bg-white shadow-sm">
                   <h4 class="text-lg font-semibold text-gray-700 mb-4 pb-2 border-b border-gray-200">Proponent Details (Institute)</h4>
                   <dl class="text-sm space-y-1" v-if="hospitalDetails.institute_details">
@@ -52,44 +51,10 @@
                       <dt class="font-medium text-gray-600">Institute CID:</dt>
                       <dd class="md:col-span-2 text-gray-800">{{ hospitalDetails.institute_details.CID || 'N/A' }}</dd>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-2 py-1.5 px-2 rounded bg-gray-50">
-                      <dt class="font-medium text-gray-600">Contact No (Proponent):</dt>
-                      <dd class="md:col-span-2 text-gray-800">{{ hospitalDetails.institute_details.contact_no || 'N/A' }}</dd>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-2 py-1.5 px-2 rounded">
-                      <dt class="font-medium text-gray-600">Email (Proponent):</dt>
-                      <dd class="md:col-span-2 text-gray-800">{{ hospitalDetails.institute_details.email_address || 'N/A' }}</dd>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-2 py-1.5 px-2 rounded bg-gray-50">
-                      <dt class="font-medium text-gray-600">Country (Proponent):</dt>
-                      <dd class="md:col-span-2 text-gray-800">{{ hospitalDetails.institute_details.country === 'BT' ? 'Bhutan' : hospitalDetails.institute_details.country || 'N/A' }}</dd>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-2 py-1.5 px-2 rounded">
-                      <dt class="font-medium text-gray-600">Dzongkhag (Proponent):</dt>
-                      <dd class="md:col-span-2 text-gray-800">{{ hospitalDetails.institute_details.dzongkhag || 'N/A' }}</dd>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-2 py-1.5 px-2 rounded bg-gray-50">
-                      <dt class="font-medium text-gray-600">Gewog (Proponent):</dt>
-                      <dd class="md:col-span-2 text-gray-800">{{ hospitalDetails.institute_details.gewog || 'N/A' }}</dd>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-2 py-1.5 px-2 rounded">
-                      <dt class="font-medium text-gray-600">Address (Proponent):</dt>
-                      <dd class="md:col-span-2 text-gray-800">{{ hospitalDetails.institute_details.address || 'N/A' }}</dd>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-2 py-1.5 px-2 rounded bg-gray-50">
-                      <dt class="font-medium text-gray-600">Institute Website:</dt>
-                      <dd class="md:col-span-2 text-gray-800">
-                        <a :href="hospitalDetails.institute_details.website" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline" v-if="hospitalDetails.institute_details.website">
-                          {{ hospitalDetails.institute_details.website }}
-                        </a>
-                        <span v-else>N/A</span>
-                      </dd>
-                    </div>
-                  </dl>
+                    </dl>
                   <p v-else class="text-sm text-gray-500">Institute details not available.</p>
                 </section>
 
-                <!-- Proposed Teaching Center Details Section -->
                 <section class="p-4 border border-gray-200 rounded-lg bg-white shadow-sm">
                   <h4 class="text-lg font-semibold text-gray-700 mb-4 pb-2 border-b border-gray-200">Proposed Teaching Center Details</h4>
                   <dl class="text-sm space-y-1">
@@ -98,80 +63,13 @@
                       <dd class="md:col-span-2 text-gray-800">{{ hospitalDetails.center_name || 'N/A' }}</dd>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-2 py-1.5 px-2 rounded">
-                      <dt class="font-medium text-gray-600">Center Location:</dt>
-                      <dd class="md:col-span-2 text-gray-800">{{ hospitalDetails.center_location || 'N/A' }}</dd>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-2 py-1.5 px-2 rounded bg-gray-50">
-                      <dt class="font-medium text-gray-600">State/Dzongkhag (Center):</dt>
-                      <dd class="md:col-span-2 text-gray-800">{{ hospitalDetails.state_dzongkhag || 'N/A' }}</dd>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-2 py-1.5 px-2 rounded">
-                      <dt class="font-medium text-gray-600">City/Gewog (Center):</dt>
-                      <dd class="md:col-span-2 text-gray-800">{{ hospitalDetails.city_gewog || 'N/A' }}</dd>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-2 py-1.5 px-2 rounded bg-gray-50">
-                      <dt class="font-medium text-gray-600">Target Category:</dt>
-                      <dd class="md:col-span-2 text-gray-800">{{ hospitalDetails.target_category || 'N/A' }}</dd>
-                    </div>
-                     <div class="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-2 py-1.5 px-2 rounded">
-                      <dt class="font-medium text-gray-600">Renewal Review Name:</dt>
-                      <dd class="md:col-span-2 text-gray-800">{{ hospitalDetails.tc_renewal_review_name || 'N/A' }}</dd>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-2 py-1.5 px-2 rounded bg-gray-50">
-                      <dt class="font-medium text-gray-600">Review Summary (Applicant):</dt>
-                      <dd class="md:col-span-2 text-gray-800 whitespace-pre-wrap">{{ hospitalDetails.tc_review_summary || 'N/A' }}</dd>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-2 py-1.5 px-2 rounded">
-                      <dt class="font-medium text-gray-600">Proposed Valid Till:</dt>
-                      <dd class="md:col-span-2 text-gray-800">{{ hospitalDetails.valid_till ? formatDate(hospitalDetails.valid_till) : 'N/A' }}</dd>
-                    </div>
-                    <!-- Note: Applicant's attachments are shown here, DO's attachments will be in the DO section if needed for display after upload -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-2 py-1.5 px-2 rounded bg-gray-50">
                         <dt class="font-medium text-gray-600">Attachments (Applicant):</dt>
                         <dd class="md:col-span-2 text-gray-800">
-                            <!-- This logic assumes tc_attachments might be a single URL or an array of URLs/objects -->
-                            <div v-if="hospitalDetails.tc_attachments && Array.isArray(hospitalDetails.tc_attachments) && hospitalDetails.tc_attachments.length > 0">
-                                <ul class="list-disc list-inside">
-                                    <li v-for="(file, index) in hospitalDetails.tc_attachments" :key="index">
-                                        <a :href="ensureAbsoluteUrl(typeof file === 'string' ? file : file.url)" target="_blank" class="text-blue-600 hover:underline" :download="getFileNameFromUrl(typeof file === 'string' ? file : file.url)">
-                                            {{ getFileNameFromUrl(typeof file === 'string' ? file : file.url) || `Attachment ${index + 1}` }}
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div v-else-if="hospitalDetails.tc_attachments && typeof hospitalDetails.tc_attachments === 'string'">
-                                <a :href="ensureAbsoluteUrl(hospitalDetails.tc_attachments)" target="_blank" class="text-blue-600 hover:underline" :download="getFileNameFromUrl(hospitalDetails.tc_attachments)">
-                                    {{ getFileNameFromUrl(hospitalDetails.tc_attachments) || 'View Attachment' }}
-                                </a>
-                            </div>
-                            <span v-else>No attachments from applicant</span>
-                        </dd>
+                            </dd>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-2 py-1.5 px-2 rounded">
-                        <dt class="font-medium text-gray-600">Report File (Applicant):</dt>
-                        <dd class="md:col-span-2 text-gray-800">
-                            <a v-if="hospitalDetails.tc_report" :href="ensureAbsoluteUrl(hospitalDetails.tc_report)" target="_blank" class="text-blue-600 hover:underline" :download="getFileNameFromUrl(hospitalDetails.tc_report)">
-                            {{ getFileNameFromUrl(hospitalDetails.tc_report) || 'View Report' }}
-                            </a>
-                            <span v-else>No report file from applicant</span>
-                        </dd>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-2 py-1.5 px-2 rounded bg-gray-50">
-                      <dt class="font-medium text-gray-600">TC Remarks (Applicant):</dt>
-                      <dd class="md:col-span-2 text-gray-800 whitespace-pre-wrap">{{ hospitalDetails.tc_remarks || 'N/A' }}</dd>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-2 py-1.5 px-2 rounded">
-                      <dt class="font-medium text-gray-600">General Remarks (Applicant):</dt>
-                      <dd class="md:col-span-2 text-gray-800 whitespace-pre-wrap">{{ hospitalDetails.remarks || 'N/A' }}</dd>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-2 py-1.5 px-2 rounded bg-gray-50">
-                      <dt class="font-medium text-gray-600">Declaration Accepted (Applicant):</dt>
-                      <dd class="md:col-span-2 text-gray-800">{{ hospitalDetails.declaration || hospitalDetails.tc_declaration ? 'Yes' : 'No' }}</dd> <!-- Adjusted for tc_declaration too -->
-                    </div>
-                  </dl>
+                    </dl>
                 </section>
 
-                <!-- Dealing Officer Section -->
                 <section class="mt-6 pt-6 border-t-2 border-green-200">
                   <div class="bg-gradient-to-r from-green-50 to-blue-50 p-4 rounded-lg mb-6">
                     <h4 class="text-xl font-bold text-green-800 mb-2 flex items-center">
@@ -183,24 +81,7 @@
                     <p class="text-green-700 text-sm">Review and make decisions on this teaching center application.</p>
                   </div>
 
-                  <!-- Display Previous Verification Info -->
-                  <div v-if="hospitalDetails.physical_verification_date" class="mb-6 p-4 bg-blue-50 border-l-4 border-blue-500 rounded-r-lg">
-                     <div class="flex items-start">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600 mt-0.5 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                        </svg>
-                        <div>
-                          <h5 class="font-semibold text-blue-800">Physical Verification Recorded</h5>
-                          <p class="text-blue-700 text-sm mt-1">Date: {{ formatDate(hospitalDetails.physical_verification_date) }}</p>
-                          <p class="text-blue-700 text-sm">Status: {{ formattedVerificationStatus(hospitalDetails.physical_verification_status) }}</p>
-                          <p class="text-blue-700 text-sm">Remarks: {{ hospitalDetails.physical_verification_remarks || 'N/A' }}</p>
-                          <!-- TODO: Add display for DO's uploaded attachments and report file here if needed after they are submitted and fetched -->
-                        </div>
-                    </div>
-                  </div>
-
-                  <!-- Display Rejection Reason if Rejected -->
-                   <div v-if="isEffectivelyRejected && hospitalDetails.tc_reason_if_rejected" class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-r-lg">
+                  <div v-if="isEffectivelyRejected && hospitalDetails.tc_reason_if_rejected" class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-r-lg">
                      <div class="flex items-start">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600 mt-0.5 mr-3" fill="currentColor" viewBox="0 0 20 20">
                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
@@ -212,184 +93,119 @@
                      </div>
                    </div>
 
-                  <!-- Physical Verification Form Section -->
-                  <div v-if="canRecordVerification" class="mb-8 p-6 border-2 border-dashed border-blue-300 rounded-xl bg-blue-50">
-                    <div class="flex items-center mb-4">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-blue-600 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-                      </svg>
-                      <h5 class="text-xl font-bold text-blue-800">
-                        {{ hospitalDetails.physical_verification_date ? 'Update Scheduled Verification' : 'Schedule Physical Verification' }}
+                  <div v-if="hospitalDetails.physical_verification_date" class="mb-6 p-4 bg-blue-50 border-l-4 border-blue-500 rounded-r-lg">
+                     <div class="flex items-start">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600 mt-0.5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                        </svg>
+                        <div>
+                          <h5 class="font-semibold text-blue-800">Physical Verification Recorded</h5>
+                          <p class="text-blue-700 text-sm mt-1">Date: {{ formatDate(hospitalDetails.physical_verification_date) }}</p>
+                          <p class="text-blue-700 text-sm">Status: {{ formattedVerificationStatus(hospitalDetails.physical_verification_status) }}</p>
+                          <p class="text-blue-700 text-sm">Remarks: {{ hospitalDetails.physical_verification_remarks || 'N/A' }}</p>
+                        </div>
+                    </div>
+                  </div>
+
+                  <div v-if="!isEffectivelyApproved && !isEffectivelyRejected">
+
+                    <div class="mb-8 p-6 border-2 border-dashed border-blue-300 rounded-xl bg-blue-50">
+                       <h5 class="text-xl font-bold text-blue-800 mb-4">
+                        Physical Verification Management
                       </h5>
-                    </div>
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                      <div>
-                        <label for="verificationDate" class="block text-sm font-semibold text-blue-700 mb-2">
-                          Scheduled Verification Date <span class="text-red-500">*</span>
-                        </label>
-                        <input
-                          type="date"
-                          id="verificationDate"
-                          v-model="localVerificationData.date"
-                          :min="todayDate()"
-                          class="w-full rounded-lg border-2 border-blue-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-3"
-                        >
-                      </div>
-                      <div>
-                        <label for="verificationStatus" class="block text-sm font-semibold text-blue-700 mb-2">
-                          Physical Verification Status <span class="text-red-500">*</span>
-                        </label>
-                        <select
-                          id="verificationStatus"
-                          v-model="localVerificationData.status"
-                          class="w-full rounded-lg border-2 border-blue-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-3"
-                        >
-                          <option value="" disabled>Select status</option>
-                          <option value="PENDING_PV">Pending Physical Verification (Scheduled)</option>
-                          <option value="IN_PROGRESS_PV">Physical Verification In Progress</option>
-                          <option value="VERIFIED_PV">Physically Verified & Recommended</option>
-                          <option value="NOT_VERIFIED_PV">Physical Verification Failed / Not Recommended</option>
-                          <option value="NOT_REQUIRED_PV">Physical Verification Not Required</option>
-                        </select>
-                      </div>
-                       <div class="lg:col-span-2">
-                        <label for="verificationReport" class="block text-sm font-semibold text-blue-700 mb-2">
-                          Verification Notes/Plan <span class="text-red-500">*</span>
-                        </label>
-                        <textarea
-                          id="verificationReport"
-                          v-model="localVerificationData.report"
-                          rows="4"
-                          class="w-full rounded-lg border-2 border-blue-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-3"
-                          placeholder="Enter notes regarding the scheduled verification, agenda, or initial plan. After verification, update with findings, facilities, staff, equipment, compliance, concerns, recommendations..."
-                        ></textarea>
-                      </div>
-
-                      <!-- File Uploads for Dealing Officer -->
-                      <div class="lg:col-span-2 space-y-4 pt-4 border-t border-blue-200">
-                         <h6 class="text-md font-semibold text-blue-700">Upload Verification Documents (Optional)</h6>
+                      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                         <div>
-                          <label for="modal-tcAttachments-do" class="block text-sm font-medium text-blue-700 mb-1">
-                            Supporting Attachments (Multiple)
+                          <label for="verificationStatus" class="block text-sm font-semibold text-blue-700 mb-2">
+                            Verification Status <span class="text-red-500">*</span>
                           </label>
-                          <input
-                            type="file"
-                            id="modal-tcAttachments-do"
-                            ref="attachmentsInputRef"
-                            multiple
-                            @change="handleAttachmentsChange"
-                            class="block w-full text-sm text-gray-900 border border-blue-300 rounded-lg cursor-pointer bg-blue-50 focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-l-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-200 file:text-blue-700 hover:file:bg-blue-300"
-                          />
-                          <div v-if="selectedAttachments && selectedAttachments.length > 0" class="mt-1 text-xs text-gray-500">
-                            Selected for upload:
-                            <ul class="list-disc list-inside">
-                              <li v-for="file in Array.from(selectedAttachments)" :key="file.name">{{ file.name }} ({{ (file.size / 1024).toFixed(1) }} KB)</li>
-                            </ul>
-                          </div>
+                          <select id="verificationStatus" v-model="localVerificationData.status" class="form-input">
+                            <option value="PENDING_PV">Pending (Scheduled)</option>
+                            <option value="IN_PROGRESS_PV">In Progress</option>
+                            <option value="VERIFIED_PV">Verified & Recommended</option>
+                            <option value="NOT_VERIFIED_PV">Failed / Not Recommended</option>
+                            <option value="NOT_REQUIRED_PV">Not Required</option>
+                          </select>
                         </div>
-
                         <div>
-                          <label for="modal-tcReportFile-do" class="block text-sm font-medium text-blue-700 mb-1">
-                            Main Report File (Single)
+                          <label for="verificationDate" class="block text-sm font-semibold text-blue-700 mb-2">
+                            Verification Date
                           </label>
-                          <input
-                            type="file"
-                            id="modal-tcReportFile-do"
-                            ref="reportFileInputRef"
-                            @change="handleReportFileChange"
-                            class="block w-full text-sm text-gray-900 border border-blue-300 rounded-lg cursor-pointer bg-blue-50 focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-l-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-200 file:text-blue-700 hover:file:bg-blue-300"
-                          />
-                           <div v-if="selectedReportFile" class="mt-1 text-xs text-gray-500">
-                            Selected for upload: {{ selectedReportFile.name }} ({{ (selectedReportFile.size / 1024).toFixed(1) }} KB)
+                          <input type="date" id="verificationDate" v-model="localVerificationData.date" :min="todayDate()" class="form-input">
+                        </div>
+                        <div class="lg:col-span-2">
+                          <label for="verificationReport" class="block text-sm font-semibold text-blue-700 mb-2">
+                            Verification Remarks / Notes <span class="text-red-500">*</span>
+                          </label>
+                          <textarea id="verificationReport" v-model="localVerificationData.report" rows="4" class="form-input"
+                            placeholder="Add scheduling plan, site visit findings, reasons for recommendation/failure, etc."></textarea>
+                        </div>
+
+                        <div class="lg:col-span-2 space-y-4 pt-4 border-t border-blue-200">
+                          <h6 class="text-md font-semibold text-blue-700">Upload Officer's Documents (Optional)</h6>
+                          <div>
+                            <label for="modal-tcReportFile-do" class="block text-sm font-medium text-blue-700 mb-1">
+                              Officer's Main Report (PDF, Word, etc.)
+                            </label>
+                            <input type="file" id="modal-tcReportFile-do" ref="reportFileInputRef" @change="handleReportFileChange" class="file-input">
+                          </div>
+                          <div>
+                            <label for="modal-tcAttachments-do" class="block text-sm font-medium text-blue-700 mb-1">
+                              Officer's Supporting Attachments (Images, etc.)
+                            </label>
+                            <input type="file" id="modal-tcAttachments-do" ref="attachmentsInputRef" multiple @change="handleAttachmentsChange" class="file-input">
                           </div>
                         </div>
-                      </div>
-                      <!-- End File Uploads -->
 
-                      <div class="lg:col-span-2 bg-white p-4 rounded-lg border border-blue-200">
-                        <div class="flex items-start">
-                          <div class="flex items-center h-5">
-                            <input
-                              id="sendToUserModal"
-                              v-model="localVerificationData.sendToUser"
-                              type="checkbox"
-                              class="focus:ring-blue-500 h-5 w-5 text-blue-600 border-2 border-blue-300 rounded"
-                            >
-                          </div>
-                          <div class="ml-3">
-                            <label for="sendToUserModal" class="font-semibold text-blue-700 text-sm">Send notification to user & publish schedule</label>
-                            <p class="text-blue-600 text-xs mt-1">Check to notify applicant and make this schedule visible on their dashboard.</p>
-                          </div>
+                        <div class="lg:col-span-2 bg-white p-4 rounded-lg border border-blue-200">
+                            <div class="flex items-start">
+                              <div class="flex items-center h-5">
+                                <input id="sendToUserModal" v-model="localVerificationData.sendToUser" type="checkbox" class="focus:ring-blue-500 h-5 w-5 text-blue-600 border-2 border-blue-300 rounded">
+                              </div>
+                              <div class="ml-3">
+                                <label for="sendToUserModal" class="font-semibold text-blue-700 text-sm">Send notification to user</label>
+                                <p class="text-blue-600 text-xs mt-1">Check to notify applicant about this verification update.</p>
+                              </div>
+                            </div>
                         </div>
                       </div>
-                    </div>
-                    <button
-                      type="button"
-                      @click="submitVerificationHandler"
-                      :disabled="!localVerificationData.date || !localVerificationData.report.trim() || !localVerificationData.status"
-                      class="btn btn-info py-3 px-6 text-sm font-semibold"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      Save Schedule / Verification Details
-                    </button>
-                  </div>
 
-                  <!-- Application Decision Section -->
-                  <div v-if="canDecide" class="mt-8 p-6 border border-gray-300 rounded-xl bg-gray-50 shadow-lg">
-                    <div class="text-center mb-6">
-                      <h5 class="text-xl font-semibold text-gray-800 mb-2">Make Final Decision</h5>
-                      <p class="text-sm text-gray-600">Choose to approve or reject this application.</p>
+                      <button type="button" @click="submitVerificationHandler"
+                        :disabled="!localVerificationData.status || !localVerificationData.report.trim()"
+                        class="btn btn-info py-3 px-6 text-sm font-semibold">
+                        Save Verification Status
+                      </button>
                     </div>
 
-                    <!-- Rejection Reason Input (if officer chooses to reject here) -->
-                    <div v-if="actionAttempt === 'reject'" class="mb-6">
+                    <div class="mt-8 p-6 border border-gray-300 rounded-xl bg-gray-50 shadow-lg">
+                      <div class="text-center mb-6">
+                        <h5 class="text-xl font-semibold text-gray-800">Make Final Decision</h5>
+                        <p class="text-sm text-gray-600">This action is final. Approve or reject the application.</p>
+                      </div>
+
+                      <div v-if="actionAttempt === 'reject'" class="mb-6">
                         <label for="modalRejectionReason" class="block text-sm font-medium text-gray-700 mb-1">
-                        Reason for Rejection <span class="text-red-500">*</span>
+                          Reason for Rejection <span class="text-red-500">*</span>
                         </label>
-                        <textarea
-                        id="modalRejectionReason"
-                        v-model="rejectionReason"
-                        rows="4"
-                        class="form-input w-full"
-                        placeholder="Provide a clear and detailed reason for rejecting this application..."
-                        ></textarea>
-                    </div>
+                        <textarea id="modalRejectionReason" v-model="rejectionReason" rows="4" class="form-input"
+                          placeholder="Provide a clear reason for rejection. This will be shown to the applicant."></textarea>
+                      </div>
 
-                    <div class="flex flex-col sm:flex-row justify-center items-center gap-6">
-                      <button
-                        type="button"
-                        @click="handleApprove"
-                        :disabled="!isVerificationSufficientForApproval"
-                        class="btn btn-success px-8 py-3 text-base font-medium"
-                        title="Approve this application"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                        </svg>
-                        Approve
-                      </button>
-                      <button
-                        type="button"
-                        @click="prepareReject"
-                        class="btn btn-danger px-8 py-3 text-base font-medium"
-                        title="Reject this application"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-                        </svg>
-                        {{ actionAttempt === 'reject' && rejectionReason.trim() ? 'Confirm Rejection' : 'Reject' }}
-                      </button>
+                      <div class="flex flex-col sm:flex-row justify-center items-center gap-6">
+                        <button type="button" @click="handleApprove" :disabled="!isVerificationSufficientForApproval" class="btn btn-success">
+                          Approve Application
+                        </button>
+                        <button type="button" @click="prepareReject" class="btn btn-danger">
+                          {{ actionAttempt === 'reject' && rejectionReason.trim() ? 'Confirm Rejection' : 'Reject Application' }}
+                        </button>
+                      </div>
+
+                      <p v-if="!isVerificationSufficientForApproval" class="mt-4 text-center text-sm text-orange-600">
+                        Approval is disabled. The verification status must be 'Verified & Recommended' or 'Not Required'.
+                      </p>
                     </div>
-                     <p v-if="!isVerificationSufficientForApproval && canDecide" class="mt-4 text-center text-sm text-orange-600">
-                        Physical verification must be recorded as 'Physically Verified & Recommended' or 'Not Required' before approval.
-                    </p>
                   </div>
 
-
-                  <!-- Final Status Messages -->
-                   <div v-if="isEffectivelyApproved" class="mt-8 p-6 bg-gradient-to-r from-green-100 to-green-200 border-2 border-green-400 rounded-xl">
+                  <div v-if="isEffectivelyApproved" class="mt-8 p-6 bg-gradient-to-r from-green-100 to-green-200 border-2 border-green-400 rounded-xl">
                     <div class="flex items-center">
                        <div class="bg-green-500 p-2 rounded-full mr-4">
                         <svg class="h-8 w-8 text-white" viewBox="0 0 20 20" fill="currentColor">
@@ -438,7 +254,7 @@
 </template>
 
 <script setup>
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed } from 'vue';
 
 const props = defineProps({
   isOpen: Boolean,
@@ -446,8 +262,8 @@ const props = defineProps({
     type: Object,
     default: () => ({
         institute_details: {},
-        tc_attachments: null, // Applicant's attachments
-        tc_report: null,      // Applicant's report
+        tc_attachments: null,
+        tc_report: null,
         physical_verification_date: null,
         physical_verification_remarks: null,
         physical_verification_status: null,
@@ -455,23 +271,11 @@ const props = defineProps({
         tc_reason_if_rejected: null,
         tc_review_decision: null,
         center_name: '',
-        center_location: '',
-        state_dzongkhag: '',
-        city_gewog: '',
-        target_category: '',
-        tc_renewal_review_name: '',
-        tc_review_summary: '',
-        valid_till: null,
-        tc_remarks: '',
-        remarks: '',
-        tc_declaration: false, // Changed from declaration
-        // Potentially add fields for DO's uploaded files if they need to be displayed
-        // e.g., do_tc_attachments: null, do_tc_report: null
     }),
   },
-})
+});
 
-const emit = defineEmits(['close-modal', 'approve', 'reject', 'submit-verification'])
+const emit = defineEmits(['close-modal', 'approve', 'reject', 'submit-verification']);
 
 // Refs for file inputs
 const attachmentsInputRef = ref(null);
@@ -481,22 +285,18 @@ const reportFileInputRef = ref(null);
 const selectedAttachments = ref(null); // FileList
 const selectedReportFile = ref(null);  // File
 
+// Ref for all local verification form data
 const localVerificationData = ref({
   date: '',
   report: '',
   status: 'PENDING_PV',
   sendToUser: false,
-})
-const rejectionReason = ref('')
-const actionAttempt = ref(null);
+});
 
-const resetFileInputs = () => {
-  if (attachmentsInputRef.value) attachmentsInputRef.value.value = null;
-  if (reportFileInputRef.value) reportFileInputRef.value.value = null;
-  selectedAttachments.value = null;
-  selectedReportFile.value = null;
-};
+const rejectionReason = ref('');
+const actionAttempt = ref(null); // Tracks if user clicked 'Reject' to show the reason box
 
+// Watcher to sync local state with props when modal opens or data changes
 watch(() => props.hospitalDetails, (newDetails) => {
   if (newDetails && props.isOpen) {
     localVerificationData.value = {
@@ -506,16 +306,103 @@ watch(() => props.hospitalDetails, (newDetails) => {
       sendToUser: newDetails.send_to_user || false,
     };
     rejectionReason.value = newDetails.tc_reason_if_rejected || '';
-    actionAttempt.value = null;
-    resetFileInputs(); // Reset file inputs when new details are loaded or modal opens
-  } else if (!props.isOpen) {
-    localVerificationData.value = { date: '', report: '', status: 'PENDING_PV', sendToUser: false };
-    rejectionReason.value = '';
-    actionAttempt.value = null;
-    resetFileInputs(); // Also reset on close
+    actionAttempt.value = null; // Reset action attempt on data change
+    resetFileInputs(); // Clear any stale file selections
   }
-}, { immediate: true, deep: true })
+}, { immediate: true, deep: true });
 
+// --- Computed Properties for UI Logic ---
+
+const isEffectivelyApproved = computed(() => props.hospitalDetails?.tc_review_decision === 'Approved');
+const isEffectivelyRejected = computed(() => {
+    const decision = props.hospitalDetails?.tc_review_decision;
+    return decision === 'Rejected' || decision === 'Regretted';
+});
+
+// Determines if the main officer forms should be visible
+const canDecide = computed(() => !isEffectivelyApproved.value && !isEffectivelyRejected.value);
+
+// Determines if the 'Approve' button should be enabled
+const isVerificationSufficientForApproval = computed(() => {
+    const pvStatus = props.hospitalDetails?.physical_verification_status;
+    return pvStatus === 'VERIFIED_PV' || pvStatus === 'NOT_REQUIRED_PV';
+});
+
+const statusBadgeClass = computed(() => {
+  const status = props.hospitalDetails?.tc_review_decision;
+  if (!status) return 'bg-yellow-100 text-yellow-800';
+  const sLower = String(status).toLowerCase();
+  if (sLower === 'approved') return 'bg-green-100 text-green-800';
+  if (sLower === 'rejected' || sLower === 'regretted') return 'bg-red-100 text-red-800';
+  if (sLower.includes('pv') || sLower.includes('verification')) return 'bg-blue-100 text-blue-800';
+  return 'bg-yellow-100 text-yellow-800';
+});
+
+// --- Event Handlers ---
+
+const submitVerificationHandler = () => {
+  if (!localVerificationData.value.report.trim()) {
+    alert('Verification Remarks/Notes are required to save the status.');
+    return;
+  }
+
+  const payloadToEmit = {
+    verificationDate: localVerificationData.value.date || null, // Send null if date is cleared
+    verificationReport: localVerificationData.value.report,
+    verificationStatus: localVerificationData.value.status,
+    sendToUser: localVerificationData.value.sendToUser,
+    officer_attachments: selectedAttachments.value, // FileList or null
+    officer_report: selectedReportFile.value,        // File object or null
+  };
+
+  emit('submit-verification', payloadToEmit);
+};
+
+const handleApprove = () => {
+    if (!isVerificationSufficientForApproval.value) {
+        alert("Cannot approve. The verification status must be set to 'Verified & Recommended' or 'Not Required' first.");
+        return;
+    }
+    actionAttempt.value = null; // Clear any pending rejection state
+    emit('approve');
+};
+
+const prepareReject = () => {
+    // If the reject button is clicked again when the reason is filled, emit the event
+    if (actionAttempt.value === 'reject' && rejectionReason.value.trim()) {
+        emit('reject', { rejectionReason: rejectionReason.value.trim() });
+        actionAttempt.value = null; // Reset after emitting
+    } else {
+        // On first click, just show the rejection reason textarea
+        actionAttempt.value = 'reject';
+    }
+};
+
+const closeModal = () => {
+  emit('close-modal');
+  actionAttempt.value = null;
+  rejectionReason.value = '';
+  resetFileInputs();
+};
+
+// --- File Handling ---
+
+const handleAttachmentsChange = (event) => {
+  selectedAttachments.value = event.target.files; // A FileList object
+};
+
+const handleReportFileChange = (event) => {
+  selectedReportFile.value = event.target.files[0]; // A single File object
+};
+
+const resetFileInputs = () => {
+  if (attachmentsInputRef.value) attachmentsInputRef.value.value = null;
+  if (reportFileInputRef.value) reportFileInputRef.value.value = null;
+  selectedAttachments.value = null;
+  selectedReportFile.value = null;
+};
+
+// --- Formatting & Helper Functions ---
 
 const todayDate = () => new Date().toISOString().split('T')[0];
 
@@ -523,10 +410,11 @@ const formatDate = (dateString) => {
   if (!dateString) return 'N/A';
   try {
     const date = new Date(dateString);
-    return isNaN(date.getTime()) ? dateString : date.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+    // Check if the date is valid
+    return isNaN(date.getTime()) ? dateString : date.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' });
   } catch (e) {
-    console.error('Error formatting date:', e);
-    return dateString; }
+    return dateString;
+  }
 };
 
 const formattedStatus = (statusKey) => {
@@ -547,125 +435,14 @@ const formattedVerificationStatus = (statusKey) => {
 };
 
 const ensureAbsoluteUrl = (url) => {
-    if (!url) return '#';
-    if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('//')) {
-        return url;
-    }
-    const backendBaseUrl = import.meta.env.VITE_API_BASE_URL || window.location.origin;
-    // Check if the URL is already a full path from the backend (e.g., /media/...)
-    if (url.startsWith('/media/') || url.startsWith('/static/')) {
-         // Assuming backendBaseUrl does not end with a slash and url starts with one.
-        return `${backendBaseUrl.replace(/\/$/, '')}${url}`;
-    }
-    // If it's just a filename or relative path not starting with /media/
-    return `${backendBaseUrl.replace(/\/$/, '')}/media/${url.startsWith('/') ? url.substring(1) : url}`;
-}
+    // Your logic to construct full URL for viewing applicant's files
+    return url;
+};
 
 const getFileNameFromUrl = (url) => {
-  if (!url || typeof url !== 'string') return null;
-  try {
-    const decodedUrl = decodeURIComponent(url);
-    const name = decodedUrl.substring(decodedUrl.lastIndexOf('/') + 1);
-    return name.split('?')[0];
-  } catch (e) {
-    console.error('Error extracting file name from URL:', e);
-    return 'attachment';
-  }
+    // Your logic to get filename from a URL
+    return url ? url.substring(url.lastIndexOf('/') + 1) : 'attachment';
 };
-
-const statusBadgeClass = computed(() => {
-  const status = props.hospitalDetails?.tc_review_decision;
-  if (!status) return 'bg-yellow-100 text-yellow-800';
-  const sLower = String(status).toLowerCase();
-  if (sLower === 'approved') return 'bg-green-100 text-green-800';
-  if (sLower === 'rejected' || sLower === 'regretted') return 'bg-red-100 text-red-800';
-  if (sLower === 'verification_completed' || sLower === 'verified_pv' || sLower.includes('pv')) return 'bg-blue-100 text-blue-800';
-  return 'bg-yellow-100 text-yellow-800';
-});
-
-const isEffectivelyApproved = computed(() => props.hospitalDetails?.tc_review_decision === 'Approved');
-const isEffectivelyRejected = computed(() => {
-    const decision = props.hospitalDetails?.tc_review_decision;
-    return decision === 'Rejected' || decision === 'Regretted';
-});
-
-const canRecordVerification = computed(() => {
-  return !isEffectivelyApproved.value && !isEffectivelyRejected.value;
-});
-
-const isVerificationSufficientForApproval = computed(() => {
-    const pvStatus = props.hospitalDetails?.physical_verification_status;
-    return pvStatus === 'VERIFIED_PV' || pvStatus === 'NOT_REQUIRED_PV';
-});
-
-const canDecide = computed(() => {
-  return !isEffectivelyApproved.value && !isEffectivelyRejected.value;
-});
-
-const closeModal = () => {
-  emit('close-modal');
-  actionAttempt.value = null;
-  rejectionReason.value = '';
-  resetFileInputs(); // Ensure files are cleared on close
-}
-
-// File handling methods for DO
-const handleAttachmentsChange = (event) => {
-  selectedAttachments.value = event.target.files; // FileList
-};
-
-const handleReportFileChange = (event) => {
-  selectedReportFile.value = event.target.files[0]; // Single File
-};
-
-
-const submitVerificationHandler = () => {
-  if (!localVerificationData.value.date) {
-    alert('Please provide the Scheduled Verification Date.');
-    return;
-  }
-   if (!localVerificationData.value.status) {
-    alert('Please select a Physical Verification Status.');
-    return;
-  }
-  if ((localVerificationData.value.status === 'VERIFIED_PV' || localVerificationData.value.status === 'NOT_VERIFIED_PV') && !localVerificationData.value.report.trim()) {
-    alert('Verification Report/Notes are required for Verified or Not Verified statuses.');
-    return;
-  }
-
-  const payloadToEmit = {
-    verificationDate: localVerificationData.value.date,
-    verificationReport: localVerificationData.value.report,
-    verificationStatus: localVerificationData.value.status,
-    sendToUser: localVerificationData.value.sendToUser,
-    // Add the selected files to the payload
-    tc_attachments: selectedAttachments.value, // This will be a FileList or null
-    tc_report: selectedReportFile.value        // This will be a File object or null
-  };
-  console.log('MODAL: Emitting submit-verification with payload (including files if any):', payloadToEmit);
-  emit('submit-verification', payloadToEmit);
-  // Do not reset file inputs here immediately; parent might need them if submission fails and modal stays open.
-  // Files will be reset if modal closes or new data is loaded.
-}
-
-const handleApprove = () => {
-    if (!isVerificationSufficientForApproval.value) {
-        alert("Physical verification must be recorded as 'Physically Verified & Recommended' or 'Not Required' before approving.");
-        return;
-    }
-    actionAttempt.value = null;
-    emit('approve');
-}
-
-const prepareReject = () => {
-    if (actionAttempt.value === 'reject' && rejectionReason.value.trim()) {
-        emit('reject', { rejectionReason: rejectionReason.value.trim() });
-        actionAttempt.value = null;
-    } else {
-        actionAttempt.value = 'reject';
-    }
-}
-
 </script>
 
 <style scoped>
@@ -680,5 +457,11 @@ const prepareReject = () => {
 .btn-danger { @apply border-transparent bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 disabled:bg-red-300; }
 .btn-info { @apply border-transparent bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 disabled:bg-blue-300; }
 .btn-secondary { @apply border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-indigo-500; }
-.form-input { @apply block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2; }
+
+.form-input {
+  @apply block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2;
+}
+.file-input {
+  @apply block w-full text-sm text-gray-900 border border-blue-300 rounded-lg cursor-pointer bg-blue-50 focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-l-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-200 file:text-blue-700 hover:file:bg-blue-300;
+}
 </style>

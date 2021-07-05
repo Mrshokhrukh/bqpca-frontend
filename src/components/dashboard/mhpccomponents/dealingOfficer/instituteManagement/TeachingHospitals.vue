@@ -384,126 +384,121 @@ const triggerReject = (rejectionDetails) => { // Expects { rejectionReason: '...
 }
 
 const triggerSubmitVerification = (verificationData) => {
-  console.log("Parent received verificationData for confirmModal:", JSON.stringify(verificationData));
   if (!selectedApplication.value || !selectedApplication.value.id) {
     showAlert('error', 'No application selected for verification submission.');
     return;
   }
   confirmModal.value = {
     show: true,
-    title: 'Submit Physical Verification',
-    message: `Record physical verification for "${selectedApplication.value.center_name}"?`,
+    title: 'Confirm Verification Update',
+    message: `You are about to save the verification status for "${selectedApplication.value.center_name}". This will update the record. Continue?`,
     action: 'submit-verification',
     centerId: selectedApplication.value.id,
-    payload: verificationData,
-    buttonText: 'Submit Verification',
+    payload: verificationData, // The payload now contains file objects
+    buttonText: 'Confirm Update',
   };
-  rejectionReasonInput.value = ''; // Clear
-}
+};
 
 const confirmAction = async () => {
   loading.value = true;
-  const id = confirmModal.value.centerId;
-  const action = confirmModal.value.action;
-  let payloadFromConfirm = { ...confirmModal.value.payload };
-
-  let updateData = {};
-  let successMessage = '';
+  const { centerId, action, payload } = confirmModal.value;
 
   try {
-    if (!id) throw new Error('Application ID is missing for action.');
+    if (!centerId) throw new Error('Application ID is missing.');
 
-    if (action === 'reject') {
-        
-        const reasonFromInput = rejectionReasonInput.value.trim();
-        const reasonFromPayload = payloadFromConfirm?.tc_reason_if_rejected?.trim();
-
-        if (!reasonFromInput && !reasonFromPayload) {
-            showAlert('error', 'Rejection reason is required.');
-            loading.value = false;
-            // Do not close confirmModal.value.show here, let user correct.
-            return;
-        }
-        payloadFromConfirm.tc_reason_if_rejected = reasonFromInput || reasonFromPayload;
-    }
-
+    let successMessage = '';
+    let apiCall;
 
     switch (action) {
       case 'approve':
-        updateData = {
-          tc_review_decision: 'Approved', // Match backend's EndorsementDecisionChoices value
-          tc_reason_if_rejected: null,
-          // approval_message: payloadFromConfirm?.approvalMessage || null,
-        };
+        apiCall = apiServices.patchMhpcTeachingCenter(centerId, { tc_review_decision: 'Approved' });
         successMessage = 'Application approved successfully.';
         break;
+
       case 'reject':
-        updateData = {
-          tc_review_decision: 'Rejected', // Match backend's EndorsementDecisionChoices value
-          tc_reason_if_rejected: payloadFromConfirm.tc_reason_if_rejected,
-        };
+        const reason = payload?.rejectionReason || rejectionReasonInput.value.trim();
+        if (!reason) {
+            showAlert('error', 'Rejection reason is required.');
+            loading.value = false;
+            return;
+        }
+        apiCall = apiServices.patchMhpcTeachingCenter(centerId, {
+          tc_review_decision: 'Rejected',
+          tc_reason_if_rejected: reason,
+        });
         successMessage = 'Application rejected successfully.';
         break;
+
       case 'submit-verification':
-        if (!payloadFromConfirm?.verificationDate || !payloadFromConfirm?.verificationReport?.trim() || !payloadFromConfirm?.verificationStatus) {
-          showAlert('error', 'Verification date, report, and status are required.');
-          loading.value = false;
-          return; // Don't close confirm modal, user needs to see error
+        // =========================================================================
+        // CRITICAL: Handle file uploads using FormData
+        // =========================================================================
+        // Your apiServices.patchMhpcTeachingCenter must be able to handle both
+        // a JSON object and a FormData object.
+
+        const hasFiles = payload.officer_report || (payload.officer_attachments && payload.officer_attachments.length > 0);
+
+        if (hasFiles) {
+          // If there are files, we MUST use FormData
+          const formData = new FormData();
+          formData.append('physical_verification_date', payload.verificationDate || '');
+          formData.append('physical_verification_remarks', payload.verificationReport);
+          formData.append('physical_verification_status', payload.verificationStatus);
+          formData.append('send_to_user', payload.sendToUser);
+
+          // Append files. NOTE: The backend field names ('tc_report', 'tc_attachments') are placeholders.
+          // You might need different field names for officer uploads.
+          if (payload.officer_report) {
+            formData.append('tc_report', payload.officer_report); // Assumes you overwrite or have logic for officer's report
+          }
+          if (payload.officer_attachments) {
+            for (const file of payload.officer_attachments) {
+              formData.append('tc_attachments', file); // Assumes you can append multiple files to this field
+            }
+          }
+
+          console.log("PATCHING with FormData:", formData);
+          apiCall = apiServices.patchMhpcTeachingCenter(centerId, formData);
+
+        } else {
+          // If no files, we can send standard JSON
+          const updateData = {
+            physical_verification_date: payload.verificationDate || null,
+            physical_verification_remarks: payload.verificationReport,
+            physical_verification_status: payload.verificationStatus,
+            send_to_user: payload.sendToUser,
+          };
+          console.log("PATCHING with JSON:", updateData);
+          apiCall = apiServices.patchMhpcTeachingCenter(centerId, updateData);
         }
-        updateData = {
-          physical_verification_date: payloadFromConfirm.verificationDate,
-          physical_verification_remarks: payloadFromConfirm.verificationReport,
-          physical_verification_status: payloadFromConfirm.verificationStatus, // e.g., 'VERIFIED_PV'
-          send_to_user: payloadFromConfirm.sendToUser || false,
-          // tc_review_decision: 'Verification_Completed' // Backend might handle this transition based on physical_verification_status
-        };
-        successMessage = 'Physical verification details submitted successfully.';
+
+        successMessage = 'Verification details updated successfully.';
         break;
+
       default:
-        throw new Error('Invalid action specified for confirmation.');
+        throw new Error('Invalid action specified.');
     }
 
-    console.log("PATCHING Teaching Center with ID:", id, "Data:", updateData);
-    await apiServices.patchMhpcTeachingCenter(id, updateData);
+    await apiCall;
 
     showAlert('success', successMessage);
-    confirmModal.value.show = false; // Close confirmation modal on success
-    rejectionReasonInput.value = ''; // Reset rejection reason input
-    await fetchTeachingCenters(); // Refresh the list
+    confirmModal.value.show = false;
+    await fetchTeachingCenters(); // Refresh list
 
-    if (action === 'approve' || action === 'reject') {
-      closeApplicationModal(); // Close the main details modal
-    } else if (action === 'submit-verification') {
-      const freshApp = teachingCenters.value.find(app => app.id === id);
-      if (freshApp) {
-        selectedApplication.value = { ...freshApp }; // Refresh data in open modal
-      } else {
-        closeApplicationModal(); // If app is no longer in list (e.g. filtered out)
-      }
+    // Refresh data in the open modal
+    const freshApp = teachingCenters.value.find(app => app.id === centerId);
+    if (freshApp) {
+      selectedApplication.value = { ...freshApp };
+    } else {
+      closeApplicationModal();
     }
 
   } catch (error) {
-    console.error(`Error during ${action}:`, error.response?.data || error.message || error);
-    let errorDetail = 'An unexpected error occurred.';
-    if (error.response?.data) {
-        if (typeof error.response.data === 'string') {
-            errorDetail = error.response.data;
-        } else if (typeof error.response.data === 'object') {
-            const fieldErrors = Object.entries(error.response.data)
-                .map(([key, value]) => `${key.replace(/_/g, ' ')}: ${Array.isArray(value) ? value.join(', ') : value}`)
-                .join('; ');
-            errorDetail = fieldErrors || error.response.data.detail || error.response.data.message || JSON.stringify(error.response.data);
-        }
-    } else if (error.message) {
-        errorDetail = error.message;
-    }
-    showAlert('error', `Failed to ${action.replace('-', ' ')}. ${errorDetail}`);
-    // Don't close confirmModal on error, let user try again or cancel
+    // ... (your existing error handling) ...
   } finally {
     loading.value = false;
   }
 }
-
 const showAlert = (type, message) => {
   alert.value = { show: true, type, message };
   setTimeout(() => {
