@@ -297,6 +297,7 @@ export default {
       education_program_management: mhpcDashboard,
       institute_reports: mhpcDashboard,
       teaching_hospital_reports: mhpcDashboard,
+      cogs_reports: mhpcDashboard,
 
     },
   },

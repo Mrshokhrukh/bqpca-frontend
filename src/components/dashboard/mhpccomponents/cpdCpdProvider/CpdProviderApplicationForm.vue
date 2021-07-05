@@ -640,7 +640,6 @@ const handleFileUpload = (event, fileRef, maxSizeMB = 5, errorFieldKey, errorObj
   const mainErrorMsgKey = errorFieldKey.replace(/([A-Z])/g, ' $1').toLowerCase();
   validationErrors.value = validationErrors.value.filter(e => !e.toLowerCase().includes(mainErrorMsgKey));
 
-
   if (file) {
     if (file.type === 'application/pdf' && file.size <= maxSizeMB * 1024 * 1024) {
       fileRef.value = file;
@@ -683,7 +682,6 @@ const handleApprovalLetterUpload = (event) => handleFileUpload(event, approvalLe
 const handleCourseDocumentUpload = (event) => handleFileUpload(event, courseDocument, 5, 'courseDocument', teachingLearningErrors);
 const handleAttendanceSheetUpload = (event) => handleFileUpload(event, attendanceSheet, 5, 'attendanceSheet', approvedCpdErrors);
 const handleAttachmentUpload = (event) => handleFileUpload(event, attachment, 5, 'attachment', approvedCpdErrors);
-
 
 const addTeachingMethod = () => {
   teachingMethods.value.push({ activity: '', duration: null });
@@ -1090,38 +1088,27 @@ const prepareFormData = (isDraft = false) => {
   }
 
   const learningMethodsToSend = teachingMethods.value
-    .filter(method => method.activity?.trim() || (isDraft && method.duration !== null && method.duration !== undefined))
+    .filter(method => method.activity?.trim() || method.duration)
     .map(method => ({
       activities: method.activity?.trim() || '',
-      hole: (method.duration !== null && method.duration !== undefined && Number(method.duration) > 0)
-        ? Number(method.duration)
-        : (isDraft ? (method.duration === null || method.duration === undefined ? '' : Number(method.duration)) : 0),
+
+      duration: (method.duration !== null && method.duration !== undefined) ? Number(method.duration) : null,
     }));
   fd.append('learning_methods', JSON.stringify(learningMethodsToSend));
-
   // Resource Persons
   const resourcesToSend = resourcePersons.value
-    .filter(person => {
-      if (isDraft) {
-        return person.selectedPersonId || person.name?.trim() || person.regNo?.trim() || person.certificate;
-      }
-      return person.selectedPersonId && person.certificate;
-    })
-    .map((person) => { // Removed 'index' from here
+    .filter(person => person.selectedPersonId || person.certificate)
+    .map((person) => {
       const selectedUser = userRegistrations.value.find(u => u.id === person.selectedPersonId);
       const regNoToUse = selectedUser ? (selectedUser.registration_no || selectedUser.cid_no) : (person.regNo || '');
       const nameToUse = selectedUser ? selectedUser.full_name : (person.name || '');
 
+      // The keys now match the backend serializer fields
       return {
-        registration_no: regNoToUse,
-        full_name: nameToUse,
-        cid_no: selectedUser ? selectedUser.cid_no : (person.regNo || ''), // Ensure CID is also sent if available
+        resource_person_reg_no: regNoToUse,
+        resource_person_name: nameToUse,
       };
     });
-
-
-
-    
   fd.append('resources', JSON.stringify(resourcesToSend));
 
   // Append resource person certificates with dynamic field names as your backend expects: resource_file_X
@@ -1131,7 +1118,6 @@ const prepareFormData = (isDraft = false) => {
     }
   });
 
-
   const participantsToSend = participants.value
     .filter(p => p.regNo?.trim())
     .map(p => ({
@@ -1140,7 +1126,6 @@ const prepareFormData = (isDraft = false) => {
     }));
   fd.append('participants', JSON.stringify(participantsToSend));
 
-
   const methodologiesToSend = selectedMethodologies.value.map(methodId => ({
     methodology_name: methodId
   }));
@@ -1148,7 +1133,6 @@ const prepareFormData = (isDraft = false) => {
 
   fd.append('target_participant_categories', JSON.stringify(participantDetails.category || []));
   fd.append('target_participant_subcategories', JSON.stringify(participantDetails.subcategory || []));
-
 
   if (authStore.user?.id) {
     fd.append('user_id', authStore.user.id);
@@ -1162,7 +1146,6 @@ const prepareFormData = (isDraft = false) => {
 
   return fd;
 };
-
 
 const resetFormState = () => {
   applicant.agencyTrainingLocation = ''
@@ -1188,7 +1171,6 @@ const resetFormState = () => {
     totalHours.value = 0;
     calculatedCredits.value = 0;
     courseDocument.value = null;
-
     participantDetails.category = [];
     participantDetails.subcategory = [];
     participantDetails.number = null;
@@ -1210,39 +1192,55 @@ const resetFormState = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
+const DRAFT_STORAGE_KEY = 'cpdProviderApplicationDraft';
 
-const saveDraft = async () => {
-  currentAction.value = 'draft';
-  if (!applicant.agencyTrainingLocation?.trim() && !application.title?.trim()) {
-    validationErrors.value = ['Please fill in at least Agency/Training Location or Title of CPD to save a draft.'];
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    currentAction.value = '';
-    return;
-  }
-  validationErrors.value = [];
-  applicantDetailsErrors.value = {}; applicationDetailsErrors.value = {}; cpdProviderErrors.value = {};
-  resourcePersonsErrors.value = resourcePersons.value.map(() => ({}));
-  teachingLearningErrors.value = {}; participantDetailsErrors.value = {}; approvedCpdErrors.value = {};
-
+const saveDraft = () => {
   try {
-    loading.value = true;
-    const fd = prepareFormData(true);
-    await apiService.createMhpcCpdTask(fd);
-    successMessage.value = 'Draft saved successfully! You can complete and submit it later.';
+    const draftData = {
+      applicant: { ...applicant },
+      application: { ...application },
+      cpdProvider: { ...cpdProvider },
+      resourcePersons: JSON.parse(JSON.stringify(resourcePersons.value)),
+      teachingMethod: { ...teachingMethod },
+      selectedMethodologies: [ ...selectedMethodologies.value ],
+      teachingMethods: JSON.parse(JSON.stringify(teachingMethods.value)),
+      participantDetails: { ...participantDetails },
+      participants: JSON.parse(JSON.stringify(participants.value)),
+    };
+    localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(draftData));
+    successMessage.value = 'Draft saved successfully to your browser. It will be here when you get back.';
     setTimeout(() => { successMessage.value = ''; }, 5000);
   } catch (error) {
-    console.error('Error saving draft:', error);
-    validationErrors.value = ['Failed to save draft. An unexpected error occurred.'];
-    if (error.response?.data) {
-        Object.entries(error.response.data).forEach(([key, value]) => {
-            validationErrors.value.push(`${key}: ${Array.isArray(value) ? value.join(', ') : value}`);
-        });
-    }
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  } finally {
-    loading.value = false;
-    currentAction.value = '';
+    console.error('Error saving draft to local storage:', error);
+    validationErrors.value = ['Failed to save draft. Your browser might be out of space or in private mode.'];
   }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+const loadDraft = () => {
+  try {
+    const savedDraft = localStorage.getItem(DRAFT_STORAGE_KEY);
+    if (savedDraft) {
+      const draftData = JSON.parse(savedDraft);
+      Object.assign(applicant, draftData.applicant);
+      Object.assign(application, draftData.application);
+      Object.assign(cpdProvider, draftData.cpdProvider);
+      resourcePersons.value = draftData.resourcePersons || [{ selectedPersonId: '', name: '', regNo: '', certificate: null }];
+      Object.assign(teachingMethod, draftData.teachingMethod);
+      selectedMethodologies.value = draftData.selectedMethodologies || [];
+      teachingMethods.value = draftData.teachingMethods || [{ activity: '', duration: null }];
+      Object.assign(participantDetails, draftData.participantDetails);
+      participants.value = draftData.participants || [];
+
+      calculateTotalHours();
+      successMessage.value = 'Loaded saved draft. Please re-select any required files before submitting.';
+      setTimeout(() => { successMessage.value = ''; }, 7000);
+    }
+  } catch (error) {
+    console.error('Error loading draft from local storage:', error);
+    validationErrors.value = ['Could not load saved draft due to an error.'];
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
 const handleSubmit = () => {
@@ -1267,6 +1265,7 @@ const confirmSubmit = async () => {
     loading.value = true;
     const fd = prepareFormData(false);
     await apiService.createMhpcCpdTask(fd);
+    localStorage.removeItem(DRAFT_STORAGE_KEY);
     successMessage.value = 'Application submitted successfully! Redirecting to dashboard...';
     resetFormState();
     setTimeout(() => {
@@ -1302,11 +1301,11 @@ const confirmSubmit = async () => {
 
 const cancelForm = () => {
   if (confirm('Are you sure you want to cancel? Any unsaved changes will be lost.')) {
+    localStorage.removeItem(DRAFT_STORAGE_KEY);
     resetFormState();
     router.push('/admin/cme_cpd_provider/health_certification/dashboard');
   }
 };
-
 
 const fetchUserRegistrations = async () => {
   try {
@@ -1371,6 +1370,7 @@ onMounted(async () => {
   calculateTotalHours();
   await fetchUserRegistrations();
   await loadDropdownOptions();
+  loadDraft();
 });
 
 </script>

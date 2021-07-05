@@ -138,7 +138,7 @@ const tableHeaders = [
   { key: 'title', label: 'Report Title', sortable: true },
   { key: 'dateSubmitted', label: 'Submitted On', sortable: true, type: 'date' },
   { key: 'status', label: 'Status', sortable: true, type: 'status' },
-  { key: 'approvedBy', label: 'Reviewed By', sortable: true },
+  { key: 'reviewedBy', label: 'Reviewed By', sortable: true },
   { key: 'lastUpdated', label: 'Last Updated', sortable: true, type: 'date' },
 ];
 
@@ -148,7 +148,7 @@ const transformData = (apiItem) => ({
   title: apiItem.center_name,
   dateSubmitted: apiItem.created_at,
   status: apiItem.tc_review_decision_display,
-  approvedBy: apiItem.tc_renewal_review_name,
+  reviewedBy: apiItem.tc_reviewed_by_name || 'N/A',
   lastUpdated: apiItem.updated_at,
 });
 

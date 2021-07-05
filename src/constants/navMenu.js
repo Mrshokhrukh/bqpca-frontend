@@ -999,6 +999,10 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/teaching_hospital_reports`,
           },
           {
+            name: 'Cogs Reports',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/cogs_reports`,
+          },
+          {
             name: 'Payment History',
             icon: getIconComponent('CreditCard'),
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/payments`,
