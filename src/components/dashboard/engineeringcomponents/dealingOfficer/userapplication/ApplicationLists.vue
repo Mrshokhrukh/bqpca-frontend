@@ -142,11 +142,11 @@
 import { ref, computed, onMounted } from 'vue'
 import apiServices from '@/services/services'
 import ViewDetailsModal from '../modals/ViewApplicationDetailsModal.vue'
-import DOPageHeader from '@/components/common/MHPC/DOPageHeader.vue' // Import the header
+import DOPageHeader from '@/components/common/MHPC/DOPageHeader.vue'
 import { useToast } from 'vue-toastification'
 
 const applications = ref([])
-const filterStatus = ref('all') // Changed default to 'all' to match options
+const filterStatus = ref('all')
 const searchQuery = ref('')
 const currentPage = ref(1)
 const itemsPerPage = 10
@@ -214,7 +214,7 @@ const paginatedApplications = computed(() => {
 })
 
 const totalPages = computed(() => {
-  return Math.max(1, Math.ceil(filteredApplications.value.length / itemsPerPage)) // Ensure at least 1 page
+  return Math.max(1, Math.ceil(filteredApplications.value.length / itemsPerPage))
 })
 
 const paginationStart = computed(() => {

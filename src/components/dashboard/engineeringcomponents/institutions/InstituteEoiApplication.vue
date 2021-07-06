@@ -337,7 +337,7 @@ const formData = ref({
   do_dpr_reason_if_rejected: '',
 
   // Declaration
-  declaration: false,
+  declaration: '',
 
   // Backend-set fields
   review_decision: 'Pending',
@@ -457,12 +457,15 @@ const handleSubmit = async () => {
   Object.keys(formData.value).forEach((key) => {
     const value = formData.value[key]
 
-    // Skip frontend-only or backend-set fields
-    if (key === 'declaration' || key === 'review_decision' || key === 'reason_if_rejected') {
+    // Skip only backend-set fields
+    if (key === 'review_decision' || key === 'reason_if_rejected') {
       return
     }
 
-    if (value instanceof File) {
+    if (key === 'declaration') {
+      // Always send as string 'true' or 'false'
+      submitData.append('declaration', value ? 'true' : 'false')
+    } else if (value instanceof File) {
       submitData.append(key, value, value.name)
     } else if (key === 'course_duration') {
       const duration = Number(value)
