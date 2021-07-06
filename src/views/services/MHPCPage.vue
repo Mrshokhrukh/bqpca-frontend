@@ -625,7 +625,43 @@ const handleCPDProviderRegistration = async () => {
     toast.success('Registration successful! Please login.')
     closeCPDProviderModal()
   } catch (error) {
-    toast.error(error.response?.data?.message || 'Registration failed.')
+    console.error('Registration error:', error)
+    const response = error.response || {}
+    const data = response.data || {}
+    const status = response.status
+
+    // Improved error message handling from backend
+    let errorMessage = 'Registration failed. Please check your details and try again.' // Default message
+
+    if (status === 400) {
+      // Concatenate all field errors for a more informative message
+      const fieldErrors = Object.entries(data)
+        .map(([field, messages]) => {
+          if (Array.isArray(messages) && messages.length > 0) {
+            // Make field name more readable
+            const readableField = field.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())
+            return `${readableField}: ${messages[0]}` // Show first error message per field
+          }
+          return null
+        })
+        .filter((msg) => msg !== null)
+        .join('. ')
+
+      if (fieldErrors) {
+        errorMessage = fieldErrors
+      } else if (data.non_field_errors && data.non_field_errors.length > 0) {
+        errorMessage = data.non_field_errors[0]
+      }
+    } else if (status === 409) {
+      // Conflict (e.g., email/CID exists)
+      errorMessage = 'An account with this email or CID already exists.'
+    } else if (error.message && error.message.includes('Network Error')) {
+      errorMessage = 'Cannot connect to the server. Please check your internet connection.'
+    } else if (status >= 500) {
+      errorMessage = 'Server error during registration. Please try again later.'
+    }
+
+    toast.error(errorMessage)
   }
 }
 
@@ -676,7 +712,43 @@ const handleMedicalInstitutionRegistration = async () => {
     toast.success('Medical Institution registration successful! Please login.')
     closeMedicalInstitutionModal()
   } catch (error) {
-    toast.error(error.response?.data?.message || 'Registration failed.')
+    console.error('Registration error:', error)
+    const response = error.response || {}
+    const data = response.data || {}
+    const status = response.status
+
+    // Improved error message handling from backend
+    let errorMessage = 'Registration failed. Please check your details and try again.' // Default message
+
+    if (status === 400) {
+      // Concatenate all field errors for a more informative message
+      const fieldErrors = Object.entries(data)
+        .map(([field, messages]) => {
+          if (Array.isArray(messages) && messages.length > 0) {
+            // Make field name more readable
+            const readableField = field.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())
+            return `${readableField}: ${messages[0]}` // Show first error message per field
+          }
+          return null
+        })
+        .filter((msg) => msg !== null)
+        .join('. ')
+
+      if (fieldErrors) {
+        errorMessage = fieldErrors
+      } else if (data.non_field_errors && data.non_field_errors.length > 0) {
+        errorMessage = data.non_field_errors[0]
+      }
+    } else if (status === 409) {
+      // Conflict (e.g., email/CID exists)
+      errorMessage = 'An account with this email or CID already exists.'
+    } else if (error.message && error.message.includes('Network Error')) {
+      errorMessage = 'Cannot connect to the server. Please check your internet connection.'
+    } else if (status >= 500) {
+      errorMessage = 'Server error during registration. Please try again later.'
+    }
+
+    toast.error(errorMessage)
   }
 }
 
