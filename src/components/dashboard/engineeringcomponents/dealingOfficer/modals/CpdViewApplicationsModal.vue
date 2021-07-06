@@ -1,4 +1,4 @@
-```vue
+
 <template>
   <TransitionRoot appear :show="application !== null" as="template">
     <Dialog as="div" @close="$emit('close')" class="relative z-50">
@@ -483,7 +483,7 @@
 
                           <div v-if="showApprovalForm"
                             class="p-6 bg-green-50 rounded-xl border border-green-200 mb-4 transition-all">
-                            ```vue
+
                             <h5 class="text-base font-medium text-green-800 mb-4 flex items-center space-x-2">
                               <CheckCircle class="h-4 w-4 text-green-600" />
                               <span>Approve Application</span>
