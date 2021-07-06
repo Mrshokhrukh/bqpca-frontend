@@ -142,27 +142,27 @@
         <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label for="headName" class="block text-sm font-medium text-gray-700">Name:</label>
-            <input type="text" id="headName" v-model="formData.head_name"
+            <input type="text" id="headName" v-model="formData.head_of_institution_name"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-              required />
+              disabled />
           </div>
           <div>
             <label for="headGender" class="block text-sm font-medium text-gray-700">Gender:</label>
-            <input type="text" id="headGender" v-model="formData.head_gender"
+            <input type="text" id="headGender" v-model="formData.head_of_institution_gender"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-              required />
+              disabled />
           </div>
           <div>
             <label for="headPhone" class="block text-sm font-medium text-gray-700">Phone Number:</label>
-            <input type="text" id="headPhone" v-model="formData.head_phone"
+            <input type="text" id="headPhone" v-model="formData.head_of_institution_phone_number"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-              required />
+              disabled />
           </div>
           <div>
             <label for="headEmail" class="block text-sm font-medium text-gray-700">Email Address:</label>
-            <input type="email" id="headEmail" v-model="formData.head_email"
+            <input type="email" id="headEmail" v-model="formData.head_of_institution_email"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-              required />
+              disabled />
           </div>
         </div>
 
@@ -191,9 +191,120 @@
               accept="application/pdf"
               class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
           </div>
+
+        </div>
+
+        <!-- Additional Details Section -->
+        <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl">
+          <h3 class="text-lg font-semibold text-gray-900">5. Additional Details</h3>
+          <p class="mt-1 text-sm text-gray-500">Provide any additional details relevant to the DPR.</p>
+        </div>
+        <div class="p-8 grid grid-cols-1 gap-6">
           <div>
-            <label for="remarks" class="block text-sm font-medium text-gray-700">Remarks:</label>
-            <textarea id="remarks" v-model="formData.remarks" rows="3"
+            <label for="visionMissionStrategies" class="block text-sm font-medium text-gray-700">Vision, Mission &
+              Strategies:</label>
+            <textarea id="visionMissionStrategies" v-model="formData.vision_mission_strategies" rows="3"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"></textarea>
+          </div>
+          <div>
+            <label for="projectScheduling" class="block text-sm font-medium text-gray-700">Project Scheduling:</label>
+            <textarea id="projectScheduling" v-model="formData.project_scheduling" rows="3"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"></textarea>
+          </div>
+          <div>
+            <label for="grossNationalHappiness" class="block text-sm font-medium text-gray-700">Gross National
+              Happiness:</label>
+            <textarea id="grossNationalHappiness" v-model="formData.gross_national_happiness" rows="3"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"></textarea>
+          </div>
+          <div>
+            <label for="landDetails" class="block text-sm font-medium text-gray-700">Land Details:</label>
+            <textarea id="landDetails" v-model="formData.land_details" rows="3"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"></textarea>
+          </div>
+          <div>
+            <label for="conceptualMasterPlan" class="block text-sm font-medium text-gray-700">Conceptual Master
+              Plan:</label>
+            <textarea id="conceptualMasterPlan" v-model="formData.conceptual_master_plan" rows="3"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"></textarea>
+          </div>
+          <div>
+            <label for="academicPlan" class="block text-sm font-medium text-gray-700">Academic Plan:</label>
+            <textarea id="academicPlan" v-model="formData.academic_plan" rows="3"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"></textarea>
+          </div>
+          <div>
+            <label for="affiliationDetails" class="block text-sm font-medium text-gray-700">Affiliation Details:</label>
+            <textarea id="affiliationDetails" v-model="formData.affiliation_details" rows="3"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"></textarea>
+          </div>
+          <div>
+            <label for="teachingHospital" class="block text-sm font-medium text-gray-700">Teaching Hospital:</label>
+            <textarea id="teachingHospital" v-model="formData.teaching_hospital" rows="3"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"></textarea>
+          </div>
+          <div>
+            <label for="researchPolicy" class="block text-sm font-medium text-gray-700">Research Policy:</label>
+            <textarea id="researchPolicy" v-model="formData.research_policy" rows="3"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"></textarea>
+          </div>
+          <div>
+            <label for="humanResource" class="block text-sm font-medium text-gray-700">Human Resource:</label>
+            <textarea id="humanResource" v-model="formData.human_resource" rows="3"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"></textarea>
+          </div>
+          <div>
+            <label for="qualityAssurance" class="block text-sm font-medium text-gray-700">Quality Assurance:</label>
+            <textarea id="qualityAssurance" v-model="formData.quality_assurance" rows="3"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"></textarea>
+          </div>
+          <div>
+            <label for="governanceStructure" class="block text-sm font-medium text-gray-700">Governance
+              Structure:</label>
+            <textarea id="governanceStructure" v-model="formData.governance_structure" rows="3"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"></textarea>
+          </div>
+          <div>
+            <label for="businessPlan" class="block text-sm font-medium text-gray-700">Business Plan:</label>
+            <textarea id="businessPlan" v-model="formData.business_plan" rows="3"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"></textarea>
+          </div>
+          <div>
+            <label for="projectCostAnalysis" class="block text-sm font-medium text-gray-700">Project Cost
+              Analysis:</label>
+            <textarea id="projectCostAnalysis" v-model="formData.project_cost_analysis" rows="3"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"></textarea>
+          </div>
+          <div>
+            <label for="facilitiesStudentServices" class="block text-sm font-medium text-gray-700">Facilities & Student
+              Services:</label>
+            <textarea id="facilitiesStudentServices" v-model="formData.facilities_student_services" rows="3"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"></textarea>
+          </div>
+          <div>
+            <label for="admissionPolicy" class="block text-sm font-medium text-gray-700">Admission Policy:</label>
+            <textarea id="admissionPolicy" v-model="formData.admission_policy" rows="3"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"></textarea>
+          </div>
+          <div>
+            <label for="serviceConditions" class="block text-sm font-medium text-gray-700">Service Conditions:</label>
+            <textarea id="serviceConditions" v-model="formData.service_conditions" rows="3"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"></textarea>
+          </div>
+          <div>
+            <label for="safetySecurity" class="block text-sm font-medium text-gray-700">Safety & Security:</label>
+            <textarea id="safetySecurity" v-model="formData.safety_security" rows="3"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"></textarea>
+          </div>
+          <div>
+            <label for="publicInformationSystem" class="block text-sm font-medium text-gray-700">Public Information
+              System:</label>
+            <textarea id="publicInformationSystem" v-model="formData.public_information_system" rows="3"
+              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"></textarea>
+          </div>
+          <div>
+            <label for="otherDetails" class="block text-sm font-medium text-gray-700">Other Details:</label>
+            <textarea id="otherDetails" v-model="formData.other_details" rows="3"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"></textarea>
           </div>
         </div>
@@ -254,15 +365,34 @@ const formData = ref({
   course_duration: '',
   commencement_date: '',
   type_of_programme: '',
-  head_name: '',
-  head_gender: '',
-  head_phone: '',
-  head_email: '',
+  head_of_institution_name: '',
+  head_of_institution_gender: '',
+  head_of_institution_phone_number: '',
+  head_of_institution_email: '',
   dpr_name: '',
   executive_summary: '',
   supporting_documents: null,
-  remarks: '',
   declaration: false,
+  vision_mission_strategies: '',
+  project_scheduling: '',
+  gross_national_happiness: '',
+  land_details: '',
+  conceptual_master_plan: '',
+  academic_plan: '',
+  affiliation_details: '',
+  teaching_hospital: '',
+  research_policy: '',
+  human_resource: '',
+  quality_assurance: '',
+  governance_structure: '',
+  business_plan: '',
+  project_cost_analysis: '',
+  facilities_student_services: '',
+  admission_policy: '',
+  service_conditions: '',
+  safety_security: '',
+  public_information_system: '',
+  other_details: '',
 })
 
 onMounted(async () => {
@@ -332,13 +462,12 @@ const fetchInstituteData = async () => {
       formData.value.course_duration = response.data.course_duration || ''
       formData.value.commencement_date = response.data.commencement_date || ''
       formData.value.type_of_programme = response.data.type_of_programme || ''
-      formData.value.head_name = response.data.head_name || ''
-      formData.value.head_gender = response.data.head_gender || ''
-      formData.value.head_phone = response.data.head_phone || ''
-      formData.value.head_email = response.data.head_email || ''
+      formData.value.head_of_institution_name = response.data.head_of_institution_name || ''
+      formData.value.head_of_institution_gender = response.data.head_of_institution_gender || ''
+      formData.value.head_of_institution_phone_number = response.data.head_of_institution_phone_number || ''
+      formData.value.head_of_institution_email = response.data.head_of_institution_email || ''
       formData.value.dpr_name = response.data.dpr_name || ''
       formData.value.executive_summary = response.data.executive_summary || ''
-      formData.value.remarks = response.data.remarks || ''
     }
   } catch (error) {
     console.error('Error fetching institute data:', error)
@@ -389,16 +518,35 @@ const handleSubmit = async () => {
   submitData.append('course_duration', formData.value.course_duration)
   submitData.append('commencement_date', formData.value.commencement_date)
   submitData.append('type_of_programme', formData.value.type_of_programme)
-  submitData.append('head_name', formData.value.head_name)
-  submitData.append('head_gender', formData.value.head_gender)
-  submitData.append('head_phone', formData.value.head_phone)
-  submitData.append('head_email', formData.value.head_email)
+  submitData.append('head_of_institution_name', formData.value.head_of_institution_name)
+  submitData.append('head_of_institution_gender', formData.value.head_of_institution_gender)
+  submitData.append('head_of_institution_phone_number', formData.value.head_of_institution_phone_number)
+  submitData.append('head_of_institution_email', formData.value.head_of_institution_email)
   submitData.append('dpr_name', formData.value.dpr_name)
   submitData.append('executive_summary', formData.value.executive_summary)
   if (formData.value.supporting_documents) {
     submitData.append('supporting_documents', formData.value.supporting_documents)
   }
-  submitData.append('remarks', formData.value.remarks)
+  submitData.append('vision_mission_strategies', formData.value.vision_mission_strategies)
+  submitData.append('project_scheduling', formData.value.project_scheduling)
+  submitData.append('gross_national_happiness', formData.value.gross_national_happiness)
+  submitData.append('land_details', formData.value.land_details)
+  submitData.append('conceptual_master_plan', formData.value.conceptual_master_plan)
+  submitData.append('academic_plan', formData.value.academic_plan)
+  submitData.append('affiliation_details', formData.value.affiliation_details)
+  submitData.append('teaching_hospital', formData.value.teaching_hospital)
+  submitData.append('research_policy', formData.value.research_policy)
+  submitData.append('human_resource', formData.value.human_resource)
+  submitData.append('quality_assurance', formData.value.quality_assurance)
+  submitData.append('governance_structure', formData.value.governance_structure)
+  submitData.append('business_plan', formData.value.business_plan)
+  submitData.append('project_cost_analysis', formData.value.project_cost_analysis)
+  submitData.append('facilities_student_services', formData.value.facilities_student_services)
+  submitData.append('admission_policy', formData.value.admission_policy)
+  submitData.append('service_conditions', formData.value.service_conditions)
+  submitData.append('safety_security', formData.value.safety_security)
+  submitData.append('public_information_system', formData.value.public_information_system)
+  submitData.append('other_details', formData.value.other_details)
 
   try {
     isSubmitting.value = true
@@ -440,16 +588,36 @@ const handleSaveDraft = async () => {
   draftData.append('course_duration', formData.value.course_duration)
   draftData.append('commencement_date', formData.value.commencement_date)
   draftData.append('type_of_programme', formData.value.type_of_programme)
-  draftData.append('head_name', formData.value.head_name)
-  draftData.append('head_gender', formData.value.head_gender)
-  draftData.append('head_phone', formData.value.head_phone)
-  draftData.append('head_email', formData.value.head_email)
+  draftData.append('head_of_institution_name', formData.value.head_of_institution_name)
+  draftData.append('head_of_institution_gender', formData.value.head_of_institution_gender)
+  draftData.append('head_of_institution_phone_number', formData.value.head_of_institution_phone_number)
+  draftData.append('head_of_institution_email', formData.value.head_of_institution_email)
   draftData.append('dpr_name', formData.value.dpr_name)
   draftData.append('executive_summary', formData.value.executive_summary)
   if (formData.value.supporting_documents) {
     draftData.append('supporting_documents', formData.value.supporting_documents)
   }
-  draftData.append('remarks', formData.value.remarks)
+
+  draftData.append('vision_mission_strategies', formData.value.vision_mission_strategies)
+  draftData.append('project_scheduling', formData.value.project_scheduling)
+  draftData.append('gross_national_happiness', formData.value.gross_national_happiness)
+  draftData.append('land_details', formData.value.land_details)
+  draftData.append('conceptual_master_plan', formData.value.conceptual_master_plan)
+  draftData.append('academic_plan', formData.value.academic_plan)
+  draftData.append('affiliation_details', formData.value.affiliation_details)
+  draftData.append('teaching_hospital', formData.value.teaching_hospital)
+  draftData.append('research_policy', formData.value.research_policy)
+  draftData.append('human_resource', formData.value.human_resource)
+  draftData.append('quality_assurance', formData.value.quality_assurance)
+  draftData.append('governance_structure', formData.value.governance_structure)
+  draftData.append('business_plan', formData.value.business_plan)
+  draftData.append('project_cost_analysis', formData.value.project_cost_analysis)
+  draftData.append('facilities_student_services', formData.value.facilities_student_services)
+  draftData.append('admission_policy', formData.value.admission_policy)
+  draftData.append('service_conditions', formData.value.service_conditions)
+  draftData.append('safety_security', formData.value.safety_security)
+  draftData.append('public_information_system', formData.value.public_information_system)
+  draftData.append('other_details', formData.value.other_details)
 
   try {
     isSubmitting.value = true

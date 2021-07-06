@@ -121,230 +121,215 @@
     <div v-if="isModalOpen" class="fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog"
       aria-modal="true">
       <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" @click="closeModal">
+        <div class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity" aria-hidden="true" @click="closeModal">
         </div>
-        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">​</span>
         <div
-          class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-3xl sm:w-full">
-          <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+          class="inline-block align-bottom bg-gray-50 rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-5xl sm:w-full">
+          <div class="bg-white px-4 pt-5 pb-4 sm:p-6">
             <!-- Modal Header -->
-            <div class="sm:flex sm:items-start mb-4 border-b pb-3">
-              <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+            <div class="flex items-start justify-between">
+              <div>
                 <h3 class="text-2xl leading-6 font-bold text-gray-900" id="modal-title">
                   Institute & Review Details
                 </h3>
                 <p class="text-sm text-gray-500 mt-1">
-                  View details and enter review for
-                  {{ selectedCenter?.center_name || 'the selected center' }}.
+                  Reviewing proposal for
+                  <span class="font-semibold text-indigo-600">{{ selectedCenter?.center_name || 'N/A' }}</span>.
                 </p>
               </div>
-              <div class="ml-auto flex-shrink-0 flex items-center">
-                <button @click="closeModal"
-                  class="p-1 rounded-full hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                  title="Close">
-                  <svg class="h-6 w-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
+              <button @click="closeModal"
+                class="ml-4 p-1 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                title="Close">
+                <span class="sr-only">Close</span>
+                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
             </div>
+          </div>
 
-            <!-- Scrollable Content Area -->
-            <div class="mt-5 max-h-[65vh] overflow-y-auto pr-2 text-sm">
-              <!-- Proponent Details (Read-Only) -->
-              <section class="mb-6 opacity-80">
-                <h4 class="text-lg font-semibold text-gray-700 mb-3 border-b pb-1">
-                  Proponent Details (Read-Only)
-                </h4>
-                <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3">
-                  <div class="sm:col-span-2">
-                    <dt class="font-medium text-gray-600">Training Institute Name</dt>
-                    <dd class="mt-1 text-gray-900">
-                      {{ selectedCenter.institute?.name_of_institution || 'N/A' }}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt class="font-medium text-gray-600">Country</dt>
-                    <dd class="mt-1 text-gray-900">
-                      {{ selectedCenter.institute?.country || 'N/A' }}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt class="font-medium text-gray-600">Dzongkhag/Thromde</dt>
-                    <dd class="mt-1 text-gray-900">
-                      {{ selectedCenter.institute?.dzongkhag || 'N/A' }}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt class="font-medium text-gray-600">City/Gewog</dt>
-                    <dd class="mt-1 text-gray-900">
-                      {{ selectedCenter.institute?.gewog || 'N/A' }}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt class="font-medium text-gray-600">Address/Location</dt>
-                    <dd class="mt-1 text-gray-900 whitespace-pre-wrap">
-                      {{ selectedCenter.institute?.address || 'N/A' }}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt class="font-medium text-gray-600">Contact No.</dt>
-                    <dd class="mt-1 text-gray-900">
-                      {{ selectedCenter.institute?.contact_no || 'N/A' }}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt class="font-medium text-gray-600">Email Address</dt>
-                    <dd class="mt-1 text-gray-900">
-                      {{ selectedCenter.institute?.email_address || 'N/A' }}
-                    </dd>
-                  </div>
-                </dl>
-              </section>
+          <!-- Scrollable Content Area with Two-Column Layout -->
+          <div class="max-h-[70vh] overflow-y-auto px-6 py-4 bg-gray-50">
+            <div class="lg:grid lg:grid-cols-5 lg:gap-8">
 
-              <!-- Proposal Details (Read-Only) -->
-              <section class="mb-6 opacity-80">
-                <h4 class="text-lg font-semibold text-gray-700 mb-3 border-b pb-1">
-                  Proposal Details (Read-Only)
-                </h4>
-                <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3">
-                  <div>
-                    <dt class="font-medium text-gray-600">Center Name</dt>
-                    <dd class="mt-1 text-gray-900">{{ selectedCenter.center_name || 'N/A' }}</dd>
-                  </div>
-                  <div>
-                    <dt class="font-medium text-gray-600">Center Location</dt>
-                    <dd class="mt-1 text-gray-900">
-                      {{ selectedCenter.center_location || 'N/A' }}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt class="font-medium text-gray-600">City/Gewog</dt>
-                    <dd class="mt-1 text-gray-900">{{ selectedCenter.city_gewog || 'N/A' }}</dd>
-                  </div>
-                  <div>
-                    <dt class="font-medium text-gray-600">State/Dzongkhag</dt>
-                    <dd class="mt-1 text-gray-900">
-                      {{ selectedCenter.state_dzongkhag || 'N/A' }}
-                    </dd>
-                  </div>
-                  <div class="sm:col-span-2">
-                    <dt class="font-medium text-gray-600">Target Category</dt>
-                    <dd class="mt-1 text-gray-900">
-                      {{ selectedCenter.target_category || 'N/A' }}
-                    </dd>
-                  </div>
-                  <div class="sm:col-span-2">
-                    <dt class="font-medium text-gray-600">Attachments</dt>
-                    <dd class="mt-1 text-gray-900">
-                      <a v-if="selectedCenter.tc_attachments" :href="selectedCenter.tc_attachments" target="_blank"
-                        rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-800 hover:underline">View
-                        Attachment</a>
-                      <span v-else>N/A</span>
-                    </dd>
-                  </div>
-                  <div class="sm:col-span-2">
-                    <dt class="font-medium text-gray-600">Remarks (Proposal)</dt>
-                    <dd class="mt-1 text-gray-900 whitespace-pre-wrap">
-                      {{ selectedCenter.remarks || 'N/A' }}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt class="font-medium text-gray-600">Declaration</dt>
-                    <dd class="mt-1 text-gray-900">
-                      {{ selectedCenter.tc_declaration ? 'Yes' : 'No' }}
-                    </dd>
-                  </div>
-                </dl>
-              </section>
+              <!-- Left Column: Details -->
+              <div class="lg:col-span-2">
+                <!-- Proponent Details Section -->
+                <section class="mb-8">
+                  <h4 class="text-lg font-semibold text-gray-800 mb-3 flex items-center">
+                    <svg class="h-5 w-5 mr-2 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                      fill="currentColor">
+                      <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                        clip-rule="evenodd" />
+                    </svg>
+                    Proponent Details
+                  </h4>
+                  <dl class="divide-y divide-gray-200">
+                    <div class="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
+                      <dt class="text-sm font-medium text-gray-500">Institute Name</dt>
+                      <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{
+                        selectedCenter.institute?.name_of_institution || 'N/A' }}</dd>
+                    </div>
+                    <div class="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
+                      <dt class="text-sm font-medium text-gray-500">Contact</dt>
+                      <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{
+                        selectedCenter.institute?.contact_no || 'N/A' }}</dd>
+                    </div>
+                    <div class="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
+                      <dt class="text-sm font-medium text-gray-500">Email</dt>
+                      <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{
+                        selectedCenter.institute?.email_address || 'N/A' }}</dd>
+                    </div>
+                    <div class="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
+                      <dt class="text-sm font-medium text-gray-500">Location</dt>
+                      <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2 whitespace-pre-wrap">
+                        {{ [selectedCenter.institute?.address, selectedCenter.institute?.gewog,
+                        selectedCenter.institute?.dzongkhag,
+                        selectedCenter.institute?.country].filter(Boolean).join(', ') || 'N / A' }}</dd>
+                    </div>
+                  </dl>
+                </section>
 
-              <!-- Review Form Section (Editable) -->
-              <section class="border-t pt-4">
-                <h4 class="text-lg font-semibold text-gray-800 mb-4">Review Details</h4>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
-                  <!-- Renewal Review Name -->
-                  <div class="sm:col-span-2">
-                    <label for="renewal-review-name" class="block text-sm font-medium text-gray-700">Renewal Review
-                      Name</label>
-                    <input type="text" id="renewal-review-name" v-model="reviewForm.tc_renewal_review_name"
-                      class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
-                  </div>
+                <!-- Proposal Details Section -->
+                <section>
+                  <h4 class="text-lg font-semibold text-gray-800 mb-3 flex items-center">
+                    <svg class="h-5 w-5 mr-2 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                      fill="currentColor">
+                      <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
+                    </svg>
+                    Proposal Details
+                  </h4>
+                  <dl class="divide-y divide-gray-200">
+                    <div class="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
+                      <dt class="text-sm font-medium text-gray-500">Target Category</dt>
+                      <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ selectedCenter.target_category ||
+                        'N/A' }}</dd>
+                    </div>
+                    <div class="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
+                      <dt class="text-sm font-medium text-gray-500">Remarks</dt>
+                      <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2 whitespace-pre-wrap">{{
+                        selectedCenter.remarks || 'N/A' }}</dd>
+                    </div>
+                    <div class="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
+                      <dt class="text-sm font-medium text-gray-500">Attachments</dt>
+                      <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                        <a v-if="selectedCenter.tc_attachments" :href="selectedCenter.tc_attachments" target="_blank"
+                          rel="noopener noreferrer" class="font-medium text-indigo-600 hover:text-indigo-500">View
+                          Attachment</a>
+                        <span v-else>None</span>
+                      </dd>
+                    </div>
+                    <div class="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
+                      <dt class="text-sm font-medium text-gray-500">Payment Status</dt>
+                      <dd class="mt-1 sm:mt-0 sm:col-span-2">
+                        <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full" :class="{
+                          'bg-green-100 text-green-800': selectedCenter.is_payment_complete,
+                          'bg-yellow-100 text-yellow-800': !selectedCenter.is_payment_complete,
+                        }">
+                          {{ selectedCenter.is_payment_complete ? 'Complete' : 'Pending' }}
+                        </span>
+                      </dd>
+                    </div>
+                  </dl>
+                </section>
+              </div>
 
-                  <!-- Review Summary -->
-                  <div class="sm:col-span-2">
-                    <label for="review-summary" class="block text-sm font-medium text-gray-700">Review Summary</label>
-                    <textarea id="review-summary" v-model="reviewForm.tc_review_summary" rows="4"
-                      class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
-                  </div>
+              <!-- Right Column: Review Form -->
+              <div class="lg:col-span-3 mt-8 lg:mt-0">
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                  <fieldset :disabled="isReviewFinalized">
+                    <h4 class="text-lg font-semibold text-gray-800 mb-4">Review Action</h4>
 
-                  <!-- Report Upload -->
-                  <div class="sm:col-span-2">
-                    <label for="report-upload" class="block text-sm font-medium text-gray-700">Upload Review
-                      Report</label>
-                    <input type="file" id="report-upload" @change="handleReportUpload" accept=".pdf,.doc,.docx"
-                      class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
-                    <p v-if="reviewForm.reportFile" class="mt-1 text-xs text-gray-600">
-                      Selected: {{ reviewForm.reportFile.name }}
-                    </p>
-                    <p v-else class="mt-1 text-xs text-gray-600">No file chosen</p>
-                    <p v-if="selectedCenter.tc_report && !reviewForm.reportFile" class="mt-1 text-xs text-gray-600">
-                      Current report:
-                      <a :href="selectedCenter.tc_report" target="_blank" rel="noopener noreferrer"
-                        class="text-indigo-600 hover:underline">View Existing</a>
-                    </p>
-                  </div>
+                    <!-- Payment Pending Warning -->
+                    <div v-if="!selectedCenter.is_payment_complete"
+                      class="p-4 mb-4 text-sm text-yellow-800 bg-yellow-50 rounded-lg border border-yellow-300 flex items-start"
+                      role="alert">
+                      <svg class="flex-shrink-0 inline w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd"
+                          d="M8.257 3.099c.636-1.026 2.85-1.026 3.486 0l5.58 8.997c.636 1.026-.424 2.404-1.743 2.404H4.42c-1.319 0-2.379-1.378-1.743-2.404l5.58-8.997zM10 13a1 1 0 110-2 1 1 0 010 2zm-1-4a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z"
+                          clip-rule="evenodd"></path>
+                      </svg>
+                      <div>
+                        <span class="font-medium">Action Required:</span> Payment is pending. The 'Approve' and 'Reject'
+                        actions will be unavailable until the payment is marked as complete.
+                      </div>
+                    </div>
 
-                  <!-- Review Decision -->
-                  <div>
-                    <label for="review-decision" class="block text-sm font-medium text-gray-700">Review Decision</label>
-                    <select id="review-decision" v-model="reviewForm.tc_review_decision"
-                      class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white">
-                      <option value="Pending">Pending</option>
-                      <option value="Approved">Approved</option>
-                      <option value="Regretted">Regretted</option>
-                    </select>
-                  </div>
+                    <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                      <div class="sm:col-span-6">
+                        <label for="review-decision" class="block text-sm font-medium text-gray-700">Review
+                          Decision</label>
+                        <select id="review-decision" v-model="reviewForm.tc_review_decision"
+                          class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                          <option value="Pending">Pending</option>
+                          <option value="Approved">Approved</option>
+                          <option value="Regretted">Regretted</option>
+                        </select>
+                      </div>
 
-                  <!-- Valid Till -->
-                  <div>
-                    <label for="valid-till" class="block text-sm font-medium text-gray-700">Valid Till</label>
-                    <input type="date" id="valid-till" v-model="reviewForm.valid_till"
-                      class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      placeholder="mm/dd/yyyy" />
-                  </div>
+                      <div class="sm:col-span-6">
+                        <label for="review-summary" class="block text-sm font-medium text-gray-700">Review
+                          Summary</label>
+                        <textarea id="review-summary" v-model="reviewForm.tc_review_summary" rows="3"
+                          class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
+                      </div>
 
-                  <!-- Reason (if rejected) -->
-                  <div class="sm:col-span-2" v-if="reviewForm.tc_review_decision === 'Regretted'">
-                    <label for="reason-rejected" class="block text-sm font-medium text-gray-700">Reason (if rejected)
-                      <span class="text-red-500">*</span></label>
-                    <textarea id="reason-rejected" v-model="reviewForm.tc_reason_if_rejected" rows="3"
-                      class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      placeholder="Provide reason for regretting"></textarea>
-                  </div>
+                      <div class="sm:col-span-3">
+                        <label for="valid-till" class="block text-sm font-medium text-gray-700">Valid Till</label>
+                        <input type="date" id="valid-till" v-model="reviewForm.valid_till"
+                          class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                      </div>
 
-                  <!-- Remarks (Review) -->
-                  <div class="sm:col-span-2">
-                    <label for="review-remarks" class="block text-sm font-medium text-gray-700">Remarks (Review)</label>
-                    <textarea id="review-remarks" v-model="reviewForm.tc_remarks" rows="3"
-                      class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
-                  </div>
+                      <div class="sm:col-span-3">
+                        <label for="report-upload" class="block text-sm font-medium text-gray-700">Upload Report</label>
+                        <input type="file" id="report-upload" @change="handleReportUpload"
+                          class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-1.5 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
+                        <p v-if="selectedCenter.tc_report && !reviewForm.reportFile" class="mt-1 text-xs text-gray-500">
+                          Current: <a :href="selectedCenter.tc_report" target="_blank"
+                            class="text-indigo-600 hover:underline">View Existing</a>
+                        </p>
+                      </div>
+
+                      <div class="sm:col-span-6" v-if="reviewForm.tc_review_decision === 'Regretted'">
+                        <label for="reason-rejected" class="block text-sm font-medium text-gray-700">Reason (if
+                          Regretted) <span class="text-red-500">*</span></label>
+                        <textarea id="reason-rejected" v-model="reviewForm.tc_reason_if_rejected" rows="3"
+                          class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
+                      </div>
+
+                      <div class="sm:col-span-6">
+                        <label for="review-remarks" class="block text-sm font-medium text-gray-700">General Remarks
+                          (Review)</label>
+                        <textarea id="review-remarks" v-model="reviewForm.tc_remarks" rows="3"
+                          class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
+                      </div>
+                    </div>
+                  </fieldset>
                 </div>
-              </section>
+              </div>
+
             </div>
           </div>
 
           <!-- Modal Footer Actions -->
-          <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t">
-            <button type="button" @click="openApproveDialog" :disabled="loading"
-              class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50">
+          <div class="bg-gray-100 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse rounded-b-2xl border-t">
+            <button type="button" @click="openApproveDialog"
+              :disabled="loading || isReviewFinalized || !selectedCenter.is_payment_complete"
+              :title="!selectedCenter.is_payment_complete ? 'Payment must be complete to approve' : (isReviewFinalized ? 'Review already finalized' : 'Approve Proposal')"
+              class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed">
               Approve
             </button>
-            <button type="button" @click="openRejectDialog" :disabled="loading"
-              class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50">
+            <button type="button" @click="openRejectDialog"
+              :disabled="loading || isReviewFinalized || !selectedCenter.is_payment_complete"
+              :title="!selectedCenter.is_payment_complete ? 'Payment must be complete to reject' : (isReviewFinalized ? 'Review already finalized' : 'Reject Proposal')"
+              class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed">
               Reject
             </button>
-            <button type="button" @click="saveReview" :disabled="loading"
-              class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50">
+            <button type="button" @click="saveReview" :disabled="loading || isReviewFinalized"
+              :title="isReviewFinalized ? 'Review already finalized' : 'Save current review progress'"
+              class="mt-3 w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50">
               <span v-if="loading">Saving...</span>
               <span v-else>Save Review</span>
             </button>
@@ -357,13 +342,16 @@
       </div>
     </div>
 
+    <!-- Approve and Reject Dialogs (No changes needed here) -->
+    <!-- ... your existing code for approveDialog and rejectDialog ... -->
+
     <!-- Approve Confirmation Dialog -->
     <div v-if="approveDialog.show" class="fixed z-20 inset-0 overflow-y-auto" aria-labelledby="approve-dialog-title"
       role="dialog" aria-modal="true">
       <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
         <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"
           @click="closeApproveDialog"></div>
-        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">​</span>
         <div
           class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
           <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
@@ -412,7 +400,7 @@
       <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
         <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"
           @click="closeRejectDialog"></div>
-        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">​</span>
         <div
           class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
           <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
@@ -458,7 +446,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import apiServices from '@/services/services'
 
 const teachingCenters = ref([])
@@ -467,7 +455,6 @@ const selectedCenter = ref({ institute: {} })
 const loading = ref(false)
 
 const reviewForm = ref({
-  tc_renewal_review_name: '',
   tc_review_summary: '',
   tc_report: null,
   reportFile: null,
@@ -493,6 +480,13 @@ const rejectDialog = ref({
   message: '',
 })
 
+const isReviewFinalized = computed(() => {
+  return (
+    selectedCenter.value?.tc_review_decision === 'Approved' ||
+    selectedCenter.value?.tc_review_decision === 'Regretted'
+  )
+})
+
 onMounted(async () => {
   await fetchTeachingCenters()
 })
@@ -505,7 +499,13 @@ const fetchTeachingCenters = async () => {
       response?.data?.results ||
       response?.results ||
       (Array.isArray(response) ? response : Array.isArray(response?.data) ? response.data : [])
-    teachingCenters.value = results.filter((center) => center != null)
+
+    // Make sure is_payment_complete is available, defaulting to false if not provided
+    teachingCenters.value = results.filter((center) => center != null).map(center => ({
+      ...center,
+      is_payment_complete: center.is_payment_complete === true // Ensure it's a strict boolean
+    }));
+
     if (!Array.isArray(results)) {
       console.error('Unexpected API response structure:', response)
       showAlert('error', 'Failed to load teaching centers: Unexpected data format.')
@@ -520,9 +520,8 @@ const fetchTeachingCenters = async () => {
 }
 
 const openModal = (center) => {
-  selectedCenter.value = center || { institute: {} }
+  selectedCenter.value = center || { institute: {}, is_payment_complete: false }
   reviewForm.value = {
-    tc_renewal_review_name: center?.tc_renewal_review_name || '',
     tc_review_summary: center?.tc_review_summary || '',
     tc_report: null,
     reportFile: null,
@@ -576,7 +575,6 @@ const confirmApprove = async () => {
     const formData = new FormData()
     formData.append('tc_review_decision', 'Approved')
     formData.append('tc_remarks', approveDialog.value.message)
-    formData.append('tc_renewal_review_name', reviewForm.value.tc_renewal_review_name || '')
     formData.append('tc_review_summary', reviewForm.value.tc_review_summary || '')
     if (reviewForm.value.valid_till) {
       formData.append('valid_till', reviewForm.value.valid_till)
@@ -628,7 +626,6 @@ const confirmReject = async () => {
     formData.append('tc_review_decision', 'Regretted')
     formData.append('tc_reason_if_rejected', rejectDialog.value.message)
     formData.append('tc_remarks', reviewForm.value.tc_remarks || '')
-    formData.append('tc_renewal_review_name', reviewForm.value.tc_renewal_review_name || '')
     formData.append('tc_review_summary', reviewForm.value.tc_review_summary || '')
     if (reviewForm.value.valid_till) {
       formData.append('valid_till', reviewForm.value.valid_till)
@@ -684,7 +681,6 @@ const saveReview = async () => {
   loading.value = true
   try {
     const formData = new FormData()
-    formData.append('tc_renewal_review_name', reviewForm.value.tc_renewal_review_name || '')
     formData.append('tc_review_summary', reviewForm.value.tc_review_summary || '')
     formData.append('tc_review_decision', reviewForm.value.tc_review_decision)
     formData.append('tc_reason_if_rejected', reviewForm.value.tc_reason_if_rejected || '')

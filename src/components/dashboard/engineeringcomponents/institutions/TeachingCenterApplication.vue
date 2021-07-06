@@ -238,16 +238,12 @@
                   placeholder="Enter target category" />
               </div>
 
-
-
-
-
               <!-- Valid Till -->
-              <div>
+              <!-- <div>
                 <label for="validTill" class="form-label required-label">Valid Till</label>
                 <input type="date" id="validTill" v-model="formData.valid_till" class="form-input" required
                   :min="todayDate" />
-              </div>
+              </div> -->
 
               <!-- Attachments -->
               <div class="lg:col-span-2">
@@ -267,23 +263,32 @@
 
 
               <!-- Teaching Center Remarks -->
-              <div class="lg:col-span-2">
-                <label for="tcRemarks" class="form-label required-label">Teaching Center Remarks</label>
-                <textarea id="tcRemarks" v-model="formData.tc_remarks" rows="4" class="form-textarea" required
+              <div class="lg:col-span-2 mb-6">
+                <label for="tcRemarks" class="form-label required-label">
+                  Teaching Center Remarks
+                  <span class="text-slate-400 text-xs ml-1">(Required)</span>
+                </label>
+                <textarea id="tcRemarks" v-model="formData.tc_remarks" rows="6"
+                  class="form-textarea w-full border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-400 transition"
+                  required aria-label="Teaching Center Remarks" aria-required="true"
                   placeholder="Enter teaching center remarks..."></textarea>
               </div>
 
               <!-- General Remarks -->
-              <div class="lg:col-span-2">
-                <label for="remarks" class="form-label">Remarks (General)</label>
-                <textarea id="remarks" v-model="formData.remarks" rows="3" class="form-textarea"
-                  placeholder="Enter general remarks..."></textarea>
+              <div class="lg:col-span-2 mb-6">
+                <label for="remarks" class="form-label">
+                  Remarks (General)
+                  <span class="text-slate-400 text-xs ml-1">(Optional)</span>
+                </label>
+                <textarea id="remarks" v-model="formData.remarks" rows="3"
+                  class="form-textarea w-full border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-400 transition"
+                  aria-label="General Remarks" placeholder="Enter general remarks..."></textarea>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Declaration Section -->
+        <!-- tc_declaration Section -->
         <div class="group relative">
           <div
             class="absolute inset-0 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 rounded-3xl opacity-20 group-hover:opacity-30 transition-opacity duration-500 blur-xl">
@@ -293,16 +298,16 @@
             class="relative bg-white/80 backdrop-blur-xl border border-white/30 rounded-3xl shadow-sm p-8 transform transition-all duration-500 hover:shadow-3xl hover:-translate-y-1">
             <div class="flex items-start space-x-4">
               <div class="flex items-center h-6 mt-1">
-                <input id="declaration" aria-describedby="declaration-description" type="checkbox"
-                  v-model="formData.declaration"
+                <input id="tc_declaration" aria-describedby="tc_declaration-description" type="checkbox"
+                  v-model="formData.tc_declaration"
                   class="w-5 h-5 text-emerald-600 bg-white border-2 border-slate-300 rounded-md focus:ring-emerald-500 focus:ring-2 focus:ring-offset-2 transition-all duration-200 hover:border-emerald-400"
                   required />
               </div>
               <div class="flex-1">
-                <label for="declaration" class="block text-lg font-semibold text-slate-700 required-label mb-2">
+                <label for="tc_declaration" class="block text-lg font-semibold text-slate-700 required-label mb-2">
                   Declaration
                 </label>
-                <p id="declaration-description" class="text-slate-600 leading-relaxed">
+                <p id="tc_declaration-description" class="text-slate-600 leading-relaxed">
                   I hereby declare that the information provided above is true and correct to the best of my knowledge.
                   I understand that any false information may result in the rejection of this application.
                 </p>
@@ -331,7 +336,7 @@
             {{ isSubmittingDraft ? 'Saving Draft...' : 'Save as Draft' }}
           </button>
 
-          <button type="submit" :disabled="!formData.declaration || isSubmitting || isSubmittingDraft"
+          <button type="submit" :disabled="!formData.tc_declaration || isSubmitting || isSubmittingDraft"
             class="btn btn-primary w-full sm:w-auto">
             <Loader v-if="isSubmitting" class="animate-spin w-5 h-5 mr-2 text-white" />
             <svg v-else class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -389,7 +394,7 @@ const initialFormData = {
   tc_renewal_review_name: '',
   tc_review_summary: '',
   valid_till: '',
-  declaration: false,
+  tc_declaration: false,
 }
 
 const formData = ref({ ...initialFormData })
@@ -490,7 +495,7 @@ const resetForm = () => {
     const inputElement = input
     if (inputElement) inputElement.value = ''
   })
-  formData.value.declaration = false;
+  formData.value.tc_declaration = false;
 }
 
 const createPayload = (isDraft = false) => {
@@ -551,11 +556,14 @@ const validateForm = () => {
   if (!formData.value.valid_till) { alert('Please select Valid Till date.'); return false; }
   if (!formData.value.tc_attachments || formData.value.tc_attachments.length === 0) { alert('Please attach required documents.'); return false; }
   if (!formData.value.tc_remarks.trim()) { alert('Please enter Teaching Center Remarks.'); return false; }
-  if (!formData.value.declaration) { alert('Please accept the declaration.'); return false; }
+  if (!formData.value.tc_declaration) { alert('Please accept the tc_declaration.'); return false; }
   return true;
 }
 
 const handleFormSubmit = async () => {
+  // Force tc_declaration to true before validation and submission
+  formData.value.tc_declaration = true;
+
   if (!validateForm()) {
     return;
   }
