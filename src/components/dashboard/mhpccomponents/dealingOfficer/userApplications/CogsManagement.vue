@@ -276,11 +276,11 @@
                     </button>
                     <button
                       v-if="application.endorsement_decision === 'Approved'"
-                      @click="downloadCertificate(application.id)"
+                      @click="openCertificateModal(application)"
                       class="inline-flex items-center justify-center bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-all duration-200 transform hover:translate-y-[-1px] hover:shadow-md"
                     >
                       <DownloadIcon class="h-4 w-4 mr-1" />
-                      Certificate
+                      View Certificate
                     </button>
                   </div>
                 </td>
@@ -351,9 +351,10 @@
             Prev
           </button>
           <div class="flex space-x-1">
-            <template v-for="page in paginationRange" :key="page">
+            <template v-for="page in paginationRange">
               <button
                 v-if="page !== '...'"
+                :key="page"
                 @click="currentPage = page"
                 :class="[
                   currentPage === page
@@ -364,7 +365,10 @@
               >
                 {{ page }}
               </button>
-              <span v-else class="flex items-center justify-center py-2 px-4 text-gray-500"
+              <span
+                v-else
+                :key="'ellipsis-' + page + '-' + Math.random()"
+                class="flex items-center justify-center py-2 px-4 text-gray-500"
                 >...</span
               >
             </template>
@@ -404,6 +408,15 @@
       @confirm="confirmReviewAction"
       @cancel="cancelReviewAction"
     />
+
+    <CertificateModal
+      v-if="isCertificateModalOpen"
+      :isOpen="isCertificateModalOpen"
+      :application="selectedApplication"
+      @close="closeCertificateModal"
+      @download="handleCertificateDownload"
+    />
+
 
     <!-- Toast Notification -->
     <div
@@ -445,6 +458,7 @@ import {
 import apiServices from '@/services/services'
 import CogsReviewModal from '../modals/CogsReviewModal.vue'
 import CogsConfirmationModal from '../modals/CogsConfirmationModal.vue'
+import CertificateModal from '../modals/CertificateModal.vue'
 import DOPageHeader from '@/components/common/MHPC/DOPageHeader.vue' // Import the new header component
 
 // --- State ---
@@ -457,6 +471,7 @@ const currentPage = ref(1)
 const itemsPerPage = ref(10)
 const selectedApplication = ref(null)
 const isModalOpen = ref(false)
+const isCertificateModalOpen = ref(false)
 const showConfirmation = ref(false)
 const confirmationMessage = ref('')
 const showSuccessToast = ref(false)
@@ -603,6 +618,20 @@ const closeReviewModal = () => {
   isModalOpen.value = false
 }
 
+const openCertificateModal = (application) => {
+  selectedApplication.value = application
+  isCertificateModalOpen.value = true
+}
+
+const closeCertificateModal = () => {
+  isCertificateModalOpen.value = false
+  selectedApplication.value = null
+}
+
+const handleCertificateDownload = (id) => {
+  downloadCertificate(id)
+}
+
 const handleUpdate = (data) => {
   confirmData.value = data
 
@@ -690,7 +719,9 @@ const downloadCertificate = async (id) => {
 
     if (response.status === 200 && response.data instanceof Blob) {
       const url = window.URL.createObjectURL(
-        new Blob([response.data], {
+        new Blob([
+          response.data
+        ], {
           type: response.headers['content-type'] || 'application/pdf',
         }),
       )
