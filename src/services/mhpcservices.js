@@ -645,7 +645,7 @@ export default {
     return apiClient.get(`/mhpc/mhpc-institutes/${id}/`);
   },
   getMhpcInstituteByCid(cid) {
-    return apiClient.get(`/mhpc/mhpc-institutes/?cid=${cid}/`);
+    return apiClient.get(`/mhpc/mhpc-institutes/?CID=${cid}`);
   },
   createMhpcInstitute(data) {
     return apiClient.post('/mhpc/mhpc-institutes/', data);
@@ -793,8 +793,8 @@ export default {
   getMhpcCpdTaskById(id) {
     return apiClient.get(`/mhpc/mhpc-cpd-tasks/${id}/`)
   },
-  getMhpcCpdTaskByCid(id) {
-    return apiClient.get(`/mhpc/mhpc-cpd-tasks/?cid=${id}/`)
+  getMhpcCpdTaskByCid(cid) {
+    return apiClient.get(`/mhpc/mhpc-cpd-tasks/?cid=${cid}`)
   },
   updateMhpcCpdTask(id, data) {
     return apiClient.put(`/mhpc/mhpc-cpd-tasks/${id}/`, data)

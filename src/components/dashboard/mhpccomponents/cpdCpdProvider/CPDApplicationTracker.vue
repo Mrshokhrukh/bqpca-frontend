@@ -359,6 +359,7 @@
                 </dd>
               </div>
             </dl>
+            '''
             <div
               v-if="
                 section.title === 'Resource Persons' &&
@@ -394,6 +395,32 @@
                 </tbody>
               </table>
             </div>
+            <div
+              v-if="
+                section.title === 'Registered Participants' &&
+                selectedApplication.participants &&
+                selectedApplication.participants.length > 0
+              "
+              class="mt-4 -mx-5"
+            >
+              <table class="min-w-full">
+                <thead class="bg-slate-50 text-xs text-slate-500 uppercase">
+                  <tr>
+                    <th class="px-5 py-3 text-left font-semibold">Name</th>
+                    <th class="px-5 py-3 text-left font-semibold">Reg No.</th>
+                    <th class="px-5 py-3 text-left font-semibold">CPD Credits</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200 text-sm">
+                  <tr v-for="participant in selectedApplication.participants" :key="participant.id">
+                    <td class="px-5 py-3">{{ participant.participant_name || 'N/A' }}</td>
+                    <td class="px-5 py-3">{{ participant.participant_reg_no || 'N/A' }}</td>
+                    <td class="px-5 py-3">{{ participant.cpd_credits || 'N/A' }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            ''
           </div>
         </div>
 
@@ -688,6 +715,20 @@ const modalSections = computed(() => {
         },
         { label: 'Other Attachments', value: app.attachment, type: 'link', span: 'sm:col-span-1' },
       ],
+    },
+    {
+      title: 'Registered Participants',
+      items:
+        app.participants?.length > 0
+          ? []
+          : [
+              {
+                label: '',
+                value: 'No participants listed for this application.',
+                type: 'text',
+                span: 'sm:col-span-3',
+              },
+            ],
     },
     {
       title: 'Administrative Details',
