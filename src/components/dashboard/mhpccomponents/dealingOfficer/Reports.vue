@@ -1,4 +1,3 @@
-<!-- ProfessionalsReport.vue -->
 <template>
   <div class="p-6 bg-gray-50 min-h-screen">
     <DOPageHeader
@@ -8,7 +7,7 @@
       search-placeholder="Search by Name, Reg. No..."
       :filter-value="filters.endorsement_decision"
       @update:filterValue="handleStatusUpdate"
-      :filter-options="CONFIG.statusFilterOptions"
+      :filter-options="statusFilterOptions"
     >
       <template #actions>
         <div class="flex items-center ml-4">
@@ -34,48 +33,53 @@
         </button>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <!-- Date Range Filter -->
+        <!-- [NEW] Status Filter Dropdown -->
         <div>
-          <label class="filter-label">Endorsement Date Range</label>
-          <div class="flex gap-2">
-            <input v-model="filters.start_date" type="date" class="filter-input" aria-label="Start Date" :max="filters.end_date || today" />
-            <input v-model="filters.end_date" type="date" class="filter-input" aria-label="End Date" :min="filters.start_date" :max="today" />
-          </div>
+            <label for="statusFilter" class="filter-label">Status</label>
+            <select id="statusFilter" v-model="filters.endorsement_decision" class="filter-input">
+              <option v-for="option in statusFilterOptions" :key="option.value" :value="option.value">
+                {{ option.text }}
+              </option>
+            </select>
         </div>
+
         <!-- Registration Type Filter -->
         <div>
           <label for="regTypeFilter" class="filter-label">Registration Type</label>
           <select id="regTypeFilter" v-model="filters.registration_type_name" class="filter-input">
-            <option v-for="option in CONFIG.registrationTypeOptions" :key="option.value" :value="option.value">
+            <option v-for="option in registrationTypeOptions" :key="option.value" :value="option.value">
               {{ option.text }}
             </option>
           </select>
         </div>
-        <!-- Payment Status Filter -->
+
+        <!-- Endorsed By Filter -->
         <div>
-          <label for="paymentStatusFilter" class="filter-label">Payment Status</label>
-          <select id="paymentStatusFilter" v-model="filters.payment_status" class="filter-input">
-            <option v-for="option in CONFIG.paymentStatusOptions" :key="option.value" :value="option.value">
-              {{ option.text }}
-            </option>
-          </select>
+            <label for="endorsedByFilter" class="filter-label">Endorsed By</label>
+            <input id="endorsedByFilter" v-model="filters.endorsed_by" type="text" class="filter-input" placeholder="Enter endorser's username" />
+        </div>
+
+        <!-- Date Range Filter -->
+        <div>
+          <label class="filter-label">Endorsement Date Range</label>
+          <div class="flex gap-2">
+            <input v-model="filters.endorsed_at_start" type="date" class="filter-input" aria-label="Start Date" :max="filters.endorsed_at_end || today" />
+            <input v-model="filters.endorsed_at_end" type="date" class="filter-input" aria-label="End Date" :min="filters.endorsed_at_start" :max="today" />
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Loading State -->
+    <!-- Loading, Error, Empty State and Table -->
+    <!-- (No changes needed in this part of the template) -->
     <div v-if="isLoading && !reportData.length" class="flex justify-center items-center py-8">
       <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
     </div>
-
-    <!-- Error State -->
     <div v-else-if="error" class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
       <p class="text-red-800 font-semibold">An Error Occurred</p>
       <p class="text-red-700 mt-1">{{ error }}</p>
       <button @click="fetchData(true)" class="text-red-600 underline mt-2 font-medium">Try Again</button>
     </div>
-
-    <!-- Empty State -->
     <div v-else-if="!reportData.length && !isLoading" class="bg-white rounded-lg shadow p-8 text-center">
       <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -83,8 +87,6 @@
       <h3 class="mt-2 text-lg font-medium text-gray-900">No Data Available</h3>
       <p class="mt-1 text-sm text-gray-500">No records match your current filters. Try adjusting them.</p>
     </div>
-
-    <!-- Report Table -->
     <div v-else class="bg-white rounded-lg shadow overflow-x-auto relative">
       <div v-if="isLoading" class="absolute inset-0 bg-white bg-opacity-75 flex justify-center items-center z-10">
         <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
@@ -95,7 +97,7 @@
             <th v-for="header in tableHeaders" :key="header.key" class="table-header">
               <div class="flex items-center">
                 <span>{{ header.label }}</span>
-                <button v-if="header.sortable" @click="handleSort(header.key)" class="ml-2 focus:outline-none text-gray-400 hover:text-gray-600" :aria-label="`Sort by ${header.label}`">
+                <button v-if="header.sortable" @click="handleSort(header.key)" class="ml-2 focus:outline-none text-gray-400 hover:text-gray-600">
                   <template v-if="sortBy === header.key">
                     <ChevronUp v-if="sortOrder === 'asc'" class="h-4 w-4" />
                     <ChevronDown v-else class="h-4 w-4" />
@@ -120,23 +122,18 @@
 
     <!-- Pagination -->
     <div class="mt-4 flex justify-between items-center bg-white p-4 rounded-lg shadow-sm">
-      <p class="text-sm text-gray-700">
-        <span v-if="totalItems > 0">Showing <b>{{ startIndex + 1 }}</b> to <b>{{ endIndex }}</b> of <b>{{ totalItems }}</b> results</span>
-        <span v-else>No results</span>
-      </p>
-      <div class="flex gap-2">
-        <button @click="prevPage" :disabled="currentPage === 1 || isLoading" class="pagination-btn">Previous</button>
-        <button @click="nextPage" :disabled="currentPage >= totalPages || isLoading" class="pagination-btn">Next</button>
-      </div>
+        <p class="text-sm text-gray-700">
+            <span v-if="totalItems > 0">Showing <b>{{ startIndex + 1 }}</b> to <b>{{ endIndex }}</b> of <b>{{ totalItems }}</b> results</span>
+            <span v-else>No results</span>
+        </p>
+        <div class="flex gap-2">
+            <button @click="prevPage" :disabled="currentPage === 1 || isLoading" class="pagination-btn">Previous</button>
+            <button @click="nextPage" :disabled="currentPage >= totalPages || isLoading" class="pagination-btn">Next</button>
+        </div>
     </div>
   </div>
 </template>
 
-<script>
-export default {
-  name: 'DealingOfficerReports'
-}
-</script>
 <script setup>
 import { ref, computed, reactive, watch, onMounted } from 'vue';
 import { useToast } from 'vue-toastification';
@@ -149,31 +146,27 @@ import { FileSpreadsheet, LoaderCircle, ChevronUp, ChevronDown, ChevronsUpDown }
 const toast = useToast();
 const ITEMS_PER_PAGE = 10;
 
-// --- Configuration ---
-// Grouping static config makes it easier to manage and read.
-const CONFIG = {
-  apiMethod: apiServices.getMhpcNewApplications,
-  statusFilterOptions: [
-    { value: '', text: 'All Statuses' },
-    { value: 'Approved', text: 'Approved' },
-    { value: 'Pending', text: 'Pending' },
-    { value: 'Regretted', text: 'Regretted' },
-  ],
-  registrationTypeOptions: [
-    { value: '', text: 'All Types' },
-    { value: 'New Registration', text: 'New Registration' },
-    { value: 'Renewal', text: 'Renewal' },
-    { value: 'Additional Qualification', text: 'Additional Qualification' },
-  ],
-  paymentStatusOptions: [
-    { value: '', text: 'All Payment Statuses' },
-    { value: 'paid', text: 'Paid' },
-    { value: 'completed', text: 'Completed' }, // As per your API response
-    { value: 'pending', text: 'Pending' },
-    { value: 'failed', text: 'Failed' },
-    { value: 'waived', text: 'Waived' },
-  ],
-};
+// --- Static Configuration ---
+const statusFilterOptions = [
+  { value: '', text: 'All Statuses' },
+  { value: 'Approved', text: 'Approved' },
+  { value: 'Pending', text: 'Pending' },
+  { value: 'Regretted', text: 'Regretted' },
+];
+
+const registrationTypeOptions = [
+  { value: '', text: 'All Types' },
+  { value: 'Registration', text: 'Registration' },
+  { value: 'Renewal', text: 'Renewal' },
+  { value: 'Additional Qualification', text: 'Additional Qualification' },
+];
+
+const paymentStatusOptions = [
+  { value: '', text: 'All Payment Statuses' },
+  { value: 'completed', text: 'Completed' },
+  { value: 'pending', text: 'Pending' },
+  { value: 'failed', text: 'Failed' },
+];
 
 const tableHeaders = [
   { key: 'registration_no', label: 'Reg Number', sortable: true },
@@ -185,27 +178,6 @@ const tableHeaders = [
   { key: 'endorsed_by', label: 'Endorsed By', sortable: true },
 ];
 
-// --- Data Transformation ---
-// This is the key fix. It correctly processes the nested API structure.
-const transformData = (apiItem) => {
-  // Find the primary qualification, or fall back to the first one.
-  const qualification =
-    apiItem.user_qualifications?.find((q) => q.is_primary_qualification) ||
-    apiItem.user_qualifications?.[0] ||
-    {};
-
-  return {
-    id: apiItem.id, // Use top-level ID for the table row key
-    registration_no: qualification.registration_no || apiItem.registration_no || 'N/A',
-    applicant_name: apiItem.full_name || 'N/A',
-    registration_type: qualification.registration_type_name || apiItem.registration_type_name || 'N/A',
-    status: qualification.endorsement_decision || 'Pending', // Default to 'Pending' if not present
-    payment_status: qualification.payment_status || apiItem.payment_status || 'N/A',
-    endorsed_at: qualification.endorsed_at,
-    endorsed_by: qualification.endorsed_by_name || 'N/A',
-  };
-};
-
 // --- Component State ---
 const reportData = ref([]);
 const isLoading = ref(false);
@@ -213,17 +185,17 @@ const isLoadingExport = ref(false);
 const error = ref(null);
 const currentPage = ref(1);
 const totalItems = ref(0);
-const sortBy = ref('');
+const sortBy = ref('applicant_name');
 const sortOrder = ref('asc');
 
-// Use more descriptive keys that match API query parameters
 const initialFilters = {
   search: '',
-  start_date: '',
-  end_date: '',
-  endorsement_decision: '',
+  endorsed_at_start: '',
+  endorsed_at_end: '',
+  endorsement_decision: '', // This now controls the Status filter
   registration_type_name: '',
   payment_status: '',
+  endorsed_by: '',
 };
 const filters = reactive({ ...initialFilters });
 
@@ -240,29 +212,38 @@ const fetchData = async (resetPage = false) => {
   error.value = null;
 
   try {
-    // Build a clean params object, excluding empty values.
+    const sortKeyMapping = {
+      applicant_name: 'full_name',
+      status: 'user_qualifications__endorsement_decision',
+      payment_status: 'user_qualifications__payment_status',
+      endorsed_at: 'user_qualifications__endorsed_at',
+      endorsed_by: 'user_qualifications__endorsed_by__username',
+      registration_type: 'user_qualifications__registration_type__name',
+    };
+    const backendSortKey = sortKeyMapping[sortBy.value] || sortBy.value;
+
     const params = {
       page: currentPage.value,
       page_size: ITEMS_PER_PAGE,
-      ordering: sortBy.value ? `${sortOrder.value === 'desc' ? '-' : ''}${sortBy.value}` : null,
+      ordering: `${sortOrder.value === 'desc' ? '-' : ''}${backendSortKey}`,
       ...filters,
     };
     Object.keys(params).forEach((key) => {
       if (params[key] === '' || params[key] === null) delete params[key];
     });
 
-    const response = await CONFIG.apiMethod(params);
+    const response = await apiServices.getProfessionalsReport(params);
 
     if (response?.data?.results) {
-      reportData.value = response.data.results.map(transformData);
+      reportData.value = response.data.results;
       totalItems.value = response.data.count || 0;
     } else {
       throw new Error('Received invalid data structure from API.');
     }
   } catch (err) {
-    error.value = `Error fetching professionals data. Please check the console for more details and try again.`;
-    toast.error('An API error occurred.');
-    console.error('Error fetching professionals data:', err);
+    error.value = `Error fetching professionals data. The API might be down or returning an error.`;
+    toast.error('An API error occurred while fetching report data.');
+    console.error('Error in fetchData:', err);
     reportData.value = [];
     totalItems.value = 0;
   } finally {
@@ -272,11 +253,10 @@ const fetchData = async (resetPage = false) => {
 
 const debouncedFetchData = debounce(() => fetchData(true), 500);
 
-// --- Event Handlers ---
+// --- Event Handlers & Watchers ---
 const handleSearchUpdate = (newValue) => {
   filters.search = newValue;
 };
-watch(() => filters.search, debouncedFetchData);
 
 const handleStatusUpdate = (newValue) => {
   filters.endorsement_decision = newValue;
@@ -294,143 +274,111 @@ const handleSort = (key) => {
 
 const resetFilters = () => {
   Object.assign(filters, initialFilters);
-  // The watcher will automatically trigger fetchData
 };
 
-const prevPage = () => currentPage.value > 1 && fetchData();
-const nextPage = () => currentPage.value < totalPages.value && fetchData();
-
-// --- Export Logic ---
-const fetchAllDataForExport = async () => {
-  toast.info('Fetching all data for export, this may take a moment...', { autoClose: false });
-  const allData = [];
-  let page = 1;
-  let hasMore = true;
-
-  while (hasMore) {
-    const params = {
-      page,
-      page_size: 100, // Fetch in larger chunks for export
-      ordering: sortBy.value ? `${sortOrder.value === 'desc' ? '-' : ''}${sortBy.value}` : null,
-      ...filters,
-    };
-    Object.keys(params).forEach((key) => (params[key] == null || params[key] === '') && delete params[key]);
-
-    try {
-      const response = await CONFIG.apiMethod(params);
-      if (response?.data?.results) {
-        allData.push(...response.data.results);
-        hasMore = !!response.data.next;
-        page++;
-        if (hasMore) await new Promise((resolve) => setTimeout(resolve, 50)); // Small delay between requests
-      } else {
-        hasMore = false;
-        throw new Error('API error during full data fetch for export.');
-      }
-    } catch (err) {
-      toast.dismiss();
-      toast.error('Could not fetch all data for export.');
-      console.error(err);
-      return []; // Return empty array on failure
-    }
+const prevPage = () => {
+  if (currentPage.value > 1) {
+    currentPage.value--;
+    fetchData();
   }
-  toast.dismiss();
-  return allData;
+};
+
+const nextPage = () => {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value++;
+    fetchData();
+  }
+};
+
+watch(filters, debouncedFetchData, { deep: true });
+
+onMounted(() => {
+  fetchData();
+});
+
+// --- Export & Formatting Helpers ---
+const fetchAllDataForExport = async () => {
+    toast.info('Fetching all data for export...', { id: 'export-toast' });
+    const allData = [];
+    let page = 1;
+    let hasMore = true;
+
+    while (hasMore) {
+        const params = { page, page_size: 100, ...filters };
+        Object.keys(params).forEach(key => (params[key] == null || params[key] === '') && delete params[key]);
+        try {
+            const response = await apiServices.getProfessionalsReport(params);
+            if (response?.data?.results) {
+                allData.push(...response.data.results);
+                hasMore = !!response.data.next;
+                page++;
+            } else {
+                hasMore = false;
+            }
+        } catch (err) {
+            toast.dismiss('export-toast');
+            toast.error('Could not fetch all data for export.');
+            return [];
+        }
+    }
+    toast.dismiss('export-toast');
+    return allData;
 };
 
 const exportToExcel = async () => {
   if (isLoadingExport.value) return;
-  if (!totalItems.value) {
-    toast.info('No data available to export.');
-    return;
-  }
   isLoadingExport.value = true;
-
   try {
     const rawData = await fetchAllDataForExport();
     if (!rawData.length) {
       toast.warning('No data found for the selected filters to export.');
       return;
     }
-
-    const transformedForExport = rawData.map(transformData);
-    const dataToExport = transformedForExport.map((item) => {
-      const row = {};
-      tableHeaders.forEach((header) => {
-        const rawValue = item[header.key];
-        row[header.label] = header.type === 'date' ? formatDate(rawValue, 'excel') : rawValue ?? 'N/A';
-      });
-      return row;
-    });
+    const dataToExport = rawData.map(item => ({
+      'Reg Number': item.registration_no,
+      'Applicant Name': item.applicant_name,
+      'Type': item.registration_type,
+      'Status': item.status,
+      'Payment Status': item.payment_status,
+      'Endorsed Date': formatDate(item.endorsed_at),
+      'Endorsed By': item.endorsed_by,
+    }));
 
     const worksheet = XLSX.utils.json_to_sheet(dataToExport);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Professionals Report');
-
-    worksheet['!cols'] = tableHeaders.map((header) => ({ wch: Math.max(header.label.length, 20) }));
     XLSX.writeFile(workbook, `professionals_report_${new Date().toISOString().split('T')[0]}.xlsx`);
-
     toast.success('Excel Report exported successfully!');
   } catch (err) {
-    console.error('Excel Export error:', err);
     toast.error('Failed to export Excel report.');
+    console.error("Export Error:", err);
   } finally {
     isLoadingExport.value = false;
   }
 };
 
-// --- Formatting and Style Helpers ---
-const formatDate = (date, format = 'display') => {
+const formatDate = (date) => {
   if (!date) return '–';
-  const d = new Date(date);
-  if (isNaN(d.getTime())) return '–';
-
-  if (format === 'excel') {
-    return d.toLocaleDateString('en-CA'); // YYYY-MM-DD format is good for Excel
+  try {
+    return new Date(date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+  } catch (e) {
+    return 'Invalid Date';
   }
-  return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
 };
 
 const statusBadge = (status) => {
   const lowerStatus = String(status ?? '').toLowerCase().trim();
-  let baseClasses = 'px-2 py-1 rounded-full text-xs font-medium inline-block capitalize';
+  const baseClasses = 'px-2 py-1 rounded-full text-xs font-medium inline-block capitalize';
   switch (lowerStatus) {
-    case 'approved':
-    case 'completed':
-    case 'active':
-    case 'paid':
-      return `${baseClasses} bg-green-100 text-green-800`;
-    case 'pending':
-    case 'processing':
-      return `${baseClasses} bg-yellow-100 text-yellow-800`;
-    case 'regretted':
-    case 'rejected':
-    case 'cancelled':
-    case 'failed':
-      return `${baseClasses} bg-red-100 text-red-800`;
-    case 'expired':
-      return `${baseClasses} bg-purple-100 text-purple-800`;
-    default:
-      return `${baseClasses} bg-gray-100 text-gray-800`;
+    case 'approved': case 'completed': return `${baseClasses} bg-green-100 text-green-800`;
+    case 'pending': return `${baseClasses} bg-yellow-100 text-yellow-800`;
+    case 'regretted': case 'rejected': case 'failed': return `${baseClasses} bg-red-100 text-red-800`;
+    default: return `${baseClasses} bg-gray-100 text-gray-800`;
   }
 };
-
-// --- Watchers & Lifecycle ---
-watch(
-  () => [filters.endorsement_decision, filters.start_date, filters.end_date, filters.registration_type_name, filters.payment_status],
-  () => {
-    fetchData(true);
-  },
-  { deep: true }
-);
-
-onMounted(() => {
-  fetchData();
-});
 </script>
 
 <style scoped>
-/* Scoped styles are the same as your original, they are well-written */
 .filter-label {
   display: block;
   font-size: 0.875rem;

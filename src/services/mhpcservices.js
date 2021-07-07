@@ -1045,4 +1045,17 @@ export default {
   deleteMhpcTerm(id) {
     return apiClient.delete(`/mhpc/mhpc-term/${id}/`)
   },
+
+  /**
+   * Fetches the paginated and filtered list of professionals for the report.
+   * @param {object} params -
+   * @returns {Promise}
+   */
+  getProfessionalsReport(params = {}) {
+
+    return apiClient.get('/mhpc/reports/professionals/', { params });
+  },
+  getInstituteReport(params = {}) {
+    return apiClient.get('/mhpc/reports/institutes/', { params });
+},
 }
