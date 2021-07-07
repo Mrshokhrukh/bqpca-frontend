@@ -28,8 +28,8 @@
           <!-- Main Form Content -->
           <form @submit.prevent="confirmSubmission" class="space-y-12">
             <!-- Sections -->
-            <template v-for="section in sections" :key="section.refKey">
-              <section
+            <template>
+              <section v-for="section in sections" :key="section.refKey"
                 :ref="(el) => (sectionRefs[section.refKey] = el)"
                 class="space-y-8 pt-6 border-t border-gray-100 first:border-t-0 first:pt-0"
               >

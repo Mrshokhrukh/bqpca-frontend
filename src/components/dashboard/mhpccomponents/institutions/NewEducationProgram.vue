@@ -1,273 +1,254 @@
 <template>
-  <div class="container mx-auto p-4 md:p-8">
-    <!-- Toast Notifications -->
-    <div v-if="notifications.length > 0" class="fixed top-4 right-4 z-50 space-y-2">
+  <div class="mx-auto p-4 md:p-8 bg-gray-50 min-h-screen">
+    <div v-if="notifications.length > 0" class="fixed top-6 right-6 z-50 w-full max-w-sm space-y-3">
       <div
         v-for="notification in notifications"
         :key="notification.id"
-        :class="[
-          'px-6 py-4 rounded-lg shadow-lg text-white font-medium transition-all duration-300 transform',
-          notification.type === 'success'
-            ? 'bg-green-500'
-            : notification.type === 'error'
-            ? 'bg-red-500'
-            : notification.type === 'warning'
-            ? 'bg-yellow-500'
-            : 'bg-blue-500',
-        ]"
+        class="flex items-center p-4 rounded-lg shadow-xl text-white font-semibold transition-all duration-300 transform"
+        :class="{
+          'bg-green-600': notification.type === 'success',
+          'bg-red-600': notification.type === 'error',
+          'bg-yellow-600': notification.type === 'warning',
+          'bg-blue-600': notification.type === 'info',
+        }"
       >
-        <div class="flex items-center justify-between">
-          <div class="flex items-center">
-            <span v-if="notification.type === 'success'" class="mr-2">✓</span>
-            <span v-else-if="notification.type === 'error'" class="mr-2">✗</span>
-            <span v-else-if="notification.type === 'warning'" class="mr-2">⚠</span>
-            <span v-else class="mr-2">ℹ</span>
-            {{ notification.message }}
-          </div>
+        <CheckCircle2 v-if="notification.type === 'success'" class="h-6 w-6 mr-3" />
+        <AlertOctagon v-else-if="notification.type === 'error'" class="h-6 w-6 mr-3" />
+        <AlertTriangle v-else-if="notification.type === 'warning'" class="h-6 w-6 mr-3" />
+        <Info v-else class="h-6 w-6 mr-3" />
+        <span class="flex-1">{{ notification.message }}</span>
+        <button
+          @click="removeNotification(notification.id)"
+          class="ml-4 p-1 rounded-full hover:bg-white/20"
+        >
+          <X class="h-5 w-5" />
+        </button>
+      </div>
+    </div>
+
+    <header class="flex flex-wrap justify-between items-center mb-8 pb-4 border-b border-gray-200">
+      <div>
+        <h1 class="text-4xl font-bold text-gray-800 tracking-tight">Module Faculty Assignments</h1>
+        <p v-if="instituteName" class="text-lg text-gray-600 mt-1">For {{ instituteName }}</p>
+      </div>
+      <div class="flex items-center space-x-4">
+        <p
+          v-if="!currentUserInstitute?.id && !isLoadingInstitute"
+          class="text-sm text-red-600 flex items-center"
+        >
+          <AlertCircle class="w-5 h-5 mr-2" />
+          Cannot manage assignments: Institute (ID: {{ instituteId }}) could not be loaded.
+        </p>
+        <button
+          @click="openAddProgramModal"
+          class="flex items-center justify-center px-5 py-2.5 text-sm font-semibold text-white bg-indigo-600 rounded-lg shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          :disabled="isLoadingInstitute || !currentUserInstitute?.id || isPerformingAction"
+        >
+          <LoaderCircle v-if="isPerformingAction" class="animate-spin h-5 w-5 mr-2" />
+          <Plus v-else class="h-5 w-5 mr-2" />
+          {{ isPerformingAction ? 'Processing...' : 'Configure & Assign' }}
+        </button>
+      </div>
+    </header>
+
+    <div
+      v-if="
+        isLoadingInstitute ||
+        !currentUserInstitute?.id ||
+        isLoadingAssignments ||
+        fetchError ||
+        moduleFacultyAssignments.length === 0
+      "
+      class="text-center py-16 px-6 bg-white rounded-lg shadow-md"
+    >
+      <div v-if="isLoadingInstitute">
+        <LoaderCircle class="animate-spin inline-block w-12 h-12 text-indigo-600 mb-4" />
+        <h2 class="text-2xl font-semibold text-gray-800">Loading Institute Profile...</h2>
+        <p class="text-gray-500 mt-2">Please wait while we fetch your institute information.</p>
+      </div>
+      <div v-else-if="!currentUserInstitute?.id">
+        <University class="inline-block w-16 h-16 text-gray-400 mb-4" />
+        <h2 class="text-2xl font-semibold text-gray-800">Institute Not Found</h2>
+        <p class="mt-2 text-gray-500">
+          Institute profile (ID: {{ instituteId }}) could not be loaded.
+        </p>
+        <p class="mt-1 text-sm text-gray-500">
+          Please check the API connection and ensure an institute with this ID exists.
+        </p>
+        <button
+          @click="fetchInstitute"
+          class="mt-6 flex items-center mx-auto px-5 py-2 text-sm font-semibold bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+        >
+          <RefreshCw class="w-4 h-4 mr-2" />
+          Retry Loading
+        </button>
+      </div>
+      <div v-else-if="isLoadingAssignments">
+        <LoaderCircle class="animate-spin inline-block w-12 h-12 text-indigo-600 mb-4" />
+        <h2 class="text-2xl font-semibold text-gray-800">Loading Assignments...</h2>
+        <p class="text-gray-500 mt-2">Fetching the latest assignment data for your institute.</p>
+      </div>
+      <div v-else-if="fetchError">
+        <AlertTriangle class="inline-block w-16 h-16 text-red-500 mb-4" />
+        <h2 class="text-2xl font-semibold text-red-700">Failed to Load Assignments</h2>
+        <p class="mt-2 text-gray-600 bg-red-50 p-3 rounded-md">{{ fetchError }}</p>
+        <div class="mt-6 space-x-4">
           <button
-            @click="removeNotification(notification.id)"
-            class="ml-4 text-white hover:text-gray-200"
+            @click="fetchAssignments"
+            class="px-5 py-2 text-sm font-semibold bg-red-600 text-white rounded-md hover:bg-red-700"
           >
-            ×
+            Retry Loading
+          </button>
+          <button
+            @click="fetchInstitute"
+            class="px-5 py-2 text-sm font-semibold bg-gray-600 text-white rounded-md hover:bg-gray-700"
+          >
+            Reload Institute
           </button>
         </div>
       </div>
-    </div>
-
-    <div class="flex justify-between items-center mb-6">
-      <h1 class="text-3xl font-bold text-gray-800">
-        Module Faculty Assignments
-        <span v-if="instituteName" class="text-xl text-gray-600">for {{ instituteName }}</span>
-      </h1>
-      <button
-        @click="openAddProgramModal"
-        class="px-6 py-2 text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
-        :disabled="isLoadingInstitute || !currentUserInstitute?.id || isPerformingAction"
-      >
-        <span v-if="isPerformingAction" class="mr-2">⏳</span>
-        <span v-else class="mr-2">+</span>
-        {{ isPerformingAction ? 'Processing...' : 'Configure Program & Assign Faculty' }}
-      </button>
-      <p v-if="!currentUserInstitute?.id && !isLoadingInstitute" class="text-sm text-red-500 ml-4">
-        Cannot manage assignments: Institute (ID: {{ instituteId }}) could not be loaded.
-      </p>
-    </div>
-
-    <!-- Loading Institute State -->
-    <div v-if="isLoadingInstitute" class="text-center text-gray-500 py-10">
-      <div
-        class="animate-spin inline-block w-8 h-8 border-4 border-gray-300 border-t-indigo-600 rounded-full mb-4"
-      ></div>
-      <p class="text-xl">Loading institute profile...</p>
-      <p class="text-sm mt-2">Please wait while we fetch your institute information.</p>
-    </div>
-    <!-- Institute Not Found -->
-    <div v-else-if="!currentUserInstitute?.id" class="text-center text-gray-500 py-10">
-      <div class="text-6xl mb-4">🏫</div>
-      <p class="text-xl font-semibold">Institute Not Found</p>
-      <p class="mt-2 text-sm">
-        Institute profile (ID: {{ SPECIFIC_INSTITUTE_ID }}) could not be loaded.
-      </p>
-      <p class="mt-1 text-sm">
-        Please check the API connection and ensure an institute with this ID exists.
-      </p>
-      <button
-        @click="fetchInstitute"
-        class="mt-4 px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
-      >
-        Retry Loading Institute
-      </button>
-    </div>
-    <!-- Loading Assignments State -->
-    <div v-else-if="isLoadingAssignments" class="text-center text-gray-500 py-10">
-      <div
-        class="animate-spin inline-block w-8 h-8 border-4 border-gray-300 border-t-indigo-600 rounded-full mb-4"
-      ></div>
-      <p class="text-xl">Loading module faculty assignments...</p>
-      <p class="text-sm mt-2">Fetching the latest assignment data for your institute.</p>
-    </div>
-    <!-- Error State -->
-    <div v-else-if="fetchError" class="text-center text-red-500 py-10">
-      <div class="text-6xl mb-4">⚠️</div>
-      <p class="text-xl font-semibold">Failed to Load Assignments</p>
-      <p class="mt-2">{{ fetchError }}</p>
-      <div class="mt-4 space-x-2">
+      <div v-else-if="moduleFacultyAssignments.length === 0">
+        <BookMarked class="inline-block w-16 h-16 text-gray-400 mb-4" />
+        <h2 class="text-2xl font-semibold text-gray-800">No Assignments Found</h2>
+        <p class="mt-2 text-gray-500">
+          No module faculty assignments have been created for this institute yet.
+        </p>
         <button
-          @click="fetchAssignments"
-          class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+          @click="openAddProgramModal"
+          class="mt-6 flex items-center mx-auto px-5 py-2.5 text-sm font-semibold bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+          :disabled="!currentUserInstitute?.id"
         >
-          Retry Loading
-        </button>
-        <button
-          @click="fetchInstitute"
-          class="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
-        >
-          Reload Institute
+          <PlusCircle class="w-5 h-5 mr-2" />
+          Create First Assignment
         </button>
       </div>
     </div>
-    <!-- Empty State -->
-    <div v-else-if="moduleFacultyAssignments.length === 0" class="text-center text-gray-500 py-10">
-      <div class="text-6xl mb-4">📚</div>
-      <p class="text-xl font-semibold">No Faculty Assignments Found</p>
-      <p class="mt-2">No module faculty assignments have been created for this institute yet.</p>
-      <p class="mt-1 text-sm">
-        Get started by configuring a program and assigning faculty members to modules.
-      </p>
-      <button
-        @click="openAddProgramModal"
-        class="mt-4 px-6 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
-        :disabled="!currentUserInstitute?.id"
-      >
-        Create Your First Assignment
-      </button>
-    </div>
-    <!-- Table -->
-    <div v-else class="overflow-x-auto bg-white shadow-lg rounded-lg">
+
+    <div v-else class="overflow-hidden bg-white shadow-lg rounded-xl">
       <div
         v-if="isPerformingAction"
-        class="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10 rounded-lg"
+        class="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-20 rounded-xl"
       >
         <div class="text-center">
-          <div
-            class="animate-spin inline-block w-8 h-8 border-4 border-gray-300 border-t-indigo-600 rounded-full mb-2"
-          ></div>
-          <p class="text-gray-600">{{ actionMessage }}</p>
+          <LoaderCircle class="animate-spin inline-block w-10 h-10 text-indigo-600 mb-3" />
+          <p class="text-gray-700 font-semibold">{{ actionMessage }}</p>
         </div>
       </div>
-
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-100">
-          <tr>
-            <th
-              scope="col"
-              class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider"
-            >
-              Program Offering
-            </th>
-            <th
-              scope="col"
-              class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider"
-            >
-              Semester
-            </th>
-            <th
-              scope="col"
-              class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider"
-            >
-              Module
-            </th>
-            <th
-              scope="col"
-              class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider"
-            >
-              Assigned Faculty
-            </th>
-            <th
-              scope="col"
-              class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider"
-            >
-              Number of Students
-            </th>
-            <th
-              scope="col"
-              class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider"
-            >
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-          <tr
-            v-for="assignment in moduleFacultyAssignments"
-            :key="assignment.id"
-            class="hover:bg-gray-50"
-          >
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-              {{
-                assignment.module?.semester?.program_offered?.program_master?.program_name || 'N/A'
-              }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-              {{ assignment.module?.semester?.name || 'N/A' }}
-              <div v-if="assignment.module?.semester?.academic_year" class="text-xs text-gray-500">
-                (AY: {{ assignment.module.semester.academic_year }})
-              </div>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-              {{ assignment.module?.module_master?.module_name || 'N/A' }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-              {{ assignment.faculty?.faculty_name || 'N/A' }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-              {{ assignment.module?.student_count ?? 'N/A' }}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-              <button
-                @click="openEditModal(assignment)"
-                class="text-indigo-600 hover:text-indigo-900 mr-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                :disabled="isPerformingAction"
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th
+                v-for="header in tableHeaders"
+                :key="header"
+                scope="col"
+                class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider"
               >
-                Edit
-              </button>
-              <button
-                @click="confirmDeleteAssignment(assignment)"
-                class="text-red-600 hover:text-red-900 disabled:opacity-50 disabled:cursor-not-allowed"
-                :disabled="isPerformingAction"
+                {{ header }}
+              </th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <tr
+              v-for="assignment in moduleFacultyAssignments"
+              :key="assignment.id"
+              class="hover:bg-gray-50 transition-colors duration-150"
+            >
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800">
+                {{
+                  assignment.module?.semester?.program_offered?.program_master?.program_name ||
+                  'N/A'
+                }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                {{ assignment.module?.semester?.name || 'N/A' }}
+                <div
+                  v-if="assignment.module?.semester?.academic_year"
+                  class="text-xs text-gray-400"
+                >
+                  AY: {{ assignment.module.semester.academic_year }}
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                {{ assignment.module?.module_master?.module_name || 'N/A' }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                {{ assignment.faculty?.faculty_name || 'N/A' }}
+              </td>
+              <td
+                class="px-6 py-4 whitespace-nowrap text-sm text-center font-semibold text-gray-800"
               >
-                Delete
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+                {{ assignment.module?.student_count ?? 'N/A' }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <div class="flex items-center space-x-2">
+                  <button
+                    @click="openEditModal(assignment)"
+                    class="p-2 text-indigo-600 hover:bg-indigo-100 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                    :disabled="isPerformingAction"
+                    title="Edit Assignment"
+                  >
+                    <Pencil class="h-4 w-4" />
+                  </button>
+                  <button
+                    @click="confirmDeleteAssignment(assignment)"
+                    class="p-2 text-red-600 hover:bg-red-100 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                    :disabled="isPerformingAction"
+                    title="Delete Assignment"
+                  >
+                    <Trash2 class="h-4 w-4" />
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
-    <!-- Confirmation Modal -->
     <div
       v-if="showConfirmModal"
-      class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
+      class="fixed inset-0 bg-gray-900 bg-opacity-60 flex items-center justify-center z-50"
     >
-      <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-        <div class="mt-3 text-center">
-          <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
-            <span class="text-red-600 text-2xl">⚠️</span>
+      <div class="relative mx-auto p-6 border w-full max-w-md shadow-xl rounded-lg bg-white">
+        <div class="text-center">
+          <div
+            class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-4"
+          >
+            <AlertTriangle class="h-8 w-8 text-red-600" />
           </div>
-          <h3 class="text-lg font-medium text-gray-900 mt-4">Confirm Deletion</h3>
-          <div class="mt-2 px-7 py-3">
-            <p class="text-sm text-gray-500">Are you sure you want to delete the assignment for:</p>
-            <div class="mt-2 p-3 bg-gray-50 rounded">
-              <p class="font-medium">
-                {{ confirmData?.module?.module_master?.module_name || 'Unknown Module' }}
-              </p>
-              <p class="text-sm text-gray-600">
-                Faculty: {{ confirmData?.faculty?.faculty_name || 'Unknown Faculty' }}
-              </p>
-            </div>
-            <p class="text-sm text-red-600 mt-2">This action cannot be undone.</p>
+          <h3 class="text-xl font-bold text-gray-900">Confirm Deletion</h3>
+          <div class="mt-4 px-4 py-3 bg-gray-50 rounded-lg">
+            <p class="text-sm text-gray-600">Are you sure you want to delete the assignment for:</p>
+            <p class="font-semibold text-gray-800 mt-2">
+              {{ confirmData?.module?.module_master?.module_name || 'Unknown Module' }}
+            </p>
+            <p class="text-sm text-gray-500">
+              Faculty: {{ confirmData?.faculty?.faculty_name || 'Unknown Faculty' }}
+            </p>
           </div>
-          <div class="items-center px-4 py-3">
-            <button
-              @click="executeDelete"
-              class="px-4 py-2 bg-red-600 text-white text-base font-medium rounded-md w-24 mr-2 hover:bg-red-700 disabled:opacity-50"
-              :disabled="isPerformingAction"
-            >
-              {{ isPerformingAction ? '...' : 'Deleting' }}
-            </button>
+          <p class="text-sm text-red-500 mt-3 font-semibold">This action cannot be undone.</p>
+          <div class="flex justify-center space-x-4 mt-6">
             <button
               @click="cancelDelete"
-              class="px-4 py-2 bg-gray-300 text-gray-800 text-base font-medium rounded-md w-24 hover:bg-gray-400"
+              class="px-6 py-2 bg-gray-200 text-gray-800 font-semibold rounded-md hover:bg-gray-300"
               :disabled="isPerformingAction"
             >
               Cancel
             </button>
+            <button
+              @click="executeDelete"
+              class="flex items-center justify-center w-32 px-6 py-2 bg-red-600 text-white font-semibold rounded-md hover:bg-red-700 disabled:opacity-50"
+              :disabled="isPerformingAction"
+            >
+              <LoaderCircle v-if="isPerformingAction" class="animate-spin h-5 w-5 mr-2" />
+              {{ isPerformingAction ? 'Deleting...' : 'Delete' }}
+            </button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Modal for Adding New Assignment -->
     <NewEducationProgramModal
       :is-open="isModalOpen"
       :current-user-institute-id="currentUserInstitute?.id"
@@ -275,8 +256,6 @@
       @close="closeAddProgramModal"
       @program-configured="handleProgramConfigured"
     />
-
-    <!-- Modal for Editing Assignment -->
     <EditFacultyAssignmentModal
       :is-open="isEditModalOpen"
       :assignment="selectedAssignment"
@@ -293,6 +272,10 @@ import { useAuthStore } from '@/stores/authStore'
 import apiServices from '@/services/services'
 import NewEducationProgramModal from './NewEducationProgramModal.vue'
 import EditFacultyAssignmentModal from './EditFacultyAssignmentModal.vue'
+import {
+  Plus, LoaderCircle, CheckCircle2, AlertOctagon, AlertTriangle, Info, X,
+  University, RefreshCw, AlertCircle, BookMarked, PlusCircle, Pencil, Trash2
+} from 'lucide-vue-next';
 
 // --- STATE MANAGEMENT ---
 // instituteId is now derived purely from the API call, not the route.
@@ -315,6 +298,10 @@ const notifications = ref([])
 
 const user = useAuthStore().user
 
+const tableHeaders = [
+    'Program Offering', 'Semester', 'Module', 'Assigned Faculty', 'Students', 'Actions'
+];
+
 // --- NOTIFICATION SYSTEM ---
 const addNotification = (message, type = 'info', duration = 5000) => {
   const id = Date.now() + Math.random()
@@ -331,36 +318,35 @@ const removeNotification = (id) => {
 
 // --- DATA FETCHING ---
 const fetchInstitute = async () => {
-  isLoadingInstitute.value = true;
+  isLoadingInstitute.value = true
   try {
-    const response = await apiServices.getMhpcInstituteByCid(user.cid);
+    const response = await apiServices.getMhpcInstituteByCid(user.cid)
 
     if (response.data?.results?.length > 0) {
       // ✅ FIX: Access the data directly from the first result.
-      const instituteRecord = response.data.results[0];
+      const instituteRecord = response.data.results[0]
 
       // No longer need a 'details' variable.
       currentUserInstitute.value = {
         id: instituteRecord.id,
         name: instituteRecord.name_of_institution,
-      };
-      instituteId.value = instituteRecord.id; // This is the crucial fix.
-      instituteName.value = instituteRecord.name_of_institution || 'Unknown Institute';
-
+      }
+      instituteId.value = instituteRecord.id // This is the crucial fix.
+      instituteName.value = instituteRecord.name_of_institution || 'Unknown Institute'
     } else {
-      throw new Error('Institute data not found for the current user.');
+      throw new Error('Institute data not found for the current user.')
     }
   } catch (error) {
-    console.error('Error fetching institute:', error);
-    currentUserInstitute.value = null;
-    instituteName.value = '';
+    console.error('Error fetching institute:', error)
+    currentUserInstitute.value = null
+    instituteName.value = ''
     // Use the error message from the catch block for better debugging
-    fetchError.value = error.message || 'Failed to load institute profile.';
-    addNotification(fetchError.value, 'error');
+    fetchError.value = error.message || 'Failed to load institute profile.'
+    addNotification(fetchError.value, 'error')
   } finally {
-    isLoadingInstitute.value = false;
+    isLoadingInstitute.value = false
   }
-};
+}
 
 const fetchFacultyList = async () => {
   // Guard clause: Don't run if instituteId is not yet available.

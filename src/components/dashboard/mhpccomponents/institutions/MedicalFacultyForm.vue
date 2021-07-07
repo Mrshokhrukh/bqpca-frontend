@@ -642,7 +642,6 @@ const selectMedicalFaculty = (facultyData) => {
     registration_type:
       facultyData.registration_type_name || String(facultyData.registration_type || ''),
 
-    // ✅ FIX: Use the correct field names directly from the API response.
     nationality: facultyData.nationality || '',
     date_of_birth: facultyData.date_of_birth || '',
     village: facultyData.village || '',

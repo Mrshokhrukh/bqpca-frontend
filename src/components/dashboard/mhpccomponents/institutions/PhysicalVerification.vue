@@ -270,8 +270,6 @@ const formatTime = (dateString) => {
     const date = new Date(dateString);
     if (isNaN(date.getTime())) return '';
     if (date.getUTCHours() === 0 && date.getUTCMinutes() === 0 && date.getUTCSeconds() === 0 && date.getUTCMilliseconds() === 0) {
-        // If date is midnight UTC, it might have been a date-only field.
-        // More robustly, check if the original string was just YYYY-MM-DD.
         if (typeof dateString === 'string' && dateString.length === 10) {
              return '(Time not specified)';
         }
@@ -329,66 +327,32 @@ const fetchSchedules = async () => {
 
   try {
     const response = await apiServices.getMhpcTeachingCenters();
-    console.log('API Response for SiteVisitSchedules:', JSON.stringify(response, null, 2)); // Log the whole response
 
     let centersData = [];
     // Adjusted to check response.data first, then response.data.results
     if (response && response.data && Array.isArray(response.data.results)) {
         centersData = response.data.results;
-        console.log("Data extracted from response.data.results");
     } else if (response && response.data && Array.isArray(response.data)) {
         centersData = response.data;
-        console.log("Data extracted from response.data (as array)");
     } else if (response && Array.isArray(response.results)) { // Fallback
         centersData = response.results;
-        console.log("Data extracted from response.results");
     } else if (Array.isArray(response)) { // Fallback
         centersData = response;
-        console.log("Data extracted from response (as direct array)");
     } else {
         console.error('Unexpected API response structure for centers:', response);
         throw new Error('Invalid data format received from server for teaching centers.');
     }
 
-    console.log("Raw centersData before filter:", JSON.stringify(centersData, null, 2));
-
-    // --- MODIFIED FILTER LOGIC ---
-    // Show if send_to_user is true AND (EITHER a date is set OR the status is PENDING_PV/IN_PROGRESS_PV)
-    // This allows users to see that something is scheduled even if the DO hasn't finalized the exact date yet,
-    // but has marked it to be shown.
-    // OR, if you strictly want a date to be present:
-    // schedules.value = centersData.filter(
-    //   (center) => center.send_to_user === true && center.physical_verification_date
-    // );
-
     schedules.value = centersData.filter((center) => {
         const showToUser = center.send_to_user === true;
-        const hasDate = !!center.physical_verification_date; // Check if date is not null/undefined/empty
-        // Consider a pending status as a valid reason to show, even if date is temporarily null
-        // This depends on your workflow: if PENDING_PV always means a date will be set soon.
+        const hasDate = !!center.physical_verification_date;
         const isPendingOrInProgress = center.physical_verification_status === 'PENDING_PV' ||
                                    center.physical_verification_status === 'IN_PROGRESS_PV';
-
-        // Primary condition: must be marked to send to user.
-        // Secondary: EITHER a date is set, OR it's a status that implies scheduling.
-        // If your workflow guarantees a date for PENDING_PV, then `hasDate` is sufficient with `send_to_user`.
-        // If `PENDING_PV` can exist without a date temporarily, then `isPendingOrInProgress` might be useful.
-        // For your current API data where date is null, the original filter `&& center.physical_verification_date` fails.
-        // Let's assume for now that if `send_to_user` is true, it should be shown if it has a status indicating it's related to verification.
-        // A more robust check includes the date.
-        return showToUser && (hasDate || isPendingOrInProgress) ; // Show if date OR if status is PENDING/IN_PROGRESS
-                                                                  // If you *only* want to show items with a date, revert to:
-                                                                  // return showToUser && hasDate;
+        return showToUser && (hasDate || isPendingOrInProgress);
     });
-
-
-    console.log("Filtered schedules for user view:", JSON.stringify(schedules.value, null, 2));
 
     if (schedules.value.length > 0) {
       toast.success(`Successfully loaded ${schedules.value.length} published schedule${schedules.value.length === 1 ? '' : 's'}.`);
-    } else {
-      // This message will be shown by the v-else-if in the template
-      // toast.info('No site visit schedules are currently published for you.');
     }
 
   } catch (error) {
