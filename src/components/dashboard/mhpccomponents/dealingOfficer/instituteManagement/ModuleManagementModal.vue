@@ -12,11 +12,11 @@
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
-          <tr v-for="definition in moduleDefinitions" :key="definition.id">
-            <td class="px-6 py-4 whitespace-nowrap">
+          <tr v-for="definition in moduleDefinitions" :key="definition.id" class="hover:bg-gray-50">
+            <td class="px-6 py-4">
               <div class="text-sm font-medium text-gray-900">{{ definition.module_master?.module_name || 'N/A' }}</div>
             </td>
-            <td class="px-6 py-4 whitespace-nowrap">
+            <td class="px-6 py-4">
               <div class="text-xs text-gray-500">{{ definition.module_master?.module_code || 'N/A' }}</div>
             </td>
             <td class="px-6 py-4">
@@ -24,10 +24,10 @@
                 {{ definition.module_master?.description ? (definition.module_master.description.length > 70 ? definition.module_master.description.substring(0, 70) + '...' : definition.module_master.description) : 'N/A' }}
               </div>
             </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-3">
-              <button @click="openViewModal(definition)" class="text-blue-600 hover:text-blue-900">View</button>
-              <button @click="openEditModal(definition)" class="text-indigo-600 hover:text-indigo-900">Edit</button>
-              <button @click="confirmDeleteDefinition(definition.id)" class="text-red-600 hover:text-red-900">Delete</button>
+            <td class="px-6 py-4 text-sm font-medium space-x-3">
+              <button @click="openViewModal(definition)" class="text-blue-600 hover:text-blue-900 transition-colors duration-200">View</button>
+              <button @click="openEditModal(definition)" class="text-indigo-600 hover:text-indigo-900 transition-colors duration-200">Edit</button>
+              <button @click="confirmDeleteDefinition(definition.id)" class="text-red-600 hover:text-red-900 transition-colors duration-200">Delete</button>
             </td>
           </tr>
         </tbody>
@@ -91,7 +91,7 @@
             </div>
           </dl>
           <div class="mt-6 flex justify-end">
-            <button @click="closeViewModal" type="button" class="btn btn-outline">Close</button>
+            <button type="button" @click="closeViewModal" class="btn btn-outline">Close</button>
           </div>
         </div>
       </div>
@@ -172,6 +172,7 @@ import { ref, reactive, onMounted } from 'vue'
 import apiServices from '@/services/services' // Adjust path as needed
 import { Loader } from 'lucide-vue-next'
 import { BookOpenIcon, XMarkIcon, XCircleIcon } from '@heroicons/vue/24/outline'
+import { useToast } from 'vue-toastification' // Import useToast
 
 const moduleDefinitions = ref([]) // Stores ModuleMaster instances
 const loading = ref(true)
@@ -183,13 +184,14 @@ const isSubmitting = ref(false)
 const modalError = ref(null)
 const fieldErrors = reactive({})
 const selectedDefinition = ref(null)
+const toast = useToast() // Initialize toast
 
 const initialFormState = {
   id: null, // For ModuleMaster id
   module_name: '',
   module_code: '',
   description: '',
-  is_active: true,
+  is_active: true, // Default to true for new modules
   attachmentFile: null, // File object for attachment
   existingAttachmentName: null, // To display existing attachment filename
   program_master_id: null, // Keep for potential future use, but not in form for now
@@ -220,7 +222,9 @@ const fetchModuleDefinitions = async () => {
     error.value = `Failed to fetch module definitions: ${err.message || 'Unknown error'}`
     moduleDefinitions.value = []
     emit('error', error.value);
-  } finally {
+    toast.error(`Failed to fetch module definitions: ${err.message || 'Unknown error'}`);
+  }
+  finally {
     loading.value = false
   }
 }
@@ -242,6 +246,7 @@ const openEditModal = (definitionToEdit) => {
   formState.module_name = moduleData?.module_name || ''
   formState.module_code = moduleData?.module_code || ''
   formState.description = moduleData?.description || ''
+  // Ensure is_active is correctly set from moduleData, defaulting to true if undefined
   formState.is_active = moduleData?.is_active !== undefined ? moduleData.is_active : true;
 
   if (moduleData?.attachments) {
@@ -282,6 +287,7 @@ const submitDefinitionForm = async () => {
 
   if (!validateForm()) {
     modalError.value = 'Please correct the errors highlighted below.'
+    toast.error('Please correct the errors highlighted below.');
     return
   }
   isSubmitting.value = true
@@ -290,20 +296,25 @@ const submitDefinitionForm = async () => {
   formData.append('module_name', formState.module_name)
   formData.append('module_code', formState.module_code)
   if (formState.description) formData.append('description', formState.description)
-  formData.append('is_active', formState.is_active)
+  // Explicitly convert boolean to string 'true' or 'false' for FormData
+  formData.append('is_active_for_mm', formState.is_active ? 'true' : 'false')
   if (formState.attachmentFile) {
     formData.append('attachments', formState.attachmentFile, formState.attachmentFile.name)
   } else if (isEditing.value && formState.existingAttachmentName === null) {
-    // formData.append('attachments', ''); // If backend supports clearing file with empty string
+    // If editing and no new file is selected, and there was an existing one that was cleared,
+    // you might need to send a specific signal to the backend to clear the file.
+    // For now, assuming backend handles absence of 'attachments' field as no change,
+    // or an empty string clears it if 'attachments' is sent with an empty value.
+    // formData.append('attachments', ''); // Uncomment if backend expects empty string to clear
   }
 
   try {
     if (isEditing.value && formState.id) {
       await apiServices.updateMhpcModule(formState.id, formData)
-      alert('Module definition updated successfully!')
+      toast.success('Module definition updated successfully!')
     } else {
       await apiServices.createMhpcModule(formData)
-      alert('Module definition added successfully!')
+      toast.success('Module definition added successfully!')
     }
     closeModal()
     await fetchModuleDefinitions()
@@ -325,14 +336,18 @@ const submitDefinitionForm = async () => {
       }
       if (unhandledErrorMessages.length > 0) {
         modalError.value = `Please correct the issues: ${unhandledErrorMessages.join('; ')}`;
+        toast.error(modalError.value);
       } else if (Object.values(fieldErrors).some(e => e)) {
         modalError.value = 'Please correct the errors highlighted below.';
+        toast.error(modalError.value);
       } else {
         modalError.value = `Validation error: ${backendErrors.detail || err.message || 'Unknown validation issue.'}`;
+        toast.error(modalError.value);
       }
     } else {
       modalError.value = `Failed to submit module definition: ${err.response?.data?.detail || err.message || 'Unknown server error'}`
       emit('error', modalError.value);
+      toast.error(modalError.value);
     }
   } finally {
     isSubmitting.value = false
@@ -344,12 +359,12 @@ const confirmDeleteDefinition = async (definitionId) => {
     error.value = null
     try {
       await apiServices.deleteMhpcModule(definitionId)
-      alert('Module definition deleted successfully.')
+      toast.success('Module definition deleted successfully.')
       await fetchModuleDefinitions()
     } catch (err) {
       console.error('Error deleting module definition:', err)
       error.value = `Failed to delete module definition: ${err.response?.data?.detail || err.message || 'Unknown error'}`
-      alert(error.value)
+      toast.error(error.value)
       emit('error', error.value);
     }
   }
