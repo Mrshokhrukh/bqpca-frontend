@@ -502,6 +502,36 @@ export default {
     return apiClient.get(`/mhpc/mhpc-new-application/?cid=${cid}`)
   },
 
+  /**
+   * Uploads a file for a specific application by a Dealing Officer.
+   * @param {number} applicationId
+   * @param {FormData} formData
+   * @returns {Promise}
+   */
+  uploadOfficerFileForApplication(applicationId, formData) {
+    return apiClient.post(`/mhpc/mhpc-new-application/${applicationId}/upload-officer-file/`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
+   // *** File Upload***
+  /**
+   * @description
+   * @param {number} qualificationId
+   * @param {FormData} formData
+   * @returns {Promise}
+  */
+  addAttachmentToQualification(qualificationId, formData) {
+
+    return apiClient.post(`/mhpc/mhpc-new-qualification/${qualificationId}/attachments/`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+  },
+
+
   // MHPC Renewals Endpoints
   getMhpcRenewals() {
     return apiClient.get('/mhpc/mhpc-renewals/')
