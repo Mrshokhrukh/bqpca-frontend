@@ -28,611 +28,604 @@
           <!-- Main Form Content -->
           <form @submit.prevent="confirmSubmission" class="space-y-12">
             <!-- Sections -->
-            <template>
-              <section v-for="section in sections" :key="section.refKey"
-                :ref="(el) => (sectionRefs[section.refKey] = el)"
-                class="space-y-8 pt-6 border-t border-gray-100 first:border-t-0 first:pt-0"
-              >
-                <div class="flex items-center justify-between pb-3 mb-6 border-b border-gray-100">
-                  <h2 class="text-2xl font-semibold text-gray-900 flex items-center">
-                    <component :is="section.icon" class="w-6 h-6 mr-3 text-indigo-600" />
-                    {{ section.title }}
-                  </h2>
-                  <button
-                    v-if="section.collapsible"
-                    type="button"
-                    @click="toggleSectionVisibility(section.refKey)"
-                    class="text-indigo-600 hover:text-indigo-800"
-                  >
-                    <ChevronUpIcon
-                      class="w-5 h-5 transform transition-transform"
-                      :class="{ 'rotate-180': !sectionVisibility[section.refKey] }"
-                    />
-                  </button>
-                </div>
 
-                <div
-                  v-if="!section.collapsible || sectionVisibility[section.refKey]"
-                  class="space-y-8"
+            <section
+              v-for="section in sections"
+              :key="section.refKey"
+              :ref="(el) => (sectionRefs[section.refKey] = el)"
+              class="space-y-8 pt-6 border-t border-gray-100 first:border-t-0 first:pt-0"
+            >
+              <div class="flex items-center justify-between pb-3 mb-6 border-b border-gray-100">
+                <h2 class="text-2xl font-semibold text-gray-900 flex items-center">
+                  <component :is="section.icon" class="w-6 h-6 mr-3 text-indigo-600" />
+                  {{ section.title }}
+                </h2>
+                <button
+                  v-if="section.collapsible"
+                  type="button"
+                  @click="toggleSectionVisibility(section.refKey)"
+                  class="text-indigo-600 hover:text-indigo-800"
                 >
-                  <!-- Basic Information -->
-                  <template v-if="section.refKey === 'basicInfo'">
-                    <div class="grid gap-6 md:grid-cols-2">
-                      <div>
-                        <label for="CID" class="form-label required-label flex items-center">
-                          License Number/CID
-                          <InformationCircleIcon
-                            class="w-4 h-4 ml-1 text-gray-400 cursor-help"
-                            title="Your Institute License Number"
-                          />
-                        </label>
-                        <input
-                          type="text"
-                          id="CID"
-                          v-model="formData.CID"
-                          class="form-input"
-                          disabled
-                          aria-describedby="CID-error"
-                        />
-                        <p v-if="validationErrors.CID" class="form-error" id="CID-error">
-                          {{ validationErrors.CID }}
-                        </p>
-                      </div>
-                      <div>
-                        <label for="full_name" class="form-label required-label">Full Name</label>
-                        <input
-                          type="text"
-                          id="full_name"
-                          v-model="formData.full_name"
-                          class="form-input"
-                          disabled
-                          aria-describedby="full_name-error"
-                        />
-                        <p
-                          v-if="validationErrors.full_name"
-                          class="form-error"
-                          id="full_name-error"
-                        >
-                          {{ validationErrors.full_name }}
-                        </p>
-                      </div>
-                      <div>
-                        <label for="gender" class="form-label">Gender</label>
-                        <input
-                          id="gender"
-                          v-model="formData.gender"
-                          class="form-input"
-                          disabled
-                          aria-describedby="gender-error"
-                        />
-                        <p v-if="validationErrors.gender" class="form-error" id="gender-error">
-                          {{ validationErrors.gender }}
-                        </p>
-                      </div>
-                      <div>
-                        <label for="contact_no" class="form-label">Contact Number</label>
-                        <input
-                          type="tel"
-                          id="contact_no"
-                          v-model="formData.contact_no"
-                          class="form-input"
-                          disabled
-                          aria-describedby="contact_no-error"
-                        />
-                        <p
-                          v-if="validationErrors.contact_no"
-                          class="form-error"
-                          id="contact_no-error"
-                        >
-                          {{ validationErrors.contact_no }}
-                        </p>
-                      </div>
-                      <div>
-                        <label for="email_address" class="form-label">Email Address</label>
-                        <input
-                          type="email"
-                          id="email_address"
-                          v-model="formData.email_address"
-                          class="form-input"
-                          disabled
-                          aria-describedby="email_address-error"
-                        />
-                        <p
-                          v-if="validationErrors.email_address"
-                          class="form-error"
-                          id="email_address-error"
-                        >
-                          {{ validationErrors.email_address }}
-                        </p>
-                      </div>
-                    </div>
-                  </template>
+                  <ChevronUpIcon
+                    class="w-5 h-5 transform transition-transform"
+                    :class="{ 'rotate-180': !sectionVisibility[section.refKey] }"
+                  />
+                </button>
+              </div>
 
-                  <!-- Institution Details -->
-                  <template v-if="section.refKey === 'institutionDetails'">
-                    <div class="grid gap-6 md:grid-cols-2">
-                      <div class="md:col-span-2">
-                        <label for="name_of_institution" class="form-label required-label"
-                          >Name of Institution</label
-                        >
-                        <input
-                          type="text"
-                          id="name_of_institution"
-                          v-model="formData.name_of_institution"
-                          class="form-input"
-                          @input="debounceValidateField('name_of_institution')"
-                          aria-describedby="name_of_institution-error"
+              <div
+                v-if="!section.collapsible || sectionVisibility[section.refKey]"
+                class="space-y-8"
+              >
+                <!-- Basic Information -->
+                <template v-if="section.refKey === 'basicInfo'">
+                  <div class="grid gap-6 md:grid-cols-2">
+                    <div>
+                      <label for="CID" class="form-label required-label flex items-center">
+                        License Number/CID
+                        <InformationCircleIcon
+                          class="w-4 h-4 ml-1 text-gray-400 cursor-help"
+                          title="Your Institute License Number"
                         />
-                        <p
-                          v-if="validationErrors.name_of_institution"
-                          class="form-error"
-                          id="name_of_institution-error"
-                        >
-                          {{ validationErrors.name_of_institution }}
-                        </p>
-                      </div>
-                      <div>
-                        <label for="dzongkhag" class="form-label required-label">Dzongkhag</label>
-                        <select
-                          id="dzongkhag"
-                          v-model="formData.dzongkhag"
-                          class="form-select"
-                          @change="debounceValidateField('dzongkhag')"
-                          aria-describedby="dzongkhag-error"
-                        >
-                          <option value="">Select Dzongkhag</option>
-                          <option
-                            v-for="dzongkhag_option in dzongkhagOptions"
-                            :key="dzongkhag_option"
-                            :value="dzongkhag_option"
-                          >
-                            {{ dzongkhag_option }}
-                          </option>
-                        </select>
-                        <p
-                          v-if="validationErrors.dzongkhag"
-                          class="form-error"
-                          id="dzongkhag-error"
-                        >
-                          {{ validationErrors.dzongkhag }}
-                        </p>
-                      </div>
-                      <div>
-                        <label for="gewog" class="form-label"
-                          >Gewog <span class="text-gray-400">(Optional)</span></label
-                        >
-                        <input
-                          type="text"
-                          id="gewog"
-                          v-model="formData.gewog"
-                          class="form-input"
-                          aria-describedby="gewog-error"
-                        />
-                        <p v-if="validationErrors.gewog" class="form-error" id="gewog-error">
-                          {{ validationErrors.gewog }}
-                        </p>
-                      </div>
-                      <div>
-                        <label for="village" class="form-label"
-                          >Village <span class="text-gray-400">(Optional)</span></label
-                        >
-                        <input
-                          type="text"
-                          id="village"
-                          v-model="formData.village"
-                          class="form-input"
-                          aria-describedby="village-error"
-                        />
-                        <p v-if="validationErrors.village" class="form-error" id="village-error">
-                          {{ validationErrors.village }}
-                        </p>
-                      </div>
-                      <div>
-                        <label for="chiwog" class="form-label"
-                          >Chiwog <span class="text-gray-400">(Optional)</span></label
-                        >
-                        <input
-                          type="text"
-                          id="chiwog"
-                          v-model="formData.chiwog"
-                          class="form-input"
-                          aria-describedby="chiwog-error"
-                        />
-                        <p v-if="validationErrors.chiwog" class="form-error" id="chiwog-error">
-                          {{ validationErrors.chiwog }}
-                        </p>
-                      </div>
-                      <div class="md:col-span-2">
-                        <label for="address" class="form-label required-label">Address</label>
-                        <textarea
-                          id="address"
-                          v-model="formData.address"
-                          class="form-textarea"
-                          rows="3"
-                          @input="debounceValidateField('address')"
-                          aria-describedby="address-error"
-                        ></textarea>
-                        <p v-if="validationErrors.address" class="form-error" id="address-error">
-                          {{ validationErrors.address }}
-                        </p>
-                      </div>
-                      <div>
-                        <label for="website" class="form-label"
-                          >Website <span class="text-gray-400">(Optional)</span></label
-                        >
-                        <input
-                          type="url"
-                          id="website"
-                          v-model="formData.website"
-                          class="form-input"
-                          @input="debounceValidateField('website')"
-                          aria-describedby="website-error"
-                        />
-                        <p v-if="validationErrors.website" class="form-error" id="website-error">
-                          {{ validationErrors.website }}
-                        </p>
-                      </div>
-                    </div>
-                  </template>
-
-                  <!-- Course Details -->
-                  <template v-if="section.refKey === 'courseDetails'">
-                    <div class="grid gap-6 md:grid-cols-2">
-                      <div class="md:col-span-2 flex flex-col md:flex-row gap-6">
-                        <div class="flex-1">
-                          <label for="title_of_course" class="form-label required-label"
-                            >Title of Course</label
-                          >
-                          <input
-                            type="text"
-                            id="title_of_course"
-                            v-model="formData.title_of_course"
-                            class="form-input"
-                            @input="debounceValidateField('title_of_course')"
-                            aria-describedby="title_of_course-error"
-                          />
-                          <p
-                            v-if="validationErrors.title_of_course"
-                            class="form-error"
-                            id="title_of_course-error"
-                          >
-                            {{ validationErrors.title_of_course }}
-                          </p>
-                        </div>
-                        <div class="flex-1">
-                          <label for="teaching_institute" class="form-label required-label"
-                            >Teaching Hospital</label
-                          >
-                          <input
-                            type="text"
-                            id="teaching_institute"
-                            v-model="formData.teaching_institute"
-                            class="form-input"
-                            @input="debounceValidateField('teaching_institute')"
-                            aria-describedby="teaching_institute-error"
-                          />
-                          <p
-                            v-if="validationErrors.teaching_institute"
-                            class="form-error"
-                            id="teaching_institute-error"
-                          >
-                            {{ validationErrors.teaching_institute }}
-                          </p>
-                        </div>
-                      </div>
-                      <div>
-                        <label for="course_duration" class="form-label required-label"
-                          >Course Duration (in months)</label
-                        >
-                        <input
-                          type="number"
-                          id="course_duration"
-                          v-model="formData.course_duration"
-                          min="1"
-                          max="120"
-                          class="form-input"
-                          @input="debounceValidateField('course_duration')"
-                          aria-describedby="course_duration-error"
-                        />
-                        <p
-                          v-if="validationErrors.course_duration"
-                          class="form-error"
-                          id="course_duration-error"
-                        >
-                          {{ validationErrors.course_duration }}
-                        </p>
-                      </div>
-                      <div>
-                        <label for="commencement_date" class="form-label required-label"
-                          >Commencement Date</label
-                        >
-                        <input
-                          type="date"
-                          id="commencement_date"
-                          v-model="formData.commencement_date"
-                          class="form-input"
-                          @input="debounceValidateField('commencement_date')"
-                          aria-describedby="commencement_date-error"
-                        />
-                        <p
-                          v-if="validationErrors.commencement_date"
-                          class="form-error"
-                          id="commencement_date-error"
-                        >
-                          {{ validationErrors.commencement_date }}
-                        </p>
-                      </div>
-                      <div class="md:col-span-2">
-                        <label for="type_of_programme" class="form-label required-label"
-                          >Type of Program</label
-                        >
-                        <select
-                          id="type_of_programme"
-                          v-model="formData.type_of_programme"
-                          class="form-select"
-                          @change="debounceValidateField('type_of_programme')"
-                          aria-describedby="type_of_programme-error"
-                        >
-                          <option value="">Select Program Type</option>
-                          <option
-                            v-for="option in programMasterOptions"
-                            :key="option.value"
-                            :value="option.value"
-                          >
-                            {{ option.label }}
-                          </option>
-                        </select>
-                        <p
-                          v-if="validationErrors.type_of_programme"
-                          class="form-error"
-                          id="type_of_programme-error"
-                        >
-                          {{ validationErrors.type_of_programme }}
-                        </p>
-                      </div>
-                      <div class="md:col-span-2">
-                        <label for="supporting_documents" class="form-label">
-                          Supporting Documents
-                          <span class="text-gray-400">(PDF, DOC, DOCX, max 5MB)</span>
-                        </label>
-                        <div class="mt-1 flex items-center">
-                          <input
-                            type="file"
-                            id="supporting_documents"
-                            @change="handleFileUpload($event, 'supporting_documents')"
-                            accept=".pdf,.doc,.docx"
-                            class="form-file-input"
-                            aria-describedby="supporting_documents-error"
-                          />
-                          <button
-                            v-if="formData.supporting_documents"
-                            type="button"
-                            @click="clearFile('supporting_documents')"
-                            class="ml-3 text-sm text-red-600 hover:text-red-800"
-                          >
-                            Clear
-                          </button>
-                        </div>
-                        <p
-                          v-if="
-                            formData.supporting_documents &&
-                            typeof formData.supporting_documents === 'object'
-                          "
-                          class="text-xs text-gray-500 mt-1"
-                        >
-                          Selected: {{ formData.supporting_documents.name }}
-                        </p>
-                        <p
-                          v-if="validationErrors.supporting_documents"
-                          class="form-error"
-                          id="supporting_documents-error"
-                        >
-                          {{ validationErrors.supporting_documents }}
-                        </p>
-                      </div>
-                      <div class="md:col-span-2">
-                        <label for="remarks" class="form-label"
-                          >Remarks <span class="text-gray-400">(Optional)</span></label
-                        >
-                        <textarea
-                          id="remarks"
-                          v-model="formData.remarks"
-                          class="form-textarea"
-                          rows="3"
-                          aria-describedby="remarks-error"
-                        ></textarea>
-                        <p v-if="validationErrors.remarks" class="form-error" id="remarks-error">
-                          {{ validationErrors.remarks }}
-                        </p>
-                      </div>
-                    </div>
-                  </template>
-
-                  <!-- Teaching Hospital Details -->
-                  <template v-if="section.refKey === 'teachingHospitalDetails'">
-                    <div class="grid gap-6 md:grid-cols-2">
-                      <div class="md:col-span-2">
-                        <label for="teaching_hospital_name" class="form-label"
-                          >Teaching Hospital Name</label
-                        >
-                        <input
-                          type="text"
-                          id="teaching_hospital_name"
-                          v-model="formData.teaching_hospital_name"
-                          class="form-input"
-                          @input="debounceValidateField('teaching_hospital_name')"
-                          aria-describedby="teaching_hospital_name-error"
-                        />
-                        <p
-                          v-if="validationErrors.teaching_hospital_name"
-                          class="form-error"
-                          id="teaching_hospital_name-error"
-                        >
-                          {{ validationErrors.teaching_hospital_name }}
-                        </p>
-                      </div>
-                      <div>
-                        <label for="teaching_hospital_location" class="form-label"
-                          >Location (Dzongkhag)</label
-                        >
-                        <select
-                          id="teaching_hospital_location"
-                          v-model="formData.teaching_hospital_location"
-                          class="form-select"
-                          @change="debounceValidateField('teaching_hospital_location')"
-                          aria-describedby="teaching_hospital_location-error"
-                        >
-                          <option value="">Select Dzongkhag</option>
-                          <option
-                            v-for="dzongkhag_option in dzongkhagOptions"
-                            :key="dzongkhag_option"
-                            :value="dzongkhag_option"
-                          >
-                            {{ dzongkhag_option }}
-                          </option>
-                        </select>
-                        <p
-                          v-if="validationErrors.teaching_hospital_location"
-                          class="form-error"
-                          id="teaching_hospital_location-error"
-                        >
-                          {{ validationErrors.teaching_hospital_location }}
-                        </p>
-                      </div>
-                    </div>
-                  </template>
-
-                  <!-- Head of Institution Details -->
-                  <template v-if="section.refKey === 'headOfInstitutionDetails'">
-                    <div class="grid gap-6 md:grid-cols-2">
-                      <div>
-                        <label for="head_of_institution_name" class="form-label required-label"
-                          >Name</label
-                        >
-                        <input
-                          type="text"
-                          id="head_of_institution_name"
-                          v-model="formData.head_of_institution_name"
-                          class="form-input"
-                          @input="debounceValidateField('head_of_institution_name')"
-                          aria-describedby="head_of_institution_name-error"
-                        />
-                        <p
-                          v-if="validationErrors.head_of_institution_name"
-                          class="form-error"
-                          id="head_of_institution_name-error"
-                        >
-                          {{ validationErrors.head_of_institution_name }}
-                        </p>
-                      </div>
-                      <div>
-                        <label for="head_of_institution_gender" class="form-label required-label"
-                          >Gender</label
-                        >
-                        <select
-                          id="head_of_institution_gender"
-                          v-model="formData.head_of_institution_gender"
-                          class="form-select"
-                          @change="debounceValidateField('head_of_institution_gender')"
-                          aria-describedby="head_of_institution_gender-error"
-                        >
-                          <option value="">Select Gender</option>
-                          <option
-                            v-for="option in genderOptions"
-                            :key="option.value"
-                            :value="option.value"
-                          >
-                            {{ option.label }}
-                          </option>
-                        </select>
-                        <p
-                          v-if="validationErrors.head_of_institution_gender"
-                          class="form-error"
-                          id="head_of_institution_gender-error"
-                        >
-                          {{ validationErrors.head_of_institution_gender }}
-                        </p>
-                      </div>
-                      <div>
-                        <label
-                          for="head_of_institution_phone_number"
-                          class="form-label required-label"
-                          >Phone Number</label
-                        >
-                        <input
-                          type="tel"
-                          id="head_of_institution_phone_number"
-                          v-model="formData.head_of_institution_phone_number"
-                          class="form-input"
-                          @input="debounceValidateField('head_of_institution_phone_number')"
-                          aria-describedby="head_of_institution_phone_number-error"
-                        />
-                        <p
-                          v-if="validationErrors.head_of_institution_phone_number"
-                          class="form-error"
-                          id="head_of_institution_phone_number-error"
-                        >
-                          {{ validationErrors.head_of_institution_phone_number }}
-                        </p>
-                      </div>
-                      <div>
-                        <label for="head_of_institution_email" class="form-label required-label"
-                          >Email</label
-                        >
-                        <input
-                          type="email"
-                          id="head_of_institution_email"
-                          v-model="formData.head_of_institution_email"
-                          class="form-input"
-                          @input="debounceValidateField('head_of_institution_email')"
-                          aria-describedby="head_of_institution_email-error"
-                        />
-                        <p
-                          v-if="validationErrors.head_of_institution_email"
-                          class="form-error"
-                          id="head_of_institution_email-error"
-                        >
-                          {{ validationErrors.head_of_institution_email }}
-                        </p>
-                      </div>
-                    </div>
-                  </template>
-
-                  <!-- Declaration -->
-                  <template v-if="section.refKey === 'declaration'">
-                    <div class="bg-indigo-50 rounded-lg p-6 border border-indigo-100">
-                      <p class="text-sm text-gray-700 mb-4">
-                        I/We certify that the information provided in this application is true,
-                        complete, and accurate to the best of my knowledge. I realize that any
-                        false, fictitious, or fraudulent statements may be subjected to
-                        administrative penalties. I am fully aware and understand the process and
-                        requirements of relevant agencies.
+                      </label>
+                      <input
+                        type="text"
+                        id="CID"
+                        v-model="formData.CID"
+                        class="form-input"
+                        disabled
+                        aria-describedby="CID-error"
+                      />
+                      <p v-if="validationErrors.CID" class="form-error" id="CID-error">
+                        {{ validationErrors.CID }}
                       </p>
-                      <div class="flex items-center">
+                    </div>
+                    <div>
+                      <label for="full_name" class="form-label required-label">Full Name</label>
+                      <input
+                        type="text"
+                        id="full_name"
+                        v-model="formData.full_name"
+                        class="form-input"
+                        disabled
+                        aria-describedby="full_name-error"
+                      />
+                      <p v-if="validationErrors.full_name" class="form-error" id="full_name-error">
+                        {{ validationErrors.full_name }}
+                      </p>
+                    </div>
+                    <div>
+                      <label for="gender" class="form-label">Gender</label>
+                      <input
+                        id="gender"
+                        v-model="formData.gender"
+                        class="form-input"
+                        disabled
+                        aria-describedby="gender-error"
+                      />
+                      <p v-if="validationErrors.gender" class="form-error" id="gender-error">
+                        {{ validationErrors.gender }}
+                      </p>
+                    </div>
+                    <div>
+                      <label for="contact_no" class="form-label">Contact Number</label>
+                      <input
+                        type="tel"
+                        id="contact_no"
+                        v-model="formData.contact_no"
+                        class="form-input"
+                        disabled
+                        aria-describedby="contact_no-error"
+                      />
+                      <p
+                        v-if="validationErrors.contact_no"
+                        class="form-error"
+                        id="contact_no-error"
+                      >
+                        {{ validationErrors.contact_no }}
+                      </p>
+                    </div>
+                    <div>
+                      <label for="email_address" class="form-label">Email Address</label>
+                      <input
+                        type="email"
+                        id="email_address"
+                        v-model="formData.email_address"
+                        class="form-input"
+                        disabled
+                        aria-describedby="email_address-error"
+                      />
+                      <p
+                        v-if="validationErrors.email_address"
+                        class="form-error"
+                        id="email_address-error"
+                      >
+                        {{ validationErrors.email_address }}
+                      </p>
+                    </div>
+                  </div>
+                </template>
+
+                <!-- Institution Details -->
+                <template v-if="section.refKey === 'institutionDetails'">
+                  <div class="grid gap-6 md:grid-cols-2">
+                    <div class="md:col-span-2">
+                      <label for="name_of_institution" class="form-label required-label"
+                        >Name of Institution</label
+                      >
+                      <input
+                        type="text"
+                        id="name_of_institution"
+                        v-model="formData.name_of_institution"
+                        class="form-input"
+                        @input="debounceValidateField('name_of_institution')"
+                        aria-describedby="name_of_institution-error"
+                      />
+                      <p
+                        v-if="validationErrors.name_of_institution"
+                        class="form-error"
+                        id="name_of_institution-error"
+                      >
+                        {{ validationErrors.name_of_institution }}
+                      </p>
+                    </div>
+                    <div>
+                      <label for="dzongkhag" class="form-label required-label">Dzongkhag</label>
+                      <select
+                        id="dzongkhag"
+                        v-model="formData.dzongkhag"
+                        class="form-select"
+                        @change="debounceValidateField('dzongkhag')"
+                        aria-describedby="dzongkhag-error"
+                      >
+                        <option value="">Select Dzongkhag</option>
+                        <option
+                          v-for="dzongkhag_option in dzongkhagOptions"
+                          :key="dzongkhag_option"
+                          :value="dzongkhag_option"
+                        >
+                          {{ dzongkhag_option }}
+                        </option>
+                      </select>
+                      <p v-if="validationErrors.dzongkhag" class="form-error" id="dzongkhag-error">
+                        {{ validationErrors.dzongkhag }}
+                      </p>
+                    </div>
+                    <div>
+                      <label for="gewog" class="form-label"
+                        >Gewog <span class="text-gray-400">(Optional)</span></label
+                      >
+                      <input
+                        type="text"
+                        id="gewog"
+                        v-model="formData.gewog"
+                        class="form-input"
+                        aria-describedby="gewog-error"
+                      />
+                      <p v-if="validationErrors.gewog" class="form-error" id="gewog-error">
+                        {{ validationErrors.gewog }}
+                      </p>
+                    </div>
+                    <div>
+                      <label for="village" class="form-label"
+                        >Village <span class="text-gray-400">(Optional)</span></label
+                      >
+                      <input
+                        type="text"
+                        id="village"
+                        v-model="formData.village"
+                        class="form-input"
+                        aria-describedby="village-error"
+                      />
+                      <p v-if="validationErrors.village" class="form-error" id="village-error">
+                        {{ validationErrors.village }}
+                      </p>
+                    </div>
+                    <div>
+                      <label for="chiwog" class="form-label"
+                        >Chiwog <span class="text-gray-400">(Optional)</span></label
+                      >
+                      <input
+                        type="text"
+                        id="chiwog"
+                        v-model="formData.chiwog"
+                        class="form-input"
+                        aria-describedby="chiwog-error"
+                      />
+                      <p v-if="validationErrors.chiwog" class="form-error" id="chiwog-error">
+                        {{ validationErrors.chiwog }}
+                      </p>
+                    </div>
+                    <div class="md:col-span-2">
+                      <label for="address" class="form-label required-label">Address</label>
+                      <textarea
+                        id="address"
+                        v-model="formData.address"
+                        class="form-textarea"
+                        rows="3"
+                        @input="debounceValidateField('address')"
+                        aria-describedby="address-error"
+                      ></textarea>
+                      <p v-if="validationErrors.address" class="form-error" id="address-error">
+                        {{ validationErrors.address }}
+                      </p>
+                    </div>
+                    <div>
+                      <label for="website" class="form-label"
+                        >Website <span class="text-gray-400">(Optional)</span></label
+                      >
+                      <input
+                        type="url"
+                        id="website"
+                        v-model="formData.website"
+                        class="form-input"
+                        @input="debounceValidateField('website')"
+                        aria-describedby="website-error"
+                      />
+                      <p v-if="validationErrors.website" class="form-error" id="website-error">
+                        {{ validationErrors.website }}
+                      </p>
+                    </div>
+                  </div>
+                </template>
+
+                <!-- Course Details -->
+                <template v-if="section.refKey === 'courseDetails'">
+                  <div class="grid gap-6 md:grid-cols-2">
+                    <div class="md:col-span-2 flex flex-col md:flex-row gap-6">
+                      <div class="flex-1">
+                        <label for="title_of_course" class="form-label required-label"
+                          >Title of Course</label
+                        >
                         <input
-                          type="checkbox"
-                          id="declaration"
-                          v-model="formData.declaration"
-                          class="form-checkbox"
-                          @change="debounceValidateField('declaration')"
-                          aria-describedby="declaration-error"
+                          type="text"
+                          id="title_of_course"
+                          v-model="formData.title_of_course"
+                          class="form-input"
+                          @input="debounceValidateField('title_of_course')"
+                          aria-describedby="title_of_course-error"
                         />
-                        <label for="declaration" class="ml-2 text-sm font-medium text-gray-800">
-                          I agree to the above declaration
-                        </label>
+                        <p
+                          v-if="validationErrors.title_of_course"
+                          class="form-error"
+                          id="title_of_course-error"
+                        >
+                          {{ validationErrors.title_of_course }}
+                        </p>
+                      </div>
+                      <div class="flex-1">
+                        <label for="teaching_institute" class="form-label required-label"
+                          >Teaching Hospital</label
+                        >
+                        <input
+                          type="text"
+                          id="teaching_institute"
+                          v-model="formData.teaching_institute"
+                          class="form-input"
+                          @input="debounceValidateField('teaching_institute')"
+                          aria-describedby="teaching_institute-error"
+                        />
+                        <p
+                          v-if="validationErrors.teaching_institute"
+                          class="form-error"
+                          id="teaching_institute-error"
+                        >
+                          {{ validationErrors.teaching_institute }}
+                        </p>
+                      </div>
+                    </div>
+                    <div>
+                      <label for="course_duration" class="form-label required-label"
+                        >Course Duration (in months)</label
+                      >
+                      <input
+                        type="number"
+                        id="course_duration"
+                        v-model="formData.course_duration"
+                        min="1"
+                        max="120"
+                        class="form-input"
+                        @input="debounceValidateField('course_duration')"
+                        aria-describedby="course_duration-error"
+                      />
+                      <p
+                        v-if="validationErrors.course_duration"
+                        class="form-error"
+                        id="course_duration-error"
+                      >
+                        {{ validationErrors.course_duration }}
+                      </p>
+                    </div>
+                    <div>
+                      <label for="commencement_date" class="form-label required-label"
+                        >Commencement Date</label
+                      >
+                      <input
+                        type="date"
+                        id="commencement_date"
+                        v-model="formData.commencement_date"
+                        class="form-input"
+                        @input="debounceValidateField('commencement_date')"
+                        aria-describedby="commencement_date-error"
+                      />
+                      <p
+                        v-if="validationErrors.commencement_date"
+                        class="form-error"
+                        id="commencement_date-error"
+                      >
+                        {{ validationErrors.commencement_date }}
+                      </p>
+                    </div>
+                    <div class="md:col-span-2">
+                      <label for="type_of_programme" class="form-label required-label"
+                        >Type of Program</label
+                      >
+                      <select
+                        id="type_of_programme"
+                        v-model="formData.type_of_programme"
+                        class="form-select"
+                        @change="debounceValidateField('type_of_programme')"
+                        aria-describedby="type_of_programme-error"
+                      >
+                        <option value="">Select Program Type</option>
+                        <option
+                          v-for="option in programMasterOptions"
+                          :key="option.value"
+                          :value="option.value"
+                        >
+                          {{ option.label }}
+                        </option>
+                      </select>
+                      <p
+                        v-if="validationErrors.type_of_programme"
+                        class="form-error"
+                        id="type_of_programme-error"
+                      >
+                        {{ validationErrors.type_of_programme }}
+                      </p>
+                    </div>
+                    <div class="md:col-span-2">
+                      <label for="supporting_documents" class="form-label">
+                        Supporting Documents
+                        <span class="text-gray-400">(PDF, DOC, DOCX, max 5MB)</span>
+                      </label>
+                      <div class="mt-1 flex items-center">
+                        <input
+                          type="file"
+                          id="supporting_documents"
+                          @change="handleFileUpload($event, 'supporting_documents')"
+                          accept=".pdf,.doc,.docx"
+                          class="form-file-input"
+                          aria-describedby="supporting_documents-error"
+                        />
+                        <button
+                          v-if="formData.supporting_documents"
+                          type="button"
+                          @click="clearFile('supporting_documents')"
+                          class="ml-3 text-sm text-red-600 hover:text-red-800"
+                        >
+                          Clear
+                        </button>
                       </div>
                       <p
-                        v-if="validationErrors.declaration"
-                        class="form-error"
-                        id="declaration-error"
+                        v-if="
+                          formData.supporting_documents &&
+                          typeof formData.supporting_documents === 'object'
+                        "
+                        class="text-xs text-gray-500 mt-1"
                       >
-                        {{ validationErrors.declaration }}
+                        Selected: {{ formData.supporting_documents.name }}
+                      </p>
+                      <p
+                        v-if="validationErrors.supporting_documents"
+                        class="form-error"
+                        id="supporting_documents-error"
+                      >
+                        {{ validationErrors.supporting_documents }}
                       </p>
                     </div>
-                  </template>
-                </div>
-              </section>
-            </template>
+                    <div class="md:col-span-2">
+                      <label for="remarks" class="form-label"
+                        >Remarks <span class="text-gray-400">(Optional)</span></label
+                      >
+                      <textarea
+                        id="remarks"
+                        v-model="formData.remarks"
+                        class="form-textarea"
+                        rows="3"
+                        aria-describedby="remarks-error"
+                      ></textarea>
+                      <p v-if="validationErrors.remarks" class="form-error" id="remarks-error">
+                        {{ validationErrors.remarks }}
+                      </p>
+                    </div>
+                  </div>
+                </template>
+
+                <!-- Teaching Hospital Details -->
+                <template v-if="section.refKey === 'teachingHospitalDetails'">
+                  <div class="grid gap-6 md:grid-cols-2">
+                    <div class="md:col-span-2">
+                      <label for="teaching_hospital_name" class="form-label"
+                        >Teaching Hospital Name</label
+                      >
+                      <input
+                        type="text"
+                        id="teaching_hospital_name"
+                        v-model="formData.teaching_hospital_name"
+                        class="form-input"
+                        @input="debounceValidateField('teaching_hospital_name')"
+                        aria-describedby="teaching_hospital_name-error"
+                      />
+                      <p
+                        v-if="validationErrors.teaching_hospital_name"
+                        class="form-error"
+                        id="teaching_hospital_name-error"
+                      >
+                        {{ validationErrors.teaching_hospital_name }}
+                      </p>
+                    </div>
+                    <div>
+                      <label for="teaching_hospital_location" class="form-label"
+                        >Location (Dzongkhag)</label
+                      >
+                      <select
+                        id="teaching_hospital_location"
+                        v-model="formData.teaching_hospital_location"
+                        class="form-select"
+                        @change="debounceValidateField('teaching_hospital_location')"
+                        aria-describedby="teaching_hospital_location-error"
+                      >
+                        <option value="">Select Dzongkhag</option>
+                        <option
+                          v-for="dzongkhag_option in dzongkhagOptions"
+                          :key="dzongkhag_option"
+                          :value="dzongkhag_option"
+                        >
+                          {{ dzongkhag_option }}
+                        </option>
+                      </select>
+                      <p
+                        v-if="validationErrors.teaching_hospital_location"
+                        class="form-error"
+                        id="teaching_hospital_location-error"
+                      >
+                        {{ validationErrors.teaching_hospital_location }}
+                      </p>
+                    </div>
+                  </div>
+                </template>
+
+                <!-- Head of Institution Details -->
+                <template v-if="section.refKey === 'headOfInstitutionDetails'">
+                  <div class="grid gap-6 md:grid-cols-2">
+                    <div>
+                      <label for="head_of_institution_name" class="form-label required-label"
+                        >Name</label
+                      >
+                      <input
+                        type="text"
+                        id="head_of_institution_name"
+                        v-model="formData.head_of_institution_name"
+                        class="form-input"
+                        @input="debounceValidateField('head_of_institution_name')"
+                        aria-describedby="head_of_institution_name-error"
+                      />
+                      <p
+                        v-if="validationErrors.head_of_institution_name"
+                        class="form-error"
+                        id="head_of_institution_name-error"
+                      >
+                        {{ validationErrors.head_of_institution_name }}
+                      </p>
+                    </div>
+                    <div>
+                      <label for="head_of_institution_gender" class="form-label required-label"
+                        >Gender</label
+                      >
+                      <select
+                        id="head_of_institution_gender"
+                        v-model="formData.head_of_institution_gender"
+                        class="form-select"
+                        @change="debounceValidateField('head_of_institution_gender')"
+                        aria-describedby="head_of_institution_gender-error"
+                      >
+                        <option value="">Select Gender</option>
+                        <option
+                          v-for="option in genderOptions"
+                          :key="option.value"
+                          :value="option.value"
+                        >
+                          {{ option.label }}
+                        </option>
+                      </select>
+                      <p
+                        v-if="validationErrors.head_of_institution_gender"
+                        class="form-error"
+                        id="head_of_institution_gender-error"
+                      >
+                        {{ validationErrors.head_of_institution_gender }}
+                      </p>
+                    </div>
+                    <div>
+                      <label
+                        for="head_of_institution_phone_number"
+                        class="form-label required-label"
+                        >Phone Number</label
+                      >
+                      <input
+                        type="tel"
+                        id="head_of_institution_phone_number"
+                        v-model="formData.head_of_institution_phone_number"
+                        class="form-input"
+                        @input="debounceValidateField('head_of_institution_phone_number')"
+                        aria-describedby="head_of_institution_phone_number-error"
+                      />
+                      <p
+                        v-if="validationErrors.head_of_institution_phone_number"
+                        class="form-error"
+                        id="head_of_institution_phone_number-error"
+                      >
+                        {{ validationErrors.head_of_institution_phone_number }}
+                      </p>
+                    </div>
+                    <div>
+                      <label for="head_of_institution_email" class="form-label required-label"
+                        >Email</label
+                      >
+                      <input
+                        type="email"
+                        id="head_of_institution_email"
+                        v-model="formData.head_of_institution_email"
+                        class="form-input"
+                        @input="debounceValidateField('head_of_institution_email')"
+                        aria-describedby="head_of_institution_email-error"
+                      />
+                      <p
+                        v-if="validationErrors.head_of_institution_email"
+                        class="form-error"
+                        id="head_of_institution_email-error"
+                      >
+                        {{ validationErrors.head_of_institution_email }}
+                      </p>
+                    </div>
+                  </div>
+                </template>
+
+                <!-- Declaration -->
+                <template v-if="section.refKey === 'declaration'">
+                  <div class="bg-indigo-50 rounded-lg p-6 border border-indigo-100">
+                    <p class="text-sm text-gray-700 mb-4">
+                      I/We certify that the information provided in this application is true,
+                      complete, and accurate to the best of my knowledge. I realize that any false,
+                      fictitious, or fraudulent statements may be subjected to administrative
+                      penalties. I am fully aware and understand the process and requirements of
+                      relevant agencies.
+                    </p>
+                    <div class="flex items-center">
+                      <input
+                        type="checkbox"
+                        id="declaration"
+                        v-model="formData.declaration"
+                        class="form-checkbox"
+                        @change="debounceValidateField('declaration')"
+                        aria-describedby="declaration-error"
+                      />
+                      <label for="declaration" class="ml-2 text-sm font-medium text-gray-800">
+                        I agree to the above declaration
+                      </label>
+                    </div>
+                    <p
+                      v-if="validationErrors.declaration"
+                      class="form-error"
+                      id="declaration-error"
+                    >
+                      {{ validationErrors.declaration }}
+                    </p>
+                  </div>
+                </template>
+              </div>
+            </section>
 
             <!-- Form Actions -->
             <div
@@ -1257,27 +1250,34 @@ const processActualSubmission = async () => {
 }
 
 // Draft management
-const saveDraft = () => {
-  const draftData = { ...formData.value }
-  // File objects cannot be stringified, so handle supporting_documents
-  if (draftData.supporting_documents instanceof File) {
-    // You might store filename or a placeholder, or just omit it from draft if re-selection is acceptable
-    draftData.supporting_documents_name = draftData.supporting_documents.name // Store name
-    delete draftData.supporting_documents // Remove File object
-  }
-  localStorage.setItem('eoiFormDraft', JSON.stringify(draftData))
-  toast.info('Draft saved!', { timeout: 2000 })
+const getDraftKey = () => {
+  const userId = authStore.user?.id
+  if (!userId) return null
+  return `eoiFormDraft_${userId}`
 }
 
-const autoSaveDraft = debounce(() => {
-  if (props.modelValue) {
-    // Only save if the modal is actually open/active
-    saveDraft()
+const saveDraft = () => {
+  const draftKey = getDraftKey()
+  if (!draftKey) {
+    toast.error('You must be logged in to save a draft.')
+    return
   }
-}, 7000)
+
+  const draftData = { ...formData.value }
+  if (draftData.supporting_documents instanceof File) {
+    draftData.supporting_documents_name = draftData.supporting_documents.name
+    delete draftData.supporting_documents
+  }
+
+  localStorage.setItem(draftKey, JSON.stringify(draftData))
+  toast.info('Draft saved successfully!', { timeout: 2000 })
+}
 
 const clearDraft = () => {
-  localStorage.removeItem('eoiFormDraft')
+  const draftKey = getDraftKey()
+  if (draftKey) {
+    localStorage.removeItem(draftKey)
+  }
 }
 
 const resetForm = () => {
@@ -1285,7 +1285,6 @@ const resetForm = () => {
   const preservedData = {}
   basicInfoKeys.forEach((key) => (preservedData[key] = formData.value[key]))
 
-  // Create a default clean slate for formData
   const defaultFormData = {
     CID: '',
     full_name: '',
@@ -1318,8 +1317,8 @@ const resetForm = () => {
     reason_if_rejected: '',
   }
 
-  formData.value = { ...defaultFormData } // Reset to defaults
-  Object.assign(formData.value, preservedData) // Re-apply preserved basic info
+  formData.value = { ...defaultFormData }
+  Object.assign(formData.value, preservedData)
 
   validationErrors.value = {}
   clearDraft()
@@ -1339,7 +1338,7 @@ const previewForm = () => {
 
 const getProgramLabel = (programId) => {
   const program = programMasterOptions.value.find((p) => p.value === programId)
-  return program ? program.label : programId // Fallback to ID if not found
+  return program ? program.label : programId
 }
 
 // Auto-fill form
@@ -1352,7 +1351,7 @@ const autoFillForm = () => {
     formData.value.gender = user.gender || ''
     formData.value.contact_no = user.contact_number || ''
     formData.value.email_address = user.email || ''
-    formData.value.village = user.village || '' // This was in original, kept it
+    formData.value.village = user.village || ''
   }
 }
 
@@ -1361,13 +1360,11 @@ const fetchProgramMasters = async () => {
   try {
     const response = await apiServices.getMhpcProgramMasters()
     if (response.data && Array.isArray(response.data.results)) {
-      // Common Django Rest Framework structure
       programMasterOptions.value = response.data.results.map((pm) => ({
-        value: pm.id, // Assuming 'id' is the primary key for ProgramMaster
+        value: pm.id,
         label: pm.program_name,
       }))
     } else if (response.data && Array.isArray(response.data)) {
-      // If API returns a direct array
       programMasterOptions.value = response.data.map((pm) => ({
         value: pm.id,
         label: pm.program_name,
@@ -1385,52 +1382,43 @@ const fetchProgramMasters = async () => {
 }
 
 const closeModal = () => {
-  // Add any cleanup or confirmation logic if needed before closing
   emit('update:modelValue', false)
 }
 
 // Lifecycle hooks
 onMounted(() => {
   autoFillForm()
-  fetchProgramMasters() // Fetch program types for dropdown
+  fetchProgramMasters()
 
-  const savedDraft = localStorage.getItem('eoiFormDraft')
-  if (savedDraft) {
-    try {
-      const parsedDraft = JSON.parse(savedDraft)
-      // Preserve auto-filled basic info if draft doesn't have it
-      const basicInfoKeys = ['CID', 'full_name', 'gender', 'contact_no', 'email_address', 'village']
-      basicInfoKeys.forEach((key) => {
-        if (formData.value[key] && !parsedDraft[key]) {
-          // If current formData has it (from autofill) and draft doesn't
-          parsedDraft[key] = formData.value[key]
-        }
-      })
+  const draftKey = getDraftKey()
+  if (draftKey) {
+    const savedDraft = localStorage.getItem(draftKey)
+    if (savedDraft) {
+      try {
+        const parsedDraft = JSON.parse(savedDraft)
+        const basicInfoKeys = ['CID', 'full_name', 'gender', 'contact_no', 'email_address', 'village']
+        basicInfoKeys.forEach((key) => {
+          if (formData.value[key] && !parsedDraft[key]) {
+            parsedDraft[key] = formData.value[key]
+          }
+        })
 
-      Object.keys(parsedDraft).forEach((key) => {
-        if (key === 'supporting_documents_name' && parsedDraft[key]) {
-          // If you stored only the name, you can't restore the File object.
-          // You might display the name and prompt user to re-select if needed.
-          // For now, `formData.supporting_documents` remains null unless re-selected.
-          // You could add a placeholder: formData.value.supporting_documents_display_name = parsedDraft[key];
-        } else if (key !== 'supporting_documents') {
-          // Actual File object can't be restored from JSON
-          formData.value[key] = parsedDraft[key]
-        }
-      })
-      toast.info('Draft loaded.', { timeout: 2000 })
-    } catch (error) {
-      console.error('Error loading draft:', error)
-      clearDraft()
+        Object.keys(parsedDraft).forEach((key) => {
+          if (key !== 'supporting_documents') {
+            formData.value[key] = parsedDraft[key]
+          }
+        })
+        toast.info('Previously saved draft has been loaded.', { timeout: 3000 })
+      } catch (error) {
+        console.error('Error loading draft:', error)
+        clearDraft()
+      }
     }
   }
-  // Optionally, validate after loading draft/autofill if you want to show initial errors
-  // validateForm();
 })
 
 onBeforeUnmount(() => {
   debounceValidateField.cancel()
-  autoSaveDraft.cancel()
 })
 </script>
 

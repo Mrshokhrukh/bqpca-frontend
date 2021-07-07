@@ -51,7 +51,7 @@
         <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
       </div>
       <div v-else-if="!filteredEois.length && !loading" class="text-center py-12 text-gray-500">
-          No applications found matching your criteria.
+        No applications found matching your criteria.
       </div>
       <div v-else class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
@@ -132,28 +132,59 @@
                 <span v-if="institute.physical_verification_remarks">
                   PV Remarks: {{ institute.physical_verification_remarks }}
                 </span>
-                <span v-else-if="institute.review_decision === 'Rejected' && institute.reason_if_rejected">
+                <span
+                  v-else-if="
+                    institute.review_decision === 'Rejected' && institute.reason_if_rejected
+                  "
+                >
                   EOI Rejection: {{ institute.reason_if_rejected }}
                 </span>
-                 <span v-else-if="institute.review_decision === 'Regretted' && institute.reason_if_rejected"> <!-- Assuming Regretted is a form of Rejected -->
+                <span
+                  v-else-if="
+                    institute.review_decision === 'Regretted' && institute.reason_if_rejected
+                  "
+                >
+                  <!-- Assuming Regretted is a form of Rejected -->
                   EOI Rejection: {{ institute.reason_if_rejected }}
                 </span>
                 <span v-else-if="institute.review_decision === 'Approved' && institute.remarks">
                   EOI Approval: {{ institute.remarks }}
                 </span>
-                <span v-else-if="institute.do_dpr_review_decision === 'Approved' && institute.do_dpr_review_summary">
+                <span
+                  v-else-if="
+                    institute.do_dpr_review_decision === 'Approved' &&
+                    institute.do_dpr_review_summary
+                  "
+                >
                   DPR Approval: {{ institute.do_dpr_review_summary }}
                 </span>
-                <span v-else-if="institute.do_dpr_review_decision === 'Rejected' && institute.do_dpr_reason_if_rejected">
+                <span
+                  v-else-if="
+                    institute.do_dpr_review_decision === 'Rejected' &&
+                    institute.do_dpr_reason_if_rejected
+                  "
+                >
                   DPR Rejection: {{ institute.do_dpr_reason_if_rejected }}
                 </span>
-                <span v-else-if="institute.do_dpr_review_decision === 'Regretted' && institute.do_dpr_reason_if_rejected"> <!-- Assuming Regretted is a form of Rejected -->
+                <span
+                  v-else-if="
+                    institute.do_dpr_review_decision === 'Regretted' &&
+                    institute.do_dpr_reason_if_rejected
+                  "
+                >
+                  <!-- Assuming Regretted is a form of Rejected -->
                   DPR Rejection: {{ institute.do_dpr_reason_if_rejected }}
                 </span>
-                <span v-else-if="institute.application_status === 'EOI Approved' && institute.remarks">
+                <span
+                  v-else-if="institute.application_status === 'EOI Approved' && institute.remarks"
+                >
                   EOI Approved: {{ institute.remarks }}
                 </span>
-                <span v-else-if="institute.application_status === 'EOI Rejected' && institute.reason_if_rejected">
+                <span
+                  v-else-if="
+                    institute.application_status === 'EOI Rejected' && institute.reason_if_rejected
+                  "
+                >
                   EOI Rejected: {{ institute.reason_if_rejected }}
                 </span>
                 <span v-else>N/A</span>
@@ -195,21 +226,21 @@ const fetchInstitutes = async () => {
   try {
     const response = await apiService.getMhpcInstitutes() // Ensure this API endpoint exists and works
     if (response && response.data && Array.isArray(response.data.results)) {
-      institutes.value = response.data.results.map(item => ({
+      institutes.value = response.data.results.map((item) => ({
         ...item,
         // Ensure 'id' exists or use CID as id if unique and suitable.
         // The key in v-for (:key="institute.id") relies on this.
         // If your API returns 'id', this is fine. If not, use 'CID'.
-        id: item.id || item.CID
-      }));
+        id: item.id || item.CID,
+      }))
     } else {
       console.error('Invalid API response structure:', response)
-      institutes.value = [];
+      institutes.value = []
       toast.error('Failed to fetch applications: Invalid API response.')
     }
   } catch (error) {
     console.error('Error fetching institutes:', error)
-    institutes.value = [];
+    institutes.value = []
     toast.error(`Failed to fetch applications: ${error.message || 'Unknown error'}`)
   } finally {
     loading.value = false
@@ -219,8 +250,8 @@ const fetchInstitutes = async () => {
 onMounted(fetchInstitutes)
 
 const openModal = (institute) => {
-  selectedInstitute.value = JSON.parse(JSON.stringify(institute));
-  modalKey.value++;
+  selectedInstitute.value = JSON.parse(JSON.stringify(institute))
+  modalKey.value++
   isModalOpen.value = true
 }
 
@@ -232,31 +263,34 @@ const closeModal = () => {
 const handleApplicationUpdated = (updatedApplicationData) => {
   const applicationToUpdate = {
     ...updatedApplicationData,
-    id: updatedApplicationData.id || updatedApplicationData.CID
-  };
+    id: updatedApplicationData.id || updatedApplicationData.CID,
+  }
 
   if (!applicationToUpdate || typeof applicationToUpdate.id === 'undefined') {
-    console.error('Received invalid updatedApplication data:', updatedApplicationData);
-    toast.error('Update failed: Invalid data from server.');
-    fetchInstitutes();
-    return;
+    console.error('Received invalid updatedApplication data:', updatedApplicationData)
+    toast.error('Update failed: Invalid data from server.')
+    fetchInstitutes()
+    return
   }
 
-  const index = institutes.value.findIndex(inst => inst.id === applicationToUpdate.id);
+  const index = institutes.value.findIndex((inst) => inst.id === applicationToUpdate.id)
 
   if (index !== -1) {
-    institutes.value.splice(index, 1, JSON.parse(JSON.stringify(applicationToUpdate)));
-    toast.success(`Application ${applicationToUpdate.CID} updated successfully!`);
-    if (isModalOpen.value && selectedInstitute.value && selectedInstitute.value.id === applicationToUpdate.id) {
-       selectedInstitute.value = JSON.parse(JSON.stringify(applicationToUpdate));
-       modalKey.value++;
+    institutes.value.splice(index, 1, JSON.parse(JSON.stringify(applicationToUpdate)))
+    toast.success(`Application ${applicationToUpdate.CID} updated successfully!`)
+    if (
+      isModalOpen.value &&
+      selectedInstitute.value &&
+      selectedInstitute.value.id === applicationToUpdate.id
+    ) {
+      selectedInstitute.value = JSON.parse(JSON.stringify(applicationToUpdate))
+      modalKey.value++
     }
   } else {
-    console.warn(`Updated application ID ${applicationToUpdate.id} not found. Refreshing list.`);
-    fetchInstitutes();
+    console.warn(`Updated application ID ${applicationToUpdate.id} not found. Refreshing list.`)
+    fetchInstitutes()
   }
 }
-
 
 const filteredEois = computed(() => {
   const query = searchQuery.value.toLowerCase().trim()
@@ -267,7 +301,7 @@ const filteredEois = computed(() => {
     const appIDCID = String(institute.CID || '').toLowerCase()
     const instituteName = String(institute.name_of_institution || '').toLowerCase()
     const programName = String(institute.program_type?.program_name || '').toLowerCase()
-    const statusText = String(institute.application_status || '').toLowerCase(); // Search by raw status
+    const statusText = String(institute.application_status || '').toLowerCase() // Search by raw status
 
     return (
       appIDCID.includes(query) ||
@@ -279,62 +313,78 @@ const filteredEois = computed(() => {
 })
 
 const formatDate = (dateString) => {
-  if (!dateString) return 'N/A';
+  if (!dateString) return 'N/A'
   try {
-    const date = new Date(dateString);
+    const date = new Date(dateString)
     if (isNaN(date.getTime())) {
-      const parts = dateString.split('-');
+      const parts = dateString.split('-')
       if (parts.length === 3) {
-        const parsedDate = new Date(parts[0], parts[1] - 1, parts[2]);
+        const parsedDate = new Date(parts[0], parts[1] - 1, parts[2])
         if (!isNaN(parsedDate.getTime())) {
           return parsedDate.toLocaleDateString('en-US', {
-            year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC'
-          });
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            timeZone: 'UTC',
+          })
         }
       }
-      return 'Invalid Date';
+      return 'Invalid Date'
     }
     return date.toLocaleDateString('en-US', {
-      year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC'
-    });
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      timeZone: 'UTC',
+    })
   } catch (error) {
-    console.error('Error formatting date:', error);
-    return 'Invalid Date';
+    console.error('Error formatting date:', error)
+    return 'Invalid Date'
   }
 }
 
 // MODIFIED: getStatusInfo to return both text and classes
 const getStatusInfo = (institute) => {
-  const appStatus = institute.application_status;
-  const isPVComplete = institute.is_physical_verification;
-  let displayText = appStatus || 'N/A';
-  let cssClasses = 'bg-yellow-100 text-yellow-800'; // Default
+  const appStatus = institute.application_status
+  const isPVComplete = institute.is_physical_verification
+  let displayText = appStatus || 'N/A'
+  let cssClasses = 'bg-yellow-100 text-yellow-800' // Default
 
   if (appStatus === 'EOI Pending Physical Verification') {
     if (isPVComplete) {
-      displayText = 'Physical Verification Completed';
-      cssClasses = 'bg-teal-100 text-teal-800'; // Teal for PV Completed
+      displayText = 'Physical Verification Completed'
+      cssClasses = 'bg-teal-100 text-teal-800' // Teal for PV Completed
     } else {
-      displayText = 'Pending Physical Verification';
-      cssClasses = 'bg-yellow-100 text-yellow-800'; // Yellow for PV Pending
+      displayText = 'Pending Physical Verification'
+      cssClasses = 'bg-yellow-100 text-yellow-800' // Yellow for PV Pending
     }
   } else if (appStatus === 'EOI Approved' || appStatus === 'Fully Approved') {
-    displayText = appStatus; // Or simply 'Approved'
-    cssClasses = 'bg-green-100 text-green-800';
-  } else if (appStatus === 'EOI Rejected' || appStatus === 'DPR Rejected' || appStatus === 'Final Rejected') {
-    displayText = appStatus; // Or simply 'Rejected' / 'Regretted'
-    cssClasses = 'bg-red-100 text-red-800';
-  } else if (appStatus === 'EOI Submitted' || appStatus === 'EOI Pending Review' || appStatus === 'DPR Submitted' || appStatus === 'DPR Pending Review' || appStatus === 'Payment Pending' ) {
-    displayText = appStatus;
-    cssClasses = 'bg-yellow-100 text-yellow-800';
+    displayText = appStatus // Or simply 'Approved'
+    cssClasses = 'bg-green-100 text-green-800'
+  } else if (
+    appStatus === 'EOI Rejected' ||
+    appStatus === 'DPR Rejected' ||
+    appStatus === 'Final Rejected'
+  ) {
+    displayText = appStatus // Or simply 'Rejected' / 'Regretted'
+    cssClasses = 'bg-red-100 text-red-800'
+  } else if (
+    appStatus === 'EOI Submitted' ||
+    appStatus === 'EOI Pending Review' ||
+    appStatus === 'DPR Submitted' ||
+    appStatus === 'DPR Pending Review' ||
+    appStatus === 'Payment Pending'
+  ) {
+    displayText = appStatus
+    cssClasses = 'bg-yellow-100 text-yellow-800'
   }
   // Add more conditions for other statuses as needed
 
   return {
     displayText: displayText,
     cssClasses: ['px-3 py-1 rounded-full text-xs font-medium inline-block', cssClasses],
-  };
-};
+  }
+}
 </script>
 
 <style scoped>

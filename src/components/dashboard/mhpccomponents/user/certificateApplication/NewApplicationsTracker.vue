@@ -449,12 +449,11 @@ const getPaymentButtonText = (application, qualification) => {
   border-radius: 0.5rem; /* Match button's rounded-lg */
 }
 
+/* autoprefixer: off */
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
-  /* autoprefixer: off */
   -webkit-box-orient: vertical;
-  /* autoprefixer: on */
   overflow: hidden;
 }
 </style>
