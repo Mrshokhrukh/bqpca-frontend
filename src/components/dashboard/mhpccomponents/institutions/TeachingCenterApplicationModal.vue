@@ -271,7 +271,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, computed, defineProps, defineEmits } from 'vue'
+import { ref, watch, onMounted, computed } from 'vue'
 import apiServices from '@/services/services'
 
 import PaymentModal from '@/components/common/PaymentModal.vue'

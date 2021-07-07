@@ -101,7 +101,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, defineProps, defineEmits } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import apiServices from '@/services/services'; // Ensure this path is correct
 import { useToast } from 'vue-toastification';
 

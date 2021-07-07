@@ -396,45 +396,47 @@
                       <X class="h-4 w-4 mr-1.5" /> Close
                     </button>
 
-                    <template v-if="!isEditing && !isEditingPhysicalVerification">
-                       <button
-                        v-if="modalStatusInfo.displayText === 'Pending' || modalStatusInfo.displayText === 'Pending Physical Verification' || modalStatusInfo.displayText === 'Physical Verification Completed'"
-                        type="button"
-                        class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg shadow-sm hover:bg-blue-700"
-                        @click="startEditing"
-                        :disabled="isSaving"
+                    <template v-if="!isEditing && !isEditingPhysicalVerification && !isEoiWorkflowFinalized">
+                      <!-- Edit Application button -->
+                      <button
+                          type="button"
+                          class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg shadow-sm hover:bg-blue-700"
+                          @click="startEditing"
+                          :disabled="isSaving"
                       >
-                        <Pencil class="h-4 w-4 mr-1.5" /> Edit Application
+                          <Pencil class="h-4 w-4 mr-1.5" /> Edit Application
                       </button>
 
+                      <!-- Regret EOI button -->
                       <button
-                        v-if="modalStatusInfo.displayText === 'Pending Physical Verification' || modalStatusInfo.displayText === 'Physical Verification Completed'"
-                        type="button"
-                        class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg shadow-sm hover:bg-red-700"
-                        @click="openPromptDialog('rejectEOI')"
-                        :disabled="isSaving"
+                          type="button"
+                          class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg shadow-sm hover:bg-red-700"
+                          @click="openPromptDialog('rejectEOI')"
+                          :disabled="isSaving"
                       >
-                        <Ban class="h-4 w-4 mr-1.5" /> Regret EOI
+                          <Ban class="h-4 w-4 mr-1.5" /> Regret EOI
                       </button>
 
+                      <!-- Approve for Verification button -->
                       <button
-                        v-if="modalStatusInfo.displayText === 'Pending'"
-                        type="button"
-                        class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg shadow-sm hover:bg-green-700"
-                        @click="openPromptDialog('approveToVerify')"
-                        :disabled="isSaving"
+                          v-if="application.application_status === 'EOI Submitted' || application.application_status === 'EOI Pending Review'"
+                          type="button"
+                          class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg shadow-sm hover:bg-green-700"
+                          @click="openPromptDialog('approveToVerify')"
+                          :disabled="isSaving"
                       >
-                         <ClipboardCheck class="h-4 w-4 mr-1.5" /> Approve for Verification
+                          <ClipboardCheck class="h-4 w-4 mr-1.5" /> Approve for Verification
                       </button>
 
+                      <!-- Finalize EOI Approval button -->
                       <button
-                        v-if="modalStatusInfo.displayText === 'Physical Verification Completed'"
-                        type="button"
-                        class="px-4 py-2 text-sm font-medium text-white bg-teal-600 rounded-lg shadow-sm hover:bg-teal-700"
-                        @click="openPromptDialog('finalEOIApprove')"
-                        :disabled="isSaving"
+                          v-if="application.application_status === 'EOI Pending Physical Verification' && application.is_physical_verification"
+                          type="button"
+                          class="px-4 py-2 text-sm font-medium text-white bg-teal-600 rounded-lg shadow-sm hover:bg-teal-700"
+                          @click="openPromptDialog('finalEOIApprove')"
+                          :disabled="isSaving"
                       >
-                        <CheckCircle class="h-4 w-4 mr-1.5" /> Finalize EOI Approval
+                          <CheckCircle class="h-4 w-4 mr-1.5" /> Finalize EOI Approval
                       </button>
                     </template>
 
@@ -605,6 +607,16 @@ const promptConfirmButtonClass = computed(() => {
     case 'finalEOIApprove': return `${baseClass} bg-teal-600 hover:bg-teal-700 focus:ring-teal-500`;
     default: return `${baseClass} bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500`;
   }
+});
+
+const isEoiWorkflowFinalized = computed(() => {
+  if (!props.application?.application_status) return true;
+  const status = props.application.application_status;
+  const finalizedStatuses = [
+    'EOI Approved', 'EOI Rejected', 'DPR Submitted', 'DPR Pending Review',
+    'DPR Approved', 'DPR Rejected', 'Payment Pending', 'Fully Approved', 'Final Rejected'
+  ];
+  return finalizedStatuses.includes(status);
 });
 // --- End Prompt Dialog Computed Properties ---
 

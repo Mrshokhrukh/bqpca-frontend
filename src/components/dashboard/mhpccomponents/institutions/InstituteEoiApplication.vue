@@ -802,7 +802,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, reactive, defineProps, defineEmits } from 'vue'
+import { ref, onMounted, onBeforeUnmount, reactive } from 'vue'
 
 import { useToast } from 'vue-toastification'
 import { useAuthStore } from '@/stores/authStore'

@@ -49,7 +49,7 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, ref } from 'vue'
+import { ref } from 'vue'
 import html2pdf from 'html2pdf.js'
 
 const props = defineProps({
