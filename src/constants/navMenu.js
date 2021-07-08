@@ -991,13 +991,14 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/institute_reports`,
           },
           {
-            name: 'CPD Reports',
-            route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_reports`,
-          },
-          {
             name: 'Teacching Hospital Reports',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/teaching_hospital_reports`,
           },
+          {
+            name: 'CPD Reports',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/cpd_reports`,
+          },
+
           {
             name: 'Cogs Reports',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/cogs_reports`,
@@ -1651,7 +1652,22 @@ const serviceSpecificMenuItems = {
           {
             name: 'Submit ISAR Report',
             icon: getIconComponent('FilePlus'),
-            route: (serviceType) => `/admin/user/${serviceType}/isar_report`,
+            route: (serviceType) => `/admin/user/${serviceType}/submit_isar_report`,
+          },
+          {
+            name: 'Track ISAR Report',
+            icon: getIconComponent('FilePlus'),
+            route: (serviceType) => `/admin/user/${serviceType}/track_isar_reports`,
+          },
+          {
+            name: 'CoI Confirmation',
+            icon: getIconComponent('CheckSquare'),
+            route: (serviceType) => `/admin/user/${serviceType}/coi_confirmation`,
+          },
+          {
+            name: 'Site Visit',
+            icon: getIconComponent('Building2'),
+            route: (serviceType) => `/admin/user/${serviceType}/site_visit_confirmation`,
           },
         ],
       },
@@ -1660,16 +1676,7 @@ const serviceSpecificMenuItems = {
         icon: getIconComponent('History'),
         route: (serviceType) => `/admin/user/${serviceType}/appeal`,
       },
-      {
-        name: 'CoI Confirmation',
-        icon: getIconComponent('CheckSquare'),
-        route: (serviceType) => `/admin/user/${serviceType}/coi_confirmation`,
-      },
-      {
-        name: 'Site Visit',
-        icon: getIconComponent('Building2'),
-        route: (serviceType) => `/admin/user/${serviceType}/site_visit_confirmation`,
-      },
+
       {
         name: 'Track Applications',
         icon: getIconComponent('FileSearch'),

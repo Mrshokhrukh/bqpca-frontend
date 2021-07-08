@@ -250,7 +250,7 @@ const confirmModal = ref({
   show: false,
   title: '',
   message: '',
-  action: '', // 'approve', 'reject', 'submit-verification'
+  action: '', // 'approve', 'reject', 'submit-verification'a
   centerId: null,
   payload: null, // Data to be sent with the action (e.g., rejection reason, verification details)
   buttonText: 'Confirm',

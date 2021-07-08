@@ -117,8 +117,10 @@
 
       <!-- Recent Activities -->
       <div class="bg-white rounded-xl shadow-sm border border-gray-100">
-        <div class="p-6">
+        <div class="p-6 flex justify-between items-center">
           <h2 class="text-lg font-semibold text-gray-900">Recent Activities</h2>
+          <router-link to="/admin/user/accreditation/track-accreditation" class="text-sm text-blue-600 hover:underline">View All Applications</router-link>
+          <router-link to="/admin/user/accreditation/track_isar_reports" class="text-sm text-blue-600 hover:underline">Track ISAR Reports</router-link>
         </div>
         <div class="border-t border-gray-100">
           <ul class="divide-y divide-gray-100">

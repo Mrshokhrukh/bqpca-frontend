@@ -1058,4 +1058,9 @@ export default {
   getInstituteReport(params = {}) {
     return apiClient.get('/mhpc/reports/institutes/', { params });
 },
+getTeachingHospitalReport(params = {}) {
+  return apiClient.get('/mhpc/reports/teaching-hospitals/', { params });
+
+},
+
 }

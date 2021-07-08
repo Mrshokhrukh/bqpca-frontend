@@ -153,7 +153,8 @@ export default {
       results: accredDashboard,
       profile: accredDashboard,
       institute_profile: accredDashboard,
-      isar_report: accredDashboard,
+      submit_isar_report: accredDashboard,
+      track_isar_reports: accredDashboard,
       track_accreditation: accredDashboard,
     },
     engineering_certification: {

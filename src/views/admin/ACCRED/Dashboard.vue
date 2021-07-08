@@ -65,7 +65,7 @@ import EmployeeCategoryMaster from '@/components/dashboard/accredcomponent/admin
 import EmployeeTypeMaster from '@/components/dashboard/accredcomponent/admin/masters/EmployeeTypeMaster.vue'
 import FeesMaster from '@/components/dashboard/accredcomponent/admin/masters/FeesMaster.vue'
 import IndicatorsMaster from '@/components/dashboard/accredcomponent/admin/masters/IndicatorsMaster.vue'
-import InstituteMaster from '@/components/dashboard/accredcomponent/admin/masters/InstituteMaster.vue'
+import InstituteTypeMaster from '@/components/dashboard/accredcomponent/admin/masters/InstituteTypeMaster.vue'
 import KeyAspectsMaster from '@/components/dashboard/accredcomponent/admin/masters/KeyAspectsMaster.vue'
 import QualificationMaster from '@/components/dashboard/accredcomponent/admin/masters/QualificationMaster.vue'
 import RatingCategoryMaster from '@/components/dashboard/accredcomponent/admin/masters/RatingCategoryMaster.vue'
@@ -83,8 +83,9 @@ import AccreUserProfile from '@/components/dashboard/accredcomponent/users/Accre
 import CoIConfirmation from '@/components/dashboard/accredcomponent/users/CoIConfirmation.vue'
 import SiteVisitConfirmation from '@/components/dashboard/accredcomponent/users/SiteVisitConfirmation.vue'
 import CreateInstituteProfile from '@/components/dashboard/accredcomponent/users/CreateInstituteProfile.vue'
-import IsarReport from '@/components/dashboard/accredcomponent/users/IsarReport.vue'
-import TrackAccreditation from '@/components/dashboard/accredcomponent/users/TrackAccreditation.vue'
+import SubmitIsarReport from '@/components/dashboard/accredcomponent/users/SubmitIsarReport.vue';
+import TrackIsarReports from '@/components/dashboard/accredcomponent/users/TrackIsarReports.vue';
+import TrackAccreditation from '@/components/dashboard/accredcomponent/users/TrackAccreditation.vue';
 
 // Import Dealing Officer Components
 import AccreDealingdashboard from '@/components/dashboard/accredcomponent/dealingOfficer/AccreDealingdashboard.vue'
@@ -141,7 +142,7 @@ const adminComponent = computed(() => {
         employee_type: EmployeeTypeMaster,
         fees: FeesMaster,
         indicators: IndicatorsMaster,
-        institute: InstituteMaster,
+        'institute-types': InstituteTypeMaster,
         key_aspects: KeyAspectsMaster,
         qualification: QualificationMaster,
         document: DocumentType,
@@ -254,10 +255,12 @@ const userComponent = computed(() => {
       return SiteVisitConfirmation
     case path.endsWith('/accreditation/institute_profile'):
       return CreateInstituteProfile
-    case path.endsWith('/accreditation/isar_report'):
-      return IsarReport
+    case path.endsWith('/accreditation/submit_isar_report'):
+      return SubmitIsarReport
+    case path.endsWith('/accreditation/track_isar_reports'):
+      return TrackIsarReports
     case path.endsWith('/accreditation/track_accreditation'):
-      return TrackAccreditation 
+      return TrackAccreditation
     default:
       return null
   }

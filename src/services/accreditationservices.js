@@ -115,36 +115,44 @@
     deleteApplicationDocument(id) {
       return apiClient.delete(`/accreditations/application-documents/${id}/`);
     },
-
+    approveApplicationForIsar(applicationId) {
+      return apiClient.post(`/accreditations/accreditation-applications/${applicationId}/approve-for-isar/`);
+  },
     // ISAR Reports endpoints
-    getIsarReports(applicationId) {
-      return apiClient.get(`/accreditations/isar-reports/?application=${applicationId}`);
+    getIsarReports(params = {}) {
+      // Or no filters at all, to get all reports for the user.
+      return apiClient.get('/accreditations/isar-reports/', { params });
     },
     createIsarReport(data) {
+      // This is correct, no changes needed.
       return apiClient.post('/accreditations/isar-reports/', data, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
     },
     getIsarReport(id) {
+      // This is correct, no changes needed.
       return apiClient.get(`/accreditations/isar-reports/${id}/`);
     },
     updateIsarReport(id, data) {
+      // This is correct, useful for saving drafts.
       return apiClient.put(`/accreditations/isar-reports/${id}/`, data, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
     },
     patchIsarReport(id, data) {
+      // This is correct, useful for saving drafts.
       return apiClient.patch(`/accreditations/isar-reports/${id}/`, data, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
     },
     deleteIsarReport(id) {
+      // This is correct, no changes needed.
       return apiClient.delete(`/accreditations/isar-reports/${id}/`);
     },
     submitIsarReport(id) {
+      // This is PERFECT. It correctly calls the @action we created.
       return apiClient.post(`/accreditations/isar-reports/${id}/submit-isar/`);
     },
-
     // ISAR Standard Documents endpoints
     getIsarStandardDocuments(isarReportId) {
       return apiClient.get(`/accreditations/isar-standard-documents/?isar_report=${isarReportId}`);
@@ -170,6 +178,7 @@
     deleteIsarStandardDocument(id) {
       return apiClient.delete(`/accreditations/isar-standard-documents/${id}/`);
     },
+
 
     // Application Assessor COIs endpoints
     getApplicationAssessorCOIs() {
@@ -318,22 +327,22 @@
 
     // Masters Institute Types endpoints
     getMastersInstituteTypes() {
-      return apiClient.get('/accreditations/masters-institute/');
+      return apiClient.get('/accreditations/institute-types/'); // <--- CORRECT URL
     },
     createMastersInstituteType(data) {
-      return apiClient.post('/accreditations/masters-institute/', data);
+      return apiClient.post('/accreditations/institute-types/', data); // <--- CORRECT URL
     },
     getMastersInstituteType(id) {
-      return apiClient.get(`/accreditations/masters-institute/${id}/`);
+      return apiClient.get(`/accreditations/institute-types/${id}/`); // <--- CORRECT URL
     },
     updateMastersInstituteType(id, data) {
-      return apiClient.put(`/accreditations/masters-institute/${id}/`, data);
+      return apiClient.put(`/accreditations/institute-types/${id}/`, data); // <--- CORRECT URL
     },
     patchMastersInstituteType(id, data) {
-      return apiClient.patch(`/accreditations/masters-institute/${id}/`, data);
+      return apiClient.patch(`/accreditations/institute-types/${id}/`, data); // <--- CORRECT URL
     },
     deleteMastersInstituteType(id) {
-      return apiClient.delete(`/accreditations/masters-institute/${id}/`);
+      return apiClient.delete(`/accreditations/institute-types/${id}/`); // <--- CORRECT URL
     },
 
     // Masters Appeal Reasons endpoints
@@ -656,7 +665,7 @@
           endpoint = '/accreditations/masters-fee/';
           break;
         case 'institute-types':
-          endpoint = '/accreditations/masters-institute/';
+          endpoint = '/accreditations/institute-types/';
           break;
         case 'appeal-reasons':
           endpoint = '/accreditations/masters-appeal-reason/';
