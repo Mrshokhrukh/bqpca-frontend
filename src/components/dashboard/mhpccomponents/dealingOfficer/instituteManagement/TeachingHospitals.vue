@@ -89,6 +89,7 @@
               <th scope="col" class="table-th">Target Category</th>
               <th scope="col" class="table-th">Applied On</th>
               <th scope="col" class="table-th">Status</th>
+              <th scope="col" class="table-th">Payment Status</th>
               <th scope="col" class="table-th">Actions</th>
             </tr>
           </thead>
@@ -116,6 +117,14 @@
                   :class="getStatusClass(center.tc_review_decision)"
                 >
                   {{ formatStatusText(center.tc_review_decision) }}
+                </span>
+              </td>
+              <td class="table-td">
+                <span
+                  class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
+                  :class="getPaymentStatusClass(center.payment_status)"
+                >
+                  {{ formatPaymentStatusText(center.payment_status) }}
                 </span>
               </td>
               <td class="table-td">
@@ -337,6 +346,20 @@ const formatStatusText = (statusKey) => {
   return String(statusKey).replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 };
 
+const getPaymentStatusClass = (statusKey) => {
+  const status = String(statusKey).toLowerCase();
+  if (status === 'paid') return 'bg-green-100 text-green-800';
+  if (status === 'awaiting_payment') return 'bg-purple-100 text-purple-800';
+  if (status === 'processing_payment') return 'bg-blue-100 text-blue-800';
+  if (status === 'failed') return 'bg-red-100 text-red-800';
+  return 'bg-gray-100 text-gray-800'; // For 'not_paid' or 'not_applicable'
+};
+
+const formatPaymentStatusText = (statusKey) => {
+  if (!statusKey) return 'N/A';
+  return String(statusKey).replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+};
+
 const openApplicationModal = (application) => {
   console.log("Opening modal for application:", JSON.parse(JSON.stringify(application)));
   selectedApplication.value = { ...application }; // Create a copy to avoid direct mutation if needed
@@ -430,48 +453,33 @@ const confirmAction = async () => {
         break;
 
       case 'submit-verification':
-        // =========================================================================
-        // CRITICAL: Handle file uploads using FormData
-        // =========================================================================
-        // Your apiServices.patchMhpcTeachingCenter must be able to handle both
-        // a JSON object and a FormData object.
+        const formData = new FormData();
+        formData.append('physical_verification_status', payload.verificationStatus);
+        formData.append('physical_verification_remarks', payload.verificationReport);
+        formData.append('send_to_user', payload.sendToUser);
 
-        const hasFiles = payload.officer_report || (payload.officer_attachments && payload.officer_attachments.length > 0);
-
-        if (hasFiles) {
-          // If there are files, we MUST use FormData
-          const formData = new FormData();
-          formData.append('physical_verification_date', payload.verificationDate || '');
-          formData.append('physical_verification_remarks', payload.verificationReport);
-          formData.append('physical_verification_status', payload.verificationStatus);
-          formData.append('send_to_user', payload.sendToUser);
-
-          // Append files. NOTE: The backend field names ('tc_report', 'tc_attachments') are placeholders.
-          // You might need different field names for officer uploads.
-          if (payload.officer_report) {
-            formData.append('tc_report', payload.officer_report); // Assumes you overwrite or have logic for officer's report
-          }
-          if (payload.officer_attachments) {
-            for (const file of payload.officer_attachments) {
-              formData.append('tc_attachments', file); // Assumes you can append multiple files to this field
-            }
-          }
-
-          console.log("PATCHING with FormData:", formData);
-          apiCall = apiServices.patchMhpcTeachingCenter(centerId, formData);
-
-        } else {
-          // If no files, we can send standard JSON
-          const updateData = {
-            physical_verification_date: payload.verificationDate || null,
-            physical_verification_remarks: payload.verificationReport,
-            physical_verification_status: payload.verificationStatus,
-            send_to_user: payload.sendToUser,
-          };
-          console.log("PATCHING with JSON:", updateData);
-          apiCall = apiServices.patchMhpcTeachingCenter(centerId, updateData);
+        // Conditionally add dates if they are not null/empty
+        if (payload.siteVisitScheduleDate) {
+          formData.append('site_visit_schedule_date', payload.siteVisitScheduleDate);
+        }
+        if (payload.actualVerificationDate) {
+          formData.append('physical_verification_date', payload.actualVerificationDate);
         }
 
+        // Append officer attachments
+        if (payload.officer_attachments && payload.officer_attachments.length > 0) {
+          for (const file of payload.officer_attachments) {
+            formData.append('officer_attachments', file);
+          }
+        }
+
+        // Append officer report if it exists
+        if (payload.officer_report) {
+          formData.append('tc_report', payload.officer_report);
+        }
+
+        console.log("PATCHING with FormData:", formData);
+        apiCall = apiServices.patchMhpcTeachingCenter(centerId, formData);
         successMessage = 'Verification details updated successfully.';
         break;
 

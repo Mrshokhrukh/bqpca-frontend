@@ -740,6 +740,9 @@ export default {
   getMhpcTeachingCenters() {
     return apiClient.get('/mhpc/mhpc-teaching-centers/')
   },
+  getMhpcTeachingCenterByCid(cid) {
+    return apiClient.get(`/mhpc/mhpc-teaching-centers/?cid=${cid}/`)
+  },
   createMhpcTeachingCenter(data) {
     return apiClient.post('/mhpc/mhpc-teaching-centers/', data)
   },

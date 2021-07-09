@@ -93,16 +93,26 @@
                      </div>
                    </div>
 
-                  <div v-if="hospitalDetails.physical_verification_date" class="mb-6 p-4 bg-blue-50 border-l-4 border-blue-500 rounded-r-lg">
+                  <div v-if="hospitalDetails.physical_verification_status && hospitalDetails.physical_verification_status !== 'PENDING_PV'" class="mb-6 p-4 bg-blue-50 border-l-4 border-blue-500 rounded-r-lg">
                      <div class="flex items-start">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600 mt-0.5 mr-3" fill="currentColor" viewBox="0 0 20 20">
                           <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                         </svg>
                         <div>
                           <h5 class="font-semibold text-blue-800">Physical Verification Recorded</h5>
-                          <p class="text-blue-700 text-sm mt-1">Date: {{ formatDate(hospitalDetails.physical_verification_date) }}</p>
+                          <p v-if="hospitalDetails.site_visit_schedule_date" class="text-blue-700 text-sm mt-1">Scheduled Date: {{ formatDate(hospitalDetails.site_visit_schedule_date) }}</p>
+                          <p v-if="hospitalDetails.physical_verification_date" class="text-blue-700 text-sm mt-1">Actual Date: {{ formatDate(hospitalDetails.physical_verification_date) }}</p>
                           <p class="text-blue-700 text-sm">Status: {{ formattedVerificationStatus(hospitalDetails.physical_verification_status) }}</p>
                           <p class="text-blue-700 text-sm">Remarks: {{ hospitalDetails.physical_verification_remarks || 'N/A' }}</p>
+                          <div v-if="hospitalDetails.officer_uploaded_files && hospitalDetails.officer_uploaded_files.length > 0" class="mt-2">
+                            <h6 class="font-semibold text-blue-800 text-sm">Officer Uploaded Files:</h6>
+                            <ul class="list-disc list-inside text-blue-700 text-sm">
+                              <li v-for="file in hospitalDetails.officer_uploaded_files" :key="file.id">
+                                <a :href="file.file_url" target="_blank" class="text-blue-600 hover:underline">{{ file.description || getFileNameFromUrl(file.file_url) }}</a>
+                                (Uploaded by: {{ file.uploaded_by_name || 'N/A' }} on {{ formatDate(file.uploaded_at) }})
+                              </li>
+                            </ul>
+                          </div>
                         </div>
                     </div>
                   </div>
@@ -126,11 +136,17 @@
                             <option value="NOT_REQUIRED_PV">Not Required</option>
                           </select>
                         </div>
-                        <div>
-                          <label for="verificationDate" class="block text-sm font-semibold text-blue-700 mb-2">
-                            Verification Date
+                        <div v-if="localVerificationData.status === 'PENDING_PV'">
+                          <label for="siteVisitScheduleDate" class="block text-sm font-semibold text-blue-700 mb-2">
+                            Site Visit Schedule Date
                           </label>
-                          <input type="date" id="verificationDate" v-model="localVerificationData.date" :min="todayDate()" class="form-input">
+                          <input type="date" id="siteVisitScheduleDate" v-model="localVerificationData.siteVisitScheduleDate" :min="todayDate()" class="form-input">
+                        </div>
+                        <div v-if="localVerificationData.status !== 'PENDING_PV' && localVerificationData.status !== 'NOT_REQUIRED_PV'">
+                          <label for="actualVerificationDate" class="block text-sm font-semibold text-blue-700 mb-2">
+                            Actual Verification Date
+                          </label>
+                          <input type="date" id="actualVerificationDate" v-model="localVerificationData.actualVerificationDate" :max="todayDate()" class="form-input">
                         </div>
                         <div class="lg:col-span-2">
                           <label for="verificationReport" class="block text-sm font-semibold text-blue-700 mb-2">
@@ -140,7 +156,7 @@
                             placeholder="Add scheduling plan, site visit findings, reasons for recommendation/failure, etc."></textarea>
                         </div>
 
-                        <div class="lg:col-span-2 space-y-4 pt-4 border-t border-blue-200">
+                        <div v-if="['IN_PROGRESS_PV', 'VERIFIED_PV', 'NOT_VERIFIED_PV'].includes(localVerificationData.status)" class="lg:col-span-2 space-y-4 pt-4 border-t border-blue-200">
                           <h6 class="text-md font-semibold text-blue-700">Upload Officer's Documents (Optional)</h6>
                           <div>
                             <label for="modal-tcReportFile-do" class="block text-sm font-medium text-blue-700 mb-1">
@@ -170,7 +186,7 @@
                       </div>
 
                       <button type="button" @click="submitVerificationHandler"
-                        :disabled="!localVerificationData.status || !localVerificationData.report.trim()"
+                        :disabled="!localVerificationData.status || !localVerificationData.report.trim() || (localVerificationData.status === 'PENDING_PV' && !localVerificationData.siteVisitScheduleDate) || (localVerificationData.status !== 'PENDING_PV' && localVerificationData.status !== 'NOT_REQUIRED_PV' && !localVerificationData.actualVerificationDate)"
                         class="btn btn-info py-3 px-6 text-sm font-semibold">
                         Save Verification Status
                       </button>
@@ -265,12 +281,14 @@ const props = defineProps({
         tc_attachments: null,
         tc_report: null,
         physical_verification_date: null,
+        site_visit_schedule_date: null,
         physical_verification_remarks: null,
         physical_verification_status: null,
         send_to_user: false,
         tc_reason_if_rejected: null,
         tc_review_decision: null,
         center_name: '',
+        officer_uploaded_files: [], // Initialize as empty array
     }),
   },
 });
@@ -287,7 +305,8 @@ const selectedReportFile = ref(null);  // File
 
 // Ref for all local verification form data
 const localVerificationData = ref({
-  date: '',
+  siteVisitScheduleDate: '',
+  actualVerificationDate: '',
   report: '',
   status: 'PENDING_PV',
   sendToUser: false,
@@ -300,7 +319,8 @@ const actionAttempt = ref(null); // Tracks if user clicked 'Reject' to show the 
 watch(() => props.hospitalDetails, (newDetails) => {
   if (newDetails && props.isOpen) {
     localVerificationData.value = {
-      date: newDetails.physical_verification_date ? new Date(newDetails.physical_verification_date).toISOString().split('T')[0] : '',
+      siteVisitScheduleDate: newDetails.site_visit_schedule_date ? new Date(newDetails.site_visit_schedule_date).toISOString().split('T')[0] : '',
+      actualVerificationDate: newDetails.physical_verification_date ? new Date(newDetails.physical_verification_date).toISOString().split('T')[0] : '',
       report: newDetails.physical_verification_remarks || '',
       status: newDetails.physical_verification_status || 'PENDING_PV',
       sendToUser: newDetails.send_to_user || false,
@@ -346,8 +366,19 @@ const submitVerificationHandler = () => {
     return;
   }
 
+  // Validation for dates based on status
+  if (localVerificationData.value.status === 'PENDING_PV' && !localVerificationData.value.siteVisitScheduleDate) {
+    alert('Site Visit Schedule Date is required for Pending status.');
+    return;
+  }
+  if (['IN_PROGRESS_PV', 'VERIFIED_PV', 'NOT_VERIFIED_PV'].includes(localVerificationData.value.status) && !localVerificationData.value.actualVerificationDate) {
+    alert('Actual Verification Date is required for In Progress, Verified, or Not Verified statuses.');
+    return;
+  }
+
   const payloadToEmit = {
-    verificationDate: localVerificationData.value.date || null, // Send null if date is cleared
+    siteVisitScheduleDate: localVerificationData.value.siteVisitScheduleDate || null,
+    actualVerificationDate: localVerificationData.value.actualVerificationDate || null,
     verificationReport: localVerificationData.value.report,
     verificationStatus: localVerificationData.value.status,
     sendToUser: localVerificationData.value.sendToUser,
@@ -434,6 +465,20 @@ const formattedVerificationStatus = (statusKey) => {
   return statusMap[statusKey] || formattedStatus(statusKey);
 };
 
+const getPaymentStatusClass = (statusKey) => {
+  const status = String(statusKey).toLowerCase();
+  if (status === 'paid') return 'bg-green-100 text-green-800';
+  if (status === 'awaiting_payment') return 'bg-purple-100 text-purple-800';
+  if (status === 'processing_payment') return 'bg-blue-100 text-blue-800';
+  if (status === 'failed') return 'bg-red-100 text-red-800';
+  return 'bg-gray-100 text-gray-800'; // For 'not_paid' or 'not_applicable'
+};
+
+const formatPaymentStatusText = (statusKey) => {
+  if (!statusKey) return 'N/A';
+  return String(statusKey).replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+};
+
 const ensureAbsoluteUrl = (url) => {
     // Your logic to construct full URL for viewing applicant's files
     return url;
@@ -453,7 +498,7 @@ const getFileNameFromUrl = (url) => {
 .whitespace-pre-wrap { white-space: pre-wrap; }
 
 .btn { @apply inline-flex justify-center items-center rounded-md border shadow-sm px-4 py-2 text-base font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 sm:text-sm disabled:opacity-60 disabled:cursor-not-allowed transition-colors duration-150 ease-in-out; }
-.btn-success { @apply border-transparent bg-green-600 text-white hover:bg-green-700 focus:ring-green-500 disabled:bg-green-300; }
+.btn-success { @apply border-transparent bg-green-600 text-white hover:bg-green-700 focus:ring-green-500 disabled:bg-green-300; } 
 .btn-danger { @apply border-transparent bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 disabled:bg-red-300; }
 .btn-info { @apply border-transparent bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 disabled:bg-blue-300; }
 .btn-secondary { @apply border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-indigo-500; }

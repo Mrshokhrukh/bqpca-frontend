@@ -736,20 +736,20 @@ const serviceSpecificMenuItems = {
           return !store.visibleMenus.baseMenus.profile
         },
 
-      },
-      {
+            },
+            {
         name: 'Complaints',
-        icon: getIconComponent('ExclamationCircle'),
+        icon: getIconComponent('AlertTriangle'),
         route: (serviceType) => `/admin/user/${serviceType}/complains`,
-      },
-    ],
-    admin: [
-      {
+            },
+          ],
+          admin: [
+            {
         name: 'Dashboard',
         icon: getIconComponent('LayoutDashboard'),
         route: (serviceType) => `/admin/admin/${serviceType}/dashboard`,
-      },
-      {
+            },
+            {
         name: 'CPD Management',
         icon: getIconComponent('BookOpen'),
         children: [
@@ -766,8 +766,8 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/admin/${serviceType}/cpd_methodologies`,
           },
         ],
-      },
-      {
+            },
+            {
         name: 'Document Management',
         icon: getIconComponent('Folder'),
         children: [
@@ -780,8 +780,8 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/admin/${serviceType}/e_signatures`,
           },
         ],
-      },
-      {
+            },
+            {
         name: 'Fee Management',
         icon: getIconComponent('DollarSign'),
         children: [
@@ -794,8 +794,8 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/admin/${serviceType}/fees_associated_for`,
           },
         ],
-      },
-      {
+            },
+            {
         name: 'Participation',
         icon: getIconComponent('Users2'),
         children: [
@@ -808,8 +808,8 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/admin/${serviceType}/participation_sub_category`,
           },
         ],
-      },
-      {
+            },
+            {
         name: 'Personnel',
         icon: getIconComponent('UserCircle'),
         children: [
@@ -830,8 +830,8 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/admin/${serviceType}/qualification_types`,
           },
         ],
-      },
-      {
+            },
+            {
         name: 'Registration',
         icon: getIconComponent('ClipboardCheck'),
         children: [
@@ -844,13 +844,13 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/admin/${serviceType}/sector`,
           },
         ],
-      },
-      {
+            },
+            {
         name: 'University',
         icon: getIconComponent('GraduationCap'),
         route: (serviceType) => `/admin/admin/${serviceType}/university`,
-      },
-      {
+            },
+            {
         name: 'COGS Management',
         icon: getIconComponent('Award'),
         children: [
@@ -1054,6 +1054,11 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/institutions/${serviceType}/track_dpr`,
 
       },
+      {
+        name: 'Teaching Hospital',
+        icon: getIconComponent('GraduationCap'),
+        route: (serviceType) => `/admin/institutions/${serviceType}/teaching_center_tracking`,
+      },
 
       {
         name: 'Institute Profile',
@@ -1068,11 +1073,6 @@ const serviceSpecificMenuItems = {
             name: 'Institute Renewal',
             icon: getIconComponent('RefreshCw'),
             route: (serviceType) => `/admin/institutions/${serviceType}/institutes_renewal`,
-          },
-          {
-            name: 'Teaching Hospital',
-            icon: getIconComponent('RefreshCw'),
-            route: (serviceType) => `/admin/institutions/${serviceType}/teaching_center_tracking`,
           },
 
           {

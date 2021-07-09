@@ -65,7 +65,7 @@
                           Proponent Details
                         </h3>
                         <p class="text-slate-500 mt-0.5 text-xs">
-                          Information about the Teaching Hospital
+                          Information about the Institute
                         </p>
                       </div>
                     </div>
@@ -73,7 +73,7 @@
                   <div class="p-6 grid grid-cols-1 lg:grid-cols-2 gap-x-6 gap-y-4">
                     <div class="lg:col-span-2">
                       <label for="modal-trainingInstituteName" class="form-label required-label">
-                        Teaching Hospital Name
+                        Institute Name
                       </label>
                       <div class="relative">
                         <select
@@ -344,18 +344,24 @@ watch(() => formData.value.state_dzongkhag, (newDzongkhag) => {
 const fetchInstituteOptions = async () => {
   isLoadingOptions.value = true
   try {
-      const institutesResponse = await apiServices.getMhpcInstitutes()
+      const institutesResponse = await apiServices.getMhpcInstituteByCid(authStore.user.cid)
       const institutesArray = institutesResponse.data?.results || institutesResponse.data || []
 
       if (!Array.isArray(institutesArray)) {
         console.error('Error fetching institute options: Expected an array but received:', institutesArray);
         instituteOptions.value = [];
+      } else if (institutesArray.length === 0) {
+        instituteOptions.value = [{ value: '', label: 'No institute found for your user ID', disabled: true }];
       } else {
         instituteOptions.value = institutesArray.map((institute) => ({
             value: institute.id,
             label: institute.name_of_institution,
             data: institute,
         }));
+        // Automatically select the institute if there's only one
+        if (instituteOptions.value.length === 1) {
+          formData.value.institute_id = instituteOptions.value[0].value;
+        }
       }
   } catch (error) {
       console.error('Error fetching institute options:', error.response || error.message || error);

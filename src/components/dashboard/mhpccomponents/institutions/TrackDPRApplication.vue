@@ -597,6 +597,7 @@ const handlePaymentCompleted = async (paymentData) => {
     await fetchApplications()
     isDataRefreshing.value = false
     selectedApplicationForPayment.value = null
+    closePaymentModal()
   }
 }
 

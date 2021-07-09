@@ -490,387 +490,436 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue';
-import { MagnifyingGlassIcon, ChevronDownIcon, PlusIcon } from '@heroicons/vue/24/outline';
-import apiServices from '@/services/services'; // Ensure this has deleteMhpcClinicalPreceptor
-import { bhutanDzongkhagsGewogs } from '@/constants/dzongkhags';
-import { useAuthStore } from '@/stores/authStore';
-import { useToast } from 'vue-toastification';
-import ClinicalPreceptorModal from './modals/ClinicalPreceptorModal.vue';
-import TeachingCenterApplication from './TeachingCenterApplicationModal.vue';
-import PaymentModal from '@/components/common/PaymentModal.vue';
-import CertificateModal from '@/components/common/MHPC/MHPCCertificateModal.vue';
+import { ref, computed, onMounted, watch } from 'vue'
+import { MagnifyingGlassIcon, ChevronDownIcon, PlusIcon } from '@heroicons/vue/24/outline'
+import apiServices from '@/services/services' // Ensure this has deleteMhpcClinicalPreceptor
+import { bhutanDzongkhagsGewogs } from '@/constants/dzongkhags'
+import { useAuthStore } from '@/stores/authStore'
+import { useToast } from 'vue-toastification'
+import ClinicalPreceptorModal from './modals/ClinicalPreceptorModal.vue'
+import TeachingCenterApplication from './TeachingCenterApplicationModal.vue'
+import PaymentModal from '@/components/common/PaymentModal.vue'
+import CertificateModal from '@/components/common/MHPC/MHPCCertificateModal.vue'
 
-const toast = useToast();
-const authStore = useAuthStore();
-const applications = ref([]);
-const searchQuery = ref('');
-const filterDzongkhag = ref('');
-const filterGewog = ref('');
+const toast = useToast()
+const authStore = useAuthStore()
+const applications = ref([])
+const searchQuery = ref('')
+const filterDzongkhag = ref('')
+const filterGewog = ref('')
 
-const isPreceptorModalOpen = ref(false);
-const selectedApplicationForPreceptor = ref(null);
-const showCertificateModal = ref(false);
-const selectedCertificateData = ref(null);
+const isPreceptorModalOpen = ref(false)
+const selectedApplicationForPreceptor = ref(null)
+const showCertificateModal = ref(false)
+const selectedCertificateData = ref(null)
 
-const isDetailsModalOpen = ref(false);
-const selectedApplication = ref(null);
-const isLoading = ref(false);
-const isPaymentProcessing = ref(false);
+const isDetailsModalOpen = ref(false)
+const selectedApplication = ref(null)
+const isLoading = ref(false)
+const isPaymentProcessing = ref(false)
 
-const isApplicationFormModalOpen = ref(false);
-const teaching_hospital_registration = 100;
-const teachingCenterPaymentModalRef = ref(null);
-const selectedApplicationForPayment = ref(null);
+const isApplicationFormModalOpen = ref(false)
+const teaching_hospital_registration = 100
+const teachingCenterPaymentModalRef = ref(null)
+const selectedApplicationForPayment = ref(null)
 
-const dzongkhagOptionsForCenter = computed(() => bhutanDzongkhagsGewogs.map(d => ({ value: d.dzongkhag, label: d.dzongkhag })));
+const dzongkhagOptionsForCenter = computed(() =>
+  bhutanDzongkhagsGewogs.map((d) => ({ value: d.dzongkhag, label: d.dzongkhag }))
+)
 const gewogOptionsForCenter = computed(() => {
-  if (!filterDzongkhag.value) return [];
-  const selected = bhutanDzongkhagsGewogs.find(d => d.dzongkhag === filterDzongkhag.value);
-  return selected ? selected.gewogs.map(g => ({ value: g, label: g })) : [];
-});
+  if (!filterDzongkhag.value) return []
+  const selected = bhutanDzongkhagsGewogs.find((d) => d.dzongkhag === filterDzongkhag.value)
+  return selected ? selected.gewogs.map((g) => ({ value: g, label: g })) : []
+})
 
-watch(() => filterDzongkhag.value, () => { filterGewog.value = ''; });
+watch(
+  () => filterDzongkhag.value,
+  () => {
+    filterGewog.value = ''
+  }
+)
 
 const filteredApplications = computed(() => {
-  if (!Array.isArray(applications.value)) return [];
+  if (!Array.isArray(applications.value)) return []
   return applications.value.filter((app) => {
-    const appDzongkhag = app.state_dzongkhag || '';
-    const appGewog = app.city_gewog || '';
+    const appDzongkhag = app.state_dzongkhag || ''
+    const appGewog = app.city_gewog || ''
     const matchesSearch =
       app.center_name?.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
       app.center_location?.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
       appDzongkhag.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
       appGewog.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      app.preceptorName?.toLowerCase().includes(searchQuery.value.toLowerCase()); // Search by preceptor name too
-    const matchesDzongkhag = filterDzongkhag.value ? appDzongkhag === filterDzongkhag.value : true;
-    const matchesGewog = filterGewog.value ? appGewog === filterGewog.value : true;
-    return matchesSearch && matchesDzongkhag && matchesGewog;
-  });
-});
+      app.preceptorName?.toLowerCase().includes(searchQuery.value.toLowerCase()) // Search by preceptor name too
+    const matchesDzongkhag = filterDzongkhag.value ? appDzongkhag === filterDzongkhag.value : true
+    const matchesGewog = filterGewog.value ? appGewog === filterGewog.value : true
+    return matchesSearch && matchesDzongkhag && matchesGewog
+  })
+})
 
 const statusClass = (status) => {
-  const s = status ? status.toLowerCase() : 'unknown';
-  if (s === 'approved') return 'bg-green-100 text-green-700 border border-green-200';
-  if (s === 'pending') return 'bg-yellow-100 text-yellow-700 border border-yellow-200';
-  if (s === 'rejected') return 'bg-red-100 text-red-700 border border-red-200';
-  return 'bg-gray-100 text-gray-700 border border-gray-200';
-};
+  const s = status ? status.toLowerCase() : 'unknown'
+  if (s === 'approved') return 'bg-green-100 text-green-700 border border-green-200'
+  if (s === 'pending') return 'bg-yellow-100 text-yellow-700 border border-yellow-200'
+  if (s === 'rejected') return 'bg-red-100 text-red-700 border border-red-200'
+  return 'bg-gray-100 text-gray-700 border border-gray-200'
+}
 
 const paymentStatusClass = (status) => {
-  const s = status ? status.toLowerCase() : 'not_paid';
-  if (s === 'paid' || s === 'completed' || s === 'success') return 'bg-green-100 text-green-700 border border-green-200';
-  if (s === 'pending_payment' || s === 'processing_payment') return 'bg-yellow-100 text-yellow-700 border border-yellow-200';
-  if (s === 'failed') return 'bg-red-100 text-red-700 border border-red-200';
-  if (s === 'not_paid') return 'bg-orange-100 text-orange-700 border border-orange-200';
-  return 'bg-gray-100 text-gray-700 border border-gray-200';
-};
+  const s = status ? status.toLowerCase() : 'not_paid'
+  if (s === 'paid' || s === 'completed' || s === 'success')
+    return 'bg-green-100 text-green-700 border border-green-200'
+  if (s === 'pending_payment' || s === 'processing_payment')
+    return 'bg-yellow-100 text-yellow-700 border border-yellow-200'
+  if (s === 'failed') return 'bg-red-100 text-red-700 border border-red-200'
+  if (s === 'not_paid') return 'bg-orange-100 text-orange-700 border border-orange-200'
+  return 'bg-gray-100 text-gray-700 border border-gray-200'
+}
 
 const formatPaymentStatus = (status) => {
-  if (!status || status.toLowerCase() === 'not_paid') return 'Not Paid';
-  if (status.toLowerCase() === 'pending_payment') return 'Pending Payment';
-  if (status.toLowerCase() === 'processing_payment') return 'Processing';
-  if (status.toLowerCase() === 'paid' || status.toLowerCase() === 'completed' || status.toLowerCase() === 'success') return 'Paid';
-  if (status.toLowerCase() === 'failed') return 'Failed';
-  return status.charAt(0).toUpperCase() + status.slice(1).replace(/_/g, ' ');
-};
+  if (!status || status.toLowerCase() === 'not_paid') return 'Not Paid'
+  if (status.toLowerCase() === 'pending_payment') return 'Pending Payment'
+  if (status.toLowerCase() === 'processing_payment') return 'Processing'
+  if (
+    status.toLowerCase() === 'paid' ||
+    status.toLowerCase() === 'completed' ||
+    status.toLowerCase() === 'success'
+  )
+    return 'Paid'
+  if (status.toLowerCase() === 'failed') return 'Failed'
+  return status.charAt(0).toUpperCase() + status.slice(1).replace(/_/g, ' ')
+}
 
 const formatPaymentId = (id) => {
-  if (!id) return 'N/A';
-  return id.substring(0, 8) + '...';
-};
+  if (!id) return 'N/A'
+  return id.substring(0, 8) + '...'
+}
 
 const formatDate = (date) => {
-  if (!date) return 'N/A';
-  return new Date(date).toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: '2-digit' });
-};
+  if (!date) return 'N/A'
+  return new Date(date).toLocaleDateString('en-GB', {
+    year: 'numeric',
+    month: 'short',
+    day: '2-digit',
+  })
+}
 
 const fetchPreceptorDetails = async (teachingCenterId) => {
   if (!teachingCenterId || isNaN(parseInt(teachingCenterId))) {
-    console.warn(`Invalid teaching center ID for preceptor fetch: ${teachingCenterId}`);
-    return null;
+    console.warn(`Invalid teaching center ID for preceptor fetch: ${teachingCenterId}`)
+    return null
   }
   try {
-    const params = { teaching_center: teachingCenterId };
-    const response = await apiServices.getMhpcClinicalPreceptors(params);
-    const preceptors = response.data?.results || (Array.isArray(response.data) ? response.data : []);
+    const params = { teaching_center: teachingCenterId }
+    const response = await apiServices.getMhpcClinicalPreceptors(params)
+    const preceptors = response.data?.results || (Array.isArray(response.data) ? response.data : [])
 
     if (preceptors.length > 0) {
-      const preceptor = preceptors[0];
-      if (preceptor && typeof preceptor.name !== 'undefined' && typeof preceptor.id !== 'undefined') {
+      const preceptor = preceptors[0]
+      if (
+        preceptor &&
+        typeof preceptor.name !== 'undefined' &&
+        typeof preceptor.id !== 'undefined'
+      ) {
         return {
           name: preceptor.name, // Assuming 'name' field from your JSON example
-          id: preceptor.id,     // Assuming 'id' field is the preceptor record ID
-        };
+          id: preceptor.id, // Assuming 'id' field is the preceptor record ID
+        }
       } else {
-        console.warn(`Preceptor data for teaching center ${teachingCenterId} is malformed:`, preceptor);
-        return null;
+        console.warn(
+          `Preceptor data for teaching center ${teachingCenterId} is malformed:`,
+          preceptor
+        )
+        return null
       }
     }
-    return null;
+    return null
   } catch (error) {
     if (error.response && error.response.status !== 404) {
-      console.error(`Error fetching preceptor details for TC ${teachingCenterId}:`, error.message);
-    } else if (!error.response) { // Network or other errors
-      console.error(`Network/other error fetching preceptor details for TC ${teachingCenterId}:`, error.message);
+      console.error(`Error fetching preceptor details for TC ${teachingCenterId}:`, error.message)
+    } else if (!error.response) {
+      // Network or other errors
+      console.error(
+        `Network/other error fetching preceptor details for TC ${teachingCenterId}:`,
+        error.message
+      )
     }
-    return null; // For 404 or other errors, assume no preceptor
+    return null // For 404 or other errors, assume no preceptor
   }
-};
-
+}
 
 const fetchApplications = async () => {
-  if (!authStore.userId) {
-    console.warn('User not authenticated for fetching applications.');
-    isLoading.value = false;
-    applications.value = [];
-    return;
+  if (!authStore.user.cid) {
+    console.warn('User not authenticated for fetching applications.')
+    isLoading.value = false
+    applications.value = []
+    return
   }
-  isLoading.value = true;
+  isLoading.value = true
   try {
-    const response = await apiServices.getMhpcTeachingCenters(authStore.userId);
-    let fetchedApplications = response.data?.results || response.data || [];
+    const response = await apiServices.getMhpcTeachingCenterByCid(authStore.user?.cid)
+    let fetchedApplications = response.data?.results || response.data || []
     if (!Array.isArray(fetchedApplications)) {
-      console.error('Expected an array of applications, received:', fetchedApplications);
-      fetchedApplications = [];
+      console.error('Expected an array of applications, received:', fetchedApplications)
+      fetchedApplications = []
     } else {
-      fetchedApplications = await Promise.all(fetchedApplications.map(async (app) => {
-        let derivedPaymentStatus = 'not_paid';
-        const currentClientApp = applications.value.find(existing => existing.id === app.id);
+      fetchedApplications = await Promise.all(
+        fetchedApplications.map(async (app) => {
+          let derivedPaymentStatus = 'not_paid'
+          const currentClientApp = applications.value.find((existing) => existing.id === app.id)
 
-        if (app.is_payment_complete) {
-          derivedPaymentStatus = 'paid';
-        } else if (app.payment_id) {
-          if (currentClientApp && currentClientApp.payment_status === 'processing_payment' && !app.is_payment_complete) {
-            derivedPaymentStatus = 'processing_payment';
-          } else {
-            derivedPaymentStatus = 'pending_payment';
+          if (app.is_payment_complete) {
+            derivedPaymentStatus = 'paid'
+          } else if (app.payment_id) {
+            if (
+              currentClientApp &&
+              currentClientApp.payment_status === 'processing_payment' &&
+              !app.is_payment_complete
+            ) {
+              derivedPaymentStatus = 'processing_payment'
+            } else {
+              derivedPaymentStatus = 'pending_payment'
+            }
+          } else if (currentClientApp) {
+            if (currentClientApp.payment_status === 'failed') {
+              derivedPaymentStatus = 'failed'
+            } else if (currentClientApp.payment_status === 'processing_payment') {
+              derivedPaymentStatus = 'pending_payment' // or 'processing_payment' if still actively processing
+            }
           }
-        } else if (currentClientApp) {
-          if (currentClientApp.payment_status === 'failed') {
-            derivedPaymentStatus = 'failed';
-          } else if (currentClientApp.payment_status === 'processing_payment') {
-            derivedPaymentStatus = 'pending_payment'; // or 'processing_payment' if still actively processing
+
+          const preceptorInfo = await fetchPreceptorDetails(app.id)
+
+          return {
+            ...app,
+            tc_review_decision: app.tc_review_decision || (app.is_draft ? 'Draft' : 'Pending'),
+            payment_status: derivedPaymentStatus,
+            isPreceptorAdded: !!preceptorInfo,
+            preceptorName: preceptorInfo ? preceptorInfo.name : null,
+            preceptorId: preceptorInfo ? preceptorInfo.id : null,
           }
-        }
-
-        const preceptorInfo = await fetchPreceptorDetails(app.id);
-
-        return {
-          ...app,
-          tc_review_decision: app.tc_review_decision || (app.is_draft ? 'Draft' : 'Pending'),
-          payment_status: derivedPaymentStatus,
-          isPreceptorAdded: !!preceptorInfo,
-          preceptorName: preceptorInfo ? preceptorInfo.name : null,
-          preceptorId: preceptorInfo ? preceptorInfo.id : null,
-        };
-      }));
+        })
+      )
     }
-    applications.value = fetchedApplications;
+    applications.value = fetchedApplications
   } catch (error) {
-    console.error('Error fetching applications:', error.response?.data || error.message);
-    toast.error('Failed to load applications. Please try again.');
+    console.error('Error fetching applications:', error.response?.data || error.message)
+    toast.error('Failed to load applications. Please try again.')
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
-};
+}
 
 const canMakePayment = (application) => {
-  const status = application.payment_status ? application.payment_status.toLowerCase() : 'not_paid';
-  return application.tc_review_decision?.toLowerCase() === 'approved' &&
-    (status === 'not_paid' || status === 'failed' || status === 'pending_payment');
-};
+  const status = application.payment_status ? application.payment_status.toLowerCase() : 'not_paid'
+  return (
+    application.tc_review_decision?.toLowerCase() === 'approved' &&
+    (status === 'not_paid' || status === 'failed' || status === 'pending_payment')
+  )
+}
 
 const canAddPreceptor = (application) => {
-  const status = application.payment_status ? application.payment_status.toLowerCase() : '';
-  return application.tc_review_decision?.toLowerCase() === 'approved' &&
-    (status === 'paid' || status === 'completed' || status === 'success');
-};
+  const status = application.payment_status ? application.payment_status.toLowerCase() : ''
+  return (
+    application.tc_review_decision?.toLowerCase() === 'approved' &&
+    (status === 'paid' || status === 'completed' || status === 'success')
+  )
+}
 
 const canRemovePreceptor = (application) => {
-  const paymentStatus = application.payment_status ? application.payment_status.toLowerCase() : '';
-  return application.tc_review_decision?.toLowerCase() === 'approved' &&
+  const paymentStatus = application.payment_status ? application.payment_status.toLowerCase() : ''
+  return (
+    application.tc_review_decision?.toLowerCase() === 'approved' &&
     (paymentStatus === 'paid' || paymentStatus === 'completed' || paymentStatus === 'success') &&
-    application.isPreceptorAdded;
-};
+    application.isPreceptorAdded
+  )
+}
 
 const canDownloadCertificate = (application) => {
-  const status = application.payment_status ? application.payment_status.toLowerCase() : '';
-  return application.tc_review_decision?.toLowerCase() === 'approved' &&
+  const status = application.payment_status ? application.payment_status.toLowerCase() : ''
+  return (
+    application.tc_review_decision?.toLowerCase() === 'approved' &&
     (status === 'paid' || status === 'completed' || status === 'success') &&
-    application.isPreceptorAdded; // Typically certificate available after preceptor is added
-};
+    application.isPreceptorAdded
+  ) // Typically certificate available after preceptor is added
+}
 
 const initiateTeachingCenterPayment = (application) => {
-  selectedApplicationForPayment.value = application;
+  selectedApplicationForPayment.value = application
   if (teachingCenterPaymentModalRef.value) {
-    teachingCenterPaymentModalRef.value.openModal();
+    teachingCenterPaymentModalRef.value.openModal()
   } else {
-    toast.error('Payment modal could not be opened.');
+    toast.error('Payment modal could not be opened.')
   }
-};
+}
 
 const openCertificateModal = (application) => {
-  selectedCertificateData.value = { results: [application] };
-  showCertificateModal.value = true;
-};
+  selectedCertificateData.value = { results: [application] }
+  showCertificateModal.value = true
+}
 
 const closeCertificateModal = () => {
-  showCertificateModal.value = false;
-  selectedCertificateData.value = null;
-};
+  showCertificateModal.value = false
+  selectedCertificateData.value = null
+}
 
 const closeTeachingCenterPaymentModal = () => {
   if (!isPaymentProcessing.value) {
-    selectedApplicationForPayment.value = null;
+    selectedApplicationForPayment.value = null
   }
-};
+}
 
 const handleTeachingCenterPaymentCompleted = async (paymentData) => {
   if (!selectedApplicationForPayment.value) {
-    toast.error('No application selected for payment. Please try again.');
-    return;
+    toast.error('No application selected for payment. Please try again.')
+    return
   }
-  const user = authStore.user;
+  const user = authStore.user
   if (!user || !user.contact_number || !user.email || !user.cid || !user.id) {
-    toast.error('Missing user information for payment.');
-    return;
+    toast.error('Missing user information for payment.')
+    return
   }
 
-  isPaymentProcessing.value = true;
-  isLoading.value = true; // Use global loading state
-  const paymentId = paymentData.paymentHash;
-  const applicationToUpdate = { ...selectedApplicationForPayment.value };
+  isPaymentProcessing.value = true
+  isLoading.value = true // Use global loading state
+  const paymentId = paymentData.paymentHash
+  const applicationToUpdate = { ...selectedApplicationForPayment.value }
 
   try {
-    const appIndex = applications.value.findIndex(app => app.id === applicationToUpdate.id);
+    const appIndex = applications.value.findIndex((app) => app.id === applicationToUpdate.id)
     if (appIndex > -1) {
-      applications.value[appIndex].payment_id = paymentId;
-      applications.value[appIndex].payment_status = 'processing_payment';
+      applications.value[appIndex].payment_id = paymentId
+      applications.value[appIndex].payment_status = 'processing_payment'
     }
 
-    const paymentInitiationFormData = new FormData();
-    paymentInitiationFormData.append('refNo', paymentId);
-    paymentInitiationFormData.append('serviceCode', '100250');
-    paymentInitiationFormData.append('taxPayerName', user.full_name || user.cid);
-    paymentInitiationFormData.append('taxPayerNo', user.cid);
-    paymentInitiationFormData.append('taxPayerDocumentNo', user.cid);
-    paymentInitiationFormData.append('totalPayableAmount', teaching_hospital_registration.toString());
-    paymentInitiationFormData.append('description', 'Teaching Hospital Registration');
-    paymentInitiationFormData.append('mobileNo', user.contact_number);
-    paymentInitiationFormData.append('payerEmail', user.email);
-    paymentInitiationFormData.append('user', user.id.toString());
-    paymentInitiationFormData.append('payableAmount', teaching_hospital_registration.toString());
-    paymentInitiationFormData.append('application_no', applicationToUpdate.id.toString());
-    paymentInitiationFormData.append('app_type', 'teaching_hospital_registration');
+    const paymentInitiationFormData = new FormData()
+    paymentInitiationFormData.append('refNo', paymentId)
+    paymentInitiationFormData.append('serviceCode', '100250')
+    paymentInitiationFormData.append('taxPayerName', user.full_name || user.cid)
+    paymentInitiationFormData.append('taxPayerNo', user.cid)
+    paymentInitiationFormData.append('taxPayerDocumentNo', user.cid)
+    paymentInitiationFormData.append(
+      'totalPayableAmount',
+      teaching_hospital_registration.toString()
+    )
+    paymentInitiationFormData.append('description', 'Teaching Hospital Registration')
+    paymentInitiationFormData.append('mobileNo', user.contact_number)
+    paymentInitiationFormData.append('payerEmail', user.email)
+    paymentInitiationFormData.append('user', user.id.toString())
+    paymentInitiationFormData.append('payableAmount', teaching_hospital_registration.toString())
+    paymentInitiationFormData.append('application_no', applicationToUpdate.id.toString())
+    paymentInitiationFormData.append('app_type', 'teaching_hospital_registration')
 
-    await apiServices.makePayment(paymentInitiationFormData);
+    await apiServices.makePayment(paymentInitiationFormData)
 
-    const updatePayload = new FormData();
-    updatePayload.append('payment_id', paymentId);
-    updatePayload.append('payment_status', 'processing_payment'); // Or perhaps 'pending_payment' until confirmed by BIPS
-    await apiServices.patchMhpcTeachingCenter(applicationToUpdate.id, updatePayload);
+    const updatePayload = new FormData()
+    updatePayload.append('payment_id', paymentId)
+    updatePayload.append('payment_status', 'processing_payment') // Or perhaps 'pending_payment' until confirmed by BIPS
+    await apiServices.patchMhpcTeachingCenter(applicationToUpdate.id, updatePayload)
 
-    toast.success(`Payment initiated (Ref: ${paymentId.substring(0, 8)}...). Status will update shortly.`);
-    await fetchApplications(); // Refresh to get latest status including payment
-
+    toast.success(
+      `Payment initiated (Ref: ${paymentId.substring(0, 8)}...). Status will update shortly.`
+    )
+    await fetchApplications() // Refresh to get latest status including payment
   } catch (error) {
-    console.error('Teaching Center Payment handling error:', error.response || error.message);
-    let errorMsg = 'An error occurred while processing the payment.';
+    console.error('Teaching Center Payment handling error:', error.response || error.message)
+    let errorMsg = 'An error occurred while processing the payment.'
     // ... (error message parsing as before)
-    toast.error(`${errorMsg} Contact support with payment ref ${paymentId} if issue persists.`);
-    const appIdx = applications.value.findIndex(app => app.id === applicationToUpdate.id);
+    toast.error(`${errorMsg} Contact support with payment ref ${paymentId} if issue persists.`)
+    const appIdx = applications.value.findIndex((app) => app.id === applicationToUpdate.id)
     if (appIdx > -1 && applications.value[appIdx].payment_status !== 'paid') {
-      applications.value[appIdx].payment_status = 'failed';
+      applications.value[appIdx].payment_status = 'failed'
     }
   } finally {
-    isLoading.value = false;
-    isPaymentProcessing.value = false;
-    selectedApplicationForPayment.value = null;
+    isLoading.value = false
+    isPaymentProcessing.value = false
+    selectedApplicationForPayment.value = null
 
     // Add this line to close the modal
     if (teachingCenterPaymentModalRef.value) {
-      teachingCenterPaymentModalRef.value.closeModal();
+      teachingCenterPaymentModalRef.value.closeModal()
     }
   }
-};
+}
 
 const openAddPreceptorModal = (application) => {
-  selectedApplicationForPreceptor.value = application;
-  isPreceptorModalOpen.value = true;
-};
+  selectedApplicationForPreceptor.value = application
+  isPreceptorModalOpen.value = true
+}
 
 const closePreceptorModal = () => {
-  isPreceptorModalOpen.value = false;
-  selectedApplicationForPreceptor.value = null;
-};
+  isPreceptorModalOpen.value = false
+  selectedApplicationForPreceptor.value = null
+}
 
 const handlePreceptorSubmitSuccess = async () => {
-  toast.success('Clinical Preceptor added successfully. Refreshing list...');
-  closePreceptorModal();
-  await fetchApplications(); // Re-fetch to update preceptor details correctly
-};
+  toast.success('Clinical Preceptor added successfully. Refreshing list...')
+  closePreceptorModal()
+  await fetchApplications() // Re-fetch to update preceptor details correctly
+}
 
 const confirmRemovePreceptor = (application) => {
-  if (confirm(`Are you sure you want to remove the preceptor "${application.preceptorName}" for ${application.center_name}? This action cannot be undone.`)) {
-    removePreceptor(application);
+  if (
+    confirm(
+      `Are you sure you want to remove the preceptor "${application.preceptorName}" for ${application.center_name}? This action cannot be undone.`
+    )
+  ) {
+    removePreceptor(application)
   }
-};
+}
 
 const removePreceptor = async (application) => {
   if (!application.preceptorId) {
-    toast.error('Preceptor ID not found. Cannot remove.');
-    return;
+    toast.error('Preceptor ID not found. Cannot remove.')
+    return
   }
-  isLoading.value = true;
+  isLoading.value = true
   try {
     // Assuming apiServices has deleteMhpcClinicalPreceptor(preceptorId)
-    await apiServices.deleteMhpcClinicalPreceptor(application.preceptorId);
+    await apiServices.deleteMhpcClinicalPreceptor(application.preceptorId)
 
     // Update local state for immediate UI feedback
-    const appIndex = applications.value.findIndex(app => app.id === application.id);
+    const appIndex = applications.value.findIndex((app) => app.id === application.id)
     if (appIndex > -1) {
-      applications.value[appIndex].isPreceptorAdded = false;
-      applications.value[appIndex].preceptorName = null;
-      applications.value[appIndex].preceptorId = null;
+      applications.value[appIndex].isPreceptorAdded = false
+      applications.value[appIndex].preceptorName = null
+      applications.value[appIndex].preceptorId = null
     }
-    toast.success('Clinical Preceptor removed successfully.');
+    toast.success('Clinical Preceptor removed successfully.')
     // Optionally, call fetchApplications() if deeper state changes are expected or to ensure full sync
     // await fetchApplications();
   } catch (error) {
-    console.error('Error removing preceptor:', error.response?.data || error.message);
-    toast.error('Failed to remove preceptor. Please try again.');
+    console.error('Error removing preceptor:', error.response?.data || error.message)
+    toast.error('Failed to remove preceptor. Please try again.')
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
-};
-
+}
 
 const viewDetails = (application) => {
-  selectedApplication.value = application;
-  isDetailsModalOpen.value = true;
-};
+  selectedApplication.value = application
+  isDetailsModalOpen.value = true
+}
 
 const closeDetailsModal = () => {
-  isDetailsModalOpen.value = false;
-  selectedApplication.value = null;
-};
+  isDetailsModalOpen.value = false
+  selectedApplication.value = null
+}
 
 const openApplicationFormModal = () => {
-  isApplicationFormModalOpen.value = true;
-};
+  isApplicationFormModalOpen.value = true
+}
 
 const closeApplicationFormModal = () => {
-  isApplicationFormModalOpen.value = false;
-};
+  isApplicationFormModalOpen.value = false
+}
 
 const handleApplicationFormSubmitted = () => {
-  closeApplicationFormModal();
-  fetchApplications();
-  toast.success('New teaching center application submitted successfully!');
-};
+  closeApplicationFormModal()
+  fetchApplications()
+  toast.success('New teaching center application submitted successfully!')
+}
 
-onMounted(fetchApplications);
+onMounted(fetchApplications)
 </script>
 
 <style scoped>

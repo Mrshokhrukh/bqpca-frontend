@@ -120,6 +120,7 @@
       @save="saveApplication"
       @approve="onApplicationApproved"
       @reject="onApplicationRejected"
+      @application-updated="fetchApplications"
       :key="selectedApplication ? selectedApplication.id : 'no-application'"
     />
   </div>
