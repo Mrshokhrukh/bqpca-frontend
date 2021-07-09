@@ -341,6 +341,8 @@
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Status
                 </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Validate till </th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
@@ -378,6 +380,13 @@
                     }"></span>
                     {{ application.review_decision || 'Unknown' }}
                   </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {{
+                    application.created_at
+                      ? new Date(application.training_institute_details.valid_till).toLocaleDateString()
+                      : 'N/A'
+                  }}
                 </td>
               </tr>
             </tbody>
@@ -559,7 +568,7 @@ const validateForm = (isDraft = false) => {
     // ✅ FIXED: Changed from duration_in_months to duration_months
     if (!formData.value.duration_months || formData.value.duration_months <= 0)
       errors.duration_months = ['Duration must be a positive number']
-    
+
     if (!formData.value.commencement_date)
       errors.commencement_date = ['Commencement date is required']
     else if (new Date(formData.value.commencement_date) < new Date(todayDate.value))

@@ -193,19 +193,19 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <div class="flex flex-col space-y-2">
-                    <!-- MODIFIED: Removed the restrictive v-if condition -->
+                    <!-- View Details Button -->
                     <button @click="reviewApplication(application)"
                       class="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">
                       <EyeIcon class="h-4 w-4 mr-1" />
                       View Details
-                      <!-- Optional: Changed text slightly -->
                     </button>
-                    <!-- Kept the conditional logic for the download button -->
+
+                    <!-- MODIFIED: Changed from "Certificate" to "View Certificate" and updated the function -->
                     <button v-if="application.endorsement_decision === 'Approved'"
-                      @click="downloadCertificate(application.id)"
+                      @click="viewCertificate(application)"
                       class="inline-flex items-center justify-center bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">
-                      <DownloadIcon class="h-4 w-4 mr-1" />
-                      Certificate
+                      <EyeIcon class="h-4 w-4 mr-1" />
+                      View Certificate
                     </button>
                   </div>
                 </td>
@@ -272,6 +272,13 @@
     <CogsConfirmationModal v-if="showConfirmation" :message="confirmationMessage" @confirm="confirmReviewAction"
       @cancel="cancelReviewAction" />
 
+    <!-- ADDED: Certificate Modal -->
+    <EPCcogsCertificateModal
+      :cogs-application="selectedCertificateApplication"
+      :show-modal="showCertificateModal"
+      @close="closeCertificateModal"
+    />
+
     <!-- Success Toast Notification (New Addition) -->
     <div v-if="showSuccessToast"
       class="fixed bottom-4 right-4 bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg flex items-center transition-all duration-300"
@@ -300,7 +307,6 @@ import {
   CheckCircleIcon,
   XCircleIcon,
   EyeIcon,
-  DownloadIcon,
   ArrowUpDownIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -311,6 +317,8 @@ import {
 import apiServices from '@/services/services' // Adjust path if necessary
 import CogsReviewModal from '../modals/CogsReviewModal.vue' // Adjust path if necessary
 import CogsConfirmationModal from '../modals/CogsConfirmationModal.vue' // Adjust path if necessary
+// ADDED: Import the certificate modal
+import EPCcogsCertificateModal from '@/components/common/EPC/EPCcogsCertificateModal.vue'
 
 const applications = ref([])
 const isLoading = ref(false)
@@ -325,6 +333,10 @@ const confirmationMessage = ref('')
 const showSuccessToast = ref(false)
 const toastMessage = ref('')
 const confirmData = ref(null)
+
+// ADDED: Certificate modal state
+const showCertificateModal = ref(false)
+const selectedCertificateApplication = ref(null)
 
 // Get counts for dashboard stats
 const getPendingCount = () => {
@@ -444,48 +456,34 @@ const reviewApplication = (application) => {
   selectedApplication.value = application
 }
 
-// Download certificate function
-const downloadCertificate = async (id) => {
-  // Add loading state for download if needed
+// MODIFIED: Changed from downloadCertificate to viewCertificate
+const viewCertificate = async (application) => {
   try {
-    const response = await apiServices.downloadCogsCertificate(id) // Ensure this service exists and is correctly implemented
+    // Optional: Fetch the latest application data to ensure we have complete information
+    // You can skip this if your application data is already complete
+    // const response = await apiServices.getEpcCogsById(application.id)
+    // selectedCertificateApplication.value = response.data
 
-    // Check if the response is successful and is a blob (file)
-    if (response.status === 200 && response.data instanceof Blob) {
-      const url = window.URL.createObjectURL(new Blob([response.data]))
-      const link = document.createElement('a')
-      link.href = url
-      // Extract filename from content-disposition header if available, otherwise use a default name
-      const contentDisposition = response.headers['content-disposition']
-      let filename = `COGS_Certificate_${id}.pdf` // Default filename
-      if (contentDisposition) {
-        const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/
-        const matches = filenameRegex.exec(contentDisposition)
-        if (matches != null && matches[1]) {
-          filename = matches[1].replace(/['"]/g, '')
-        }
-      }
-      link.setAttribute('download', filename)
-      document.body.appendChild(link)
-      link.click()
-      link.remove()
-      window.URL.revokeObjectURL(url) // Clean up the object URL
+    // Use the application data directly
+    selectedCertificateApplication.value = application
+    showCertificateModal.value = true
 
-      // Show success toast
-      toastMessage.value = 'Certificate downloaded successfully'
-      showSuccessToast.value = true
-      setTimeout(() => {
-        showSuccessToast.value = false
-      }, 3000)
-    } else {
-      throw new Error('Invalid response received for download')
-    }
+    // Show success toast
+    toastMessage.value = 'Certificate loaded successfully'
+    showSuccessToast.value = true
+    setTimeout(() => {
+      showSuccessToast.value = false
+    }, 3000)
   } catch (err) {
-    console.error('Error downloading certificate:', err)
-    error.value =
-      'Failed to download certificate. Please ensure the file exists and the server is responding correctly.'
-    // Optionally show an error toast
+    console.error('Error loading certificate:', err)
+    error.value = 'Failed to load certificate. Please try again.'
   }
+}
+
+// ADDED: Close certificate modal function
+const closeCertificateModal = () => {
+  showCertificateModal.value = false
+  selectedCertificateApplication.value = null
 }
 
 // Handle update event from the modal (before confirmation)

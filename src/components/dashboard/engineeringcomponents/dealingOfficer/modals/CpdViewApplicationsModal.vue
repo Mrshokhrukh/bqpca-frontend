@@ -1,4 +1,4 @@
-```vue
+
 <template>
   <TransitionRoot appear :show="application !== null" as="template">
     <Dialog as="div" @close="$emit('close')" class="relative z-50">
@@ -162,209 +162,243 @@
 
                     <div class="lg:col-span-2 space-y-6">
                       <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                        <div class="p-6">
-                          <h4 class="text-lg font-medium text-gray-900 mb-6 flex items-center space-x-2">
-                            <BookOpen class="h-5 w-5 text-gray-500" />
-                            <span>CPD Details</span>
-                          </h4>
-                          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="md:col-span-2 p-4 bg-gray-50 rounded-lg">
-                              <p class="text-sm font-medium text-gray-500">Title of CPD</p>
-                              <p class="text-sm text-gray-900 mt-2 flex items-start space-x-2">
-                                <FileText class="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
-                                <span>{{ application.title_of_cpd || 'Not provided' }}</span>
-                              </p>
-                            </div>
-                            <div class="md:col-span-2 p-4 bg-gray-50 rounded-lg">
-                              <p class="text-sm font-medium text-gray-500">Expected Outcome</p>
-                              <p class="text-sm text-gray-900 mt-2 flex items-start space-x-2">
-                                <Link class="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
-                                <span>{{ application.expected_outcome || 'Not provided' }}</span>
-                              </p>
-                            </div>
-                            <div class="p-4 bg-gray-50 rounded-lg">
-                              <p class="text-sm font-medium text-gray-500">CPD Type</p>
-                              <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
-                                <Activity class="h-4 w-4 text-gray-400" />
-                                <span>{{ getCpdTypeName(application.type_of_cpd) }}</span>
-                              </p>
-                            </div>
-                            <div class="p-4 bg-gray-50 rounded-lg">
-                              <p class="text-sm font-medium text-gray-500">CPD Providing Agency</p>
-                              <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
-                                <UserCheck class="h-4 w-4 text-gray-400" />
-                                <span>{{ getCpdProvidingAgencyName(application.cpd_providing_agency) }}</span>
-                              </p>
-                            </div>
-                            <div class="p-4 bg-gray-50 rounded-lg">
-                              <p class="text-sm font-medium text-gray-500">From Date</p>
-                              <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
-                                <Calendar class="h-4 w-4 text-gray-400" />
-                                <span>{{ formatDate(application.from_date) || 'Not provided' }}</span>
-                              </p>
-                            </div>
-                            <div class="p-4 bg-gray-50 rounded-lg">
-                              <p class="text-sm font-medium text-gray-500">To Date</p>
-                              <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
-                                <Calendar class="h-4 w-4 text-gray-400" />
-                                <span>{{ formatDate(application.to_date) || 'Not provided' }}</span>
-                              </p>
-                            </div>
-                            <div class="p-4 bg-gray-50 rounded-lg">
-                              <p class="text-sm font-medium text-gray-500">Duration (Hours)</p>
-                              <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
-                                <Clock class="h-4 w-4 text-gray-400" />
-                                <span>{{ application.total_duration_hours || application.duration_in_hours || 'Not provided' }}</span>
-                              </p>
-                            </div>
-                            <div class="p-4 bg-gray-50 rounded-lg">
-                              <p class="text-sm font-medium text-gray-500">Expected Participants</p>
-                              <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
-                                <Users class="h-4 w-4 text-gray-400" />
-                                <span>{{ application.number_of_participants || 'Not provided' }}</span>
-                              </p>
-                            </div>
-                            <div class="md:col-span-2 p-4 bg-gray-50 rounded-lg">
-                              <p class="text-sm font-medium text-gray-500">Proposed Training Location</p>
-                              <p class="text-sm text-gray-900 mt-2 flex items-start space-x-2">
-                                <UserCircle class="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
-                                <span>{{ application.proposed_training_location || 'Not provided' }}</span>
-                              </p>
-                            </div>
-                            <div class="md:col-span-2 p-4 bg-gray-50 rounded-lg">
-                              <p class="text-sm font-medium text-gray-500">Relevance to Topic</p>
-                              <p class="text-sm text-gray-900 mt-2 flex items-start space-x-2">
-                                <Link class="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
-                                <span>{{ application.relevance_to_topic || 'Not provided' }}</span>
-                              </p>
-                            </div>
-                            <div class="md:col-span-2 p-4 bg-gray-50 rounded-lg">
-                              <p class="text-sm font-medium text-gray-500">Reason for Conducting</p>
-                              <p class="text-sm text-gray-900 mt-2 flex items-start space-x-2">
-                                <MessageSquare class="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
-                                <span>{{ getReasonForConductingName(application.reason_for_conducting) }}</span>
-                              </p>
-                            </div>
-                            <div v-if="application.reason_for_details" class="md:col-span-2 p-4 bg-gray-50 rounded-lg">
-                              <p class="text-sm font-medium text-gray-500">Reason Details</p>
-                              <p class="text-sm text-gray-900 mt-2 flex items-start space-x-2">
-                                <MessageSquare class="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
-                                <span>{{ application.reason_for_details }}</span>
-                              </p>
-                            </div>
-                            <div v-if="application.activities_summary" class="md:col-span-2 p-4 bg-gray-50 rounded-lg">
-                              <p class="text-sm font-medium text-gray-500">Activities Summary</p>
-                              <p class="text-sm text-gray-900 mt-2 flex items-start space-x-2">
-                                <Activity class="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
-                                <span>{{ application.activities_summary }}</span>
-                              </p>
-                            </div>
-                          </div>
+  <div class="p-6">
+    <h4 class="text-lg font-medium text-gray-900 mb-6 flex items-center space-x-2">
+      <BookOpen class="h-5 w-5 text-gray-500" />
+      <span>CPD Details</span>
+    </h4>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="md:col-span-2 p-4 bg-gray-50 rounded-lg">
+        <p class="text-sm font-medium text-gray-500">Title of CPD</p>
+        <p class="text-sm text-gray-900 mt-2 flex items-start space-x-2">
+          <FileText class="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
+          <span>{{ application.title_of_cpd || 'Not provided' }}</span>
+        </p>
+      </div>
+      <div class="md:col-span-2 p-4 bg-gray-50 rounded-lg">
+        <p class="text-sm font-medium text-gray-500">Expected Outcome</p>
+        <p class="text-sm text-gray-900 mt-2 flex items-start space-x-2">
+          <Link class="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
+          <span>{{ application.expected_outcome || 'Not provided' }}</span>
+        </p>
+      </div>
+      <div class="p-4 bg-gray-50 rounded-lg">
+        <p class="text-sm font-medium text-gray-500">CPD Type</p>
+        <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
+          <Activity class="h-4 w-4 text-gray-400" />
+          <span>{{ getCpdTypeName(application.type_of_cpd) }}</span>
+        </p>
+      </div>
+      <div class="p-4 bg-gray-50 rounded-lg">
+        <p class="text-sm font-medium text-gray-500">CPD Providing Agency</p>
+        <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
+          <UserCheck class="h-4 w-4 text-gray-400" />
+          <span>{{ getCpdProvidingAgencyName(application.cpd_providing_agency) }}</span>
+        </p>
+      </div>
+      <div class="p-4 bg-gray-50 rounded-lg">
+        <p class="text-sm font-medium text-gray-500">From Date</p>
+        <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
+          <Calendar class="h-4 w-4 text-gray-400" />
+          <span>{{ formatDate(application.from_date) || 'Not provided' }}</span>
+        </p>
+      </div>
+      <div class="p-4 bg-gray-50 rounded-lg">
+        <p class="text-sm font-medium text-gray-500">To Date</p>
+        <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
+          <Calendar class="h-4 w-4 text-gray-400" />
+          <span>{{ formatDate(application.to_date) || 'Not provided' }}</span>
+        </p>
+      </div>
+      <div class="p-4 bg-gray-50 rounded-lg">
+        <p class="text-sm font-medium text-gray-500">Duration (Hours)</p>
+        <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
+          <Clock class="h-4 w-4 text-gray-400" />
+          <span>{{ application.total_duration_hours || application.duration_in_hours || 'Not provided' }}</span>
+        </p>
+      </div>
+      <div class="p-4 bg-gray-50 rounded-lg">
+        <p class="text-sm font-medium text-gray-500">Expected Participants</p>
+        <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
+          <Users class="h-4 w-4 text-gray-400" />
+          <span>{{ application.number_of_participants || 'Notprovided' }}</span>
+        </p>
+      </div>
+      <div class="md:col-span-2 p-4 bg-gray-50 rounded-lg">
+        <p class="text-sm font-medium text-gray-500">Proposed Training Location</p>
+        <p class="text-sm text-gray-900 mt-2 flex items-start space-x-2">
+          <UserCircle class="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
+          <span>{{ application.proposed_training_location || 'Not provided' }}</span>
+        </p>
+      </div>
+      <div class="md:col-span-2 p-4 bg-gray-50 rounded-lg">
+        <p class="text-sm font-medium text-gray-500">Relevance to Topic</p>
+        <p class="text-sm text-gray-900 mt-2 flex items-start space-x-2">
+          <Link class="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
+          <span>{{ application.relevance_to_topic || 'Not provided' }}</span>
+        </p>
+      </div>
+      <div class="md:col-span-2 p-4 bg-gray-50 rounded-lg">
+        <p class="text-sm font-medium text-gray-500">Reason for Conducting</p>
+        <p class="text-sm text-gray-900 mt-2 flex items-start space-x-2">
+          <MessageSquare class="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
+          <span>{{ getReasonForConductingName(application.reason_for_conducting) }}</span>
+        </p>
+      </div>
+      <div v-if="application.reason_for_details" class="md:col-span-2 p-4 bg-gray-50 rounded-lg">
+        <p class="text-sm font-medium text-gray-500">Reason Details</p>
+        <p class="text-sm text-gray-900 mt-2 flex items-start space-x-2">
+          <MessageSquare class="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
+          <span>{{ application.reason_for_details }}</span>
+        </p>
+      </div>
+      <div v-if="application.activities_summary" class="md:col-span-2 p-4 bg-gray-50 rounded-lg">
+        <p class="text-sm font-medium text-gray-500">Activities Summary</p>
+        <p class="text-sm text-gray-900 mt-2 flex items-start space-x-2">
+          <Activity class="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
+          <span>{{ application.activities_summary }}</span>
+        </p>
+      </div>
+    </div>
 
-                          <!-- Learning Methods, Resources, Methodologies -->
-                          <div
-                            v-if="application.learning_methods?.length || application.resources?.length || application.methodologies?.length"
-                            class="mt-6 space-y-6">
-                            <!-- Learning Methods -->
-                            <div v-if="application.learning_methods?.length"
-                              class="p-6 bg-blue-50 rounded-lg border border-blue-200">
-                              <h5 class="text-base font-semibold text-blue-900 mb-4 flex items-center space-x-2">
-                                <BookOpen class="h-5 w-5 text-blue-600" />
-                                <span>Learning Methods & Activities</span>
-                              </h5>
-                              <div class="space-y-3">
-                                <div v-for="method in application.learning_methods" :key="method.id"
-                                  class="p-4 bg-white rounded-lg border border-blue-100 shadow-sm">
-                                  <div class="flex items-start justify-between">
-                                    <div class="flex-1">
-                                      <p class="text-sm font-medium text-gray-900 mb-2">{{ method.activities ||
-                                        'Activity not specified' }}</p>
-                                      <div class="flex items-center space-x-4 text-xs text-gray-600">
-                                        <span class="flex items-center space-x-1">
-                                          <Clock class="h-3 w-3" />
-                                          <span>{{ method.duration || 0 }} hours</span>
-                                        </span>
-                                      </div>
-                                    </div>
-                                    <div class="ml-4">
-                                      <span
-                                        class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full font-medium">
-                                        Activity #{{ method.id }}
-                                      </span>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
+    <!-- Learning Methods, Resources, Methodologies -->
+    <div
+      v-if="application.learning_methods?.length || application.resources?.length || application.methodologies?.length"
+      class="mt-6 space-y-6">
 
-                            <!-- Resources -->
-                            <div v-if="application.resources?.length"
-                              class="p-6 bg-green-50 rounded-lg border border-green-200">
-                              <h5 class="text-base font-semibold text-green-900 mb-4 flex items-center space-x-2">
-                                <Users class="h-5 w-5 text-green-600" />
-                                <span>Resource Persons</span>
-                              </h5>
-                              <div class="space-y-3">
-                                <div v-for="resource in application.resources" :key="resource.id"
-                                  class="p-4 bg-white rounded-lg border border-green-100 shadow-sm">
-                                  <div class="flex items-center justify-between">
-                                    <div class="flex items-center space-x-3">
-                                      <div class="p-2 bg-green-100 rounded-full">
-                                        <User class="h-4 w-4 text-green-600" />
-                                      </div>
-                                      <div>
-                                        <p class="text-sm font-medium text-gray-900">
-                                          {{ resource.resource_person_name || 'Name not provided' }}
-                                        </p>
-                                        <p class="text-xs text-gray-600">
-                                          Reg. No: {{ resource.resource_person_reg_no || 'Not specified' }}
-                                        </p>
-                                        <div v-if="resource.resource_document" class="mt-2">
-                                          <a :href="resource.resource_document" target="_blank"
-                                            class="inline-flex items-center px-2 py-1 text-xs font-medium text-blue-600 bg-blue-50 border border-blue-300 rounded hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
-                                            <FileText class="h-3 w-3 mr-1" />
-                                            View Document
-                                          </a>
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div>
-                                      <span
-                                        class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full font-medium">
-                                        Resource Person
-                                      </span>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
+      <!-- Learning Methods -->
+      <div v-if="application.learning_methods?.length"
+        class="p-6 bg-blue-50 rounded-lg border border-blue-200">
+        <h5 class="text-base font-semibold text-blue-900 mb-4 flex items-center space-x-2">
+          <BookOpen class="h-5 w-5 text-blue-600" />
+          <span>Learning Methods & Activities</span>
+        </h5>
+        <div class="space-y-3">
+          <div v-for="method in application.learning_methods" :key="method.id"
+            class="p-4 bg-white rounded-lg border border-blue-100 shadow-sm">
+            <div class="flex items-start justify-between">
+              <div class="flex-1">
+                <p class="text-sm font-medium text-gray-900 mb-2">{{ method.activities ||
+                  'Activity not specified' }}</p>
+                <div class="flex items-center space-x-4 text-xs text-gray-600">
+                  <span class="flex items-center space-x-1">
+                    <Clock class="h-3 w-3" />
+                    <span>{{ method.duration || 0 }} hours</span>
+                  </span>
+                </div>
+              </div>
+              <div class="ml-4">
+                <span
+                  class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full font-medium">
+                  Activity #{{ method.id }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-                            <!-- Methodologies -->
-                            <div v-if="application.methodologies?.length"
-                              class="p-6 bg-purple-50 rounded-lg border border-purple-200">
-                              <h5 class="text-base font-semibold text-purple-900 mb-4 flex items-center space-x-2">
-                                <Activity class="h-5 w-5 text-purple-600" />
-                                <span>Training Methodologies</span>
-                              </h5>
-                              <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                <div v-for="methodology in application.methodologies" :key="methodology.id"
-                                  class="p-4 bg-white rounded-lg border border-purple-100 shadow-sm">
-                                  <div class="flex items-center space-x-3">
-                                    <div class="p-2 bg-purple-100 rounded-full">
-                                      <Activity class="h-4 w-4 text-purple-600" />
-                                    </div>
-                                    <div class="flex-1">
-                                      <p class="text-sm font-medium text-gray-900">
-                                        {{ getMethodologyName(methodology.methodology_name) }}
-                                      </p>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+      <!-- Resources with Credits Editing -->
+      <div v-if="application.resources?.length"
+        class="p-6 bg-green-50 rounded-lg border border-green-200">
+        <h5 class="text-base font-semibold text-green-900 mb-4 flex items-center space-x-2">
+          <Users class="h-5 w-5 text-green-600" />
+          <span>Resource Persons</span>
+        </h5>
+        <div class="space-y-3">
+          <div v-for="resource in application.resources" :key="resource.id"
+            class="p-4 bg-white rounded-lg border border-green-100 shadow-sm">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-3">
+                <div class="p-2 bg-green-100 rounded-full">
+                  <User class="h-4 w-4 text-green-600" />
+                </div>
+                <div class="flex-1">
+                  <p class="text-sm font-medium text-gray-900">
+                    {{ resource.resource_person_name || 'Name not provided' }}
+                  </p>
+                  <p class="text-xs text-gray-600">
+                    Reg. No: {{ resource.resource_person_reg_no || 'Not specified' }}
+                  </p>
+
+                  <!-- Credits section for resource person -->
+                  <div class="mt-2 grid grid-cols-2 gap-4">
+                    <div>
+                      <p class="text-xs text-gray-500">Review Status</p>
+                      <span class="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
+                        Resource Person
+                      </span>
+                    </div>
+                    <div>
+                      <p class="text-xs text-gray-500">CPD Credits</p>
+                      <div v-if="editingResource === resource.id" class="mt-1">
+                        <input v-model.number="resourceCredits[resource.id]" type="number" min="0" step="0.5"
+                          class="w-20 px-2 py-1 text-sm bg-white border border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:border-green-500" />
                       </div>
+                      <p v-else class="text-sm font-medium text-gray-900">
+                        {{ getResourceCredits(resource) || 0 }}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div v-if="resource.resource_document" class="mt-2">
+                    <a :href="resource.resource_document" target="_blank"
+                      class="inline-flex items-center px-2 py-1 text-xs font-medium text-blue-600 bg-blue-50 border border-blue-300 rounded hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
+                      <FileText class="h-3 w-3 mr-1" />
+                      View Document
+                    </a>
+                  </div>
+                </div>
+              </div>
+              <div class="flex items-center space-x-2 ml-4">
+                <!-- Edit buttons for resource person -->
+                <button v-if="editingResource !== resource.id"
+                  @click="startEditingResource(resource)"
+                  class="px-3 py-1.5 text-xs font-medium text-green-600 bg-green-50 border border-green-200 rounded hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors">
+                  Edit Credits
+                </button>
+                <template v-else>
+                  <button @click="saveResource(resource)"
+                    class="px-3 py-1.5 text-xs font-medium text-white bg-green-600 rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors">
+                    Save
+                  </button>
+                  <button @click="cancelEditingResource()"
+                    class="px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-100 rounded hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors">
+                    Cancel
+                  </button>
+                </template>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Methodologies -->
+      <div v-if="application.methodologies?.length"
+        class="p-6 bg-purple-50 rounded-lg border border-purple-200">
+        <h5 class="text-base font-semibold text-purple-900 mb-4 flex items-center space-x-2">
+          <Activity class="h-5 w-5 text-purple-600" />
+          <span>Training Methodologies</span>
+        </h5>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div v-for="methodology in application.methodologies" :key="methodology.id"
+            class="p-4 bg-white rounded-lg border border-purple-100 shadow-sm">
+            <div class="flex items-center space-x-3">
+              <div class="p-2 bg-purple-100 rounded-full">
+                <Activity class="h-4 w-4 text-purple-600" />
+              </div>
+              <div class="flex-1">
+                <p class="text-sm font-medium text-gray-900">
+                  {{ getMethodologyName(methodology.methodology_name) }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
                       <!-- Participants Section -->
                       <div v-if="application.participants && application.participants.length > 0"
@@ -483,7 +517,7 @@
 
                           <div v-if="showApprovalForm"
                             class="p-6 bg-green-50 rounded-xl border border-green-200 mb-4 transition-all">
-                            ```vue
+
                             <h5 class="text-base font-medium text-green-800 mb-4 flex items-center space-x-2">
                               <CheckCircle class="h-4 w-4 text-green-600" />
                               <span>Approve Application</span>
@@ -681,6 +715,8 @@ const allParticipants = ref([])
 const editingParticipant = ref(null)
 const participantCredits = ref({})
 
+const editingResource = ref(null)
+const resourceCredits = ref({})
 // CPD Type mapping
 const cpdTypeMap = {
  1: 'Workshop',
@@ -819,6 +855,52 @@ const getMethodologyName = (methodologyId) => {
  return methodologyMap[methodologyId] || `Unknown Methodology (ID: ${methodologyId})`
 }
 
+// Resource person functions (ADD THESE after the participant functions)
+const startEditingResource = (resource) => {
+  editingResource.value = resource.id
+  resourceCredits.value[resource.id] = getResourceCredits(resource) || 0
+}
+
+const cancelEditingResource = () => {
+  editingResource.value = null
+  resourceCredits.value = {}
+}
+
+const saveResource = (resource) => {
+  const credits = Number(resourceCredits.value[resource.id])
+  if (isNaN(credits) || credits < 0) {
+    resourceCredits.value[resource.id] = 0
+  }
+
+  // Find the participant record for this resource person
+  const resourceParticipant = findResourceAsParticipant(resource)
+
+  if (resourceParticipant) {
+    emit('updateParticipant', {
+      id: resourceParticipant.id,
+      cpd_credits: resourceCredits.value[resource.id],
+      review_status: 'Approved'
+    })
+  }
+
+  editingResource.value = null
+  resourceCredits.value = {}
+}
+
+const getResourceCredits = (resource) => {
+  // Find this resource person in the participants list and get their credits
+  const resourceParticipant = findResourceAsParticipant(resource)
+  return resourceParticipant?.cpd_credits || 0
+}
+
+const findResourceAsParticipant = (resource) => {
+  // Find the resource person in the participants array by matching registration number
+  const resourceRegNo = resource.resource_person_reg_no
+  return props.application.participants?.find(participant =>
+    getParticipantRegNo(participant) === resourceRegNo
+  )
+}
+
 watch(
   () => props.application,
   (newApplication) => {
@@ -833,6 +915,8 @@ watch(
       rejectionError.value = ''
       editingParticipant.value = null
       participantCredits.value = {}
+      editingResource.value = null
+      resourceCredits.value = {}
 
       // Fetch participants data when application changes
       fetchParticipantsData()

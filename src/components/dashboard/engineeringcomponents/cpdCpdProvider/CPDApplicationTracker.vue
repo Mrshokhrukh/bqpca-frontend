@@ -59,7 +59,7 @@
     </div>
 
     <!-- Empty State -->
-    <div v-if="!loading && !error && applications.length === 0" class="bg-gray-50 rounded-xl p-8 text-center mt-6">
+    <div v-if="!loading && !error && userApplications.length === 0" class="bg-gray-50 rounded-xl p-8 text-center mt-6">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24"
         stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -74,7 +74,7 @@
     </div>
 
     <!-- Search and Filter Controls -->
-    <div v-if="!loading && !error && applications.length > 0"
+    <div v-if="!loading && !error && userApplications.length > 0"
       class="mb-6 flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center">
       <div class="relative w-full sm:w-auto">
         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -106,7 +106,7 @@
     </div>
 
     <!-- Application Table -->
-    <div v-if="!loading && !error && applications.length > 0"
+    <div v-if="!loading && !error && userApplications.length > 0"
       class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-x-auto">
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
@@ -182,7 +182,7 @@
     </div>
 
     <!-- New Application Button -->
-    <div v-if="!loading && applications.length > 0" class="mt-6 flex justify-end">
+    <div v-if="!loading && userApplications.length > 0" class="mt-6 flex justify-end">
       <button @click="createNewApplication"
         class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
         <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
@@ -499,9 +499,11 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import apiService from '@/services/services' // Corrected import path
 import { useToast } from 'vue-toastification'
+import { useAuthStore } from '@/stores/authStore'
 
 const router = useRouter()
 const toast = useToast()
+const authStore = useAuthStore()
 
 // Reactive state
 const applications = ref([])
@@ -530,24 +532,18 @@ const getCpdProvidingAgencyName = (agencyId) => {
 
 // Helper functions to handle different field name variations for participants
 const getParticipantName = (participant) => {
-  // For CPD task participants, we only have participant_reg_no
-  // We need to look up the actual user data from the participants list
   if (participant.participant_reg_no && !participant.first_name && !participant.full_name) {
-    // Try to find the user data from the participants list loaded on page mount
     const userData = findUserByRegNo(participant.participant_reg_no)
     if (userData) {
       return getParticipantName(userData)
     }
-    // If not found in loaded data, return a formatted version
     return `User ${participant.participant_reg_no}`
   }
 
-  // Check if this is from the application list (getEpcFullApplicationListByCid)
   if (participant.full_name) {
     return participant.full_name
   }
 
-  // Handle first_name + last_name combination
   if (participant.first_name || participant.last_name) {
     const firstName = participant.first_name || ''
     const middleName = participant.middle_name ? ` ${participant.middle_name}` : ''
@@ -555,28 +551,23 @@ const getParticipantName = (participant) => {
     return `${firstName}${middleName} ${lastName}`.trim()
   }
 
-  // Check if participant has a nested user object
   if (participant.user) {
     return getParticipantName(participant.user)
   }
 
-  // Fallback to other possible name fields
   return participant.name || participant.participant_name || participant.username || 'Unknown Name'
 }
 
 const getParticipantRegNo = (participant) => {
-  // Check nested objects first
   if (participant.user && participant.user.cid) {
     return participant.user.cid
   }
 
-  // Check direct fields - for CPD task participants, participant_reg_no is the main field
   return participant.participant_reg_no || participant.cid || participant.registration_no || participant.reg_no || participant.registrationNo || 'N/A'
 }
 
 // Helper function to find user data by registration number
 const findUserByRegNo = (regNo) => {
-  // This will be populated when we fetch participants data
   return allParticipants.value.find(p =>
     p.cid === regNo ||
     p.registration_no === regNo ||
@@ -585,26 +576,43 @@ const findUserByRegNo = (regNo) => {
   )
 }
 
-// Add a new reactive variable to store all participants data
 const allParticipants = ref([])
 
-// --- Status Logic ---
+const userApplications = computed(() => {
+  if (!authStore?.user?.cid || !Array.isArray(applications.value)) {
+    return []
+  }
 
-// Determines the user-facing status text based on the actual API fields
+  const userCid = String(authStore.user.cid)
+
+  const filtered = applications.value.filter((app) => {
+    const isCourseCreator = String(app.cid_no) === userCid
+
+    let isParticipant = false
+    if (app.participants && Array.isArray(app.participants)) {
+      isParticipant = app.participants.some(participant => {
+        const participantCid = String(participant.participant_reg_no)
+        return participantCid === userCid
+      })
+    }
+
+    return isCourseCreator || isParticipant
+  })
+
+  return filtered
+})
+
 const getStatusText = (application) => {
   if (!application) return 'Unknown'
 
-  // Check if it's a draft first
   if (application.is_draft) {
     return 'Draft'
   }
 
-  // Use the status field from API (pending, approved, regretted)
   const apiStatus = application.status?.toLowerCase()
 
   switch (apiStatus) {
     case 'approved':
-      // If approved, check if participants are missing
       if (!application.participants || application.participants.length === 0) {
         return 'Needs Participants'
       } else {
@@ -618,47 +626,40 @@ const getStatusText = (application) => {
   }
 }
 
-// Determines the Tailwind CSS classes for the status badge
 const getStatusClass = (application) => {
   const status = getStatusText(application)
   switch (status) {
     case 'Completed':
       return 'bg-green-100 text-green-800'
     case 'Needs Participants':
-      return 'bg-blue-100 text-blue-800' // Distinct color for action needed
+      return 'bg-blue-100 text-blue-800'
     case 'Rejected':
       return 'bg-red-100 text-red-800'
     case 'Pending':
       return 'bg-yellow-100 text-yellow-800'
     case 'Draft':
-      return 'bg-gray-100 text-gray-800 border border-gray-300' // More distinct draft
-    default: // Unknown
+      return 'bg-gray-100 text-gray-800 border border-gray-300'
+    default:
       return 'bg-gray-100 text-gray-800'
   }
 }
 
-// Specifically checks if status is 'Needs Participants' - only for approved applications
 const isApprovedWithoutParticipants = (application) => {
-  // Must be approved status AND missing participants
   return application.status?.toLowerCase() === 'approved' &&
          (!application.participants || application.participants.length === 0)
 }
 
-// --- Computed Properties ---
-
 const filteredApplications = computed(() => {
-  if (!Array.isArray(applications.value)) return [] // Safety check
+  if (!Array.isArray(userApplications.value)) return []
 
   const term = searchTerm.value.toLowerCase().trim()
   const statusTerm = statusFilter.value
 
-  return applications.value.filter((app) => {
-    // Match on Title (title_of_cpd) or ID
+  return userApplications.value.filter((app) => {
     const titleMatch = app.title_of_cpd?.toLowerCase().includes(term)
     const idMatch = app.id?.toString().toLowerCase().includes(term)
     const searchMatch = term === '' || titleMatch || idMatch
 
-    // Match on Status
     const statusMatch = statusTerm === '' || getStatusText(app) === statusTerm
 
     return searchMatch && statusMatch
@@ -666,22 +667,18 @@ const filteredApplications = computed(() => {
 })
 
 const approvedApplicationsWithoutParticipants = computed(() => {
-  if (!Array.isArray(applications.value)) return []
-  return applications.value.filter((app) => isApprovedWithoutParticipants(app))
+  if (!Array.isArray(userApplications.value)) return []
+  return userApplications.value.filter((app) => isApprovedWithoutParticipants(app))
 })
 
 const hasApprovedApplicationsWithoutParticipants = computed(() => {
   return approvedApplicationsWithoutParticipants.value.length > 0
 })
 
-// --- Data Fetching ---
-
 const fetchApplications = async () => {
   loading.value = true
   error.value = null
-  console.log('Fetching CPD Tasks using apiService...')
   try {
-    // Fetch both applications and participants data
     const [response, participantsResponse] = await Promise.all([
       apiService.getEpcCpdTasks(),
       apiService.getEpcFullApplicationListByCid('')
@@ -692,9 +689,7 @@ const fetchApplications = async () => {
         (a, b) =>
           new Date(b.updated_at || b.created_at) - new Date(a.updated_at || a.created_at),
       )
-      console.log(`Loaded ${applications.value.length} applications.`)
     } else {
-      console.warn('No application data received or format is incorrect:', response.data)
       applications.value = []
       if (response.status === 200 && !response.data?.results) {
         error.value = 'No applications found for your account.'
@@ -703,14 +698,11 @@ const fetchApplications = async () => {
       }
     }
 
-    // Store participants data for lookup
     if (participantsResponse.data) {
       allParticipants.value = participantsResponse.data.results || participantsResponse.data || []
-      console.log(`Loaded ${allParticipants.value.length} participants for lookup.`)
     }
 
   } catch (err) {
-    console.error('Error fetching applications:', err)
     error.value =
       err.response?.data?.detail ||
       err.message ||
@@ -723,15 +715,11 @@ const fetchApplications = async () => {
   }
 }
 
-// --- Helper Functions (Date Formatting) ---
-
 const formatDate = (dateString) => {
   if (!dateString) return 'N/A'
   try {
     const date = new Date(dateString)
     if (isNaN(date.getTime())) {
-      // Check if date is valid
-      console.warn(`Invalid date string received: ${dateString}`)
       return 'Invalid Date'
     }
     return date.toLocaleDateString(undefined, {
@@ -740,7 +728,6 @@ const formatDate = (dateString) => {
       day: 'numeric',
     })
   } catch (e) {
-    console.error(`Error formatting date: ${dateString}`, e)
     return 'Error'
   }
 }
@@ -748,33 +735,19 @@ const formatDate = (dateString) => {
 const formatDateRange = (startDate, endDate) => {
   const start = formatDate(startDate)
   const end = formatDate(endDate)
-  // Handle N/A or error cases for either date
   if ([start, end].some((d) => ['N/A', 'Invalid Date', 'Error'].includes(d))) {
     return 'N/A'
   }
   return `${start} to ${end}`
 }
 
-// --- Actions ---
-
 const viewApplication = async (application) => {
-  console.log('Viewing application:', application.id)
-  // Optionally fetch full details if the list view is partial
-  // loadingModal.value = true; // Indicate loading within modal
   try {
-    // Example: Fetch full data only if needed (uncomment if required)
-    // const response = await apiService.getEpcCpdTask(application.id);
-    // selectedApplication.value = response.data;
-
-    // If list data is sufficient:
     selectedApplication.value = application
     showViewModal.value = true
   } catch (viewError) {
-    console.error('Error fetching full application details:', viewError)
     toast.error('Could not load full application details.')
-    selectedApplication.value = null // Clear selection on error
-  } finally {
-    // loadingModal.value = false;
+    selectedApplication.value = null
   }
 }
 
@@ -788,41 +761,26 @@ const editApplication = (application) => {
     toast.warning('Only applications in Draft status can be edited.')
     return
   }
-  closeViewModal() // Close modal if open
-  console.log('Navigating to edit application:', application.id)
-  // Ensure the target route exists
+  closeViewModal()
   router.push(
     `/admin/cpd_cme_provider/engineering_certification/cpd_application_details?id=${application.id}`,
   )
 }
 
 const addParticipants = (application) => {
-  // Check if application is approved using the status field
   if (application.status?.toLowerCase() !== 'approved') {
     toast.error('This application must be Approved before adding participants.')
-    console.warn(
-      'Attempted to add participants to non-approved application:',
-      application.id,
-      'Status:',
-      application.status
-    )
     return
   }
-  closeViewModal() // Close modal if open
-  console.log('Navigating to add participants for application:', application.id)
-  // Ensure the target route exists and handles the query param
+  closeViewModal()
   router.push(
     `/admin/cme_cpd_provider/engineering_certification/cpd_approved_add_participants?id=${application.id}`
   )
 }
 
 const createNewApplication = () => {
-  console.log('Navigating to create new application form')
-  // Ensure the target route exists
   router.push('/admin/cme_cpd_provider/engineering_certification/cpd_application_details')
 }
-
-// --- Lifecycle Hook ---
 
 onMounted(() => {
   fetchApplications()
@@ -830,33 +788,22 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Optional: Add specific styles if needed */
-/* Example: Style for the modal background */
 .fixed.inset-0.bg-gray-900 {
-  /* Add transition for smoother appearance */
   transition: opacity 0.3s ease-in-out;
 }
 
-/* Example: Style for the modal content scaling */
 .fixed.inset-0 .bg-white {
   transition: transform 0.3s ease-in-out;
 }
 
-/* Add pointer cursor to table rows for better UX */
 tbody tr {
   cursor: default;
-  /* Default cursor */
-}
-
-tbody tr:hover {
-  /* Indicate interactivity slightly beyond background color */
 }
 
 tbody button {
   cursor: pointer;
 }
 
-/* Ensure modal scroll works correctly */
 .max-h-\[95vh\] {
   max-height: 95vh;
 }

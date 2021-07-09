@@ -1,18 +1,14 @@
 <template>
   <div class="p-8 min-h-screen bg-gray-50">
     <!-- Page Header -->
-    <div
-      class="bg-white rounded-xl p-8 mb-10 shadow-sm border border-gray-100 flex items-start justify-between"
-    >
+    <div class="bg-white rounded-xl p-8 mb-10 shadow-sm border border-gray-100 flex items-start justify-between">
       <div>
         <h1 class="text-4xl font-bold text-gray-900 mb-3">EOI Applications</h1>
       </div>
       <div>
         <button
           class="inline-flex items-center px-6 py-3 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
-          @click="fetchInstitutes"
-          :disabled="loading"
-        >
+          @click="fetchInstitutes" :disabled="loading">
           <RefreshCw class="w-4 h-4 mr-2" :class="{ 'animate-spin': loading }" />
           {{ loading ? 'Refreshing...' : 'Refresh Application List' }}
         </button>
@@ -22,26 +18,13 @@
     <!-- Search Input -->
     <div class="grid grid-cols-1 md:grid-cols-1 gap-4 mb-8">
       <div class="relative">
-        <input
-          v-model="searchQuery"
-          type="text"
-          placeholder="Search by App ID or Institute Name..."
+        <input v-model="searchQuery" type="text" placeholder="Search by App ID or Institute Name..."
           class="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          @input="debouncedSearch"
-        />
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-5 w-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-          />
+          @input="debouncedSearch" />
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2"
+          fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
         </svg>
       </div>
     </div>
@@ -55,49 +38,31 @@
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
             <tr>
-              <th
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Application ID
               </th>
-              <th
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Institute Name
               </th>
-              <th
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Program Type
               </th>
-              <th
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Date Submitted
               </th>
-              <th
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Status
               </th>
-              <th
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Actions
               </th>
-              <th
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Notes
               </th>
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
-            <tr
-              v-for="institute in filteredEois"
-              :key="institute.id"
-              class="hover:bg-gray-50 transition-colors"
-            >
+            <tr v-for="institute in filteredEois" :key="institute.id" class="hover:bg-gray-50 transition-colors">
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                 {{ institute.id }}
               </td>
@@ -113,19 +78,15 @@
               <td class="px-6 py-4 whitespace-nowrap">
                 <span :class="getStatusClasses(institute)">
                   {{ institute.review_decision }}
-                  <span
-                    v-if="institute.review_decision === 'Regretted' && institute.reason_if_rejected"
-                  >
+                  <span v-if="institute.review_decision === 'Regretted' && institute.reason_if_rejected">
                     (Reason: {{ institute.reason_if_rejected }})
                   </span>
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                 <div class="flex space-x-3">
-                  <button
-                    @click="openModal(institute)"
-                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200"
-                  >
+                  <button @click="openModal(institute)"
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">
                     View
                   </button>
                 </div>
@@ -140,13 +101,9 @@
     </div>
 
     <!-- EOI Application Modal -->
-    <EoiApplicationsModal
-      :isOpen="isModalOpen"
-      :application="selectedInstitute"
-      @close="closeModal"
+    <EoiApplicationsModal :isOpen="isModalOpen" :application="selectedInstitute" @close="closeModal"
       @application-updated="handleApplicationUpdated"
-      :key="selectedInstitute ? selectedInstitute.id : 'no-institute'"
-    />
+      :key="selectedInstitute ? selectedInstitute.id : 'no-institute'" />
   </div>
 </template>
 
