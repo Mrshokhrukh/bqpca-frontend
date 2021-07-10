@@ -154,7 +154,7 @@
                         <p class="font-medium text-gray-800">{{ renewalData.primary_qualification || 'N/A' }}</p>
                       </div>
                       <div>
-                        <p class="text-xs text-gray-500">Original Expiry</p>
+                        <p class="text-xs text-gray-500"> Expiry Date</p>
                         <p class="font-medium text-red-600">{{ formatDate(renewalData.original_expiry_date) }}</p>
                       </div>
                       <div>
@@ -185,7 +185,7 @@
                         <p class="font-medium"
                           :class="getStatusColor(renewalData.payment_status || renewalData.original_renewal?.payment_status)">
                           {{ renewalData.payment_status_display || renewalData.original_renewal?.payment_status_display
-                          || 'N/A' }}
+                            || 'N/A' }}
                         </p>
                       </div>
                       <div v-if="renewalData.new_expiry_date">
