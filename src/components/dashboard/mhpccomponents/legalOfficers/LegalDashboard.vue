@@ -142,7 +142,7 @@
                   <div class="max-w-xs truncate">{{ complaint.subject }}</div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {{ complaint.professional_name }}
+                  {{ complaint.professional_name || (complaint.respondent_application ? complaint.respondent_application.full_name : 'N/A') }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   {{ formatDate(complaint.created_at) }}
@@ -252,7 +252,7 @@
             </div>
 
             <!-- Respondent Details -->
-            <div v-if="selectedComplaint.respondent_application_details" class="bg-amber-50 rounded-xl p-6 border border-amber-200">
+            <div v-if="selectedComplaint.respondent_application" class="bg-amber-50 rounded-xl p-6 border border-amber-200">
               <h4 class="text-lg font-semibold text-amber-900 mb-4 flex items-center">
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
@@ -262,15 +262,15 @@
               <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <p class="text-sm font-medium text-gray-700 mb-1">Full Name:</p>
-                  <p class="text-gray-900">{{ selectedComplaint.respondent_application_details.full_name }}</p>
+                  <p class="text-gray-900">{{ selectedComplaint.respondent_application.full_name }}</p>
                 </div>
                 <div>
                   <p class="text-sm font-medium text-gray-700 mb-1">Registration No:</p>
-                  <p class="text-gray-900">{{ selectedComplaint.respondent_application_details.registration_no }}</p>
+                  <p class="text-gray-900">{{ selectedComplaint.respondent_application.registration_no }}</p>
                 </div>
                 <div>
                   <p class="text-sm font-medium text-gray-700 mb-1">Email:</p>
-                  <p class="text-gray-900">{{ selectedComplaint.respondent_application_details.email }}</p>
+                  <p class="text-gray-900">{{ selectedComplaint.respondent_application.email_address }}</p>
                 </div>
               </div>
             </div>

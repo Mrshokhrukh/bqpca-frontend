@@ -29,8 +29,6 @@
               Professional Name (Respondent)</th>
             <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Status</th>
-            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Assigned To</th>
             <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date
               Filed</th>
             <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -46,24 +44,13 @@
             <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{{ complaint.submitted_by_name || 'N/A' }}
             </td>
             <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-              {{ complaint.professional_name || (complaint.respondent_application_details ?
-                complaint.respondent_application_details.full_name : 'N/A') }}
+              {{ complaint.professional_name || (complaint.respondent_application ?
+                complaint.respondent_application.full_name : 'N/A') }}
             </td>
             <td class="px-4 py-4 whitespace-nowrap">
               <span :class="getStatusClass(complaint.status)"
                 class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full">
                 {{ complaint.status }}
-              </span>
-            </td>
-            <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-              <span v-if="complaint.respondent_application_details">
-                {{ complaint.respondent_application_details.full_name }}
-              </span>
-              <span v-else-if="complaint.professional_name">
-                {{ complaint.professional_name }}
-              </span>
-              <span v-else>
-                Not Specified
               </span>
             </td>
             <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatDate(complaint.created_at) }}</td>
@@ -164,9 +151,9 @@
                     class="px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full">{{
                     selectedComplaint.status }}</span></p>
                 <p><strong class="text-gray-600">Professional Name (Respondent):</strong>
-                  {{ selectedComplaint.professional_name || (selectedComplaint.respondent_application_details ?
-                    selectedComplaint.respondent_application_details.full_name : 'N/A') }}
-                  <span v-if="selectedComplaint.respondent_application_details" class="text-xs text-gray-500">(System
+                  {{ selectedComplaint.professional_name || (selectedComplaint.respondent_application ?
+                    selectedComplaint.respondent_application.full_name : 'N/A') }}
+                  <span v-if="selectedComplaint.respondent_application" class="text-xs text-gray-500">(System
                     Linked)</span>
                 </p>
                 <p><strong class="text-gray-600">Designation:</strong> {{ selectedComplaint.professional_designation ||
@@ -233,10 +220,10 @@
             <h4 class="text-lg font-medium text-gray-800 mb-3 border-b pb-2">Link Respondent Professional</h4>
             <p class="text-sm text-gray-600 mb-2">Currently Linked Respondent:
               <strong class="text-gray-700">
-                <span v-if="selectedComplaint.respondent_application_details">
-                  {{ selectedComplaint.respondent_application_details.full_name ||
-                    selectedComplaint.respondent_application_details.name }} ({{
-                    selectedComplaint.respondent_application_details.email || 'No email' }})
+                <span v-if="selectedComplaint.respondent_application">
+                  {{ selectedComplaint.respondent_application.full_name ||
+                    selectedComplaint.respondent_application.name }} ({{ 
+                    selectedComplaint.respondent_application.email_address || 'No email' }})
                 </span>
                 <span v-else-if="selectedComplaint.professional_name && !selectedComplaint.respondent_application">
                   {{ selectedComplaint.professional_name }} (Manual entry, not linked to system record)
