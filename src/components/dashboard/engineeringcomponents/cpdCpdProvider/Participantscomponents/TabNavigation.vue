@@ -11,7 +11,7 @@
       </button>
       <button @click="changeTab('photo')" :class="getTabClasses('photo')">
         <CameraIcon class="h-5 w-5 inline-block mr-2" />
-        Attendance Photo
+        Attendance Sheet
       </button>
     </div>
   </div>

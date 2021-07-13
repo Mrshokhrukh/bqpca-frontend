@@ -339,7 +339,10 @@
                   Submitted Date
                 </th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
+                  Form Status
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Approval Status
                 </th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Validate till </th>
@@ -367,6 +370,9 @@
                       ? new Date(application.created_at).toLocaleDateString()
                       : 'N/A'
                   }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {{ application.is_draft || 'N/A' }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm">
                   <span :class="getStatusClass(application.review_decision)"
@@ -421,14 +427,14 @@ const selectedFile = ref(null)
 const selectedFileName = ref('')
 const formData = ref({
   proposal_title: '',
-  duration_months: null,  // ✅ FIXED: Changed from duration_in_months
+  duration_months: null,
   commencement_date: '',
   remarks: '',
   ins_declaration: false,
-  proposal_attachment: null,  // ✅ FIXED: Changed from institute_attachments
+  proposal_attachment: null,
   ins_review_decision: 'Pending',
   is_active: true,
-  training_institute: null,  // ✅ FIXED: Changed from training_institute_id to training_institute
+  training_institute: null,
   institute_name: '',
 })
 

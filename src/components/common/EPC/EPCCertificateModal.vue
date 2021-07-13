@@ -106,20 +106,14 @@
 
               <!-- Footer Section -->
               <div class="mt-12 px-12 flex justify-between items-end">
-                <!-- Signature Section -->
-                <div>
-                  <img v-if="application.user_qualifications[0]?.e_signature"
-                    :src="application.user_qualifications[0].e_signature" alt="Signature" class="h-16" />
+
+                <div v-if="eSignature">
+                  <img :src="eSignature.signature" alt="Signature" class="h-16" />
                   <div class="mt-2 text-sm">
-                    <p class="font-medium">Wangchuk Dorji</p>
-                    <p>Director</p>
+                    <p class="font-medium">{{ eSignature.name }}</p>
+                    <p>{{ eSignature.designation }}</p>
                     <p class="mt-1">
-                      Dated:
-                      {{
-                        formatDate(
-                          application.user_qualifications[0]?.updated_at || application.updated_at,
-                        )
-                      }}
+                      Dated: {{ formatDate(eSignature.updated_at) }}
                     </p>
                   </div>
                 </div>
@@ -169,13 +163,13 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
 import html2pdf from 'html2pdf.js'
+import apiServices from '@/services/services'
 
 const props = defineProps({
   qualification: {
-    //This should now receive the entire API response, not just a qualification object
     type: Object,
     default: null,
   },
@@ -187,12 +181,25 @@ const props = defineProps({
 
 const emit = defineEmits(['close'])
 
+const eSignature = ref(null)
+
+onMounted(async () => {
+  try {
+    const response = await apiServices.getEpcMastersESignatures()
+    if (response.data && response.data.results && response.data.results.length > 0) {
+      eSignature.value = response.data.results[0]
+    }
+  } catch (error) {
+    console.error('Failed to fetch e-signature:', error)
+  }
+})
+
+
 const closeModal = () => {
   emit('close')
 }
 
 const application = computed(() => {
-  // Access the first result from the 'results' array. Handle cases where 'results' might be empty.
   return props.qualification &&
     props.qualification.results &&
     props.qualification.results.length > 0
@@ -201,7 +208,6 @@ const application = computed(() => {
 })
 
 const getEngineeringType = (app) => {
-  // If we have user_qualifications, try to derive engineering type from there
   if (app.user_qualifications && app.user_qualifications.length > 0) {
     const qualification = app.user_qualifications[0]
     if (qualification.qualification_name_display) {
@@ -220,10 +226,10 @@ const getEngineeringType = (app) => {
 }
 
 const qrCodeData = computed(() => {
-  const baseUrl = window.location.origin // Get base URL dynamically
+  const baseUrl = window.location.origin
   return application.value
     ? `${baseUrl}/certification-validity/search?service_type=engineering_certification&cert_number=${application.value.registration_no}`
-    : '' // Return empty string if application data is not available
+    : ''
 })
 
 const formatDate = (dateString) => {

@@ -6,7 +6,8 @@
       <div class="flex items-center text-gray-600">
         <span class="flex items-center">
           <span class="w-3 h-3 rounded-full bg-blue-500 mr-2"></span>
-          Total: {{ teachingCenters.length }}
+          <!-- MODIFIED: Display count of published centers -->
+          Total: {{ publishedCenters.length }}
         </span>
       </div>
     </div>
@@ -53,10 +54,10 @@
       <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
     </div>
 
-    <!-- No Data Message -->
-    <div v-else-if="!loading && teachingCenters.length === 0"
+    <!-- MODIFIED: Check published centers length and update text -->
+    <div v-else-if="!loading && publishedCenters.length === 0"
       class="bg-white p-8 text-center text-gray-500 rounded-xl shadow-sm border border-gray-100">
-      <p>No teaching Institutes found</p>
+      <p>No published teaching Institutes found</p>
     </div>
 
     <!-- Teaching Centers Table -->
@@ -83,7 +84,8 @@
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="center in teachingCenters" :key="center.id" class="hover:bg-gray-50 transition-colors">
+            <!-- MODIFIED: Iterate over published centers -->
+            <tr v-for="center in publishedCenters" :key="center.id" class="hover:bg-gray-50 transition-colors">
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="text-sm font-medium text-gray-900">{{ center.center_name }}</div>
               </td>
@@ -342,8 +344,7 @@
       </div>
     </div>
 
-    <!-- Approve and Reject Dialogs (No changes needed here) -->
-    <!-- ... your existing code for approveDialog and rejectDialog ... -->
+    <!-- Approve and Reject Dialogs -->
 
     <!-- Approve Confirmation Dialog -->
     <div v-if="approveDialog.show" class="fixed z-20 inset-0 overflow-y-auto" aria-labelledby="approve-dialog-title"
@@ -480,6 +481,11 @@ const rejectDialog = ref({
   message: '',
 })
 
+// ADDED: computed property to filter for non-drafts
+const publishedCenters = computed(() => {
+  return teachingCenters.value.filter(center => center && center.is_draft === false);
+});
+
 const isReviewFinalized = computed(() => {
   return (
     selectedCenter.value?.tc_review_decision === 'Approved' ||
@@ -500,10 +506,11 @@ const fetchTeachingCenters = async () => {
       response?.results ||
       (Array.isArray(response) ? response : Array.isArray(response?.data) ? response.data : [])
 
-    // Make sure is_payment_complete is available, defaulting to false if not provided
+    // Ensure is_payment_complete and is_draft are available, defaulting as needed
     teachingCenters.value = results.filter((center) => center != null).map(center => ({
       ...center,
-      is_payment_complete: center.is_payment_complete === true // Ensure it's a strict boolean
+      is_payment_complete: center.is_payment_complete === true, // Ensure it's a strict boolean
+      is_draft: center.is_draft === true // Default is_draft to false if not provided
     }));
 
     if (!Array.isArray(results)) {

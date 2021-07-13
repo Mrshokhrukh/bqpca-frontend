@@ -29,7 +29,7 @@
     <!-- No Teaching Centers Found -->
     <div v-else-if="!filteredTeachingCenters.length"
       class="bg-yellow-50 border border-yellow-200 text-yellow-700 p-6 rounded-lg mb-6">
-      <h3 class="text-lg font-medium mb-2">No Teaching Centers Found</h3>
+      x<h3 class="text-lg font-medium mb-2">No Teaching Centers Found</h3>
       <p>You don't have any registered teaching centers associated with your institute.</p>
       <p class="mt-2">Please register a teaching center first before attempting to renew.</p>
     </div>

@@ -80,7 +80,7 @@
                   <div class="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
                     <dt class="text-sm font-medium text-gray-500">Email Address</dt>
                     <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ localProgram.email_address || 'N/A'
-                    }}</dd>
+                      }}</dd>
                   </div>
                   <div class="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
                     <dt class="text-sm font-medium text-gray-500">Website</dt>
@@ -106,7 +106,7 @@
                   <div class="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
                     <dt class="text-sm font-medium text-gray-500">Proposal Title</dt>
                     <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ localProgram.proposal_title || 'N/A'
-                    }}</dd>
+                      }}</dd>
                   </div>
                   <div class="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
                     <dt class="text-sm font-medium text-gray-500">Duration</dt>

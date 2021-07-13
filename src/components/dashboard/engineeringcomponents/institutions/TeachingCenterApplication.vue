@@ -238,12 +238,6 @@
                   placeholder="Enter target category" />
               </div>
 
-              <!-- Valid Till -->
-              <!-- <div>
-                <label for="validTill" class="form-label required-label">Valid Till</label>
-                <input type="date" id="validTill" v-model="formData.valid_till" class="form-input" required
-                  :min="todayDate" />
-              </div> -->
 
               <!-- Attachments -->
               <div class="lg:col-span-2">
@@ -553,7 +547,6 @@ const validateForm = () => {
   if (!formData.value.state_dzongkhag) { alert('Please select State/Dzongkhag for the center.'); return false; }
   if (!formData.value.city_gewog) { alert('Please select City/Gewog for the center.'); return false; }
   if (!formData.value.target_category.trim()) { alert('Please enter Target Category.'); return false; }
-  if (!formData.value.valid_till) { alert('Please select Valid Till date.'); return false; }
   if (!formData.value.tc_attachments || formData.value.tc_attachments.length === 0) { alert('Please attach required documents.'); return false; }
   if (!formData.value.tc_remarks.trim()) { alert('Please enter Teaching Center Remarks.'); return false; }
   if (!formData.value.tc_declaration) { alert('Please accept the tc_declaration.'); return false; }

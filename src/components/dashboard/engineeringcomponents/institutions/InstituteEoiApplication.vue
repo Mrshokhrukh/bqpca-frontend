@@ -104,7 +104,7 @@
               </div>
               <div>
                 <label for="teaching_institute" class="block text-sm font-medium text-gray-700 mb-1">
-                  Engineering Institution (If different from above)
+                  Teaching Institute Name, Engineering Institution (If different from above)
                 </label>
                 <input type="text" id="teaching_institute" v-model.trim="formData.teaching_institute"
                   class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2" />
@@ -313,10 +313,10 @@ const formData = ref({
 
   // Course Details
   title_of_course: '',
-  course_duration: '', // Initialize as empty string to avoid null
+  course_duration: '',
   commencement_date: '',
   type_of_programme: '',
-  supporting_documents: null, // File object or null (optional unless required)
+  supporting_documents: null,
   remarks: '',
 
   // Head of Institution Details
@@ -357,14 +357,11 @@ const programTypeOptions = [
   { value: 'D', label: 'Diploma' },
   { value: 'B', label: 'Bachelor' },
 ]
-
-// File upload handler
 const handleFileUpload = (event, fieldName) => {
   const file = event.target.files[0]
   formData.value[fieldName] = file || null
 }
 
-// Validation Function
 const validateForm = () => {
   const requiredFields = [
     { field: 'full_name', label: 'Full Name' },
@@ -396,21 +393,11 @@ const validateForm = () => {
       return false
     }
   }
-
-  // Specific validation for course_duration
   const duration = Number(formData.value.course_duration)
   if (!Number.isInteger(duration) || duration <= 0) {
     toast.error('Course Duration must be a positive integer (in months).')
     return false
   }
-
-  // Validation for supporting_documents (uncomment if required)
-  // if (!formData.value.supporting_documents) {
-  //   toast.error('Supporting Documents are required.');
-  //   return false;
-  // }
-
-  // Email format validation
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   if (!emailRegex.test(formData.value.email_address)) {
     toast.error('Please enter a valid Email Address.')
@@ -420,8 +407,6 @@ const validateForm = () => {
     toast.error('Please enter a valid Head of Institution Email.')
     return false
   }
-
-  // Commencement date validation
   if (new Date(formData.value.commencement_date) < new Date(todayDate.value)) {
     toast.error('Commencement Date cannot be in the past.')
     return false
@@ -432,38 +417,31 @@ const validateForm = () => {
 
 // Form Submission
 const handleSubmit = async () => {
-  // Check Auth User
   if (!authStore.user || !authStore.user.cid) {
     toast.error('User authentication error. Please log in again.', { timeout: 5000 })
     return
   }
   formData.value.CID = authStore.user.cid
 
-  // Check Declaration
   if (!formData.value.declaration) {
     toast.warning('Please agree to the declaration before submitting.', { timeout: 4000 })
     return
   }
-
-  // Validate Form
   if (!validateForm()) {
     return
   }
 
-  // Prepare FormData
   isSubmitting.value = true
   const submitData = new FormData()
 
   Object.keys(formData.value).forEach((key) => {
     const value = formData.value[key]
-
-    // Skip only backend-set fields
     if (key === 'review_decision' || key === 'reason_if_rejected') {
       return
     }
 
     if (key === 'declaration') {
-      // Always send as string 'true' or 'false'
+
       submitData.append('declaration', value ? 'true' : 'false')
     } else if (value instanceof File) {
       submitData.append(key, value, value.name)
@@ -481,13 +459,11 @@ const handleSubmit = async () => {
     }
   })
 
-  // Log FormData for debugging
   console.log('Submitting FormData:')
   for (let pair of submitData.entries()) {
     console.log(`${pair[0]}: ${pair[1]}`)
   }
 
-  // Submit to API
   try {
     const response = await apiService.createEpcInstitute(submitData)
     if (response.data) {
@@ -532,7 +508,6 @@ const handleSubmit = async () => {
   }
 }
 
-// Draft Management
 const saveDraft = () => {
   const draftData = { ...formData.value }
     ;['supporting_documents', 'institute_eoi_supporting_documents', 'do_dpr_report'].forEach(
@@ -552,7 +527,6 @@ const clearDraft = () => {
   localStorage.removeItem('epcEoiFormDraft')
 }
 
-// Load Draft on Mount
 onMounted(() => {
   if (authStore.user?.cid) {
     formData.value.CID = authStore.user.cid
