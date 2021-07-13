@@ -4,11 +4,30 @@
     class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 transition-opacity duration-300"
     @click.self="close"
   >
-    <div class="bg-white rounded-2xl shadow-xl max-w-2xl w-full m-4 transform transition-transform duration-300 scale-95" :class="{ 'scale-100': isOpen }">
+    <div
+      class="bg-white rounded-2xl shadow-xl max-w-2xl w-full m-4 transform transition-transform duration-300 scale-95"
+      :class="{ 'scale-100': isOpen }"
+    >
       <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
         <h2 class="text-xl font-semibold text-gray-800">Certificate of Good Standing</h2>
-        <button @click="close" class="p-2 rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        <button
+          @click="close"
+          class="p-2 rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+        >
+          <svg
+            class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 18L18 6M6 6l12 12"
+            ></path>
+          </svg>
         </button>
       </div>
       <div class="p-6" ref="certificateContent">
@@ -19,15 +38,19 @@
           </div>
           <div class="text-center">
             <p class="text-3xl font-serif text-gray-800">{{ application.full_name }}</p>
-            <p class="text-sm text-gray-600 mt-1">Registration No: {{ application.registration_no }}</p>
+            <p class="text-sm text-gray-600 mt-1">
+              Registration No: {{ application.registration_no }}
+            </p>
           </div>
           <div class="text-center my-6">
             <p class="text-gray-700">has been granted the Certificate of Good Standing.</p>
-            <p class="text-sm text-gray-500">This certificate is a placeholder and for demonstration purposes only.</p>
+            <p class="text-sm text-gray-500">
+              This certificate is a placeholder and for demonstration purposes only.
+            </p>
           </div>
         </div>
         <div v-else class="text-center py-8">
-            <p class="text-gray-500">No application data available.</p>
+          <p class="text-gray-500">No application data available.</p>
         </div>
       </div>
       <div class="px-6 py-4 bg-gray-50 rounded-b-2xl flex justify-end space-x-3">
@@ -37,7 +60,7 @@
         >
           Close
         </button>
-         <button
+        <button
           @click="downloadCertificate"
           class="inline-flex items-center justify-center bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white font-semibold py-2 px-5 rounded-lg shadow-sm transition-all duration-200"
         >

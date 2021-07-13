@@ -417,7 +417,6 @@
       @download="handleCertificateDownload"
     />
 
-
     <!-- Toast Notification -->
     <div
       v-if="showSuccessToast"
@@ -719,9 +718,7 @@ const downloadCertificate = async (id) => {
 
     if (response.status === 200 && response.data instanceof Blob) {
       const url = window.URL.createObjectURL(
-        new Blob([
-          response.data
-        ], {
+        new Blob([response.data], {
           type: response.headers['content-type'] || 'application/pdf',
         }),
       )

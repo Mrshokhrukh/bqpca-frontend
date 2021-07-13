@@ -17,7 +17,7 @@ import {
   CreditCard,
   Heart, // Used for Teaching Hospital child
   Wrench,
-   // Used for Maintenance section items (alternative)
+  // Used for Maintenance section items (alternative)
   Award,
   FilePlus,
   List,
@@ -44,7 +44,6 @@ import {
   GraduationCap, // Used for Course Management
   Sliders,
   Activity,
-
 } from 'lucide-vue-next'
 
 // Icon mapping for dynamic icon selection
@@ -93,12 +92,9 @@ const iconMap = {
   GraduationCap,
   Sliders,
   Activity,
-
 }
 import { useHealthCertificationStore } from '@/stores/mhpcNavigationStore' // Ensure this path is correct
 import { useEngineeringCertificationStore } from '@/stores/engineeringNavigationStore'
-
-
 
 // Helper function to get the icon component
 const getIconComponent = (iconName) => {
@@ -735,21 +731,20 @@ const serviceSpecificMenuItems = {
           const store = useHealthCertificationStore()
           return !store.visibleMenus.baseMenus.profile
         },
-
-            },
-            {
+      },
+      {
         name: 'Complaints',
         icon: getIconComponent('AlertTriangle'),
         route: (serviceType) => `/admin/user/${serviceType}/complains`,
-            },
-          ],
-          admin: [
-            {
+      },
+    ],
+    admin: [
+      {
         name: 'Dashboard',
         icon: getIconComponent('LayoutDashboard'),
         route: (serviceType) => `/admin/admin/${serviceType}/dashboard`,
-            },
-            {
+      },
+      {
         name: 'CPD Management',
         icon: getIconComponent('BookOpen'),
         children: [
@@ -766,8 +761,8 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/admin/${serviceType}/cpd_methodologies`,
           },
         ],
-            },
-            {
+      },
+      {
         name: 'Document Management',
         icon: getIconComponent('Folder'),
         children: [
@@ -780,8 +775,8 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/admin/${serviceType}/e_signatures`,
           },
         ],
-            },
-            {
+      },
+      {
         name: 'Fee Management',
         icon: getIconComponent('DollarSign'),
         children: [
@@ -794,8 +789,8 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/admin/${serviceType}/fees_associated_for`,
           },
         ],
-            },
-            {
+      },
+      {
         name: 'Participation',
         icon: getIconComponent('Users2'),
         children: [
@@ -808,8 +803,8 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/admin/${serviceType}/participation_sub_category`,
           },
         ],
-            },
-            {
+      },
+      {
         name: 'Personnel',
         icon: getIconComponent('UserCircle'),
         children: [
@@ -830,8 +825,8 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/admin/${serviceType}/qualification_types`,
           },
         ],
-            },
-            {
+      },
+      {
         name: 'Registration',
         icon: getIconComponent('ClipboardCheck'),
         children: [
@@ -844,13 +839,13 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/admin/${serviceType}/sector`,
           },
         ],
-            },
-            {
+      },
+      {
         name: 'University',
         icon: getIconComponent('GraduationCap'),
         route: (serviceType) => `/admin/admin/${serviceType}/university`,
-            },
-            {
+      },
+      {
         name: 'COGS Management',
         icon: getIconComponent('Award'),
         children: [
@@ -954,8 +949,7 @@ const serviceSpecificMenuItems = {
           },
           {
             name: 'Module Management',
-            route: (serviceType) =>
-              `/admin/dealing_officer/${serviceType}/module_management`,
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/module_management`,
           },
           {
             name: 'Program Management',
@@ -992,7 +986,8 @@ const serviceSpecificMenuItems = {
           },
           {
             name: 'Teacching Hospital Reports',
-            route: (serviceType) => `/admin/dealing_officer/${serviceType}/teaching_hospital_reports`,
+            route: (serviceType) =>
+              `/admin/dealing_officer/${serviceType}/teaching_hospital_reports`,
           },
           {
             name: 'CPD Reports',
@@ -1010,7 +1005,6 @@ const serviceSpecificMenuItems = {
           },
         ],
       },
-
     ],
     cme_cpd_provider: [
       {
@@ -1046,20 +1040,12 @@ const serviceSpecificMenuItems = {
         name: 'EOI Management',
         icon: getIconComponent('FileText'),
         route: (serviceType) => `/admin/institutions/${serviceType}/track_eoi`,
-
       },
       {
         name: 'DPR Management',
         icon: getIconComponent('FileText'),
         route: (serviceType) => `/admin/institutions/${serviceType}/track_dpr`,
-
       },
-      {
-        name: 'Teaching Hospital',
-        icon: getIconComponent('GraduationCap'),
-        route: (serviceType) => `/admin/institutions/${serviceType}/teaching_center_tracking`,
-      },
-
       {
         name: 'Institute Profile',
         icon: getIconComponent('Building'),
@@ -1076,18 +1062,6 @@ const serviceSpecificMenuItems = {
           },
 
           {
-            name: 'Site Visit Schedule',
-            icon: getIconComponent('Heart'),
-            route: (serviceType) => `/admin/institutions/${serviceType}/site_visit_schedule`,
-          },
-          {
-            name: 'Renew Teaching Hospital',
-            icon: getIconComponent('RefreshCw'),
-            route: (serviceType) => `/admin/institutions/${serviceType}/renewal_teaching_hospital`,
-          },
-
-
-          {
             name: 'CAPA',
             icon: getIconComponent('ClipboardCheck'),
             route: (serviceType) => `/admin/institutions/${serviceType}/my_capa`,
@@ -1095,20 +1069,41 @@ const serviceSpecificMenuItems = {
           {
             name: 'Apply New Education Program ',
             icon: getIconComponent('BookOpen'),
-            route: (serviceType) => `/admin/institutions/${serviceType}/new_education_program_application`,
-          },
-          {
-            name: 'Education Program Management',
-            icon: getIconComponent('BookOpen'),
-            route: (serviceType) => `/admin/institutions/${serviceType}/new_education_program`,
+            route: (serviceType) =>
+              `/admin/institutions/${serviceType}/new_education_program_application`,
           },
           {
             name: 'Faculty Management',
             icon: getIconComponent('Users'),
             route: (serviceType) => `/admin/institutions/${serviceType}/staff_management`,
           },
-
+          {
+            name: 'Education Program Management',
+            icon: getIconComponent('BookOpen'),
+            route: (serviceType) => `/admin/institutions/${serviceType}/new_education_program`,
+          },
         ],
+      },
+      {
+        name: 'Teaching Hospital',
+        icon: getIconComponent('GraduationCap'),
+        children:[
+          {
+            name: 'Teaching Hospital Management',
+            icon: getIconComponent('Building2'),
+            route: (serviceType) => `/admin/institutions/${serviceType}/teaching_center_tracking`,
+          },
+          {
+            name: 'Renew Teaching Hospital',
+            icon: getIconComponent('RefreshCw'),
+            route: (serviceType) => `/admin/institutions/${serviceType}/renewal_teaching_hospital`,
+          },
+          {
+            name: 'Site Visit Schedule',
+            icon: getIconComponent('Heart'),
+            route: (serviceType) => `/admin/institutions/${serviceType}/site_visit_schedule`,
+          },
+        ]
       },
     ],
     legal_officer: [
@@ -1708,7 +1703,8 @@ const serviceSpecificMenuItems = {
       {
         name: 'Manage Accreditation Schedule',
         icon: getIconComponent('LayoutDashboard'),
-        route: (serviceType) => `/admin/dealing_officer/${serviceType}/manage_accreditation_schedule`, // Corrected "dealing_Officer"
+        route: (serviceType) =>
+          `/admin/dealing_officer/${serviceType}/manage_accreditation_schedule`, // Corrected "dealing_Officer"
       },
       {
         name: 'Accreditation Applications',
@@ -1716,8 +1712,7 @@ const serviceSpecificMenuItems = {
         children: [
           {
             name: 'Initial AccreditationApplication',
-            route: (serviceType) =>
-              `/admin/dealing_officer/${serviceType}/initial_accreditations`,
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/initial_accreditations`,
           },
           {
             name: 'Institutional Accreditation',

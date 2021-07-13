@@ -337,8 +337,8 @@
                     modalMode === 'add'
                       ? 'Add New Faculty'
                       : modalMode === 'edit'
-                      ? 'Edit Faculty Details'
-                      : 'View Faculty Details'
+                        ? 'Edit Faculty Details'
+                        : 'View Faculty Details'
                   }}
                 </h2>
                 <p class="text-xs text-gray-500">
@@ -346,8 +346,8 @@
                     modalMode === 'add'
                       ? 'Fill in the details to add a new faculty member.'
                       : modalMode === 'edit'
-                      ? 'Update the information for this faculty member.'
-                      : 'Viewing faculty member information.'
+                        ? 'Update the information for this faculty member.'
+                        : 'Viewing faculty member information.'
                   }}
                 </p>
               </div>
@@ -438,8 +438,8 @@
                     isSavingFaculty
                       ? 'Saving...'
                       : modalMode === 'add'
-                      ? 'Add Faculty'
-                      : 'Update Faculty'
+                        ? 'Add Faculty'
+                        : 'Update Faculty'
                   }}</span>
                 </button>
               </div>
@@ -545,7 +545,7 @@ const SortIndicator = ({ column, currentColumn, direction }) => {
   return h(
     'span',
     { class: 'ml-1 text-gray-400 text-xs' },
-    currentColumn === column ? (direction === 'asc' ? '↑' : '↓') : '↕'
+    currentColumn === column ? (direction === 'asc' ? '↑' : '↓') : '↕',
   )
 }
 
@@ -687,7 +687,7 @@ const validateForm = () => {
       error = validation.rules[field](
         form.value[field],
         form.value.passport_photo_name,
-        facultyType
+        facultyType,
       )
     else if (field === 'cv')
       error = validation.rules[field](form.value[field], form.value.cv_name, facultyType)
@@ -710,7 +710,7 @@ const validateForm = () => {
       error = validation.rules[field](
         form.value[field],
         facultyType,
-        isPotentiallyDataFetchedByChild
+        isPotentiallyDataFetchedByChild,
       )
     } else {
       error = validation.rules[field](form.value[field], facultyType) // For faculty_type itself
@@ -747,9 +747,8 @@ const validateForm = () => {
           'Year of completion is required and must be a number.'
         isValid = false
       } else if (year < minYear || year > currentYear) {
-        validation.errors[
-          `edu_year_${index}`
-        ] = `Year must be between ${minYear} and ${currentYear}`
+        validation.errors[`edu_year_${index}`] =
+          `Year must be between ${minYear} and ${currentYear}`
         isValid = false
       }
     })
@@ -773,14 +772,14 @@ const filteredFaculty = computed(() => {
       (faculty.staff_name && faculty.staff_name.toLowerCase().includes(query)) ||
       (faculty.identifier && String(faculty.identifier).toLowerCase().includes(query)) || // Ensure identifier is string
       (faculty.designation && faculty.designation.toLowerCase().includes(query)) ||
-      (faculty.faculty_type && faculty.faculty_type.toLowerCase().includes(query))
+      (faculty.faculty_type && faculty.faculty_type.toLowerCase().includes(query)),
   )
 })
 
 const hasNextPage = computed(() => !!nextPageUrl.value)
 const hasPreviousPage = computed(() => !!previousPageUrl.value)
 const paginationStart = computed(() =>
-  totalFaculty.value === 0 ? 0 : (currentPage.value - 1) * pageSize.value
+  totalFaculty.value === 0 ? 0 : (currentPage.value - 1) * pageSize.value,
 )
 const paginationEnd = computed(() => {
   if (totalFaculty.value === 0) return 0
@@ -798,7 +797,7 @@ const fetchInstitutePk = async () => {
       'error',
       'Authentication Error',
       'Your user ID could not be found. Please log in again.',
-      0
+      0,
     )
     return
   }
@@ -808,14 +807,13 @@ const fetchInstitutePk = async () => {
     const institutes = response.data.results || response.data
     if (institutes && institutes.length > 0) {
       institutePk.value = institutes[0].id
-      console.log(`Institute PK set to: ${institutePk.value}`)
     } else {
       console.error(`No institute found for CID: ${userCid}`)
       showNotification(
         'warning',
         'No Institute Found',
         'We could not find an institute associated with your account.',
-        0
+        0,
       )
     }
   } catch (error) {
@@ -824,7 +822,7 @@ const fetchInstitutePk = async () => {
       'error',
       'System Error',
       'Failed to fetch institute details. Please try refreshing the page.',
-      0
+      0,
     )
   }
 }
@@ -842,7 +840,7 @@ const fetchFaculty = async (page = 1) => {
         showNotification(
           'error',
           'Configuration Error',
-          'Institute not identified. Cannot load faculty.'
+          'Institute not identified. Cannot load faculty.',
         )
         isLoading.value = false
         return
@@ -881,7 +879,7 @@ const fetchFaculty = async (page = 1) => {
       showNotification(
         'error',
         'Data Error',
-        'Failed to load faculty data or data format is incorrect.'
+        'Failed to load faculty data or data format is incorrect.',
       )
       facultyList.value = []
       totalFaculty.value = 0
@@ -957,13 +955,13 @@ const sortBy = (column) => {
       ? valA < valB
         ? -1
         : valA > valB
-        ? 1
-        : 0
+          ? 1
+          : 0
       : valA > valB
-      ? -1
-      : valA < valB
-      ? 1
-      : 0
+        ? -1
+        : valA < valB
+          ? 1
+          : 0
   })
 }
 
@@ -993,7 +991,7 @@ const formatDate = (dateString) => {
         const reParsedDate = new Date(
           parseInt(parts[0]),
           parseInt(parts[1]) - 1,
-          parseInt(parts[2])
+          parseInt(parts[2]),
         )
         if (!isNaN(reParsedDate.getTime())) {
           return reParsedDate.toLocaleDateString('en-GB', {
@@ -1155,7 +1153,7 @@ const saveFaculty = async () => {
   if (!validateForm()) {
     console.log(
       'Client-side validation failed. Errors:',
-      JSON.parse(JSON.stringify(validation.errors))
+      JSON.parse(JSON.stringify(validation.errors)),
     )
     showNotification('error', 'Validation Error', 'Please check the form for errors and try again.')
     return
@@ -1167,7 +1165,7 @@ const saveFaculty = async () => {
       'error',
       'Configuration Error',
       'Institute not identified. Cannot save faculty.',
-      0
+      0,
     )
     console.error('Institute PK is missing. Aborting saveFaculty.')
     return
@@ -1244,14 +1242,14 @@ const saveFaculty = async () => {
       showNotification(
         'success',
         'Faculty Added',
-        `${form.value.staff_name || 'New Faculty'} has been successfully added.`
+        `${form.value.staff_name || 'New Faculty'} has been successfully added.`,
       )
     } else if (modalMode.value === 'edit' && form.value.id) {
       await apiServices.updateMhpcTeachingFaculty(form.value.id, formDataPayload)
       showNotification(
         'success',
         'Faculty Updated',
-        `${form.value.staff_name}'s information has been updated.`
+        `${form.value.staff_name}'s information has been updated.`,
       )
     }
     fetchFaculty(modalMode.value === 'add' ? 1 : currentPage.value) // Refresh list
@@ -1290,7 +1288,7 @@ const saveFaculty = async () => {
                   serverErrors[`edu_qualification_name_${index}`] = eduJoined
                 else serverErrors[`edu_${eduField}_${index}`] = eduJoined
                 messages.push(
-                  `${fieldNameReadable} #${index + 1} ${eduField.replace(/_/g, ' ')}: ${eduJoined}`
+                  `${fieldNameReadable} #${index + 1} ${eduField.replace(/_/g, ' ')}: ${eduJoined}`,
                 )
               })
             }
@@ -1332,7 +1330,7 @@ const deleteFaculty = async () => {
     showNotification(
       'success',
       'Faculty Deleted',
-      `${facultyToDelete.value.staff_name} has been successfully deleted.`
+      `${facultyToDelete.value.staff_name} has been successfully deleted.`,
     )
     // Optimistic UI update or fetch
     const newTotal = totalFaculty.value - 1
@@ -1356,7 +1354,7 @@ const deleteFaculty = async () => {
     showNotification(
       'error',
       'Delete Failed',
-      `Failed to delete ${facultyToDelete.value.staff_name}.`
+      `Failed to delete ${facultyToDelete.value.staff_name}.`,
     )
   } finally {
     isDeletingFaculty.value = false

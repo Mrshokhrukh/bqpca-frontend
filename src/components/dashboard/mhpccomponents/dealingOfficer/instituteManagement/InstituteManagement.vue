@@ -356,6 +356,9 @@ import { ref, computed } from 'vue'
 import InstituteViewDetailsModal from '../modals/InstituteViewDetailsModal.vue'
 import InstituteReviewApplicationModal from '../modals/InstituteReviewApplicationModal.vue'
 import InstituteManageCapaModal from '../modals/InstituteManageCapaModal.vue'
+import { useToast } from 'vue-toastification'
+
+const toast = useToast()
 
 const activeTab = ref('eoi') // Default tab
 const searchQuery = ref('')
@@ -532,7 +535,8 @@ const downloadDPR = (institute) => {
     link.click()
     document.body.removeChild(link)
   } else {
-    alert('DPR document not available for download')
+    toast.error('DPR document not available for download')
   }
 }
+
 </script>

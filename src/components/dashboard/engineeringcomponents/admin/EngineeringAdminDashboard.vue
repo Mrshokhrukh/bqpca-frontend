@@ -20,8 +20,8 @@
           <div v-for="config in configurationCards" :key="config.id" class="group relative">
             <!-- Gradient Overlay (Hover Effect) -->
             <div
-              :class="`absolute inset-0 bg-gradient-to-r ${config.gradient} rounded-xl opacity-0 group-hover:opacity-20 transition duration-300`">
-            </div>
+              :class="`absolute inset-0 bg-gradient-to-r ${config.gradient} rounded-xl opacity-0 group-hover:opacity-20 transition duration-300`"
+            ></div>
 
             <!-- Card Content -->
             <div :class="[baseCardClasses, 'relative flex flex-col h-full overflow-hidden']">
@@ -30,12 +30,16 @@
                 <div class="flex items-start justify-between mb-6">
                   <div>
                     <div class="flex items-center gap-3 mb-3">
-                      <div :class="[
-                        iconBgClass(config.icon.split(/(?=[A-Z])/)[0].toLowerCase()),
-                        'p-2 rounded-lg transition-colors duration-300 group-hover:bg-opacity-20',
-                      ]">
-                        <component :is="iconMap[config.id]"
-                          :class="iconColorClass(config.icon.split(/(?=[A-Z])/)[0].toLowerCase())" />
+                      <div
+                        :class="[
+                          iconBgClass(config.icon.split(/(?=[A-Z])/)[0].toLowerCase()),
+                          'p-2 rounded-lg transition-colors duration-300 group-hover:bg-opacity-20',
+                        ]"
+                      >
+                        <component
+                          :is="iconMap[config.id]"
+                          :class="iconColorClass(config.icon.split(/(?=[A-Z])/)[0].toLowerCase())"
+                        />
                       </div>
                       <h3 class="font-semibold text-slate-900 text-lg">{{ config.title }}</h3>
                     </div>
@@ -67,16 +71,27 @@
               <!-- Card Footer (Sub-buttons) -->
               <div class="p-4 border-t border-slate-200">
                 <div class="space-y-2">
-                  <router-link v-for="child in config.children" :key="child.route" :to="child.route" :class="[
-                    config.button,
-                    'inline-flex items-center gap-2 text-sm px-4 py-2 rounded-lg transition-colors duration-300 font-medium group w-full justify-between',
-                  ]">
+                  <router-link
+                    v-for="child in config.children"
+                    :key="child.route"
+                    :to="child.route"
+                    :class="[
+                      config.button,
+                      'inline-flex items-center gap-2 text-sm px-4 py-2 rounded-lg transition-colors duration-300 font-medium group w-full justify-between',
+                    ]"
+                  >
                     <span class="flex items-center gap-2">
                       <!-- Child Icon (Optional, shown if present) -->
-                      <component v-if="child.icon" :is="child.icon" :class="config.iconColorClass" />
+                      <component
+                        v-if="child.icon"
+                        :is="child.icon"
+                        :class="config.iconColorClass"
+                      />
                       {{ child.text }}
                     </span>
-                    <ChevronRight class="h-4 w-4 transform group-hover:translate-x-0.5 transition-transform" />
+                    <ChevronRight
+                      class="h-4 w-4 transform group-hover:translate-x-0.5 transition-transform"
+                    />
                   </router-link>
                 </div>
               </div>
@@ -185,7 +200,6 @@ const configurationCards = [
         route: `${basePath}/cpd_methodologies`,
         icon: null,
       },
-
     ],
     gradient: gradientClasses('blue', 'blue'),
     iconBg: iconBgClass('blue'),

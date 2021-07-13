@@ -11,7 +11,11 @@ export default {
       <h1 class="text-2xl font-bold text-gray-800">ECP Applications & Reports</h1>
       <div class="flex gap-4">
         <!-- Modified Export Button for CSV -->
-        <button @click="exportToCSV" class="btn-primary" :disabled="isLoading || !reportData.length || isLoadingExport">
+        <button
+          @click="exportToCSV"
+          class="btn-primary"
+          :disabled="isLoading || !reportData.length || isLoadingExport"
+        >
           <span v-if="isLoadingExport" class="mr-2">
             <i class="fas fa-spinner fa-spin"></i>
           </span>
@@ -24,7 +28,12 @@ export default {
     <!-- Report Type Selector -->
     <div class="mb-6">
       <label for="report-type" class="filter-label">Select Application / Report Type</label>
-      <select id="report-type" v-model="activeReport" class="report-type-selector" @change="handleReportTypeChange">
+      <select
+        id="report-type"
+        v-model="activeReport"
+        class="report-type-selector"
+        @change="handleReportTypeChange"
+      >
         <option value="" disabled>-- Select a Report Type --</option>
         <optgroup label="Applications">
           <option value="new_applications">New Applications</option>
@@ -55,36 +64,58 @@ export default {
           <option value="teaching_institute_renewals">Teaching Institute Renewals</option>
           API function missing */} -->
         </optgroup>
-
       </select>
     </div>
 
     <!-- Filters -->
-    <div v-if="activeReport"
-      class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6 p-4 bg-white rounded-lg shadow-sm border border-gray-200">
+    <div
+      v-if="activeReport"
+      class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6 p-4 bg-white rounded-lg shadow-sm border border-gray-200"
+    >
       <!-- Global Search -->
       <div>
         <label for="global-search" class="filter-label">Global Search</label>
-        <input id="global-search" v-model="filters.search" type="text" class="filter-input"
-          placeholder="Search across fields..." @input="debouncedFetchData" />
+        <input
+          id="global-search"
+          v-model="filters.search"
+          type="text"
+          class="filter-input"
+          placeholder="Search across fields..."
+          @input="debouncedFetchData"
+        />
       </div>
 
       <!-- Date Range -->
       <div>
         <label class="filter-label">Date Range (Created/Submitted)</label>
         <div class="flex gap-2">
-          <input v-model="filters.startDate" type="date" class="filter-input" @change="fetchData()"
-            :max="filters.endDate || undefined" />
-          <input v-model="filters.endDate" type="date" class="filter-input" @change="fetchData()"
-            :min="filters.startDate || undefined" />
+          <input
+            v-model="filters.startDate"
+            type="date"
+            class="filter-input"
+            @change="fetchData()"
+            :max="filters.endDate || undefined"
+          />
+          <input
+            v-model="filters.endDate"
+            type="date"
+            class="filter-input"
+            @change="fetchData()"
+            :min="filters.startDate || undefined"
+          />
         </div>
       </div>
 
       <!-- Status Filter -->
       <div>
         <label for="status-filter" class="filter-label">Status</label>
-        <select id="status-filter" v-model="filters.status" class="filter-input" @change="fetchData()"
-          :disabled="!statusOptions.length">
+        <select
+          id="status-filter"
+          v-model="filters.status"
+          class="filter-input"
+          @change="fetchData()"
+          :disabled="!statusOptions.length"
+        >
           <option value="">All Statuses</option>
           <option v-if="!statusOptions.length" value="" disabled>No statuses for this type</option>
           <option v-for="status in statusOptions" :key="status.value" :value="status.value">
@@ -105,11 +136,16 @@ export default {
     </div>
 
     <!-- Error State -->
-    <div v-else-if="error" class="bg-red-50 border border-red-200 rounded-lg p-6 mb-6 text-center shadow">
+    <div
+      v-else-if="error"
+      class="bg-red-50 border border-red-200 rounded-lg p-6 mb-6 text-center shadow"
+    >
       <p class="text-red-800 font-semibold text-lg">Failed to Load Report</p>
       <p class="text-red-700 mt-2">{{ error }}</p>
-      <button @click="fetchData()"
-        class="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition duration-200 text-sm font-medium">
+      <button
+        @click="fetchData()"
+        class="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition duration-200 text-sm font-medium"
+      >
         <i class="fas fa-redo mr-1"></i> Try Again
       </button>
     </div>
@@ -121,19 +157,33 @@ export default {
     </div>
 
     <!-- Empty State -->
-    <div v-else-if="!reportData.length && !isLoading"
-      class="bg-white rounded-lg shadow p-12 text-center border border-gray-200">
-      <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-        aria-hidden="true">
-        <path vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2z" />
+    <div
+      v-else-if="!reportData.length && !isLoading"
+      class="bg-white rounded-lg shadow p-12 text-center border border-gray-200"
+    >
+      <svg
+        class="mx-auto h-12 w-12 text-gray-400"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        aria-hidden="true"
+      >
+        <path
+          vector-effect="non-scaling-stroke"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2z"
+        />
       </svg>
       <h3 class="mt-2 text-lg font-medium text-gray-900">No Data Found</h3>
       <p class="mt-1 text-sm text-gray-500">
         No records match the current report type and selected filters.
       </p>
-      <p v-if="filters.search || filters.startDate || filters.endDate || filters.status"
-        class="mt-2 text-sm text-gray-500">
+      <p
+        v-if="filters.search || filters.startDate || filters.endDate || filters.status"
+        class="mt-2 text-sm text-gray-500"
+      >
         Try adjusting or clearing your filters.
       </p>
     </div>
@@ -143,22 +193,29 @@ export default {
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-100">
           <tr>
-            <th v-for="header in activeHeaders" :key="header.key" scope="col" class="table-header group"
+            <th
+              v-for="header in activeHeaders"
+              :key="header.key"
+              scope="col"
+              class="table-header group"
               :class="{ 'cursor-pointer hover:bg-gray-200': header.sortable }"
-              @click="header.sortable ? handleSort(header.key) : null">
+              @click="header.sortable ? handleSort(header.key) : null"
+            >
               <div class="flex items-center justify-between">
                 <span>{{ header.label }}</span>
                 <template v-if="header.sortable">
                   <span class="ml-2 text-gray-400 group-hover:text-gray-600">
-                    <i :class="[
-                      'fas',
-                      sortBy === header.key ||
+                    <i
+                      :class="[
+                        'fas',
+                        sortBy === header.key ||
                         (header.backendSortKey && sortBy === header.backendSortKey)
-                        ? sortOrder === 'asc'
-                          ? 'fa-sort-up text-gray-700'
-                          : 'fa-sort-down text-gray-700'
-                        : 'fa-sort',
-                    ]"></i>
+                          ? sortOrder === 'asc'
+                            ? 'fa-sort-up text-gray-700'
+                            : 'fa-sort-down text-gray-700'
+                          : 'fa-sort',
+                      ]"
+                    ></i>
                   </span>
                 </template>
               </div>
@@ -167,8 +224,11 @@ export default {
         </thead>
 
         <tbody class="bg-white divide-y divide-gray-200">
-          <tr v-for="(item, index) in reportData" :key="item.id || `report-item-${index}`"
-            class="hover:bg-gray-50 transition duration-150">
+          <tr
+            v-for="(item, index) in reportData"
+            :key="item.id || `report-item-${index}`"
+            class="hover:bg-gray-50 transition duration-150"
+          >
             <td v-for="header in activeHeaders" :key="header.key" class="table-cell">
               <template v-if="header.isStatusColumn">
                 <span :class="statusBadge(getNestedValue(item, header.key))">
@@ -199,8 +259,10 @@ export default {
     </div>
 
     <!-- Pagination -->
-    <div v-if="!isLoading && !error && reportData.length && activeReport"
-      class="mt-6 flex flex-col sm:flex-row justify-between items-center bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+    <div
+      v-if="!isLoading && !error && reportData.length && activeReport"
+      class="mt-6 flex flex-col sm:flex-row justify-between items-center bg-white p-4 rounded-lg shadow-sm border border-gray-200"
+    >
       <div class="text-sm text-gray-700 mb-2 sm:mb-0">
         Showing <span class="font-medium">{{ totalItems > 0 ? startIndex + 1 : 0 }}</span> to
         <span class="font-medium">{{ Math.min(endIndex + 1, totalItems) }}</span>
@@ -210,8 +272,14 @@ export default {
         <button @click="prevPage" :disabled="currentPage === 1 || isLoading" class="pagination-btn">
           <i class="fas fa-chevron-left mr-1 text-xs"></i> Previous
         </button>
-        <span class="px-4 py-1 text-sm font-medium text-gray-700">Page {{ currentPage }} of {{ totalPages }}</span>
-        <button @click="nextPage" :disabled="currentPage >= totalPages || isLoading" class="pagination-btn">
+        <span class="px-4 py-1 text-sm font-medium text-gray-700"
+          >Page {{ currentPage }} of {{ totalPages }}</span
+        >
+        <button
+          @click="nextPage"
+          :disabled="currentPage >= totalPages || isLoading"
+          class="pagination-btn"
+        >
           Next <i class="fas fa-chevron-right ml-1 text-xs"></i>
         </button>
       </div>
@@ -225,7 +293,6 @@ import { useToast } from 'vue-toastification'
 import debounce from 'lodash/debounce'
 import Papa from 'papaparse' // Import papaparse
 import apiServices from '@/services/services'
-
 
 const toast = useToast()
 
@@ -371,7 +438,6 @@ const headers = {
   //   { key: 'applied_date', label: 'Applied On', type: 'date', sortable: true },
   //   { key: 'renewal_status', label: 'Status', sortable: true, isStatusColumn: true },
   // ],
-
 }
 
 // --- Keep the apiMethods definition object ---
@@ -516,7 +582,6 @@ const apiMethods = {
       renewal_status: data.status ?? 'N/A',
     }),
   },
-
 }
 
 const activeHeaders = computed(() => headers[activeReport.value] || [])
@@ -578,7 +643,6 @@ const statusOptions = computed(() => {
     // teaching_institute_renewals: [
     //   /* Define statuses */
     // ],
-
   }
   return optionsMap[activeReport.value] || []
 })
@@ -645,12 +709,12 @@ const fetchData = async (isExport = false) => {
     const response = await currentApiMethod.fetch(params)
 
     if (response.data && Array.isArray(response.data.results)) {
-      let results = response.data.results;
+      let results = response.data.results
 
       if (activeReport.value === 'additional_applications') {
         results = results.filter(
-          (item) => item.registration_type_name === 'additional Qualification'
-        );
+          (item) => item.registration_type_name === 'additional Qualification',
+        )
       }
 
       reportData.value = results.map((item, index) => {
@@ -713,8 +777,7 @@ const handleReportTypeChange = () => {
   totalItems.value = 0
   error.value = null
   isLoading.value = false
-  isLoadingExport.value = false /
-    fetchData()
+  isLoadingExport.value = false / fetchData()
 }
 
 const clearFilters = () => {

@@ -34,9 +34,7 @@
               <option v-for="task in processedCpdTasks" :key="task.id" :value="task.id">
                 {{ task.title }} - {{ formatDateRange(task.from_date, task.to_date) }}
               </option>
-              <option v-if="processedCpdTasks.length === 0" disabled>
-                No CPD tasks available
-              </option>
+              <option v-if="processedCpdTasks.length === 0" disabled>No CPD tasks available</option>
             </select>
             <MagnifyingGlassIcon
               class="absolute right-3 top-2.5 h-5 w-5 text-gray-400 pointer-events-none"
@@ -48,7 +46,10 @@
         </div>
 
         <!-- Current Attachment Display -->
-        <div v-if="selectedTaskDetails && selectedTaskDetails.attendance_sheet_attachment" class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+        <div
+          v-if="selectedTaskDetails && selectedTaskDetails.attendance_sheet_attachment"
+          class="bg-yellow-50 border border-yellow-200 rounded-lg p-4"
+        >
           <h4 class="text-sm font-medium text-yellow-700 mb-2">Current Attendance Sheet:</h4>
           <div class="flex items-center space-x-2">
             <DocumentIcon class="h-5 w-5 text-yellow-600" />
@@ -73,7 +74,7 @@
             class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg"
             :class="{
               'border-blue-300 bg-blue-50': photoFile,
-              'bg-gray-100 cursor-not-allowed': isSubmitting
+              'bg-gray-100 cursor-not-allowed': isSubmitting,
             }"
             @dragover.prevent="handleDragOver"
             @dragleave.prevent="handleDragLeave"
@@ -189,7 +190,7 @@ const props = defineProps({
   isSubmitting: {
     type: Boolean,
     default: false,
-  }
+  },
 })
 
 const emit = defineEmits(['submit', 'cancel'])
@@ -213,22 +214,23 @@ const processedCpdTasks = computed(() => {
 
   return props.cpdTasks
     .filter((task) => {
-      const isApproved = task.is_cpd_approved === true;
+      const isApproved = task.is_cpd_approved === true
 
       if (props.currentProviderCid) {
-        const belongsToProvider = String(task.cid_no).trim() === String(props.currentProviderCid).trim();
-        return isApproved && belongsToProvider;
+        const belongsToProvider =
+          String(task.cid_no).trim() === String(props.currentProviderCid).trim()
+        return isApproved && belongsToProvider
       }
-      return isApproved;
+      return isApproved
     })
-    .map(task => ({
+    .map((task) => ({
       id: task.id,
       title: task.title || task.title_of_cpd || 'Untitled Task',
       from_date: task.from_date || task.start_date,
       to_date: task.to_date || task.end_date,
-      attendance_sheet_attachment: task.attendance_sheet_attachment
+      attendance_sheet_attachment: task.attendance_sheet_attachment,
     }))
-    .sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+    .sort((a, b) => (a.title || '').localeCompare(b.title || ''))
 })
 
 const isFormValid = computed(() => {
@@ -256,18 +258,21 @@ const formatDateRange = (startDate, endDate) => {
 }
 
 // Watch for CPD task selection to fetch details
-watch(() => formData.cpdTask, async (newTaskId) => {
-  selectedTaskDetails.value = null
-  if (newTaskId) {
-    try {
-      const response = await apiService.getEpcCpdTask(newTaskId)
-      selectedTaskDetails.value = response.data
-    } catch (error) {
-      console.error('Error fetching CPD task details:', error)
-      toast.error('Failed to load task details')
+watch(
+  () => formData.cpdTask,
+  async (newTaskId) => {
+    selectedTaskDetails.value = null
+    if (newTaskId) {
+      try {
+        const response = await apiService.getEpcCpdTask(newTaskId)
+        selectedTaskDetails.value = response.data
+      } catch (error) {
+        console.error('Error fetching CPD task details:', error)
+        toast.error('Failed to load task details')
+      }
     }
-  }
-})
+  },
+)
 
 function validateFile(file) {
   photoError.value = ''
@@ -277,7 +282,8 @@ function validateFile(file) {
     return false
   }
 
-  if (file.size > 10 * 1024 * 1024) { // 10MB
+  if (file.size > 10 * 1024 * 1024) {
+    // 10MB
     photoError.value = 'File size exceeds 10MB limit.'
     return false
   }
@@ -371,6 +377,6 @@ function resetForm(clearSelection = true) {
 
 // Expose resetForm method to parent component
 defineExpose({
-  resetForm
+  resetForm,
 })
 </script>

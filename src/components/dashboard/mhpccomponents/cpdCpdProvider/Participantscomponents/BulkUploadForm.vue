@@ -391,7 +391,7 @@ watch(
     if (newId && filteredCpdTasks.value.some((task) => String(task.id) === String(newId))) {
       formData.cpdTask = newId
     }
-  }
+  },
 )
 
 defineExpose({ resetForm })

@@ -117,8 +117,6 @@
         :filter-options="statusFilterOptions"
       />
 
-
-
       <!-- Loading State -->
       <div
         v-if="isLoading"

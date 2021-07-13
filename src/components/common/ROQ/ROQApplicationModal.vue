@@ -22,11 +22,17 @@
         >
           <div class="flex items-center gap-4">
             <div class="p-2.5 sm:p-3 rounded-xl shadow-sm" :class="headerColorClass">
-              <component :is="modalIcons[modalType]" class="w-5 h-5 sm:w-6 sm:h-6" :class="headerIconClass" />
+              <component
+                :is="modalIcons[modalType]"
+                class="w-5 h-5 sm:w-6 sm:h-6"
+                :class="headerIconClass"
+              />
             </div>
             <div>
               <h3 class="text-lg sm:text-xl font-semibold text-gray-800">{{ modalTitle }}</h3>
-              <p v-if="modalDescription" class="text-xs sm:text-sm text-gray-500 mt-1">{{ modalDescription }}</p>
+              <p v-if="modalDescription" class="text-xs sm:text-sm text-gray-500 mt-1">
+                {{ modalDescription }}
+              </p>
             </div>
           </div>
           <button
@@ -40,7 +46,10 @@
         <!-- Content Area -->
         <div class="flex-1 overflow-y-auto p-5 sm:p-6 space-y-6 sm:space-y-8">
           <!-- View Mode -->
-          <div v-if="modalType === 'view' || modalType === 'viewCertificate'" class="space-y-6 sm:space-y-8">
+          <div
+            v-if="modalType === 'view' || modalType === 'viewCertificate'"
+            class="space-y-6 sm:space-y-8"
+          >
             <!-- QEC Number Display -->
             <div
               v-if="modalApplication.status === 'approved' && modalApplication.qec_number"
@@ -77,7 +86,9 @@
                   <div class="p-2.5 sm:p-3 bg-blue-100/70 rounded-xl shadow-sm">
                     <UserIcon class="w-5 h-5 text-blue-600" />
                   </div>
-                  <h4 class="text-md sm:text-lg font-semibold text-gray-800">Personal Information</h4>
+                  <h4 class="text-md sm:text-lg font-semibold text-gray-800">
+                    Personal Information
+                  </h4>
                 </div>
                 <div class="space-y-2.5">
                   <div
@@ -85,12 +96,19 @@
                     :key="`personal-${index}`"
                     class="sm:grid sm:grid-cols-3 sm:gap-x-4 py-3 border-b border-gray-200/70 last:border-b-0"
                   >
-                    <div class="flex items-center text-xs sm:text-sm font-medium text-gray-500 sm:col-span-1 mb-0.5 sm:mb-0">
-                      <component :is="personalInfoIcons[index]" class="w-4 h-4 text-blue-500 mr-2.5 shrink-0" />
+                    <div
+                      class="flex items-center text-xs sm:text-sm font-medium text-gray-500 sm:col-span-1 mb-0.5 sm:mb-0"
+                    >
+                      <component
+                        :is="personalInfoIcons[index]"
+                        class="w-4 h-4 text-blue-500 mr-2.5 shrink-0"
+                      />
                       {{ item.label }}
                     </div>
-                    <div class="text-sm sm:text-base text-gray-700 sm:col-span-2 font-medium pl-[calc(1rem+0.625rem)] sm:pl-0">
-                       {{ item.value || '-' }}
+                    <div
+                      class="text-sm sm:text-base text-gray-700 sm:col-span-2 font-medium pl-[calc(1rem+0.625rem)] sm:pl-0"
+                    >
+                      {{ item.value || '-' }}
                     </div>
                   </div>
                 </div>
@@ -103,17 +121,23 @@
                   v-if="modalApplication.passport_size_photo"
                   class="bg-slate-50 rounded-xl shadow-lg border border-gray-200/50 overflow-hidden"
                 >
-                  <div class="relative aspect-[3/4] max-h-[320px] w-full flex items-center justify-center bg-gray-100">
-                     <img
+                  <div
+                    class="relative aspect-[3/4] max-h-[320px] w-full flex items-center justify-center bg-gray-100"
+                  >
+                    <img
                       :src="modalApplication.passport_size_photo"
                       alt="Passport Photo"
                       class="w-full h-full object-cover"
                     />
-                    <div class="absolute top-3 right-3 sm:top-4 sm:right-4 bg-blue-100/80 backdrop-blur-sm rounded-full p-2.5 sm:p-3 shadow-md">
+                    <div
+                      class="absolute top-3 right-3 sm:top-4 sm:right-4 bg-blue-100/80 backdrop-blur-sm rounded-full p-2.5 sm:p-3 shadow-md"
+                    >
                       <CameraIcon class="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
                     </div>
                   </div>
-                  <div class="p-3 sm:p-4 text-center bg-gradient-to-r from-gray-100 to-slate-100 border-t border-gray-200/60">
+                  <div
+                    class="p-3 sm:p-4 text-center bg-gradient-to-r from-gray-100 to-slate-100 border-t border-gray-200/60"
+                  >
                     <p class="text-xs sm:text-sm font-medium text-gray-700">Passport Photograph</p>
                   </div>
                 </div>
@@ -134,12 +158,19 @@
                       :key="`address-${index}`"
                       class="sm:grid sm:grid-cols-3 sm:gap-x-4 py-3 border-b border-gray-200/70 last:border-b-0"
                     >
-                      <div class="flex items-center text-xs sm:text-sm font-medium text-gray-500 sm:col-span-1 mb-0.5 sm:mb-0">
-                        <component :is="addressInfoIcons[index]" class="w-4 h-4 text-green-500 mr-2.5 shrink-0" />
+                      <div
+                        class="flex items-center text-xs sm:text-sm font-medium text-gray-500 sm:col-span-1 mb-0.5 sm:mb-0"
+                      >
+                        <component
+                          :is="addressInfoIcons[index]"
+                          class="w-4 h-4 text-green-500 mr-2.5 shrink-0"
+                        />
                         {{ item.label }}
                       </div>
-                      <div class="text-sm sm:text-base text-gray-700 sm:col-span-2 font-medium pl-[calc(1rem+0.625rem)] sm:pl-0">
-                         {{ item.value || '-' }}
+                      <div
+                        class="text-sm sm:text-base text-gray-700 sm:col-span-2 font-medium pl-[calc(1rem+0.625rem)] sm:pl-0"
+                      >
+                        {{ item.value || '-' }}
                       </div>
                     </div>
                   </div>
@@ -159,7 +190,9 @@
                   <h4 class="text-md sm:text-lg font-semibold text-gray-800">Education Details</h4>
                 </div>
                 <button
-                  v-if="!isEditingEducation && (modalType === 'view' || modalType === 'viewCertificate')"
+                  v-if="
+                    !isEditingEducation && (modalType === 'view' || modalType === 'viewCertificate')
+                  "
                   class="inline-flex items-center px-3.5 py-1.5 text-xs sm:text-sm font-medium text-blue-700 bg-blue-100 hover:bg-blue-200/70 rounded-lg transition-all duration-150"
                   @click="startEditingEducation"
                 >
@@ -174,18 +207,28 @@
                   :key="`education-${index}`"
                   class="sm:grid sm:grid-cols-3 sm:gap-x-4 py-3 border-b border-gray-200/70 last:border-b-0"
                 >
-                  <div class="flex items-center text-xs sm:text-sm font-medium text-gray-500 sm:col-span-1 mb-0.5 sm:mb-0">
-                    <component :is="educationInfoIcons[index]" class="w-4 h-4 text-purple-500 mr-2.5 shrink-0" />
+                  <div
+                    class="flex items-center text-xs sm:text-sm font-medium text-gray-500 sm:col-span-1 mb-0.5 sm:mb-0"
+                  >
+                    <component
+                      :is="educationInfoIcons[index]"
+                      class="w-4 h-4 text-purple-500 mr-2.5 shrink-0"
+                    />
                     {{ item.label }}
                   </div>
-                  <div class="text-sm sm:text-base text-gray-700 sm:col-span-2 font-medium pl-[calc(1rem+0.625rem)] sm:pl-0">
+                  <div
+                    class="text-sm sm:text-base text-gray-700 sm:col-span-2 font-medium pl-[calc(1rem+0.625rem)] sm:pl-0"
+                  >
                     <template v-if="item.isLink && item.value">
                       <a
                         :href="item.value"
                         target="_blank"
                         class="text-blue-600 hover:text-blue-700 hover:underline inline-flex items-center gap-1 group"
                       >
-                        <span class="truncate max-w-[200px] sm:max-w-xs group-hover:max-w-none transition-all duration-200">{{ item.value }}</span>
+                        <span
+                          class="truncate max-w-[200px] sm:max-w-xs group-hover:max-w-none transition-all duration-200"
+                          >{{ item.value }}</span
+                        >
                         <ExternalLinkIcon class="w-3.5 h-3.5 shrink-0" />
                       </a>
                     </template>
@@ -196,8 +239,15 @@
               <!-- Edit Mode -->
               <div v-else class="space-y-5 pt-2">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-4">
-                  <div v-for="(field, index) in educationFormFields" :key="`edu-form-${index}`" class="space-y-1.5">
-                    <label :for="`edu-field-${field.key}`" class="block text-xs sm:text-sm font-medium text-gray-700">
+                  <div
+                    v-for="(field, index) in educationFormFields"
+                    :key="`edu-form-${index}`"
+                    class="space-y-1.5"
+                  >
+                    <label
+                      :for="`edu-field-${field.key}`"
+                      class="block text-xs sm:text-sm font-medium text-gray-700"
+                    >
                       {{ field.label }}
                       <span v-if="field.required" class="text-red-500">*</span>
                     </label>
@@ -288,68 +338,108 @@
                 <div class="p-2.5 sm:p-3 bg-orange-100/70 rounded-xl shadow-sm">
                   <CopyIcon class="w-5 h-5 text-orange-600" />
                 </div>
-                <h4 class="text-md sm:text-lg font-semibold text-gray-800">Second Copy Information</h4>
+                <h4 class="text-md sm:text-lg font-semibold text-gray-800">
+                  Second Copy Information
+                </h4>
               </div>
               <div class="space-y-2.5">
-                 <div v-if="modalApplication.reason_for_issue_of_second_copy" class="sm:grid sm:grid-cols-3 sm:gap-x-4 py-3 border-b border-gray-200/70 last:border-b-0">
-                    <div class="flex items-center text-xs sm:text-sm font-medium text-gray-500 sm:col-span-1 mb-0.5 sm:mb-0">
-                        <HelpCircleIcon class="w-4 h-4 text-orange-500 mr-2.5 shrink-0" />
-                        Reason for Second Copy
-                    </div>
-                    <div class="text-sm sm:text-base text-gray-700 sm:col-span-2 font-medium pl-[calc(1rem+0.625rem)] sm:pl-0">
-                        <span>{{ modalApplication.reason_for_issue_of_second_copy?.name || '-' }}</span>
-                        <p v-if="modalApplication.reason_for_issue_of_second_copy?.definition" class="mt-1 text-xs text-gray-500 font-normal">
-                           {{ modalApplication.reason_for_issue_of_second_copy?.definition }}
-                        </p>
-                    </div>
+                <div
+                  v-if="modalApplication.reason_for_issue_of_second_copy"
+                  class="sm:grid sm:grid-cols-3 sm:gap-x-4 py-3 border-b border-gray-200/70 last:border-b-0"
+                >
+                  <div
+                    class="flex items-center text-xs sm:text-sm font-medium text-gray-500 sm:col-span-1 mb-0.5 sm:mb-0"
+                  >
+                    <HelpCircleIcon class="w-4 h-4 text-orange-500 mr-2.5 shrink-0" />
+                    Reason for Second Copy
+                  </div>
+                  <div
+                    class="text-sm sm:text-base text-gray-700 sm:col-span-2 font-medium pl-[calc(1rem+0.625rem)] sm:pl-0"
+                  >
+                    <span>{{ modalApplication.reason_for_issue_of_second_copy?.name || '-' }}</span>
+                    <p
+                      v-if="modalApplication.reason_for_issue_of_second_copy?.definition"
+                      class="mt-1 text-xs text-gray-500 font-normal"
+                    >
+                      {{ modalApplication.reason_for_issue_of_second_copy?.definition }}
+                    </p>
+                  </div>
                 </div>
-                 <div v-if="modalApplication.second_copy_other" class="sm:grid sm:grid-cols-3 sm:gap-x-4 py-3 border-b border-gray-200/70 last:border-b-0">
-                    <div class="flex items-center text-xs sm:text-sm font-medium text-gray-500 sm:col-span-1 mb-0.5 sm:mb-0">
-                        <DocumentIcon class="w-4 h-4 text-orange-500 mr-2.5 shrink-0" />
-                        Other Reason Specified
-                    </div>
-                    <div class="text-sm sm:text-base text-gray-700 sm:col-span-2 font-medium pl-[calc(1rem+0.625rem)] sm:pl-0">
-                       {{ modalApplication.second_copy_other || '-' }}
-                    </div>
+                <div
+                  v-if="modalApplication.second_copy_other"
+                  class="sm:grid sm:grid-cols-3 sm:gap-x-4 py-3 border-b border-gray-200/70 last:border-b-0"
+                >
+                  <div
+                    class="flex items-center text-xs sm:text-sm font-medium text-gray-500 sm:col-span-1 mb-0.5 sm:mb-0"
+                  >
+                    <DocumentIcon class="w-4 h-4 text-orange-500 mr-2.5 shrink-0" />
+                    Other Reason Specified
+                  </div>
+                  <div
+                    class="text-sm sm:text-base text-gray-700 sm:col-span-2 font-medium pl-[calc(1rem+0.625rem)] sm:pl-0"
+                  >
+                    {{ modalApplication.second_copy_other || '-' }}
+                  </div>
                 </div>
-                <div class="sm:grid sm:grid-cols-3 sm:gap-x-4 py-3 border-b border-gray-200/70 last:border-b-0">
-                    <div class="flex items-center text-xs sm:text-sm font-medium text-gray-500 sm:col-span-1 mb-0.5 sm:mb-0">
-                        <HashIcon class="w-4 h-4 text-orange-500 mr-2.5 shrink-0" />
-                        Original Copy QEC
-                    </div>
-                    <div class="text-sm sm:text-base text-gray-700 sm:col-span-2 font-medium pl-[calc(1rem+0.625rem)] sm:pl-0">
-                       {{ modalApplication.qec_number_original_copy || 'N/A' }}
-                    </div>
+                <div
+                  class="sm:grid sm:grid-cols-3 sm:gap-x-4 py-3 border-b border-gray-200/70 last:border-b-0"
+                >
+                  <div
+                    class="flex items-center text-xs sm:text-sm font-medium text-gray-500 sm:col-span-1 mb-0.5 sm:mb-0"
+                  >
+                    <HashIcon class="w-4 h-4 text-orange-500 mr-2.5 shrink-0" />
+                    Original Copy QEC
+                  </div>
+                  <div
+                    class="text-sm sm:text-base text-gray-700 sm:col-span-2 font-medium pl-[calc(1rem+0.625rem)] sm:pl-0"
+                  >
+                    {{ modalApplication.qec_number_original_copy || 'N/A' }}
+                  </div>
                 </div>
               </div>
 
-              <div v-if="modalApplication.change_details && modalApplication.change_details.length"
-                class="bg-orange-50/40 p-4 rounded-lg border border-orange-200/60 mt-5 shadow-sm">
+              <div
+                v-if="modalApplication.change_details && modalApplication.change_details.length"
+                class="bg-orange-50/40 p-4 rounded-lg border border-orange-200/60 mt-5 shadow-sm"
+              >
                 <div class="flex items-center gap-2.5 mb-3">
-                    <div class="p-1.5 bg-orange-100 rounded-md">
+                  <div class="p-1.5 bg-orange-100 rounded-md">
                     <EditIcon class="w-4 h-4 text-orange-600" />
-                    </div>
-                    <h5 class="text-sm sm:text-md font-semibold text-orange-700">Details Changed</h5>
+                  </div>
+                  <h5 class="text-sm sm:text-md font-semibold text-orange-700">Details Changed</h5>
                 </div>
                 <div class="space-y-3">
-                    <div v-for="(change, index) in modalApplication.change_details" :key="`change-${index}`"
-                        class="p-3 bg-white/70 rounded-md shadow-xs border border-orange-100/80">
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-x-2 gap-y-0.5 text-xs sm:text-sm">
-                        <strong class="text-gray-500 col-span-1 sm:col-span-1">Field:</strong>
-                        <span class="text-gray-700 col-span-2 sm:col-span-2 font-medium">{{ change.changed_field || '-' }}</span>
+                  <div
+                    v-for="(change, index) in modalApplication.change_details"
+                    :key="`change-${index}`"
+                    class="p-3 bg-white/70 rounded-md shadow-xs border border-orange-100/80"
+                  >
+                    <div
+                      class="grid grid-cols-1 sm:grid-cols-3 gap-x-2 gap-y-0.5 text-xs sm:text-sm"
+                    >
+                      <strong class="text-gray-500 col-span-1 sm:col-span-1">Field:</strong>
+                      <span class="text-gray-700 col-span-2 sm:col-span-2 font-medium">{{
+                        change.changed_field || '-'
+                      }}</span>
 
-                        <strong class="text-gray-500 col-span-1 sm:col-span-1">Old Value:</strong>
-                        <span class="text-gray-700 col-span-2 sm:col-span-2">{{ change.old_value || 'N/A' }}</span>
+                      <strong class="text-gray-500 col-span-1 sm:col-span-1">Old Value:</strong>
+                      <span class="text-gray-700 col-span-2 sm:col-span-2">{{
+                        change.old_value || 'N/A'
+                      }}</span>
 
-                        <strong class="text-gray-500 col-span-1 sm:col-span-1">New Value:</strong>
-                        <span class="text-gray-700 col-span-2 sm:col-span-2 font-medium">{{ change.new_value || '-' }}</span>
+                      <strong class="text-gray-500 col-span-1 sm:col-span-1">New Value:</strong>
+                      <span class="text-gray-700 col-span-2 sm:col-span-2 font-medium">{{
+                        change.new_value || '-'
+                      }}</span>
 
-                        <template v-if="change.other_description">
+                      <template v-if="change.other_description">
                         <strong class="text-gray-500 col-span-1 sm:col-span-1">Description:</strong>
-                        <span class="text-gray-700 col-span-2 sm:col-span-2">{{ change.other_description || '-' }}</span>
-                        </template>
+                        <span class="text-gray-700 col-span-2 sm:col-span-2">{{
+                          change.other_description || '-'
+                        }}</span>
+                      </template>
                     </div>
-                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -370,11 +460,18 @@
                   :key="`status-${index}`"
                   class="sm:grid sm:grid-cols-3 sm:gap-x-4 py-3 border-b border-gray-200/70 last:border-b-0"
                 >
-                  <div class="flex items-center text-xs sm:text-sm font-medium text-gray-500 sm:col-span-1 mb-0.5 sm:mb-0">
-                    <component :is="statusInfoIcons[index]" class="w-4 h-4 text-indigo-500 mr-2.5 shrink-0" />
+                  <div
+                    class="flex items-center text-xs sm:text-sm font-medium text-gray-500 sm:col-span-1 mb-0.5 sm:mb-0"
+                  >
+                    <component
+                      :is="statusInfoIcons[index]"
+                      class="w-4 h-4 text-indigo-500 mr-2.5 shrink-0"
+                    />
                     {{ item.label }}
                   </div>
-                  <div class="text-sm sm:text-base text-gray-700 sm:col-span-2 font-medium pl-[calc(1rem+0.625rem)] sm:pl-0">
+                  <div
+                    class="text-sm sm:text-base text-gray-700 sm:col-span-2 font-medium pl-[calc(1rem+0.625rem)] sm:pl-0"
+                  >
                     <div v-if="item.label === 'Status'">
                       <span :class="getStatusBadgeClass(item.value)">
                         {{ formatStatus(item.value) || '-' }}
@@ -408,7 +505,9 @@
 
             <!-- Assign QEC Number Form -->
             <div v-if="modalType === 'assignQEC'" class="space-y-1.5">
-              <label for="qecNumber" class="block text-sm font-medium text-gray-700">QEC Number</label>
+              <label for="qecNumber" class="block text-sm font-medium text-gray-700"
+                >QEC Number</label
+              >
               <input
                 type="text"
                 id="qecNumber"
@@ -432,7 +531,7 @@
                     rows="4"
                     placeholder="Provide a clear message for the applicant..."
                   ></textarea>
-                   <div class="absolute right-3 bottom-2.5 text-xs text-gray-400">
+                  <div class="absolute right-3 bottom-2.5 text-xs text-gray-400">
                     {{ reProcessReason.length }}/500
                   </div>
                 </div>
@@ -441,7 +540,9 @@
                 <label class="block text-sm font-medium text-gray-700 mb-2">
                   Select Documents to Re-upload
                 </label>
-                <div class="space-y-2.5 bg-gray-50/70 p-4 rounded-lg border border-gray-200/80 max-h-60 overflow-y-auto">
+                <div
+                  class="space-y-2.5 bg-gray-50/70 p-4 rounded-lg border border-gray-200/80 max-h-60 overflow-y-auto"
+                >
                   <label
                     v-for="doc in documents"
                     :key="doc.key"
@@ -472,9 +573,9 @@
                   rows="5"
                   :placeholder="`Enter ${modalType === 'reProcess' ? 'reason for reprocessing' : 'rejection reason'} here...`"
                 ></textarea>
-                 <div class="absolute right-3 bottom-2.5 text-xs text-gray-400">
-                    {{ textAreaValue.length }}/500
-                  </div>
+                <div class="absolute right-3 bottom-2.5 text-xs text-gray-400">
+                  {{ textAreaValue.length }}/500
+                </div>
               </div>
             </div>
 
@@ -530,7 +631,15 @@
             :disabled="isSaving"
           >
             <component :is="actionButtonIcon" class="w-4 h-4 mr-1.5" />
-            {{ isSaving ? 'Saving...' : (modalType === 'forward' ? 'Forward' : modalType === 'approve' ? 'Approve' : 'Save') }}
+            {{
+              isSaving
+                ? 'Saving...'
+                : modalType === 'forward'
+                  ? 'Forward'
+                  : modalType === 'approve'
+                    ? 'Approve'
+                    : 'Save'
+            }}
           </button>
         </div>
       </div>
@@ -677,24 +786,44 @@ const actionButtonIcon = computed(() => {
   return icons[props.modalType] || SaveIcon
 })
 
-
 const personalInfoIcons = [UserIcon, HashIcon, CalendarIcon, UserIcon, PhoneIcon, MailIcon]
 const addressInfoIcons = [BuildingIcon, MapPinnedIcon, MapPinIcon]
 const educationInfoIcons = [
-  GraduationCapIcon, TimerIcon, SchoolIcon, BuildingIcon, MapPinIcon, GlobeIcon,
-  HashIcon, CalendarIcon, GlobeIcon, DocumentIcon, SchoolIcon,
+  GraduationCapIcon,
+  TimerIcon,
+  SchoolIcon,
+  BuildingIcon,
+  MapPinIcon,
+  GlobeIcon,
+  HashIcon,
+  CalendarIcon,
+  GlobeIcon,
+  DocumentIcon,
+  SchoolIcon,
 ]
 const statusInfoIcons = [
-  CheckCircleIcon, ClockIcon, ClockIcon, DocumentIcon, DocumentIcon, DocumentIcon, DocumentIcon,
+  CheckCircleIcon,
+  ClockIcon,
+  ClockIcon,
+  DocumentIcon,
+  DocumentIcon,
+  DocumentIcon,
+  DocumentIcon,
 ]
 
 const formatDate = (dateString) => {
   if (!dateString) return null
   try {
-    return new Date(dateString).toLocaleDateString('en-GB', {
-      year: 'numeric', month: 'short', day: '2-digit',
-      hour: '2-digit', minute: '2-digit', hour12: true
-    }).replace(',', ' -')
+    return new Date(dateString)
+      .toLocaleDateString('en-GB', {
+        year: 'numeric',
+        month: 'short',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+      })
+      .replace(',', ' -')
   } catch {
     return 'Invalid Date'
   }
@@ -711,9 +840,18 @@ const formatStatus = (status) => {
 const modalApplication = computed(() => props.application || {})
 
 const personalInfo = computed(() => [
-  { label: 'Applicant\'s Name', value: modalApplication.value.applicants_name },
+  { label: "Applicant's Name", value: modalApplication.value.applicants_name },
   { label: 'CID Number', value: modalApplication.value.cid_no },
-  { label: 'Date of Birth', value: modalApplication.value.date_of_birth ? new Date(modalApplication.value.date_of_birth).toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric'}) : null },
+  {
+    label: 'Date of Birth',
+    value: modalApplication.value.date_of_birth
+      ? new Date(modalApplication.value.date_of_birth).toLocaleDateString('en-GB', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        })
+      : null,
+  },
   { label: 'Gender', value: modalApplication.value.gender },
   { label: 'Contact Number', value: modalApplication.value.contact_no },
   { label: 'Email Address', value: modalApplication.value.email_address },
@@ -727,7 +865,12 @@ const addressInfo = computed(() => [
 
 const educationInfo = computed(() => [
   { label: 'Course Title', value: modalApplication.value.course_title },
-  { label: 'Course Duration', value: modalApplication.value.duration_of_course ? `${modalApplication.value.duration_of_course} years` : null },
+  {
+    label: 'Course Duration',
+    value: modalApplication.value.duration_of_course
+      ? `${modalApplication.value.duration_of_course} years`
+      : null,
+  },
   { label: 'Institute Name', value: modalApplication.value.name_of_institute },
   { label: 'University Name', value: modalApplication.value.name_of_university },
   { label: 'Location (Institute)', value: modalApplication.value.location },
@@ -744,7 +887,10 @@ const statusInfo = computed(() => [
   { label: 'Created At', value: formatDate(modalApplication.value.created_at) },
   { label: 'Last Updated At', value: formatDate(modalApplication.value.updated_at) },
   { label: 'Remarks/Notes', value: modalApplication.value.remarks },
-  { label: 'Dealing Officer Decision', value: modalApplication.value.dealing_officer_decision?.name || null },
+  {
+    label: 'Dealing Officer Decision',
+    value: modalApplication.value.dealing_officer_decision?.name || null,
+  },
   { label: 'Chief Decision', value: modalApplication.value.chief_decision?.name || null },
   { label: 'Applied From Bhutan', value: modalApplication.value.from_in_country ? 'Yes' : 'No' },
 ])
@@ -757,20 +903,79 @@ const documents = [
   { key: 'second_copy_supporting_document', label: 'Second Copy Supporting Document' },
 ]
 
-const filteredDocuments = computed(() => documents.filter(doc => modalApplication.value && modalApplication.value[doc.key]))
+const filteredDocuments = computed(() =>
+  documents.filter((doc) => modalApplication.value && modalApplication.value[doc.key]),
+)
 
 const educationFormFields = computed(() => [
-  { key: 'course_title', label: 'Course Title', type: 'text', placeholder: 'e.g., Bachelor of Science in IT', required: true },
-  { key: 'duration_of_course', label: 'Duration (Years)', type: 'number', placeholder: 'e.g., 3 or 4', required: true },
-  { key: 'name_of_institute', label: 'Institute', type: 'text', placeholder: 'e.g., Royal University of Bhutan', required: true },
-  { key: 'name_of_university', label: 'University (if different)', type: 'text', placeholder: 'e.g., Harvard University' },
-  { key: 'location', label: 'City/State of Institute', type: 'text', placeholder: 'e.g., Thimphu or California' },
-  { key: 'country', label: 'Country of Institute', type: 'text', placeholder: 'e.g., Bhutan or USA', required: true },
+  {
+    key: 'course_title',
+    label: 'Course Title',
+    type: 'text',
+    placeholder: 'e.g., Bachelor of Science in IT',
+    required: true,
+  },
+  {
+    key: 'duration_of_course',
+    label: 'Duration (Years)',
+    type: 'number',
+    placeholder: 'e.g., 3 or 4',
+    required: true,
+  },
+  {
+    key: 'name_of_institute',
+    label: 'Institute',
+    type: 'text',
+    placeholder: 'e.g., Royal University of Bhutan',
+    required: true,
+  },
+  {
+    key: 'name_of_university',
+    label: 'University (if different)',
+    type: 'text',
+    placeholder: 'e.g., Harvard University',
+  },
+  {
+    key: 'location',
+    label: 'City/State of Institute',
+    type: 'text',
+    placeholder: 'e.g., Thimphu or California',
+  },
+  {
+    key: 'country',
+    label: 'Country of Institute',
+    type: 'text',
+    placeholder: 'e.g., Bhutan or USA',
+    required: true,
+  },
   { key: 'student_id_no', label: 'Student ID', type: 'text', placeholder: 'Enter student ID' },
-  { key: 'year_of_completion', label: 'Year of Completion', type: 'number', placeholder: 'e.g., 2023', required: true },
-  { key: 'website', label: 'Institute Website', type: 'text', placeholder: 'e.g., https://www.rub.edu.bt' },
-  { key: 'type_of_course', label: 'Type of Course', type: 'select', options: typesOfCourse.value, required: true },
-  { key: 'qualification', label: 'Qualification Level', type: 'select', options: qualifications.value, required: true },
+  {
+    key: 'year_of_completion',
+    label: 'Year of Completion',
+    type: 'number',
+    placeholder: 'e.g., 2023',
+    required: true,
+  },
+  {
+    key: 'website',
+    label: 'Institute Website',
+    type: 'text',
+    placeholder: 'e.g., https://www.rub.edu.bt',
+  },
+  {
+    key: 'type_of_course',
+    label: 'Type of Course',
+    type: 'select',
+    options: typesOfCourse.value,
+    required: true,
+  },
+  {
+    key: 'qualification',
+    label: 'Qualification Level',
+    type: 'select',
+    options: qualifications.value,
+    required: true,
+  },
 ])
 
 const textAreaValue = computed({
@@ -788,7 +993,7 @@ const textAreaValue = computed({
 
 const getStatusBadgeClass = (status) => {
   const capitalizedStatus = status ? formatStatus(status).replace(/\s+/g, '') : '' // Remove spaces for key lookup
-  const baseClass = 'px-2.5 py-0.5 text-xs font-semibold rounded-full inline-block tracking-wide';
+  const baseClass = 'px-2.5 py-0.5 text-xs font-semibold rounded-full inline-block tracking-wide'
   const classes = {
     Processing: `${baseClass} bg-yellow-100 text-yellow-700 border border-yellow-200`,
     Approved: `${baseClass} bg-green-100 text-green-700 border border-green-200`,
@@ -797,7 +1002,9 @@ const getStatusBadgeClass = (status) => {
     Reupload: `${baseClass} bg-purple-100 text-purple-700 border border-purple-200`,
     Regretted: `${baseClass} bg-rose-100 text-rose-700 border border-rose-200`,
   }
-  return classes[capitalizedStatus] || `${baseClass} bg-gray-100 text-gray-700 border border-gray-200`
+  return (
+    classes[capitalizedStatus] || `${baseClass} bg-gray-100 text-gray-700 border border-gray-200`
+  )
 }
 
 const fetchTypesOfCourse = async () => {
@@ -852,9 +1059,10 @@ const cancelEditingEducation = () => {
 }
 
 const saveEducationChanges = async () => {
-  const requiredFields = educationFormFields.value.filter(field => field.required)
+  const requiredFields = educationFormFields.value.filter((field) => field.required)
   for (const field of requiredFields) {
-    if (!educationForm.value[field.key] && educationForm.value[field.key] !== 0) { // Check for 0 in case of number fields
+    if (!educationForm.value[field.key] && educationForm.value[field.key] !== 0) {
+      // Check for 0 in case of number fields
       toast.error(`${field.label} is required.`)
       return
     }
@@ -868,11 +1076,18 @@ const saveEducationChanges = async () => {
     }
     await apiService.patchRecognitionOfQualification(modalApplication.value.id, updateData)
     toast.success('Education details updated successfully.')
-    emit('update', { ...modalApplication.value, ...educationForm.value, modal_action: 'updateEducation' }) // emit full updated app
+    emit('update', {
+      ...modalApplication.value,
+      ...educationForm.value,
+      modal_action: 'updateEducation',
+    }) // emit full updated app
     isEditingEducation.value = false
   } catch (error) {
     console.error('Error updating education details:', error)
-    const errorMessage = error.response?.data?.detail || error.response?.data?.message || 'Failed to update education details.'
+    const errorMessage =
+      error.response?.data?.detail ||
+      error.response?.data?.message ||
+      'Failed to update education details.'
     toast.error(errorMessage)
   } finally {
     isSaving.value = false
@@ -886,74 +1101,84 @@ const handleModalAction = async () => {
 
   switch (props.modalType) {
     case 'addNote':
-      payload = { remarks: noteText.value, modal_action: 'addNote' };
-      break;
+      payload = { remarks: noteText.value, modal_action: 'addNote' }
+      break
     case 'assignQEC':
       if (!qecNumber.value.trim()) {
-        toast.error('QEC Number cannot be empty.');
-        isSaving.value = false;
-        return;
+        toast.error('QEC Number cannot be empty.')
+        isSaving.value = false
+        return
       }
-      payload = { qec_number: qecNumber.value, modal_action: 'assignQEC' };
-      break;
+      payload = { qec_number: qecNumber.value, modal_action: 'assignQEC' }
+      break
     case 'reUpload': {
       if (selectedDocuments.value.length === 0) {
-        toast.error('Please select at least one document to request for re-upload.');
-        isSaving.value = false;
-        return;
+        toast.error('Please select at least one document to request for re-upload.')
+        isSaving.value = false
+        return
       }
-      const docLabels = selectedDocuments.value.map(key => {
-        const doc = documents.find(d => d.key === key);
-        return doc ? doc.label : key;
-      });
-      const docListString = docLabels.join(', ');
-      const defaultMessage = `Please re-upload the following document(s) with better clarity: ${docListString}.`;
-      remarksValue = reProcessReason.value.trim() ? `${reProcessReason.value.trim()} (Requested: ${docListString})` : defaultMessage;
-      payload = { remarks: remarksValue, status: 'reupload', documents_to_reupload: selectedDocuments.value, modal_action: 'reUpload' };
-      break;
+      const docLabels = selectedDocuments.value.map((key) => {
+        const doc = documents.find((d) => d.key === key)
+        return doc ? doc.label : key
+      })
+      const docListString = docLabels.join(', ')
+      const defaultMessage = `Please re-upload the following document(s) with better clarity: ${docListString}.`
+      remarksValue = reProcessReason.value.trim()
+        ? `${reProcessReason.value.trim()} (Requested: ${docListString})`
+        : defaultMessage
+      payload = {
+        remarks: remarksValue,
+        status: 'reupload',
+        documents_to_reupload: selectedDocuments.value,
+        modal_action: 'reUpload',
+      }
+      break
     }
     case 'reProcess':
-       if (!reProcessReason.value.trim()) {
-        toast.error('Reason for reprocessing cannot be empty.');
-        isSaving.value = false;
-        return;
+      if (!reProcessReason.value.trim()) {
+        toast.error('Reason for reprocessing cannot be empty.')
+        isSaving.value = false
+        return
       }
-      payload = { remarks: reProcessReason.value, status: 'reprocess', modal_action: 'reProcess' };
-      break;
+      payload = { remarks: reProcessReason.value, status: 'reprocess', modal_action: 'reProcess' }
+      break
     case 'forward':
-      payload = { forward: true, modal_action: 'forward' };
-      break;
+      payload = { forward: true, modal_action: 'forward' }
+      break
     case 'regret':
       if (!rejectionReason.value.trim()) {
-        toast.error('Rejection reason cannot be empty.');
-        isSaving.value = false;
-        return;
+        toast.error('Rejection reason cannot be empty.')
+        isSaving.value = false
+        return
       }
-      payload = { chief_remarks: rejectionReason.value, status: 'regretted', modal_action: 'regret' };
-      break;
+      payload = {
+        chief_remarks: rejectionReason.value,
+        status: 'regretted',
+        modal_action: 'regret',
+      }
+      break
     case 'approve':
-      payload = { status: 'approved', modal_action: 'approve' };
-      break;
+      payload = { status: 'approved', modal_action: 'approve' }
+      break
     default:
-      isSaving.value = false;
-      return;
+      isSaving.value = false
+      return
   }
 
   try {
     // Assuming your API service handles the actual HTTP request
     // For now, we just emit the event. If an API call happens here, ensure it's awaited.
     // Example: await apiService.updateApplicationStatus(modalApplication.value.id, payload);
-    emit('update', { applicationId: modalApplication.value.id, ...payload });
-    toast.success(`Application ${props.modalType} action processed successfully.`);
-    closeModal();
+    emit('update', { applicationId: modalApplication.value.id, ...payload })
+    toast.success(`Application ${props.modalType} action processed successfully.`)
+    closeModal()
   } catch (error) {
-    console.error(`Error processing ${props.modalType} action:`, error);
-    toast.error(error.response?.data?.detail || `Failed to process ${props.modalType} action.`);
+    console.error(`Error processing ${props.modalType} action:`, error)
+    toast.error(error.response?.data?.detail || `Failed to process ${props.modalType} action.`)
   } finally {
-    isSaving.value = false;
+    isSaving.value = false
   }
 }
-
 
 const closeModal = () => {
   noteText.value = ''
@@ -970,66 +1195,72 @@ watch(
   () => props.showModal,
   (newValue) => {
     if (newValue) {
-      isEditingEducation.value = false; // Reset edit mode when modal opens
+      isEditingEducation.value = false // Reset edit mode when modal opens
       if (props.modalType === 'addNote') {
-        noteText.value = modalApplication.value.remarks || modalApplication.value.chief_remarks || '';
+        noteText.value =
+          modalApplication.value.remarks || modalApplication.value.chief_remarks || ''
       } else {
-        noteText.value = '';
+        noteText.value = ''
       }
 
       if (props.modalType === 'assignQEC' && modalApplication.value.qec_number) {
-        qecNumber.value = modalApplication.value.qec_number;
+        qecNumber.value = modalApplication.value.qec_number
       } else {
-        qecNumber.value = '';
+        qecNumber.value = ''
       }
 
       if (props.modalType === 'reProcess' && modalApplication.value.remarks) {
-        reProcessReason.value = modalApplication.value.remarks;
+        reProcessReason.value = modalApplication.value.remarks
       } else {
-         reProcessReason.value = '';
+        reProcessReason.value = ''
       }
 
       if (props.modalType === 'regret' && modalApplication.value.chief_remarks) {
-        rejectionReason.value = modalApplication.value.chief_remarks;
+        rejectionReason.value = modalApplication.value.chief_remarks
       } else {
-        rejectionReason.value = '';
+        rejectionReason.value = ''
       }
 
-      selectedDocuments.value = []; // Clear selected documents on modal open for reUpload
+      selectedDocuments.value = [] // Clear selected documents on modal open for reUpload
 
-      if (props.modalType === 'view' || props.modalType === 'viewCertificate' || isEditingEducation.value) {
+      if (
+        props.modalType === 'view' ||
+        props.modalType === 'viewCertificate' ||
+        isEditingEducation.value
+      ) {
         fetchTypesOfCourse()
         fetchQualifications()
-        if(isEditingEducation.value) initializeEducationForm();
+        if (isEditingEducation.value) initializeEducationForm()
       }
     }
   },
 )
 
 watch(
-  () => props.application, (newApp) => {
+  () => props.application,
+  (newApp) => {
     if (newApp && props.showModal) {
-        // If modal is open and application data changes, re-initialize relevant fields
-        if (props.modalType === 'addNote') {
-            noteText.value = newApp.remarks || newApp.chief_remarks || '';
-        }
-        if (props.modalType === 'assignQEC') {
-            qecNumber.value = newApp.qec_number || '';
-        }
-        if (props.modalType === 'reProcess') {
-            reProcessReason.value = newApp.remarks || '';
-        }
-        if (props.modalType === 'regret') {
-            rejectionReason.value = newApp.chief_remarks || '';
-        }
-        // Re-initialize education form if it's in edit mode and application changes
-        if (isEditingEducation.value) {
-            initializeEducationForm();
-        }
+      // If modal is open and application data changes, re-initialize relevant fields
+      if (props.modalType === 'addNote') {
+        noteText.value = newApp.remarks || newApp.chief_remarks || ''
+      }
+      if (props.modalType === 'assignQEC') {
+        qecNumber.value = newApp.qec_number || ''
+      }
+      if (props.modalType === 'reProcess') {
+        reProcessReason.value = newApp.remarks || ''
+      }
+      if (props.modalType === 'regret') {
+        rejectionReason.value = newApp.chief_remarks || ''
+      }
+      // Re-initialize education form if it's in edit mode and application changes
+      if (isEditingEducation.value) {
+        initializeEducationForm()
+      }
     }
-  }, { deep: true }
+  },
+  { deep: true },
 )
-
 
 onMounted(() => {
   if (props.showModal && (props.modalType === 'view' || props.modalType === 'viewCertificate')) {

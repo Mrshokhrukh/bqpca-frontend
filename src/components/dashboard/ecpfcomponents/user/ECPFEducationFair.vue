@@ -80,8 +80,6 @@
                 class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
               />
             </div>
-
-
           </div>
         </section>
         <!-- Participating Institute Details -->
@@ -94,7 +92,9 @@
           >
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label class="block text-sm font-medium text-gray-700">Name of the Institution</label>
+                <label class="block text-sm font-medium text-gray-700"
+                  >Name of the Institution</label
+                >
                 <input
                   type="text"
                   v-model="institute.instituteId"
@@ -138,7 +138,9 @@
                 />
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700" >Contact (focal person)</label>
+                <label class="block text-sm font-medium text-gray-700"
+                  >Contact (focal person)</label
+                >
                 <input
                   type="text"
                   v-model="institute.contact"
@@ -185,7 +187,9 @@
 
             <!-- Representative Details (inside each institute) -->
             <section class="mb-8">
-              <h2 class="text-lg font-bold mb-4 text-gray-700 mt-2">Representative Details (Maximum 2)</h2>
+              <h2 class="text-lg font-bold mb-4 text-gray-700 mt-2">
+                Representative Details (Maximum 2)
+              </h2>
               <div
                 v-for="(rep, repIndex) in institute.representatives"
                 :key="repIndex"
@@ -241,7 +245,9 @@
                     />
                   </div>
                   <div>
-                    <label class="block text-sm font-medium text-gray-700">CV of Representative</label>
+                    <label class="block text-sm font-medium text-gray-700"
+                      >CV of Representative</label
+                    >
                     <div class="flex items-center space-x-2">
                       <input
                         type="text"
@@ -252,7 +258,11 @@
                       <label
                         class="cursor-pointer px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
                       >
-                        <input type="file" @change="handleCvUpload($event, index, repIndex)" class="hidden" />
+                        <input
+                          type="file"
+                          @change="handleCvUpload($event, index, repIndex)"
+                          class="hidden"
+                        />
                         <span>Upload</span>
                       </label>
                     </div>
@@ -343,7 +353,7 @@
               Remove Institute
             </button>
           </div>
-          <hr class="mx-6">
+          <hr class="mx-6" />
           <button
             type="button"
             @click="addInstitute"
@@ -624,13 +634,31 @@ const submitForm = async () => {
       ) // Send file object
     }
     inst.representatives.forEach((rep, repIndex) => {
-      formData.append(`participating_institutes[${index}][representatives][${repIndex}][name]`, rep.name)
-      formData.append(`participating_institutes[${index}][representatives][${repIndex}][passport_no]`, rep.passportNo)
-      formData.append(`participating_institutes[${index}][representatives][${repIndex}][nationality]`, rep.nationality)
-      formData.append(`participating_institutes[${index}][representatives][${repIndex}][arrival_date]`, rep.arrivalDate)
-      formData.append(`participating_institutes[${index}][representatives][${repIndex}][departure_date]`, rep.departureDate)
+      formData.append(
+        `participating_institutes[${index}][representatives][${repIndex}][name]`,
+        rep.name,
+      )
+      formData.append(
+        `participating_institutes[${index}][representatives][${repIndex}][passport_no]`,
+        rep.passportNo,
+      )
+      formData.append(
+        `participating_institutes[${index}][representatives][${repIndex}][nationality]`,
+        rep.nationality,
+      )
+      formData.append(
+        `participating_institutes[${index}][representatives][${repIndex}][arrival_date]`,
+        rep.arrivalDate,
+      )
+      formData.append(
+        `participating_institutes[${index}][representatives][${repIndex}][departure_date]`,
+        rep.departureDate,
+      )
       if (rep.cvFile) {
-        formData.append(`participating_institutes[${index}][representatives][${repIndex}][cv]`, rep.cvFile)
+        formData.append(
+          `participating_institutes[${index}][representatives][${repIndex}][cv]`,
+          rep.cvFile,
+        )
       }
     })
   })
@@ -700,7 +728,7 @@ onMounted(async () => {
     const profiles = profilesResponse.data.results || profilesResponse.data
 
     // 3. Find profile matching user's cid
-    const matched = profiles.find(profile => profile.cid_no === user.cid)
+    const matched = profiles.find((profile) => profile.cid_no === user.cid)
     if (matched) {
       // 4. Set ecpfDetails fields
       ecpfDetails.name = matched.applicants_name || ''
@@ -716,7 +744,6 @@ onMounted(async () => {
     // Fetch countries
     const countriesResponse = await apiService.getCountries()
     countryOptions.value = countriesResponse.data
-  
   } catch (error) {
     console.error('Error fetching data:', error)
     toast.error('Failed to load initial data.')

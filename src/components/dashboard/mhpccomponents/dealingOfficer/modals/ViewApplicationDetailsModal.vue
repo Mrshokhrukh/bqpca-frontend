@@ -1,5 +1,6 @@
 <template>
-  <TransitionRoot appear :show="isOpen" as="template">
+  <div>
+    <TransitionRoot appear :show="isOpen" as="template">
     <Dialog as="div" @close="closeModalHandler" class="relative z-50">
       <TransitionChild
         as="template"
@@ -139,6 +140,7 @@
       <MHPCCertificateModal :application="application" @close="closeCertificateModal" />
     </div>
   </Teleport>
+  </div>
 </template>
 
 <script setup>
@@ -206,20 +208,19 @@ const overallStatus = computed(() => {
 })
 
 const refreshApplication = async () => {
-  if (!props.application?.id) return;
-  isLoading.value = true;
+  if (!props.application?.id) return
+  isLoading.value = true
   try {
-    const response = await apiServices.getMhpcNewApplication(props.application.id);
+    const response = await apiServices.getMhpcNewApplication(props.application.id)
 
     // CHANGE: Emit the new, full application object to the parent
-    emit('update', response.data);
-
+    emit('update', response.data)
   } catch (error) {
-    console.error('Error refreshing application:', error);
+    console.error('Error refreshing application:', error)
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
-};
+}
 
 const openCertificateModal = () => {
   isCertificateModalOpen.value = true
@@ -259,12 +260,16 @@ const closeCertificateModal = () => {
 
 /* Enhanced card hover effects */
 .rounded-xl {
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  transition:
+    transform 0.2s ease-in-out,
+    box-shadow 0.2s ease-in-out;
 }
 
 .rounded-xl:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
 /* Status indicator animations */

@@ -131,23 +131,23 @@ import CpdProviderApplicationForm from '@/components/dashboard/mhpccomponents/cp
 //institute components
 import InstituteEoiApplication from '@/components/dashboard/mhpccomponents/institutions/InstituteEoiApplication.vue'
 import InstituteDPRApplication from '@/components/dashboard/mhpccomponents/institutions/InstituteDPRApplication.vue'
-import TrackEoiApplication from '@/components/dashboard/mhpccomponents/institutions/TrackEoiApplication.vue'
-import TrackDPRApplication from '@/components/dashboard/mhpccomponents/institutions/TrackDPRApplication.vue'
+import TrackEoiApplication from '@/components/dashboard/mhpccomponents/institutions/InstituteTrackEoiApplication.vue'
+import TrackDPRApplication from '@/components/dashboard/mhpccomponents/institutions/InstituteTrackDPRApplication.vue'
 import ViewCertificates from '@/components/dashboard/mhpccomponents/institutions/ViewCertificates.vue'
 import InstituteProfile from '@/components/dashboard/mhpccomponents/institutions/InstitutionProfile.vue'
 import TeachingCenter from '@/components/dashboard/mhpccomponents/institutions/TeachingCenterApplicationModal.vue'
-import TeachingCenterRenewal from '@/components/dashboard/mhpccomponents/institutions/TeachingCenterTrackAndRenew.vue'
-import NewEducationProgram from '@/components/dashboard/mhpccomponents/institutions/NewEducationProgram.vue'
+import TeachingCenterRenewal from '@/components/dashboard/mhpccomponents/institutions/TeachingCenterRenewals.vue'
+import NewEducationProgram from '@/components/dashboard/mhpccomponents/institutions/NewEducationProgramBaseComponent.vue'
 // import MyApplications from '@/components/dashboard/mhpccomponents/institutions/MyApplications.vue'
 import InstitutesRenewal from '@/components/dashboard/mhpccomponents/institutions/InstitutesRenewal.vue'
-import MyCapa from '@/components/dashboard/mhpccomponents/institutions/MyCapa.vue'
-import StaffManagement from '@/components/dashboard/mhpccomponents/institutions/StaffManagement.vue'
+import MyCapa from '@/components/dashboard/mhpccomponents/institutions/InstituteCapa.vue'
+import StaffManagement from '@/components/dashboard/mhpccomponents/institutions/InstituteFacultyManagement.vue'
 import CourseManagement from '@/components/dashboard/mhpccomponents/institutions/CourseManagement.vue'
 import DepartmentManagement from '@/components/dashboard/mhpccomponents/institutions/DepartmentManagement.vue'
 import CPDapprovedAddParticipants from '@/components/dashboard/mhpccomponents/cpdCpdProvider/Participantscomponents/CPDapprovedAddParticipants.vue'
-import PhysicalVerification from '@/components/dashboard/mhpccomponents/institutions/PhysicalVerification.vue'
-import TeachingCenterTracking from '@/components/dashboard/mhpccomponents/institutions/TeachingCenterTracking.vue'
-import NewEducationProgramApplication from '@/components/dashboard/mhpccomponents/institutions/NewEducationProgramApplication.vue'
+import PhysicalVerification from '@/components/dashboard/mhpccomponents/institutions/TeachingCenterSiteVisitSchedules.vue'
+import TeachingCenterTracking from '@/components/dashboard/mhpccomponents/institutions/TeachingCenterManagement.vue'
+import NewEducationProgramApplication from '@/components/dashboard/mhpccomponents/institutions/NewEducationProgramList.vue'
 
 import InstituteDashboard from '@/components/dashboard/mhpccomponents/institutions/InstituteDashboard.vue'
 
@@ -334,7 +334,6 @@ const bmhCmeCpdProviderComponent = computed(() => {
     case path.endsWith('/health_certification/cpd_provider_application_form'):
       return CpdProviderApplicationForm
 
-
     default:
       return null
   }
@@ -397,7 +396,6 @@ const bmhInstitutionsComponent = computed(() => {
       return TeachingCenterTracking
     case path.endsWith('/health_certification/new_education_program_application'):
       return NewEducationProgramApplication
-
 
     default:
       return null

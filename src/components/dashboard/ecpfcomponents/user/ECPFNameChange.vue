@@ -129,7 +129,10 @@
                 v-model="nameChangeDeclaration"
                 class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
               />
-              <label for="nameChangeDeclaration" class="ml-2 block text-sm font-medium text-gray-700">
+              <label
+                for="nameChangeDeclaration"
+                class="ml-2 block text-sm font-medium text-gray-700"
+              >
                 I hereby declare that the information provided is true and correct.
                 <span class="text-red-500">*</span>
               </label>
@@ -173,9 +176,26 @@
           :disabled="isSubmitting || !proposedName || !nameChangeDeclaration"
           class="w-full sm:w-auto px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <svg v-if="isSubmitting" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          <svg
+            v-if="isSubmitting"
+            class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"
+            ></circle>
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
           </svg>
           {{ isSubmitting ? 'Submitting...' : 'Submit Application' }}
         </button>
@@ -234,19 +254,19 @@ onMounted(async () => {
     }
 
     if (!authStore.user.cid) {
-        toast.error('User CID not found. Cannot fetch ECPF details.');
-        currentDetails.ecpfName = authStore.user?.institute_name || 'N/A'
-        currentDetails.licenseNo = authStore.user?.license_no || 'N/A'
-        currentDetails.proprietorName = authStore.fullName || 'N/A'
-        currentDetails.cid = 'N/A'
-        currentDetails.contactNo = authStore.contactNumber || 'N/A'
-        currentDetails.emailAddress = authStore.email || 'N/A'
-        const locationParts = [authStore.dzongkhag, authStore.gewog, authStore.village].filter(
-            Boolean,
-        )
-        currentDetails.location = locationParts.length > 0 ? locationParts.join(', ') : 'N/A'
-        loading.value = false;
-        return
+      toast.error('User CID not found. Cannot fetch ECPF details.')
+      currentDetails.ecpfName = authStore.user?.institute_name || 'N/A'
+      currentDetails.licenseNo = authStore.user?.license_no || 'N/A'
+      currentDetails.proprietorName = authStore.fullName || 'N/A'
+      currentDetails.cid = 'N/A'
+      currentDetails.contactNo = authStore.contactNumber || 'N/A'
+      currentDetails.emailAddress = authStore.email || 'N/A'
+      const locationParts = [authStore.dzongkhag, authStore.gewog, authStore.village].filter(
+        Boolean,
+      )
+      currentDetails.location = locationParts.length > 0 ? locationParts.join(', ') : 'N/A'
+      loading.value = false
+      return
     }
 
     const response = await apiServices.getEcpfDetailsByCID(authStore.user.cid)
@@ -267,12 +287,20 @@ onMounted(async () => {
         fetchedEcpfData.village || authStore.village,
       ].filter(Boolean)
       currentDetails.location =
-        locationParts.length > 0 ? locationParts.join(', ') : (fetchedEcpfData.location || fetchedEcpfData.firm_location || 'N/A')
+        locationParts.length > 0
+          ? locationParts.join(', ')
+          : fetchedEcpfData.location || fetchedEcpfData.firm_location || 'N/A'
 
-      currentDetails.proprietorName = fetchedEcpfData.applicants_name || fetchedEcpfData.proprietor_name || authStore.fullName || 'N/A'
-      currentDetails.cid = fetchedEcpfData.cid_no || fetchedEcpfData.cid || authStore.user.cid || 'N/A'
+      currentDetails.proprietorName =
+        fetchedEcpfData.applicants_name ||
+        fetchedEcpfData.proprietor_name ||
+        authStore.fullName ||
+        'N/A'
+      currentDetails.cid =
+        fetchedEcpfData.cid_no || fetchedEcpfData.cid || authStore.user.cid || 'N/A'
       currentDetails.contactNo = fetchedEcpfData.contact_no || authStore.contactNumber || 'N/A'
-      currentDetails.emailAddress = fetchedEcpfData.email || fetchedEcpfData.email_address || authStore.email || 'N/A'
+      currentDetails.emailAddress =
+        fetchedEcpfData.email || fetchedEcpfData.email_address || authStore.email || 'N/A'
     } else {
       toast.error('Could not fetch ECPF details.')
       Object.keys(currentDetails).forEach((key) => (currentDetails[key] = 'N/A (Error)'))
@@ -297,21 +325,22 @@ watch(
   () => props.initialData,
   (newData) => {
     if (newData && Object.keys(newData).length > 0) {
-      proposedName.value = newData.new_proposed_name || newData.proposed_name || newData.proposedName || ''
+      proposedName.value =
+        newData.new_proposed_name || newData.proposed_name || newData.proposedName || ''
 
       if (typeof newData.declaration === 'boolean') {
-        nameChangeDeclaration.value = newData.declaration;
+        nameChangeDeclaration.value = newData.declaration
       } else if (typeof newData.nameChangeDeclaration === 'string') {
-        nameChangeDeclaration.value = newData.nameChangeDeclaration === 'agree';
+        nameChangeDeclaration.value = newData.nameChangeDeclaration === 'agree'
       } else if (typeof newData.nameChangeDeclaration === 'boolean') {
-         nameChangeDeclaration.value = newData.nameChangeDeclaration;
+        nameChangeDeclaration.value = newData.nameChangeDeclaration
       } else {
-        nameChangeDeclaration.value = false;
+        nameChangeDeclaration.value = false
       }
 
       nameChangeRemarks.value = newData.remarks || newData.nameChangeRemarks || ''
-      if (newData.ecpf_profile) ecpfProfileId = newData.ecpf_profile;
-      if (newData.current_name) currentDetails.ecpfName = newData.current_name;
+      if (newData.ecpf_profile) ecpfProfileId = newData.ecpf_profile
+      if (newData.current_name) currentDetails.ecpfName = newData.current_name
     }
   },
   { immediate: true, deep: true },
@@ -326,12 +355,15 @@ const validateForm = () => {
     validationErrors.value.push('You must agree to the declaration.')
   }
   if (!ecpfProfileId) {
-    validationErrors.value.push('ECPF Profile ID is missing. Cannot link this request. Please refresh or contact support.')
+    validationErrors.value.push(
+      'ECPF Profile ID is missing. Cannot link this request. Please refresh or contact support.',
+    )
   }
   return validationErrors.value.length === 0
 }
 
-const submitApplication = async () => { // Removed paymentInfo parameter
+const submitApplication = async () => {
+  // Removed paymentInfo parameter
   if (!validateForm()) {
     toast.error('Please correct the form errors.')
     return
@@ -359,14 +391,17 @@ const submitApplication = async () => { // Removed paymentInfo parameter
       nameChangeRemarks.value = ''
       validationErrors.value = []
     } else {
-      const errorMsg = response.data?.detail || response.data?.message || 'Failed to submit application. Please try again.'
+      const errorMsg =
+        response.data?.detail ||
+        response.data?.message ||
+        'Failed to submit application. Please try again.'
       toast.error(errorMsg)
       if (response.data && typeof response.data === 'object') {
         Object.entries(response.data).forEach(([key, value]) => {
           if (Array.isArray(value)) {
-            validationErrors.value.push(`${key.replace(/_/g, ' ')}: ${value.join(', ')}`);
+            validationErrors.value.push(`${key.replace(/_/g, ' ')}: ${value.join(', ')}`)
           }
-        });
+        })
       }
     }
   } catch (error) {
@@ -374,45 +409,55 @@ const submitApplication = async () => { // Removed paymentInfo parameter
     validationErrors.value = []
     let errorMsg = 'An error occurred while submitting the application.'
     if (error.response) {
-        errorMsg = error.response.data?.detail || error.response.data?.message || `Server error: ${error.response.status}`;
-        if (error.response.data && typeof error.response.data === 'object') {
-            Object.entries(error.response.data).forEach(([key, value]) => {
-                const readableKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                if (Array.isArray(value)) {
-                    validationErrors.value.push(`${readableKey}: ${value.join(', ')}`);
-                } else if (typeof value === 'string') {
-                     validationErrors.value.push(`${readableKey}: ${value}`);
-                }
-            });
-            if (!validationErrors.value.length && (error.response.data?.detail || error.response.data?.message)) {
-                 validationErrors.value.push(error.response.data?.detail || error.response.data?.message);
-            } else if (!validationErrors.value.length) {
-                 validationErrors.value.push(`Server error: ${error.response.status}`);
-            }
-        } else {
-            validationErrors.value.push(errorMsg);
+      errorMsg =
+        error.response.data?.detail ||
+        error.response.data?.message ||
+        `Server error: ${error.response.status}`
+      if (error.response.data && typeof error.response.data === 'object') {
+        Object.entries(error.response.data).forEach(([key, value]) => {
+          const readableKey = key.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())
+          if (Array.isArray(value)) {
+            validationErrors.value.push(`${readableKey}: ${value.join(', ')}`)
+          } else if (typeof value === 'string') {
+            validationErrors.value.push(`${readableKey}: ${value}`)
+          }
+        })
+        if (
+          !validationErrors.value.length &&
+          (error.response.data?.detail || error.response.data?.message)
+        ) {
+          validationErrors.value.push(error.response.data?.detail || error.response.data?.message)
+        } else if (!validationErrors.value.length) {
+          validationErrors.value.push(`Server error: ${error.response.status}`)
         }
+      } else {
+        validationErrors.value.push(errorMsg)
+      }
     } else if (error.request) {
-        errorMsg = 'No response from server. Please check your network connection.';
-        validationErrors.value.push(errorMsg);
+      errorMsg = 'No response from server. Please check your network connection.'
+      validationErrors.value.push(errorMsg)
     } else {
-        errorMsg = `Request setup error: ${error.message}`;
-        validationErrors.value.push(errorMsg);
+      errorMsg = `Request setup error: ${error.message}`
+      validationErrors.value.push(errorMsg)
     }
-    toast.error('Submission failed. Please see error messages below.');
+    toast.error('Submission failed. Please see error messages below.')
   } finally {
     isSubmitting.value = false
   }
 }
 
 const saveAsDraft = async () => {
-  if (!proposedName.value.trim() && !nameChangeRemarks.value.trim() && !nameChangeDeclaration.value) {
+  if (
+    !proposedName.value.trim() &&
+    !nameChangeRemarks.value.trim() &&
+    !nameChangeDeclaration.value
+  ) {
     toast.info('Please enter a proposed name, remarks, or check the declaration to save as draft.')
     return
   }
   if (!ecpfProfileId) {
-    toast.error('ECPF Profile ID is missing. Cannot save draft.');
-    return;
+    toast.error('ECPF Profile ID is missing. Cannot save draft.')
+    return
   }
   isSubmitting.value = true
 
@@ -430,36 +475,43 @@ const saveAsDraft = async () => {
     const response = await apiServices.createEcpfNameChange(draftPayload)
 
     if (response.status === 200 || response.status === 201) {
-        toast.success(response.data.message || 'Application saved as draft!')
-        emit('save-draft-success', response.data)
+      toast.success(response.data.message || 'Application saved as draft!')
+      emit('save-draft-success', response.data)
     } else {
-        const errorMsg = response.data?.detail || response.data?.message || 'Failed to save draft.'
-        toast.error(errorMsg)
+      const errorMsg = response.data?.detail || response.data?.message || 'Failed to save draft.'
+      toast.error(errorMsg)
     }
-
   } catch (error) {
     console.error('Error saving ECPF name change as draft:', error)
     let errorMsg = 'An error occurred while saving the draft.'
-     if (error.response) {
-        errorMsg = error.response.data?.detail || error.response.data?.message || `Server error: ${error.response.status}`;
-         if (error.response.data && typeof error.response.data === 'object' && error.response.data.new_proposed_name) {
-            toast.error(`Draft Error - New Proposed Name: ${error.response.data.new_proposed_name.join(', ')}`)
-            isSubmitting.value = false;
-            return;
-         }
+    if (error.response) {
+      errorMsg =
+        error.response.data?.detail ||
+        error.response.data?.message ||
+        `Server error: ${error.response.status}`
+      if (
+        error.response.data &&
+        typeof error.response.data === 'object' &&
+        error.response.data.new_proposed_name
+      ) {
+        toast.error(
+          `Draft Error - New Proposed Name: ${error.response.data.new_proposed_name.join(', ')}`,
+        )
+        isSubmitting.value = false
+        return
+      }
     } else if (error.request) {
-        errorMsg = 'No response from server. Please check your network connection.';
+      errorMsg = 'No response from server. Please check your network connection.'
     } else {
-        errorMsg = `Request setup error: ${error.message}`;
+      errorMsg = `Request setup error: ${error.message}`
     }
-    toast.error(errorMsg);
+    toast.error(errorMsg)
   } finally {
     isSubmitting.value = false
   }
 }
 
 // initiatePayment function is removed as it's no longer needed.
-
 </script>
 
 <style scoped>

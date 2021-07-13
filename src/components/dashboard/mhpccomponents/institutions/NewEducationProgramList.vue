@@ -260,7 +260,11 @@ const fetchAllTeachingCenters = async () => {
 
 const fetchApplications = async () => {
   try {
-    const response = await apiServices.getMhpcProgramsOffered();
+    const user = authStore.user;
+    if (!user || !user.cid) {
+        throw new Error('User CID not found. Cannot fetch applications.');
+    }
+    const response = await apiServices.getMhpcProgramsOffered({ cid: user.cid });
     applications.value = (response.data.results || response.data || []).map(app => ({
         ...app,
         status: app.status || 'Unknown',
@@ -269,7 +273,7 @@ const fetchApplications = async () => {
     }));
   } catch (err) {
     console.error('Error fetching program applications:', err);
-    error.value = 'Failed to load program applications. Please try again later.';
+    error.value = err.message || 'Failed to load program applications. Please try again later.';
     toast.error(error.value);
   }
 };

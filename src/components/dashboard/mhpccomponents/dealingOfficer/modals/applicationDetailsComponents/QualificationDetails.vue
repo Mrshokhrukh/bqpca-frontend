@@ -76,8 +76,8 @@
                 v-else-if="
                   attachment.file &&
                   (attachment.file.endsWith('.jpg') ||
-                  attachment.file.endsWith('.jpeg') ||
-                  attachment.file.endsWith('.png'))
+                    attachment.file.endsWith('.jpeg') ||
+                    attachment.file.endsWith('.png'))
                 "
                 xmlns="http://www.w3.org/2000/svg"
                 class="w-10 h-10 text-blue-500"
@@ -118,8 +118,8 @@
                 v-else-if="
                   attachment.file &&
                   (attachment.file.endsWith('.jpg') ||
-                  attachment.file.endsWith('.jpeg') ||
-                  attachment.file.endsWith('.png'))
+                    attachment.file.endsWith('.jpeg') ||
+                    attachment.file.endsWith('.png'))
                 "
                 >Image File</span
               >
@@ -130,7 +130,8 @@
           <!-- Actions -->
           <div class="px-4 py-3 bg-gray-50 border-t flex justify-between items-center">
             <span class="text-xs text-gray-500">
-              {{ formatFileSize(getRandomFileSize()) }} <!-- File size is random, consider if actual size is available -->
+              {{ formatFileSize(getRandomFileSize()) }}
+              <!-- File size is random, consider if actual size is available -->
             </span>
             <a
               :href="attachment.file"
@@ -187,10 +188,11 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'; // ADDED: Import computed
+import { computed } from 'vue' // ADDED: Import computed
 import { GraduationCap, ClipboardCheck, MapPin, Calendar } from 'lucide-vue-next'
 
-const props = defineProps({ // CHANGED: props defined using const
+const props = defineProps({
+  // CHANGED: props defined using const
   qualification: {
     type: Object,
     required: true,
@@ -203,17 +205,19 @@ const displayedQualificationName = computed(() => {
     // Prioritize 'actual_qualification_name_display' as it seems to be the consolidated field
     // Fallback to 'qualification_name_text' for custom entries
     // Then to 'qualification_name_display' for standard list entries
-    return props.qualification.actual_qualification_name_display ||
-           props.qualification.qualification_name_text ||
-           props.qualification.qualification_name_display ||
-           'Not Specified';
+    return (
+      props.qualification.actual_qualification_name_display ||
+      props.qualification.qualification_name_text ||
+      props.qualification.qualification_name_display ||
+      'Not Specified'
+    )
   }
-  return 'Not Specified';
-});
+  return 'Not Specified'
+})
 
 // Helper function to format file sizes
 function formatFileSize(bytes) {
-  if (bytes === undefined || bytes === null || isNaN(bytes)) return 'N/A'; // Add check for valid bytes
+  if (bytes === undefined || bytes === null || isNaN(bytes)) return 'N/A' // Add check for valid bytes
   if (bytes < 1024) return bytes + ' B'
   else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB'
   else return (bytes / 1048576).toFixed(1) + ' MB'

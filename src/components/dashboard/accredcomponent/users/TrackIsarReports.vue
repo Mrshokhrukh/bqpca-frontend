@@ -42,25 +42,25 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import apiService from '@/services/services';
+import { ref, onMounted } from 'vue'
+import apiService from '@/services/services'
 
-const applications = ref([]);
-const loading = ref(true);
+const applications = ref([])
+const loading = ref(true)
 
 onMounted(async () => {
   try {
-    const response = await apiService.getAccreditationApplications();
-    applications.value = response.data.results || [];
+    const response = await apiService.getAccreditationApplications()
+    applications.value = response.data.results || []
   } catch (error) {
-    console.error("Failed to fetch applications:", error);
+    console.error('Failed to fetch applications:', error)
   } finally {
-    loading.value = false;
+    loading.value = false
   }
-});
+})
 
 const formatDate = (dateString) => {
-  if (!dateString) return 'N/A';
-  return new Date(dateString).toLocaleDateString();
-};
+  if (!dateString) return 'N/A'
+  return new Date(dateString).toLocaleDateString()
+}
 </script>

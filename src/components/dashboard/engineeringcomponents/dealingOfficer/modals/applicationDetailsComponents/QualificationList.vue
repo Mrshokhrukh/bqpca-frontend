@@ -6,9 +6,11 @@
         <span>Qualification Details</span>
       </h4>
       <div v-if="qualifications && qualifications.length > 0" class="space-y-8">
-        <div v-for="qualification in qualifications" :key="qualification.id"
-          class="bg-gray-50 rounded-xl border border-gray-200 overflow-hidden">
-
+        <div
+          v-for="qualification in qualifications"
+          :key="qualification.id"
+          class="bg-gray-50 rounded-xl border border-gray-200 overflow-hidden"
+        >
           <div class="border-b border-gray-200">
             <div class="px-6 py-2 text-sm text-gray-700">
               <span class="font-semibold text-2xl px-4">Registration Type:</span>
@@ -18,8 +20,12 @@
           </div>
 
           <div class="p-6">
-            <ApplicationReview :qualification="qualification" :applicationId="applicationId"
-              :mainApplicationPaymentStatus="props.mainApplicationPaymentStatus" @update="$emit('update')" />
+            <ApplicationReview
+              :qualification="qualification"
+              :applicationId="applicationId"
+              :mainApplicationPaymentStatus="props.mainApplicationPaymentStatus"
+              @update="$emit('update')"
+            />
           </div>
         </div>
       </div>
@@ -61,7 +67,7 @@ const props = defineProps({
 defineEmits(['update'])
 
 const getRegistrationTypeName = (id) => {
-  const type = props.registrationTypes.find(rt => rt.id === id)
+  const type = props.registrationTypes.find((rt) => rt.id === id)
   return type ? type.name : 'N/A'
 }
 </script>

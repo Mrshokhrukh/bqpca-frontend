@@ -14,8 +14,10 @@
             </div>
           </div>
         </div>
-        <button @click="proposeNewTraining"
-          class="bg-orange-500 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-orange-600">
+        <button
+          @click="proposeNewTraining"
+          class="bg-orange-500 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-orange-600"
+        >
           <Plus class="w-4 h-4" />
           <span>Propose New Training</span>
         </button>
@@ -24,7 +26,11 @@
 
     <!-- Quick Stats -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div v-for="(stat, index) in quickStats" :key="index" class="bg-white p-6 rounded-lg shadow-md">
+      <div
+        v-for="(stat, index) in quickStats"
+        :key="index"
+        class="bg-white p-6 rounded-lg shadow-md"
+      >
         <div class="flex items-center justify-between">
           <div>
             <p class="text-gray-600 text-sm">{{ stat.label }}</p>
@@ -48,8 +54,11 @@
           </button>
         </div>
         <div class="space-y-4">
-          <div v-for="session in trainingSessions.slice(0, 3)" :key="session.id"
-            class="border-b last:border-0 pb-4 last:pb-0">
+          <div
+            v-for="session in trainingSessions.slice(0, 3)"
+            :key="session.id"
+            class="border-b last:border-0 pb-4 last:pb-0"
+          >
             <div class="flex justify-between items-start">
               <div class="space-y-1">
                 <h4 class="font-medium">{{ session.title }}</h4>
@@ -74,16 +83,18 @@
                   </span>
                 </div>
               </div>
-              <span :class="[
-                'px-2 py-1 rounded-full text-xs',
-                session.status === 'Approved'
-                  ? 'bg-green-100 text-green-800'
-                  : session.status === 'Pending'
-                    ? 'bg-yellow-100 text-yellow-800'
-                    : session.status === 'Upcoming'
-                      ? 'bg-blue-100 text-blue-800'
-                      : 'bg-purple-100 text-purple-800',
-              ]">
+              <span
+                :class="[
+                  'px-2 py-1 rounded-full text-xs',
+                  session.status === 'Approved'
+                    ? 'bg-green-100 text-green-800'
+                    : session.status === 'Pending'
+                      ? 'bg-yellow-100 text-yellow-800'
+                      : session.status === 'Upcoming'
+                        ? 'bg-blue-100 text-blue-800'
+                        : 'bg-purple-100 text-purple-800',
+                ]"
+              >
                 {{ session.status }}
               </span>
             </div>
@@ -101,7 +112,11 @@
           <p v-if="recentFeedback.length === 0" class="text-gray-600">
             No recent feedback available.
           </p>
-          <div v-for="feedback in recentFeedback" :key="feedback.id" class="border-b last:border-0 pb-4 last:pb-0">
+          <div
+            v-for="feedback in recentFeedback"
+            :key="feedback.id"
+            class="border-b last:border-0 pb-4 last:pb-0"
+          >
             <div class="flex items-start space-x-3">
               <div class="bg-gray-100 p-2 rounded">
                 <MessageSquare class="w-4 h-4 text-gray-500" />
@@ -129,7 +144,10 @@
         <h3 class="font-semibold text-lg">Upcoming Schedule</h3>
         <button class="text-orange-600 text-sm hover:text-orange-700">View Calendar</button>
       </div>
-      <div v-if="upcomingSchedule.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div
+        v-if="upcomingSchedule.length > 0"
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+      >
         <div v-for="event in upcomingSchedule" :key="event.id" class="border rounded-lg p-4">
           <div class="flex items-start space-x-3">
             <div class="bg-gray-100 p-2 rounded text-center min-w-[3rem]">

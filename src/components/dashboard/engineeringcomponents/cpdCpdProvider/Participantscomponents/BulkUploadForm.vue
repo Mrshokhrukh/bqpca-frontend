@@ -191,22 +191,23 @@ const processedCpdTasks = computed(() => {
   return props.cpdTasks
     .filter((task) => {
       // FIXED: Use 'is_cpd_approved' instead of 'application_status'
-      const isApproved = task.is_cpd_approved === true;
+      const isApproved = task.is_cpd_approved === true
 
       if (props.currentProviderCid) {
-        const belongsToProvider = String(task.cid_no).trim() === String(props.currentProviderCid).trim();
-        return isApproved && belongsToProvider;
+        const belongsToProvider =
+          String(task.cid_no).trim() === String(props.currentProviderCid).trim()
+        return isApproved && belongsToProvider
       }
-      return isApproved;
+      return isApproved
     })
-    .map(task => ({
+    .map((task) => ({
       id: task.id,
       // FIXED: Use 'title' instead of 'title_of_cpd' based on your API data
       title: task.title || task.title_of_cpd || 'Untitled Task',
       from_date: task.from_date || task.start_date,
-      to_date: task.to_date || task.end_date
+      to_date: task.to_date || task.end_date,
     }))
-    .sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+    .sort((a, b) => (a.title || '').localeCompare(b.title || ''))
 })
 
 const isFormValid = computed(() => {
@@ -322,27 +323,30 @@ function downloadTemplate() {
       '839f683f-b4e4-4948-8,Pending,Pending',
       '123456-abcd-5678-9,Approved,Approved',
       '987654-efgh-3210-1,Regretted,Regretted',
-    ].join('\n');
+    ].join('\n')
 
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', 'cpd_participants_bulk_upload_template.csv');
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
-    toast.success('CSV template downloaded successfully.');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', 'cpd_participants_bulk_upload_template.csv')
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
+    toast.success('CSV template downloaded successfully.')
   } catch (err) {
-    console.error('Error downloading CSV template:', err);
-    toast.error('Failed to download CSV template. Please try again.');
+    console.error('Error downloading CSV template:', err)
+    toast.error('Failed to download CSV template. Please try again.')
   }
 }
 
 onMounted(() => {
   // Set preselected task if available and valid
-  if (props.preselectedTaskId && processedCpdTasks.value.some((task) => String(task.id) === String(props.preselectedTaskId))) {
+  if (
+    props.preselectedTaskId &&
+    processedCpdTasks.value.some((task) => String(task.id) === String(props.preselectedTaskId))
+  ) {
     formData.cpdTask = props.preselectedTaskId
   }
 })
@@ -354,17 +358,20 @@ watch(
     if (newId && processedCpdTasks.value.some((task) => String(task.id) === String(newId))) {
       formData.cpdTask = newId
     }
-  }
+  },
 )
 
 // Watch for changes in processedCpdTasks to reset invalid selection
 watch(
   () => processedCpdTasks.value,
   (newTasks) => {
-    if (formData.cpdTask && !newTasks.some(task => String(task.id) === String(formData.cpdTask))) {
+    if (
+      formData.cpdTask &&
+      !newTasks.some((task) => String(task.id) === String(formData.cpdTask))
+    ) {
       formData.cpdTask = props.preselectedTaskId || ''
     }
-  }
+  },
 )
 
 defineExpose({ resetForm })

@@ -136,7 +136,7 @@
       </div>
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
+          <thead class="bg-gray-100">
             <tr>
               <th
                 v-for="header in tableHeaders"
@@ -156,35 +156,54 @@
             >
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800">
                 {{
-                  assignment.module?.semester?.program_offered?.program_master?.program_name ||
+                  assignment.module?.semester?.program_name ||
                   'N/A'
                 }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                {{ assignment.module?.semester?.name || 'N/A' }}
-                <div
-                  v-if="assignment.module?.semester?.academic_year"
-                  class="text-xs text-gray-400"
-                >
-                  AY: {{ assignment.module.semester.academic_year }}
+                <div class="font-medium text-gray-800">
+                  {{ assignment.module?.module_master?.module_name || 'N/A' }}
+                </div>
+                <div class="text-xs text-gray-500">
+                  {{ assignment.module?.semester?.name || 'N/A' }} (AY:
+                  {{ assignment.module?.semester?.academic_year }})
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                {{ assignment.module?.module_master?.module_name || 'N/A' }}
+                <div class="flex items-center">
+                  <div class="font-medium text-gray-800">
+                    {{ assignment.faculty?.faculty_name || 'N/A' }}
+                  </div>
+                  <span
+                    v-if="assignment.is_primary_instructor"
+                    class="ml-2 px-2 py-0.5 text-xs font-semibold text-green-800 bg-green-100 rounded-full"
+                  >
+                    Primary
+                  </span>
+                </div>
+                <div class="text-xs text-gray-500">
+                  {{ assignment.faculty?.designation || 'No Designation' }}
+                </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                {{ assignment.faculty?.faculty_name || 'N/A' }}
-              </td>
-              <td
-                class="px-6 py-4 whitespace-nowrap text-sm text-center font-semibold text-gray-800"
-              >
-                {{ assignment.module?.student_count ?? 'N/A' }}
+                <div>{{ assignment.module?.student_count ?? 'N/A' }} students</div>
+                <div class="text-xs text-gray-500">
+                  {{ assignment.teaching_hours ?? 'N/A' }} teaching hours
+                </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                 <div class="flex items-center space-x-2">
                   <button
+                    @click="openViewApplicationModal(assignment)"
+                    class="p-2 text-sky-600 hover:bg-sky-100 rounded-md disabled:opacity-50"
+                    :disabled="isPerformingAction"
+                    title="View Program Details"
+                  >
+                    <Eye class="h-4 w-4" />
+                  </button>
+                  <button
                     @click="openEditModal(assignment)"
-                    class="p-2 text-indigo-600 hover:bg-indigo-100 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                    class="p-2 text-indigo-600 hover:bg-indigo-100 rounded-md disabled:opacity-50"
                     :disabled="isPerformingAction"
                     title="Edit Assignment"
                   >
@@ -192,7 +211,7 @@
                   </button>
                   <button
                     @click="confirmDeleteAssignment(assignment)"
-                    class="p-2 text-red-600 hover:bg-red-100 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                    class="p-2 text-red-600 hover:bg-red-100 rounded-md disabled:opacity-50"
                     :disabled="isPerformingAction"
                     title="Delete Assignment"
                   >
@@ -263,6 +282,14 @@
       @close="closeEditModal"
       @save="saveAssignment"
     />
+
+    <NewEducationProgramViewApplicationModal
+      v-if="isViewModalOpen && applicationForViewing"
+      :isVisible="isViewModalOpen"
+      :application="applicationForViewing"
+      :teachingCenterNameProp="applicationForViewing.teaching_center_details?.name_of_teaching_center"
+      @close="closeViewApplicationModal"
+    />
   </div>
 </template>
 
@@ -270,15 +297,27 @@
 import { ref, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/authStore'
 import apiServices from '@/services/services'
-import NewEducationProgramModal from './NewEducationProgramModal.vue'
-import EditFacultyAssignmentModal from './EditFacultyAssignmentModal.vue'
+import NewEducationProgramModal from './NewEducationProgramApplicationFormModal.vue'
+import EditFacultyAssignmentModal from './NewEducationProgramEditFacultyAssignmentModal.vue'
+import NewEducationProgramViewApplicationModal from './NewEducationProgramViewApplicationModal.vue'
 import {
-  Plus, LoaderCircle, CheckCircle2, AlertOctagon, AlertTriangle, Info, X,
-  University, RefreshCw, AlertCircle, BookMarked, PlusCircle, Pencil, Trash2
-} from 'lucide-vue-next';
+  Plus,
+  LoaderCircle,
+  CheckCircle2,
+  AlertOctagon,
+  AlertTriangle,
+  Info,
+  X,
+  University,
+  RefreshCw,
+  AlertCircle,
+  BookMarked,
+  PlusCircle,
+  Pencil,
+  Trash2,
+  Eye,
+} from 'lucide-vue-next'
 
-// --- STATE MANAGEMENT ---
-// instituteId is now derived purely from the API call, not the route.
 const instituteId = ref(null)
 const currentUserInstitute = ref(null)
 const instituteName = ref('')
@@ -295,14 +334,19 @@ const actionMessage = ref('')
 const showConfirmModal = ref(false)
 const confirmData = ref(null)
 const notifications = ref([])
+const isViewModalOpen = ref(false);
+const applicationForViewing = ref(null);
 
 const user = useAuthStore().user
 
 const tableHeaders = [
-    'Program Offering', 'Semester', 'Module', 'Assigned Faculty', 'Students', 'Actions'
-];
+  'Program Offering',
+  'Module & Semester',
+  'Instructor / Role',
+  'Details',
+  'Actions',
+]
 
-// --- NOTIFICATION SYSTEM ---
 const addNotification = (message, type = 'info', duration = 5000) => {
   const id = Date.now() + Math.random()
   notifications.value.push({ id, message, type })
@@ -316,22 +360,33 @@ const removeNotification = (id) => {
   }
 }
 
-// --- DATA FETCHING ---
+const openViewApplicationModal = (assignment) => {
+  // The 'application' is the program_offered object inside the assignment
+  if (assignment.module?.semester?.program_offered) {
+    applicationForViewing.value = assignment.module.semester.program_offered;
+    isViewModalOpen.value = true;
+  } else {
+    addNotification('Program details are not available for this assignment.', 'error');
+  }
+};
+
+const closeViewApplicationModal = () => {
+  isViewModalOpen.value = false;
+  applicationForViewing.value = null;
+};
+
 const fetchInstitute = async () => {
   isLoadingInstitute.value = true
   try {
     const response = await apiServices.getMhpcInstituteByCid(user.cid)
 
     if (response.data?.results?.length > 0) {
-      // ✅ FIX: Access the data directly from the first result.
       const instituteRecord = response.data.results[0]
-
-      // No longer need a 'details' variable.
       currentUserInstitute.value = {
         id: instituteRecord.id,
         name: instituteRecord.name_of_institution,
       }
-      instituteId.value = instituteRecord.id // This is the crucial fix.
+      instituteId.value = instituteRecord.id
       instituteName.value = instituteRecord.name_of_institution || 'Unknown Institute'
     } else {
       throw new Error('Institute data not found for the current user.')
@@ -340,7 +395,6 @@ const fetchInstitute = async () => {
     console.error('Error fetching institute:', error)
     currentUserInstitute.value = null
     instituteName.value = ''
-    // Use the error message from the catch block for better debugging
     fetchError.value = error.message || 'Failed to load institute profile.'
     addNotification(fetchError.value, 'error')
   } finally {
@@ -349,9 +403,7 @@ const fetchInstitute = async () => {
 }
 
 const fetchFacultyList = async () => {
-  // Guard clause: Don't run if instituteId is not yet available.
   if (!instituteId.value) return
-
   try {
     const response = await apiServices.getMhpcTeachingFaculties({ institute: instituteId.value })
     facultyList.value = response.data.results || response.data || []
@@ -362,7 +414,6 @@ const fetchFacultyList = async () => {
 }
 
 const fetchAssignments = async () => {
-  // Guard clause: Don't run if instituteId is not yet available.
   if (!instituteId.value) return
 
   isLoadingAssignments.value = true
@@ -370,11 +421,9 @@ const fetchAssignments = async () => {
   try {
     const params = {
       expand: 'module.semester.program_offered.program_master,module.module_master,faculty',
-      // ✅ FIX 2: Filter by the discovered institute ID on the backend if possible.
-      // This is more efficient than filtering on the client.
       module__semester__program_offered__institute: instituteId.value,
     }
-    const response = await apiServices.getMhpcFacultyAssignments(params)
+    const response = await apiServices.getMhpcFacultyAssignmentByCid(user.cid)
     moduleFacultyAssignments.value = response.data.results || response.data || []
   } catch (error) {
     console.error('Error fetching assignments:', error)
@@ -385,12 +434,11 @@ const fetchAssignments = async () => {
   }
 }
 
-// --- MODAL AND ACTION HANDLERS ---
 const openAddProgramModal = () => {
   if (!currentUserInstitute.value?.id) {
     addNotification(
       `Cannot configure program: Institute profile (ID: ${instituteId.value}) not loaded.`,
-      'error'
+      'error',
     )
     return
   }
@@ -470,10 +518,10 @@ const executeDelete = async () => {
       `Successfully deleted assignment for ${
         confirmData.value.module?.module_master?.module_name || 'module'
       }.`,
-      'success'
+      'success',
     )
-    cancelDelete() // Closes modal and resets data
-    await fetchAssignments() // Refresh the list
+    cancelDelete()
+    await fetchAssignments()
   } catch (error) {
     console.error('Error deleting assignment:', error)
     addNotification('Failed to delete assignment. Please try again.', 'error')
@@ -483,14 +531,10 @@ const executeDelete = async () => {
   }
 }
 
-// --- LIFECYCLE HOOK ---
 onMounted(async () => {
-  // 1. First, discover the institute.
   await fetchInstitute()
 
-  // 2. Only if the institute was found, proceed to fetch related data.
   if (instituteId.value) {
-    // These can run in parallel since they both depend on instituteId.
     await Promise.all([fetchAssignments(), fetchFacultyList()])
   }
 })

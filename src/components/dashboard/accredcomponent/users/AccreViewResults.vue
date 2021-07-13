@@ -81,7 +81,7 @@
             <tr v-if="filteredApplications.length === 0">
               <td colspan="5" class="py-4 px-4 text-center border border-gray-200">
                 No applications found.
-               </td>
+              </td>
             </tr>
             <tr
               v-for="application in filteredApplications"

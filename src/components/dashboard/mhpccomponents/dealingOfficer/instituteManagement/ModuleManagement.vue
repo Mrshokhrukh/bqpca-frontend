@@ -70,7 +70,7 @@ const modalForm = ref({ id: null, name: '', description: '' })
 
 const filteredModules = computed(() => {
   return modules.value.filter((module) =>
-    module.name.toLowerCase().includes(searchQuery.value.toLowerCase())
+    module.name.toLowerCase().includes(searchQuery.value.toLowerCase()),
   )
 })
 

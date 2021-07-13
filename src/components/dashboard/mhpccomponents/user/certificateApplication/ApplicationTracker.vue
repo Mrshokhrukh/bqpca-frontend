@@ -89,7 +89,8 @@
     </div>
 
     <CertificateModal
-      :application="selectedCertificateData" @close="closeCertificateModal"
+      :application="selectedCertificateData"
+      @close="closeCertificateModal"
       :showModal="showCertificateModal"
     />
 
@@ -177,87 +178,87 @@ const handleTabChange = (tabName) => {
 }
 
 const fetchNewApplications = async () => {
-  if (!userCid.value) return;
-  isLoading.value = true;
-  apiError.value = false;
+  if (!userCid.value) return
+  isLoading.value = true
+  apiError.value = false
   try {
-    const response = await apiService.getMhpcFullApplicationListByCid(userCid.value);
+    const response = await apiService.getMhpcFullApplicationListByCid(userCid.value)
     if (response && response.data && response.data.results) {
       // Filter for applications that are NOT renewals AND have at least one PRIMARY qualification.
-      newApplications.value = response.data.results.filter(app => {
+      newApplications.value = response.data.results.filter((app) => {
         // Assuming 'is_renewal' is a flag on the application object from this endpoint if it can be a renewal.
         // If this endpoint *never* returns renewals, you might not need the !app.is_renewal check here.
-        const isNotRenewal = !app.is_renewal; // Adjust if is_renewal flag is named differently or not present
+        const isNotRenewal = !app.is_renewal // Adjust if is_renewal flag is named differently or not present
 
         const hasPrimaryQualifications =
           app.user_qualifications &&
-          app.user_qualifications.some(q => q.is_primary_qualification === true);
+          app.user_qualifications.some((q) => q.is_primary_qualification === true)
 
-        return isNotRenewal && hasPrimaryQualifications;
-      });
+        return isNotRenewal && hasPrimaryQualifications
+      })
     } else {
-      newApplications.value = [];
+      newApplications.value = []
     }
   } catch (error) {
-    console.error('Error fetching new applications:', error);
-    newApplications.value = [];
-    apiError.value = true;
-    toast.error('Failed to load new application data.');
+    console.error('Error fetching new applications:', error)
+    newApplications.value = []
+    apiError.value = true
+    toast.error('Failed to load new application data.')
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
-};
+}
 
 const fetchRenewalApplications = async () => {
-  if (!userCid.value) return;
-  isLoading.value = true;
-  apiError.value = false;
+  if (!userCid.value) return
+  isLoading.value = true
+  apiError.value = false
   try {
-    const response = await apiService.getMhpcRenewals(); // This endpoint specifically gets renewals
+    const response = await apiService.getMhpcRenewals() // This endpoint specifically gets renewals
     if (response && response.data && response.data.results) {
-      renewalApplications.value = response.data.results;
+      renewalApplications.value = response.data.results
     } else {
-      renewalApplications.value = [];
+      renewalApplications.value = []
     }
   } catch (error) {
-    console.error('Error fetching renewal applications:', error);
-    renewalApplications.value = [];
-    apiError.value = true;
-    toast.error('Failed to load renewal data.');
+    console.error('Error fetching renewal applications:', error)
+    renewalApplications.value = []
+    apiError.value = true
+    toast.error('Failed to load renewal data.')
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
-};
+}
 
 const fetchAdditionalApplications = async () => {
-  if (!userCid.value) return;
-  isLoading.value = true;
-  apiError.value = false;
+  if (!userCid.value) return
+  isLoading.value = true
+  apiError.value = false
   try {
-    const response = await apiService.getMhpcFullApplicationListByCid(userCid.value);
+    const response = await apiService.getMhpcFullApplicationListByCid(userCid.value)
     if (response && response.data && response.data.results) {
       // Filter for applications that are NOT renewals AND have at least one NON-PRIMARY qualification.
-      additionalApplications.value = response.data.results.filter(app => {
-        const isNotRenewal = !app.is_renewal; // Adjust if is_renewal flag is named differently or not present
+      additionalApplications.value = response.data.results.filter((app) => {
+        const isNotRenewal = !app.is_renewal // Adjust if is_renewal flag is named differently or not present
 
         const hasNonPrimaryQualifications =
           app.user_qualifications &&
-          app.user_qualifications.some(q => q.is_primary_qualification === false);
+          app.user_qualifications.some((q) => q.is_primary_qualification === false)
 
-        return isNotRenewal && hasNonPrimaryQualifications;
-      });
+        return isNotRenewal && hasNonPrimaryQualifications
+      })
     } else {
-      additionalApplications.value = [];
+      additionalApplications.value = []
     }
   } catch (error) {
-    console.error('Error fetching additional applications:', error);
-    additionalApplications.value = [];
-    apiError.value = true;
-    toast.error('Failed to load additional qualifications data.');
+    console.error('Error fetching additional applications:', error)
+    additionalApplications.value = []
+    apiError.value = true
+    toast.error('Failed to load additional qualifications data.')
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
-};
+}
 
 const openCertificateModal = (application) => {
   selectedCertificateData.value = { results: [application] }
@@ -294,121 +295,123 @@ const closePaymentModal = () => {
 const handlePaymentCompleted = async (paymentData) => {
   // 1. Initial Checks: Ensure an item is selected and user data is available.
   if (!selectedQualificationForPayment.value) {
-    toast.error('No item selected for payment.');
-    return;
+    toast.error('No item selected for payment.')
+    return
   }
-  const user = authStore.user;
+  const user = authStore.user
   if (!user || !user.contact_number || !user.email || !user.cid || !user.id) {
-    toast.error('Missing user information. Please log in again or update your profile.');
-    return;
+    toast.error('Missing user information. Please log in again or update your profile.')
+    return
   }
 
-  isLoading.value = true;
-  const paymentId = paymentData.paymentHash;
-  const itemForPayment = selectedQualificationForPayment.value;
+  isLoading.value = true
+  const paymentId = paymentData.paymentHash
+  const itemForPayment = selectedQualificationForPayment.value
 
   // 2. Differentiate between a Renewal and a regular Qualification.
   // We check for a field that only exists on Renewal objects.
-  const isRenewal = Object.hasOwn(itemForPayment, 'renewal_status');
+  const isRenewal = Object.hasOwn(itemForPayment, 'renewal_status')
 
   try {
     // 3. Prepare Payment Gateway Data (This is generic for both types)
-    const paymentInitiationFormData = new FormData();
-    paymentInitiationFormData.append('refNo', paymentId);
-    paymentInitiationFormData.append('serviceCode', '100196');
-    paymentInitiationFormData.append('taxPayerName', user.cid);
-    paymentInitiationFormData.append('taxPayerNo', user.cid);
-    paymentInitiationFormData.append('taxPayerDocumentNo', user.cid);
-    paymentInitiationFormData.append('totalPayableAmount', 1000);
+    const paymentInitiationFormData = new FormData()
+    paymentInitiationFormData.append('refNo', paymentId)
+    paymentInitiationFormData.append('serviceCode', '100196')
+    paymentInitiationFormData.append('taxPayerName', user.cid)
+    paymentInitiationFormData.append('taxPayerNo', user.cid)
+    paymentInitiationFormData.append('taxPayerDocumentNo', user.cid)
+    paymentInitiationFormData.append('totalPayableAmount', 1000)
     // Use a dynamic description based on the payment type
     paymentInitiationFormData.append(
       'description',
-      isRenewal ? 'MHPC Renewal Fee' : 'MHPC Qualification Registration Fee'
-    );
-    paymentInitiationFormData.append('mobileNo', user.contact_number);
-    paymentInitiationFormData.append('payerEmail', user.email);
-    paymentInitiationFormData.append('user', user.id);
-    paymentInitiationFormData.append('payableAmount', 1000);
-    paymentInitiationFormData.append('application_no', itemForPayment.id);
-    paymentInitiationFormData.append('app_type', 'specification_for_health_certification');
+      isRenewal ? 'MHPC Renewal Fee' : 'MHPC Qualification Registration Fee',
+    )
+    paymentInitiationFormData.append('mobileNo', user.contact_number)
+    paymentInitiationFormData.append('payerEmail', user.email)
+    paymentInitiationFormData.append('user', user.id)
+    paymentInitiationFormData.append('payableAmount', 1000)
+    paymentInitiationFormData.append('application_no', itemForPayment.id)
+    paymentInitiationFormData.append('app_type', 'specification_for_health_certification')
 
     // This call to the payment gateway is the same for both.
-    await apiService.makePayment(paymentInitiationFormData);
+    await apiService.makePayment(paymentInitiationFormData)
 
     // Prepare the data to update our own backend.
-    const updateFormData = new FormData();
-    updateFormData.append('payment_id', paymentId);
-    updateFormData.append('payment_status', 'processing_payment');
+    const updateFormData = new FormData()
+    updateFormData.append('payment_id', paymentId)
+    updateFormData.append('payment_status', 'processing_payment')
 
     // 4. Execute different logic based on whether it's a Renewal or not.
     if (isRenewal) {
       // --- LOGIC FOR RENEWAL ---
-      const renewalId = itemForPayment.id;
+      const renewalId = itemForPayment.id
 
       // Call the dedicated API endpoint for patching a Renewal
-      await apiService.patchMhpcRenewal(renewalId, updateFormData);
+      await apiService.patchMhpcRenewal(renewalId, updateFormData)
 
       // Update the local state for immediate UI feedback
-      const renewalIndex = renewalApplications.value.findIndex(r => r.id === renewalId);
+      const renewalIndex = renewalApplications.value.findIndex((r) => r.id === renewalId)
       if (renewalIndex > -1) {
-        renewalApplications.value[renewalIndex].payment_status = 'processing_payment';
-        renewalApplications.value[renewalIndex].payment_id = paymentId;
+        renewalApplications.value[renewalIndex].payment_status = 'processing_payment'
+        renewalApplications.value[renewalIndex].payment_id = paymentId
       }
-
     } else {
       // --- LOGIC FOR NEW/ADDITIONAL QUALIFICATION ---
-      const qualificationId = itemForPayment.id;
+      const qualificationId = itemForPayment.id
 
       // Call the API endpoint for patching a UserQualification
-      await apiService.patchMhpcNewQualification(qualificationId, updateFormData);
+      await apiService.patchMhpcNewQualification(qualificationId, updateFormData)
 
       // Update the local state for immediate UI feedback
       // This helper function finds the qualification in any of the application lists.
       const updateLocalQualificationState = (appList) => {
-        const app = appList.value.find(a => a.user_qualifications.some(q => q.id === qualificationId));
+        const app = appList.value.find((a) =>
+          a.user_qualifications.some((q) => q.id === qualificationId),
+        )
         if (app) {
-          const qual = app.user_qualifications.find(q => q.id === qualificationId);
+          const qual = app.user_qualifications.find((q) => q.id === qualificationId)
           if (qual) {
-            qual.payment_id = paymentId;
-            qual.payment_status = 'processing_payment';
+            qual.payment_id = paymentId
+            qual.payment_status = 'processing_payment'
           }
         }
-      };
-      updateLocalQualificationState(newApplications);
-      updateLocalQualificationState(additionalApplications);
+      }
+      updateLocalQualificationState(newApplications)
+      updateLocalQualificationState(additionalApplications)
     }
 
     // 5. Final Success Handling
     // Update the object that the payment modal was using.
-    itemForPayment.payment_id = paymentId;
-    itemForPayment.payment_status = 'processing_payment';
+    itemForPayment.payment_id = paymentId
+    itemForPayment.payment_status = 'processing_payment'
 
-    toast.success(`Payment initiated (Ref: ${paymentId.substring(0, 8)}...). Your application status will update shortly.`);
+    toast.success(
+      `Payment initiated (Ref: ${paymentId.substring(0, 8)}...). Your application status will update shortly.`,
+    )
 
     // Refresh all data from the server to ensure consistency.
-    await fetchAllData();
-
+    await fetchAllData()
   } catch (error) {
     // 6. Centralized Error Handling
-    console.error('Payment handling error:', error.response || error.request || error);
-    let errorMsg = 'An error occurred while processing the payment confirmation.';
+    console.error('Payment handling error:', error.response || error.request || error)
+    let errorMsg = 'An error occurred while processing the payment confirmation.'
     if (error.response?.data) {
-      const detail = error.response.data.detail || JSON.stringify(error.response.data);
-      errorMsg = `Payment API Error: ${detail}`;
+      const detail = error.response.data.detail || JSON.stringify(error.response.data)
+      errorMsg = `Payment API Error: ${detail}`
     } else if (error.request) {
-      errorMsg = 'Network Error: Could not reach the server to confirm payment.';
+      errorMsg = 'Network Error: Could not reach the server to confirm payment.'
     }
-    toast.error(`${errorMsg} Contact support with payment ref ${paymentId} if the issue persists.`);
+    toast.error(`${errorMsg} Contact support with payment ref ${paymentId} if the issue persists.`)
 
     // Update status to failed on error
     if (selectedQualificationForPayment.value) {
-      selectedQualificationForPayment.value.payment_status = 'failed';
+      selectedQualificationForPayment.value.payment_status = 'failed'
     }
   } finally {
     // 7. Cleanup
-    isLoading.value = false;
+    isLoading.value = false
   }
-};
+}
 
 const fetchAllData = async () => {
   isLoading.value = true

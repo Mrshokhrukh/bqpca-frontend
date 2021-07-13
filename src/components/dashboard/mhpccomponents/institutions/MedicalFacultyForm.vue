@@ -1,4 +1,3 @@
-
 <template>
   <div class="space-y-6">
     <div class="relative">
@@ -49,9 +48,7 @@
     <!-- Fields populated from BMHC - These are for display and context -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div>
-        <label for="medical-registration_type" class="form-label"
-          >Registration Type </label
-        >
+        <label for="medical-registration_type" class="form-label">Registration Type </label>
         <input
           type="text"
           id="medical-registration_type"
@@ -526,7 +523,7 @@ watch(
       showMedicalSearchDropdown.value = false
     }
   },
-  { deep: false }
+  { deep: false },
 )
 
 const searchMedicalFacultyDebounced = debounce(async () => {
@@ -547,8 +544,8 @@ const searchMedicalFacultyDebounced = debounce(async () => {
           q.application_review_status === 'Approved' &&
           q.physical_review_status === 'Approved' &&
           q.endorsement_decision === 'Approved' &&
-          q.is_active === true
-      )
+          q.is_active === true,
+      ),
     )
 
     if (approvedCandidates.length > 0) {
@@ -560,7 +557,7 @@ const searchMedicalFacultyDebounced = debounce(async () => {
         'show-notification',
         'info',
         'No Suitable Faculty',
-        'No medical faculty with approved & active qualifications found for the search term.'
+        'No medical faculty with approved & active qualifications found for the search term.',
       )
     }
   } catch (error) {
@@ -605,7 +602,7 @@ const selectMedicalFaculty = (facultyData) => {
         q.application_review_status === 'Approved' &&
         q.physical_review_status === 'Approved' &&
         q.endorsement_decision === 'Approved' &&
-        q.is_active === true
+        q.is_active === true,
     )
     .map((q) => ({
       type: q.qualification_type_display || q.qualification_type || '',
@@ -677,7 +674,7 @@ const selectMedicalFaculty = (facultyData) => {
 
   emit('update:form', updatedFormData)
   toast.success(
-    `${updatedFormData.staff_name} selected. ${educationDetails.length} education record(s) loaded.`
+    `${updatedFormData.staff_name} selected. ${educationDetails.length} education record(s) loaded.`,
   )
 }
 
@@ -709,4 +706,3 @@ const handleFileRemoval = (field) => {
   @apply bg-gray-100 text-gray-500;
 }
 </style>
-

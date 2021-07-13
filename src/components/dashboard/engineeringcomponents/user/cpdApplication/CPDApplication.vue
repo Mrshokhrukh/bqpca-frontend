@@ -1,6 +1,9 @@
 <template>
   <div class="w-full mx-auto px-4 sm:px-6 py-8 pb-10">
-    <PageHeader title="CPD Application" subtitle="Complete required fields *. Ensure information is accurate.">
+    <PageHeader
+      title="CPD Application"
+      subtitle="Complete required fields *. Ensure information is accurate."
+    >
       <template #icon>
         <ClipboardList class="w-6 h-6 text-indigo-600" />
       </template>
@@ -10,7 +13,10 @@
       </template>
     </PageHeader>
 
-    <form @submit.prevent="handleSubmit" class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
+    <form
+      @submit.prevent="handleSubmit"
+      class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100"
+    >
       <!-- Section for Displaying Auto-Populated Personal Information -->
       <div class="bg-gray-50/70 p-6 border-b border-gray-100">
         <h3 class="text-lg font-semibold text-gray-800">Personal Information</h3>
@@ -21,10 +27,13 @@
       <div class="p-6 space-y-6">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-6">
           <div class="space-y-1.5">
-            <label for="display_registration_no_str" class="text-xs font-medium text-gray-700">Registration
-              Number</label>
-            <p id="display_registration_no_str"
-              class="w-full px-3 py-2 rounded-md border border-gray-200 bg-gray-100 text-gray-600 text-sm shadow-sm min-h-[38px] flex items-center">
+            <label for="display_registration_no_str" class="text-xs font-medium text-gray-700"
+              >Registration Number</label
+            >
+            <p
+              id="display_registration_no_str"
+              class="w-full px-3 py-2 rounded-md border border-gray-200 bg-gray-100 text-gray-600 text-sm shadow-sm min-h-[38px] flex items-center"
+            >
               {{
                 form.display_registration_no || (isLoadingRegistrationNo ? 'Fetching...' : 'N/A')
               }}
@@ -32,26 +41,35 @@
           </div>
 
           <div class="space-y-1.5">
-            <label for="display_cid_no" class="text-xs font-medium text-gray-700">CID No./Identity/Work Permit
-              No.</label>
-            <p id="display_cid_no"
-              class="w-full px-3 py-2 rounded-md border border-gray-200 bg-gray-100 text-gray-600 text-sm shadow-sm min-h-[38px] flex items-center">
+            <label for="display_cid_no" class="text-xs font-medium text-gray-700"
+              >CID No./Identity/Work Permit No.</label
+            >
+            <p
+              id="display_cid_no"
+              class="w-full px-3 py-2 rounded-md border border-gray-200 bg-gray-100 text-gray-600 text-sm shadow-sm min-h-[38px] flex items-center"
+            >
               {{ form.cid_no || 'N/A' }}
             </p>
           </div>
 
           <div class="space-y-1.5">
-            <label for="display_full_name" class="text-xs font-medium text-gray-700">Full Name</label>
-            <p id="display_full_name"
-              class="w-full px-3 py-2 rounded-md border border-gray-200 bg-gray-100 text-gray-600 text-sm shadow-sm min-h-[38px] flex items-center">
+            <label for="display_full_name" class="text-xs font-medium text-gray-700"
+              >Full Name</label
+            >
+            <p
+              id="display_full_name"
+              class="w-full px-3 py-2 rounded-md border border-gray-200 bg-gray-100 text-gray-600 text-sm shadow-sm min-h-[38px] flex items-center"
+            >
               {{ form.full_name || 'N/A' }}
             </p>
           </div>
 
           <div class="space-y-1.5">
             <label for="display_gender" class="text-xs font-medium text-gray-700">Gender</label>
-            <p id="display_gender"
-              class="w-full px-3 py-2 rounded-md border border-gray-200 bg-gray-100 text-gray-600 text-sm shadow-sm capitalize min-h-[38px] flex items-center">
+            <p
+              id="display_gender"
+              class="w-full px-3 py-2 rounded-md border border-gray-200 bg-gray-100 text-gray-600 text-sm shadow-sm capitalize min-h-[38px] flex items-center"
+            >
               {{ form.gender || 'N/A' }}
             </p>
           </div>
@@ -71,34 +89,53 @@
             <label for="title_of_cpd" class="text-xs font-medium text-gray-700 flex items-center">
               Title of CPD <span class="text-red-500 ml-1">*</span>
             </label>
-            <input id="title_of_cpd" v-model="form.title_of_cpd" type="text"
+            <input
+              id="title_of_cpd"
+              v-model="form.title_of_cpd"
+              type="text"
               class="w-full px-3 py-2 rounded-md border border-gray-200 bg-gray-50 text-gray-900 text-sm placeholder-gray-400 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 shadow-sm hover:border-gray-300"
-              required placeholder="Enter CPD title" />
+              required
+              placeholder="Enter CPD title"
+            />
             <span v-if="errors.title_of_cpd" class="text-xs text-red-500 block">{{
               errors.title_of_cpd
             }}</span>
           </div>
 
           <div class="space-y-1.5">
-            <label for="relevance_to_profession" class="text-xs font-medium text-gray-700 flex items-center">
+            <label
+              for="relevance_to_profession"
+              class="text-xs font-medium text-gray-700 flex items-center"
+            >
               Professional Relevance <span class="text-red-500 ml-1">*</span>
             </label>
-            <input id="relevance_to_profession" v-model="form.relevance_to_profession" type="text"
+            <input
+              id="relevance_to_profession"
+              v-model="form.relevance_to_profession"
+              type="text"
               class="w-full px-3 py-2 rounded-md border border-gray-200 bg-gray-50 text-gray-900 text-sm placeholder-gray-400 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 shadow-sm hover:border-gray-300"
-              required placeholder="Describe relevance" />
+              required
+              placeholder="Describe relevance"
+            />
             <span v-if="errors.relevance_to_profession" class="text-xs text-red-500 block">{{
               errors.relevance_to_profession
             }}</span>
           </div>
 
           <div class="space-y-1.5">
-            <label for="type_of_cpd_activity" class="text-xs font-medium text-gray-700 flex items-center">
+            <label
+              for="type_of_cpd_activity"
+              class="text-xs font-medium text-gray-700 flex items-center"
+            >
               CPD Activity Type <span class="text-red-500 ml-1">*</span>
             </label>
-            <select id="type_of_cpd_activity" v-model="form.type_of_cpd_activity"
+            <select
+              id="type_of_cpd_activity"
+              v-model="form.type_of_cpd_activity"
               :disabled="isLoadingData || cpdActivities.length === 0"
               class="w-full px-3 py-2 rounded-md border border-gray-200 bg-gray-50 text-gray-900 text-sm focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 shadow-sm hover:border-gray-300 appearance-none disabled:bg-gray-100 disabled:cursor-not-allowed"
-              required>
+              required
+            >
               <option value="" disabled>
                 {{ isLoadingData ? 'Loading activities...' : 'Select activity type' }}
               </option>
@@ -115,15 +152,31 @@
           </div>
 
           <div class="space-y-1.5">
-            <label for="attachment" class="text-xs font-medium text-gray-700">Supporting Documents</label>
+            <label for="attachment" class="text-xs font-medium text-gray-700"
+              >Supporting Documents</label
+            >
             <div class="relative">
-              <input id="attachment" type="file" ref="fileInputRef" @change="handleFileUpload"
-                class="w-full px-3 py-2 rounded-md border-2 border-dashed border-gray-200 bg-gray-50/50 text-gray-800 text-sm placeholder-gray-400 hover:border-indigo-300 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 cursor-pointer file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
+              <input
+                id="attachment"
+                type="file"
+                ref="fileInputRef"
+                @change="handleFileUpload"
+                class="w-full px-3 py-2 rounded-md border-2 border-dashed border-gray-200 bg-gray-50/50 text-gray-800 text-sm placeholder-gray-400 hover:border-indigo-300 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 cursor-pointer file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+              />
               <p class="mt-1.5 text-xs text-gray-500 flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 mr-1 text-gray-400" fill="none"
-                  viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                  <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-3.5 w-3.5 mr-1 text-gray-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
                 PDF, DOC, JPG, PNG (Max: 2MB)
               </p>
@@ -140,23 +193,45 @@
 
       <!-- Form Footer / Actions -->
       <div class="bg-gray-50/70 px-6 py-4 flex justify-end space-x-3 border-t border-gray-100">
-        <button type="button" @click="handleCancel"
-          class="px-4 py-2 rounded-md bg-white text-gray-700 text-sm border border-gray-200 hover:bg-gray-100 hover:border-gray-300 transition duration-200 shadow-sm focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-gray-400">
+        <button
+          type="button"
+          @click="handleCancel"
+          class="px-4 py-2 rounded-md bg-white text-gray-700 text-sm border border-gray-200 hover:bg-gray-100 hover:border-gray-300 transition duration-200 shadow-sm focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-gray-400"
+        >
           Cancel
         </button>
-        <button type="button" @click="handleSaveDraft"
-          class="px-4 py-2 rounded-md bg-yellow-500 text-white text-sm hover:bg-yellow-600 transition duration-200 shadow-sm focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-yellow-400">
+        <button
+          type="button"
+          @click="handleSaveDraft"
+          class="px-4 py-2 rounded-md bg-yellow-500 text-white text-sm hover:bg-yellow-600 transition duration-200 shadow-sm focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-yellow-400"
+        >
           Save Draft
         </button>
-        <button type="submit" :disabled="isSubmitting || isLoadingData"
-          class="px-4 py-2 rounded-md bg-gradient-to-r from-indigo-600 to-blue-600 text-white text-sm hover:from-indigo-700 hover:to-blue-700 transition duration-200 shadow-sm focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-indigo-500 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center min-w-[120px]">
+        <button
+          type="submit"
+          :disabled="isSubmitting || isLoadingData"
+          class="px-4 py-2 rounded-md bg-gradient-to-r from-indigo-600 to-blue-600 text-white text-sm hover:from-indigo-700 hover:to-blue-700 transition duration-200 shadow-sm focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-indigo-500 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center min-w-[120px]"
+        >
           <span v-if="isSubmitting" class="flex items-center">
-            <svg class="animate-spin -ml-0.5 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
-              viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-              </path>
+            <svg
+              class="animate-spin -ml-0.5 mr-2 h-4 w-4 text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              ></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
             </svg>
             Submitting...
           </span>
@@ -217,9 +292,11 @@ const fetchMasterData = async () => {
 
     // CPD Activities
     console.log('CPD Activities raw response:', activitiesResponse)
-    const activitiesData = activitiesResponse?.data?.results ||
+    const activitiesData =
+      activitiesResponse?.data?.results ||
       activitiesResponse?.results ||
-      activitiesResponse?.data || []
+      activitiesResponse?.data ||
+      []
     cpdActivities.value = Array.isArray(activitiesData) ? activitiesData : []
     console.log('CPD Activities loaded:', cpdActivities.value.length)
     console.log('CPD Activities processed data:', cpdActivities.value)
@@ -228,7 +305,6 @@ const fetchMasterData = async () => {
     if (cpdActivities.value.length === 0) {
       toast.warning('CPD activities could not be loaded. Form functionality may be limited.')
     }
-
   } catch (error) {
     console.error('Error fetching master data:', error)
 
@@ -259,8 +335,9 @@ const loadDraft = () => {
       if (authStore.user) {
         form.cid_no = authStore.user.cid || draftData.cid_no || ''
         form.full_name =
-          `${authStore.user.first_name || ''} ${authStore.user.middle_name || ''} ${authStore.user.last_name || ''
-            }`
+          `${authStore.user.first_name || ''} ${authStore.user.middle_name || ''} ${
+            authStore.user.last_name || ''
+          }`
             .replace(/\s+/g, ' ')
             .trim() ||
           draftData.full_name ||
@@ -323,7 +400,8 @@ const validateForm = () => {
   }
 
   if (!form.registration_record_id) {
-    errors.general_registration = 'Registration information (Application ID) is missing. Cannot submit.'
+    errors.general_registration =
+      'Registration information (Application ID) is missing. Cannot submit.'
     toast.error(errors.general_registration)
     isValid = false
   }
@@ -338,9 +416,9 @@ const fetchRegistrationDetails = async (cid) => {
     const response = await apiService.getEpcApplicationsByCid(cid)
     if (response.data && Array.isArray(response.data) && response.data.length > 0) {
       const primaryApp = response.data.find(
-        (app) => (app.registration_type_name === 'New Registration' || app.is_primary) && app.id
+        (app) => (app.registration_type_name === 'New Registration' || app.is_primary) && app.id,
       )
-      const appToUse = primaryApp || response.data.find(app => app.id)
+      const appToUse = primaryApp || response.data.find((app) => app.id)
 
       if (appToUse && appToUse.id) {
         return {
@@ -349,7 +427,7 @@ const fetchRegistrationDetails = async (cid) => {
           personnelCategory: appToUse.personnel_category,
           personnelCategoryName: appToUse.personnel_category_name || 'N/A',
           personnelSubCategory: appToUse.personnel_sub_category,
-          personnelSubCategoryName: appToUse.personnel_sub_category_name || 'N/A'
+          personnelSubCategoryName: appToUse.personnel_sub_category_name || 'N/A',
         }
       }
     }
@@ -358,7 +436,7 @@ const fetchRegistrationDetails = async (cid) => {
     return null
   } catch (error) {
     console.error('Error fetching registration details:', error)
-    if (error.response) console.error("Error response data:", error.response.data)
+    if (error.response) console.error('Error response data:', error.response.data)
     toast.warning('Failed to fetch registration details. Submission might be affected.')
     return null
   } finally {
@@ -433,7 +511,7 @@ const handleSubmissionError = (errorData, error = null) => {
 
     // Map field errors
     if (typeof errorData === 'object' && errorData !== null) {
-      Object.keys(errorData).forEach(key => {
+      Object.keys(errorData).forEach((key) => {
         if (Object.hasOwn(errors, key)) {
           errors[key] = Array.isArray(errorData[key]) ? errorData[key].join(', ') : errorData[key]
         }
@@ -444,7 +522,7 @@ const handleSubmissionError = (errorData, error = null) => {
   }
 
   toast.error(`Submission failed: ${errorMessage}`)
-  console.error("Submission error:", error?.response || error || errorData)
+  console.error('Submission error:', error?.response || error || errorData)
 }
 
 const resetForm = () => {
@@ -507,8 +585,9 @@ onMounted(async () => {
   // Set user data first
   if (authStore.user) {
     form.cid_no = authStore.user.cid || ''
-    form.full_name = `${authStore.user.first_name || ''} ${authStore.user.middle_name || ''} ${authStore.user.last_name || ''
-      }`
+    form.full_name = `${authStore.user.first_name || ''} ${authStore.user.middle_name || ''} ${
+      authStore.user.last_name || ''
+    }`
       .replace(/\s+/g, ' ')
       .trim()
     form.gender = authStore.user.gender || ''
@@ -535,7 +614,10 @@ onMounted(async () => {
       form.personnel_sub_category = regDetails.personnelSubCategory
       form.personnel_sub_category_name = regDetails.personnelSubCategoryName
     }
-  } else if (form.registration_record_id && (form.display_registration_no === 'Fetching...' || !form.display_registration_no)) {
+  } else if (
+    form.registration_record_id &&
+    (form.display_registration_no === 'Fetching...' || !form.display_registration_no)
+  ) {
     if (form.cid_no) {
       const regDetails = await fetchRegistrationDetails(form.cid_no)
       if (regDetails) {

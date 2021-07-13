@@ -27,11 +27,7 @@
       </div>
 
       <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
-        <ModuleTableView
-          ref="moduleDefinitionTableRef"
-          @error="handleChildError"
-
-        />
+        <ModuleTableView ref="moduleDefinitionTableRef" @error="handleChildError" />
       </div>
     </div>
   </div>
@@ -52,18 +48,23 @@ const openAddDefinitionModal = () => {
   }
 }
 
-
 //   }
 // }
 
 const handleChildError = (errorMessage) => {
-  pageError.value = errorMessage;
+  pageError.value = errorMessage
   // You might want to clear the error after some time or on user action
-  setTimeout(() => { pageError.value = null; }, 7000);
+  setTimeout(() => {
+    pageError.value = null
+  }, 7000)
 }
 </script>
 
 <style scoped>
-.btn { @apply inline-flex items-center justify-center rounded-lg border py-2.5 px-5 text-sm font-semibold shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-150 disabled:opacity-70 disabled:cursor-not-allowed; }
-.btn-primary { @apply border-transparent bg-purple-600 text-white hover:bg-purple-700 focus:ring-purple-500; }
+.btn {
+  @apply inline-flex items-center justify-center rounded-lg border py-2.5 px-5 text-sm font-semibold shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-150 disabled:opacity-70 disabled:cursor-not-allowed;
+}
+.btn-primary {
+  @apply border-transparent bg-purple-600 text-white hover:bg-purple-700 focus:ring-purple-500;
+}
 </style>

@@ -5,37 +5,70 @@
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
             <tr>
-              <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <th
+                scope="col"
+                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+              >
                 Institute
               </th>
-              <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <th
+                scope="col"
+                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+              >
                 Teaching Center
               </th>
-              <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <th
+                scope="col"
+                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+              >
                 Inspection From Date
               </th>
-              <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <th
+                scope="col"
+                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+              >
                 Inspection To Date
               </th>
-              <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <th
+                scope="col"
+                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+              >
                 Observation Description
               </th>
-              <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <th
+                scope="col"
+                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+              >
                 Root Cause
               </th>
-              <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <th
+                scope="col"
+                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+              >
                 CAPA
               </th>
-              <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <th
+                scope="col"
+                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+              >
                 Implementation Timeline
               </th>
-              <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <th
+                scope="col"
+                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+              >
                 DO Remarks
               </th>
-              <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <th
+                scope="col"
+                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+              >
                 Status
               </th>
-              <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <th
+                scope="col"
+                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+              >
                 Actions
               </th>
             </tr>
@@ -46,13 +79,25 @@
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   {{ institute.name_of_institution }}
                   <button @click="toggleCapas(institute.id)" class="ml-2">
-                    <svg v-if="expandedInstitute === institute.id" class="w-4 h-4 fill-current"
-                      xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                      <path d="M7 10v4h6v-4H7zm0-5v4h6V5H7zm0 10v4h6v-4H7zM2 3v14h16V3H2zm15 13H3V4h14v12z" />
-                    </svg>
-                    <svg v-else class="w-4 h-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                    <svg
+                      v-if="expandedInstitute === institute.id"
+                      class="w-4 h-4 fill-current"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                    >
                       <path
-                        d="M10 0v4h4v2h-4v4H8V6H4V4h4V0h2zm0 8v4h4v2h-4v4H8v-4H4v-2h4V8h2zM2 3v14h16V3H2zm15 13H3V4h14v12z" />
+                        d="M7 10v4h6v-4H7zm0-5v4h6V5H7zm0 10v4h6v-4H7zM2 3v14h16V3H2zm15 13H3V4h14v12z"
+                      />
+                    </svg>
+                    <svg
+                      v-else
+                      class="w-4 h-4 fill-current"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        d="M10 0v4h4v2h-4v4H8V6H4V4h4V0h2zm0 8v4h4v2h-4v4H8v-4H4v-2h4V8h2zM2 3v14h16V3H2zm15 13H3V4h14v12z"
+                      />
                     </svg>
                   </button>
                 </td>
@@ -60,15 +105,21 @@
                   <!-- Empty cells for Teaching Center through Status -->
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <button @click="$emit('add-capa', institute.id)"
-                    class="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">
+                  <button
+                    @click="$emit('add-capa', institute.id)"
+                    class="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200"
+                  >
                     <PlusIcon class="w-4 h-4 mr-1" />
                     Add CAPA
                   </button>
                 </td>
               </tr>
               <template v-if="expandedInstitute === institute.id">
-                <tr v-for="capa in instituteCapas[institute.id] || []" :key="capa.id" class="bg-gray-100">
+                <tr
+                  v-for="capa in instituteCapas[institute.id] || []"
+                  :key="capa.id"
+                  class="bg-gray-100"
+                >
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {{ institute.name_of_institution }}
                   </td>
@@ -81,10 +132,16 @@
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {{ formatDate(capa.inspection_to_date) }}
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" :title="capa.observation_description">
+                  <td
+                    class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                    :title="capa.observation_description"
+                  >
                     {{ truncateText(capa.observation_description || 'N/A', 50) }}
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" :title="capa.root_cause">
+                  <td
+                    class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                    :title="capa.root_cause"
+                  >
                     {{ truncateText(capa.root_cause || 'N/A', 50) }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" :title="capa.capa">
@@ -93,24 +150,33 @@
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {{ capa.implementation_timeline || 'N/A' }}
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" :title="capa.DO_remarks">
+                  <td
+                    class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                    :title="capa.DO_remarks"
+                  >
                     {{ truncateText(capa.DO_remarks || 'N/A', 50) }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm">
-                    <span :class="[
-                      getStatusClass(capa.status),
-                      'px-2.5 py-0.5 rounded-full text-xs font-medium',
-                    ]">
+                    <span
+                      :class="[
+                        getStatusClass(capa.status),
+                        'px-2.5 py-0.5 rounded-full text-xs font-medium',
+                      ]"
+                    >
                       {{ getStatusText(capa.status) }}
                     </span>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <button @click="$emit('open-view-details-modal', capa)"
-                      class="inline-flex items-center bg-blue-100 hover:bg-blue-200 text-blue-600 font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200 mr-2">
+                    <button
+                      @click="$emit('open-view-details-modal', capa)"
+                      class="inline-flex items-center bg-blue-100 hover:bg-blue-200 text-blue-600 font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200 mr-2"
+                    >
                       View
                     </button>
-                    <button @click="$emit('delete-capa', capa.id)"
-                      class="inline-flex items-center bg-red-100 hover:bg-red-200 text-red-600 font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">
+                    <button
+                      @click="$emit('delete-capa', capa.id)"
+                      class="inline-flex items-center bg-red-100 hover:bg-red-200 text-red-600 font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200"
+                    >
                       <TrashIcon class="w-4 h-4" />
                     </button>
                   </td>

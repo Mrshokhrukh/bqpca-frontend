@@ -17,25 +17,39 @@
     </div>
 
     <!-- Error Message -->
-    <div v-if="error && !loading" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6 relative">
+    <div
+      v-if="error && !loading"
+      class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6 relative"
+    >
       <p class="font-bold">Error loading applications</p>
       <p>{{ error }}</p>
-      <button @click="fetchApplications"
-        class="mt-2 bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded text-sm font-medium">
+      <button
+        @click="fetchApplications"
+        class="mt-2 bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded text-sm font-medium"
+      >
         Retry
       </button>
     </div>
 
     <!-- Approved Applications Notice -->
-    <div v-if="!loading && hasApprovedApplicationsWithoutParticipants"
-      class="bg-blue-50 border border-blue-200 text-blue-800 px-6 py-4 rounded-lg mb-6">
+    <div
+      v-if="!loading && hasApprovedApplicationsWithoutParticipants"
+      class="bg-blue-50 border border-blue-200 text-blue-800 px-6 py-4 rounded-lg mb-6"
+    >
       <div class="flex items-start">
         <div class="shrink-0">
-          <svg class="h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
-            aria-hidden="true">
-            <path fill-rule="evenodd"
+          <svg
+            class="h-5 w-5 text-blue-500"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              fill-rule="evenodd"
               d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z"
-              clip-rule="evenodd" />
+              clip-rule="evenodd"
+            />
           </svg>
         </div>
         <div class="ml-3 flex-1">
@@ -48,9 +62,11 @@
             </p>
           </div>
           <div class="mt-2 text-right">
-            <button v-if="approvedApplicationsWithoutParticipants.length > 0"
+            <button
+              v-if="approvedApplicationsWithoutParticipants.length > 0"
               @click="addParticipants(approvedApplicationsWithoutParticipants[0])"
-              class="px-3 py-1.5 bg-blue-600 text-white rounded-md text-xs font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-blue-50">
+              class="px-3 py-1.5 bg-blue-600 text-white rounded-md text-xs font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-blue-50"
+            >
               Add Participants (First)
             </button>
           </div>
@@ -59,41 +75,73 @@
     </div>
 
     <!-- Empty State -->
-    <div v-if="!loading && !error && userApplications.length === 0" class="bg-gray-50 rounded-xl p-8 text-center mt-6">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24"
-        stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+    <div
+      v-if="!loading && !error && userApplications.length === 0"
+      class="bg-gray-50 rounded-xl p-8 text-center mt-6"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-12 w-12 mx-auto text-gray-400"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+        />
       </svg>
       <h3 class="mt-2 text-lg font-medium text-gray-900">No applications found</h3>
       <p class="mt-1 text-gray-500">You haven't submitted any Engineering CPD applications yet.</p>
-      <button @click="createNewApplication"
-        class="mt-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+      <button
+        @click="createNewApplication"
+        class="mt-4 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+      >
         Create New Application
       </button>
     </div>
 
     <!-- Search and Filter Controls -->
-    <div v-if="!loading && !error && userApplications.length > 0"
-      class="mb-6 flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center">
+    <div
+      v-if="!loading && !error && userApplications.length > 0"
+      class="mb-6 flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center"
+    >
       <div class="relative w-full sm:w-auto">
         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
-            aria-hidden="true">
-            <path fill-rule="evenodd"
+          <svg
+            class="h-5 w-5 text-gray-400"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <path
+              fill-rule="evenodd"
               d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z"
-              clip-rule="evenodd" />
+              clip-rule="evenodd"
+            />
           </svg>
         </div>
-        <input type="text" id="search" v-model="searchTerm"
+        <input
+          type="text"
+          id="search"
+          v-model="searchTerm"
           class="block w-full sm:w-64 rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5 pl-10"
-          placeholder="Search Title or ID" />
+          placeholder="Search Title or ID"
+        />
       </div>
 
       <div class="flex items-center w-full sm:w-auto">
-        <label for="statusFilter" class="mr-3 text-sm font-medium text-gray-700 shrink-0">Status:</label>
-        <select id="statusFilter" v-model="statusFilter"
-          class="block w-full sm:w-auto rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5">
+        <label for="statusFilter" class="mr-3 text-sm font-medium text-gray-700 shrink-0"
+          >Status:</label
+        >
+        <select
+          id="statusFilter"
+          v-model="statusFilter"
+          class="block w-full sm:w-auto rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
+        >
           <option value="">All Statuses</option>
           <option value="Needs Participants">Needs Participants</option>
           <option value="Completed">Completed</option>
@@ -106,24 +154,41 @@
     </div>
 
     <!-- Application Table -->
-    <div v-if="!loading && !error && userApplications.length > 0"
-      class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-x-auto">
+    <div
+      v-if="!loading && !error && userApplications.length > 0"
+      class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-x-auto"
+    >
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
           <tr>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th
+              scope="col"
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
               ID
             </th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th
+              scope="col"
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
               Title of CPD
             </th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th
+              scope="col"
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
               Submission Date
             </th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th
+              scope="col"
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
               Status
             </th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th
+              scope="col"
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+            >
               Actions
             </th>
           </tr>
@@ -136,43 +201,60 @@
             </td>
           </tr>
           <!-- Iterate over filtered applications -->
-          <tr v-for="application in filteredApplications" :key="application.id"
-            class="hover:bg-gray-50 transition-colors duration-150" :class="{
+          <tr
+            v-for="application in filteredApplications"
+            :key="application.id"
+            class="hover:bg-gray-50 transition-colors duration-150"
+            :class="{
               'bg-blue-50 hover:bg-blue-100': isApprovedWithoutParticipants(application),
-            }">
+            }"
+          >
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
               {{ application.id }}
             </td>
-            <td class="px-6 py-4 text-sm text-gray-900 font-medium max-w-xs truncate"
-              :title="application.title_of_cpd || ''">
+            <td
+              class="px-6 py-4 text-sm text-gray-900 font-medium max-w-xs truncate"
+              :title="application.title_of_cpd || ''"
+            >
               {{ application.title_of_cpd || 'N/A' }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
               {{ formatDate(application.created_at) }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-              <span :class="[
-                'px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full',
-                getStatusClass(application),
-              ]">
+              <span
+                :class="[
+                  'px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full',
+                  getStatusClass(application),
+                ]"
+              >
                 {{ getStatusText(application) }}
               </span>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-3">
-              <button @click="viewApplication(application)" title="View Details"
-                class="text-blue-600 hover:text-blue-800 focus:outline-none transition duration-150 ease-in-out">
+              <button
+                @click="viewApplication(application)"
+                title="View Details"
+                class="text-blue-600 hover:text-blue-800 focus:outline-none transition duration-150 ease-in-out"
+              >
                 View
               </button>
 
-              <button v-if="getStatusText(application) === 'Draft'" @click="editApplication(application)"
+              <button
+                v-if="getStatusText(application) === 'Draft'"
+                @click="editApplication(application)"
                 title="Edit Draft"
-                class="text-green-600 hover:text-green-800 focus:outline-none transition duration-150 ease-in-out">
+                class="text-green-600 hover:text-green-800 focus:outline-none transition duration-150 ease-in-out"
+              >
                 Edit
               </button>
 
-              <button v-if="isApprovedWithoutParticipants(application)" @click="addParticipants(application)"
+              <button
+                v-if="isApprovedWithoutParticipants(application)"
+                @click="addParticipants(application)"
                 title="Add Participants"
-                class="text-purple-600 hover:text-purple-800 focus:outline-none font-medium transition duration-150 ease-in-out">
+                class="text-purple-600 hover:text-purple-800 focus:outline-none font-medium transition duration-150 ease-in-out"
+              >
                 Add Participants
               </button>
             </td>
@@ -183,36 +265,60 @@
 
     <!-- New Application Button -->
     <div v-if="!loading && userApplications.length > 0" class="mt-6 flex justify-end">
-      <button @click="createNewApplication"
-        class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-        <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
-          aria-hidden="true">
+      <button
+        @click="createNewApplication"
+        class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+      >
+        <svg
+          class="-ml-1 mr-2 h-5 w-5"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          aria-hidden="true"
+        >
           <path
-            d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+            d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z"
+          />
         </svg>
         Create New Application
       </button>
     </div>
 
     <!-- Application View Modal -->
-    <div v-if="showViewModal && selectedApplication"
+    <div
+      v-if="showViewModal && selectedApplication"
       class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4 overflow-y-auto transition-opacity duration-300"
-      aria-labelledby="modal-title" role="dialog" aria-modal="true">
+      aria-labelledby="modal-title"
+      role="dialog"
+      aria-modal="true"
+    >
       <!-- Modal content -->
       <div
-        class="bg-white rounded-xl shadow-xl max-w-4xl w-full m-4 max-h-[95vh] overflow-hidden flex flex-col transform transition-all duration-300 scale-100">
+        class="bg-white rounded-xl shadow-xl max-w-4xl w-full m-4 max-h-[95vh] overflow-hidden flex flex-col transform transition-all duration-300 scale-100"
+      >
         <!-- Modal Header -->
-        <div class="flex justify-between items-center p-5 border-b border-gray-200 bg-gray-50 rounded-t-xl">
+        <div
+          class="flex justify-between items-center p-5 border-b border-gray-200 bg-gray-50 rounded-t-xl"
+        >
           <h2 class="text-xl font-semibold text-gray-800" id="modal-title">
             Engineering CPD Application Details
           </h2>
-          <button @click="closeViewModal"
+          <button
+            @click="closeViewModal"
             class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
-            aria-label="Close modal">
-            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-              <path fill-rule="evenodd"
+            aria-label="Close modal"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fill-rule="evenodd"
                 d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                clip-rule="evenodd"></path>
+                clip-rule="evenodd"
+              ></path>
             </svg>
           </button>
         </div>
@@ -220,14 +326,21 @@
         <!-- Modal Body -->
         <div class="p-6 space-y-6 overflow-y-auto">
           <!-- Status Banner (Needs Participants) -->
-          <div v-if="isApprovedWithoutParticipants(selectedApplication)"
-            class="bg-blue-50 border-l-4 border-blue-400 text-blue-700 p-4 rounded-r-lg" role="alert">
+          <div
+            v-if="isApprovedWithoutParticipants(selectedApplication)"
+            class="bg-blue-50 border-l-4 border-blue-400 text-blue-700 p-4 rounded-r-lg"
+            role="alert"
+          >
             <div class="flex">
               <div class="py-1">
-                <svg class="fill-current h-6 w-6 text-blue-500 mr-4" xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20">
+                <svg
+                  class="fill-current h-6 w-6 text-blue-500 mr-4"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                >
                   <path
-                    d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z" />
+                    d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z"
+                  />
                 </svg>
               </div>
               <div>
@@ -237,8 +350,10 @@
                   the process.
                 </p>
                 <div class="mt-2 text-right">
-                  <button @click="addParticipants(selectedApplication)"
-                    class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-blue-50">
+                  <button
+                    @click="addParticipants(selectedApplication)"
+                    class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-blue-50"
+                  >
                     Add Participants Now
                   </button>
                 </div>
@@ -258,10 +373,12 @@
               </div>
               <div>
                 <p class="text-xs font-medium text-gray-500 uppercase">Status</p>
-                <span :class="[
-                  'px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full',
-                  getStatusClass(selectedApplication),
-                ]">
+                <span
+                  :class="[
+                    'px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full',
+                    getStatusClass(selectedApplication),
+                  ]"
+                >
                   {{ getStatusText(selectedApplication) }}
                 </span>
               </div>
@@ -286,8 +403,12 @@
               <div class="sm:col-span-2">
                 <p class="text-xs font-medium text-gray-500 uppercase">Duration</p>
                 <p class="text-sm text-gray-800">
-                  {{ formatDateRange(selectedApplication.from_date || selectedApplication.start_date,
-                    selectedApplication.to_date || selectedApplication.end_date) }}
+                  {{
+                    formatDateRange(
+                      selectedApplication.from_date || selectedApplication.start_date,
+                      selectedApplication.to_date || selectedApplication.end_date,
+                    )
+                  }}
                 </p>
               </div>
             </div>
@@ -333,7 +454,9 @@
               <div>
                 <p class="text-xs font-medium text-gray-500 uppercase">CPD Credits</p>
                 <p class="text-sm text-gray-800">
-                  {{ selectedApplication.credit || selectedApplication.expected_cpd_credits || '0' }}
+                  {{
+                    selectedApplication.credit || selectedApplication.expected_cpd_credits || '0'
+                  }}
                 </p>
               </div>
               <div>
@@ -345,7 +468,11 @@
               <div>
                 <p class="text-xs font-medium text-gray-500 uppercase">Duration (Hours)</p>
                 <p class="text-sm text-gray-800">
-                  {{ selectedApplication.total_duration_hours || selectedApplication.duration_in_hours || 'N/A' }}
+                  {{
+                    selectedApplication.total_duration_hours ||
+                    selectedApplication.duration_in_hours ||
+                    'N/A'
+                  }}
                 </p>
               </div>
               <div class="col-span-full">
@@ -371,7 +498,11 @@
               <div class="col-span-full">
                 <p class="text-xs font-medium text-gray-500 uppercase">CPD Providing Agency</p>
                 <p class="text-sm text-gray-800 mt-1">
-                  {{ getCpdProvidingAgencyName(selectedApplication.cpd_providing_agency) || selectedApplication.if_others_specify || 'N/A' }}
+                  {{
+                    getCpdProvidingAgencyName(selectedApplication.cpd_providing_agency) ||
+                    selectedApplication.if_others_specify ||
+                    'N/A'
+                  }}
                 </p>
               </div>
             </div>
@@ -379,38 +510,63 @@
 
           <!-- Supporting Documents Section -->
           <div
-            v-if="selectedApplication.document_supporting_expertise || selectedApplication.course_document || selectedApplication.attachment"
-            class="border border-gray-200 p-4 rounded-lg">
+            v-if="
+              selectedApplication.document_supporting_expertise ||
+              selectedApplication.course_document ||
+              selectedApplication.attachment
+            "
+            class="border border-gray-200 p-4 rounded-lg"
+          >
             <h3 class="text-lg font-semibold mb-3 text-gray-700 border-b pb-2">
               Supporting Documents
             </h3>
             <div class="space-y-2">
               <div v-if="selectedApplication.document_supporting_expertise">
-                <p class="text-xs font-medium text-gray-500 uppercase">Supporting Expertise Document</p>
-                <a :href="selectedApplication.document_supporting_expertise" target="_blank"
-                  class="text-blue-600 hover:text-blue-800 text-sm">View Document</a>
+                <p class="text-xs font-medium text-gray-500 uppercase">
+                  Supporting Expertise Document
+                </p>
+                <a
+                  :href="selectedApplication.document_supporting_expertise"
+                  target="_blank"
+                  class="text-blue-600 hover:text-blue-800 text-sm"
+                  >View Document</a
+                >
               </div>
               <div v-if="selectedApplication.course_document">
                 <p class="text-xs font-medium text-gray-500 uppercase">Course Document</p>
-                <a :href="selectedApplication.course_document" target="_blank"
-                  class="text-blue-600 hover:text-blue-800 text-sm">View Document</a>
+                <a
+                  :href="selectedApplication.course_document"
+                  target="_blank"
+                  class="text-blue-600 hover:text-blue-800 text-sm"
+                  >View Document</a
+                >
               </div>
               <div v-if="selectedApplication.attachment">
                 <p class="text-xs font-medium text-gray-500 uppercase">Additional Attachment</p>
-                <a :href="selectedApplication.attachment" target="_blank"
-                  class="text-blue-600 hover:text-blue-800 text-sm">View Document</a>
+                <a
+                  :href="selectedApplication.attachment"
+                  target="_blank"
+                  class="text-blue-600 hover:text-blue-800 text-sm"
+                  >View Document</a
+                >
               </div>
               <div v-if="selectedApplication.attendance_sheet_attachment">
                 <p class="text-xs font-medium text-gray-500 uppercase">Attendance Sheet</p>
-                <a :href="selectedApplication.attendance_sheet_attachment" target="_blank"
-                  class="text-blue-600 hover:text-blue-800 text-sm">View Document</a>
+                <a
+                  :href="selectedApplication.attendance_sheet_attachment"
+                  target="_blank"
+                  class="text-blue-600 hover:text-blue-800 text-sm"
+                  >View Document</a
+                >
               </div>
             </div>
           </div>
 
           <!-- Participants Section (if present) -->
-          <div v-if="selectedApplication.participants && selectedApplication.participants.length > 0"
-            class="border border-gray-200 p-4 rounded-lg">
+          <div
+            v-if="selectedApplication.participants && selectedApplication.participants.length > 0"
+            class="border border-gray-200 p-4 rounded-lg"
+          >
             <h3 class="text-lg font-semibold mb-3 text-gray-700 border-b pb-2">
               Participants ({{ selectedApplication.participants.length }})
             </h3>
@@ -418,27 +574,37 @@
               <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-100">
                   <tr>
-                    <th scope="col"
-                      class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th
+                      scope="col"
+                      class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
                       Reg No
                     </th>
-                    <th scope="col"
-                      class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th
+                      scope="col"
+                      class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
                       Name
                     </th>
-                    <th scope="col"
-                      class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th
+                      scope="col"
+                      class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
                       Credits
                     </th>
-                    <th scope="col"
-                      class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th
+                      scope="col"
+                      class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
                       Status
                     </th>
                   </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
-                  <tr v-for="(participant, index) in selectedApplication.participants"
-                    :key="`participant-${participant.id || index}`">
+                  <tr
+                    v-for="(participant, index) in selectedApplication.participants"
+                    :key="`participant-${participant.id || index}`"
+                  >
                     <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-800">
                       {{ getParticipantRegNo(participant) }}
                     </td>
@@ -449,14 +615,16 @@
                       {{ participant.cpd_credits || 'N/A' }}
                     </td>
                     <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                      <span :class="[
-                        'px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full',
-                        participant.review_status === 'Approved'
-                          ? 'bg-green-100 text-green-800'
-                          : participant.review_status === 'Rejected'
-                            ? 'bg-red-100 text-red-800'
-                            : 'bg-yellow-100 text-yellow-800', // Default to Pending/Yellow
-                      ]">
+                      <span
+                        :class="[
+                          'px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full',
+                          participant.review_status === 'Approved'
+                            ? 'bg-green-100 text-green-800'
+                            : participant.review_status === 'Rejected'
+                              ? 'bg-red-100 text-red-800'
+                              : 'bg-yellow-100 text-yellow-800', // Default to Pending/Yellow
+                        ]"
+                      >
                         {{ participant.review_status || 'Pending' }}
                       </span>
                     </td>
@@ -466,26 +634,39 @@
             </div>
           </div>
           <!-- If no participants yet but needed -->
-          <div v-else-if="isApprovedWithoutParticipants(selectedApplication)"
-            class="border border-gray-200 p-4 rounded-lg text-center text-gray-500">
+          <div
+            v-else-if="isApprovedWithoutParticipants(selectedApplication)"
+            class="border border-gray-200 p-4 rounded-lg text-center text-gray-500"
+          >
             <p>Participant details have not been added yet.</p>
           </div>
         </div>
 
         <!-- Modal Footer -->
-        <div class="flex items-center justify-end p-4 space-x-3 border-t border-gray-200 bg-gray-50 rounded-b-xl">
-          <button @click="closeViewModal" type="button"
-            class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200">
+        <div
+          class="flex items-center justify-end p-4 space-x-3 border-t border-gray-200 bg-gray-50 rounded-b-xl"
+        >
+          <button
+            @click="closeViewModal"
+            type="button"
+            class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200"
+          >
             Close
           </button>
-          <button v-if="getStatusText(selectedApplication) === 'Draft'" @click="editApplication(selectedApplication)"
+          <button
+            v-if="getStatusText(selectedApplication) === 'Draft'"
+            @click="editApplication(selectedApplication)"
             type="button"
-            class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300">
+            class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300"
+          >
             Edit Application
           </button>
-          <button v-if="isApprovedWithoutParticipants(selectedApplication)"
-            @click="addParticipants(selectedApplication)" type="button"
-            class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300">
+          <button
+            v-if="isApprovedWithoutParticipants(selectedApplication)"
+            @click="addParticipants(selectedApplication)"
+            type="button"
+            class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300"
+          >
             Add Participants
           </button>
         </div>
@@ -522,7 +703,7 @@ const cpdProvidingAgencyMap = {
   4: 'Institution of Civil Engineers (ICE)',
   5: 'American Society of Civil Engineers (ASCE)',
   6: 'Institute of Electrical and Electronics Engineers (IEEE)',
-  7: 'Other'
+  7: 'Other',
 }
 
 const getCpdProvidingAgencyName = (agencyId) => {
@@ -563,16 +744,24 @@ const getParticipantRegNo = (participant) => {
     return participant.user.cid
   }
 
-  return participant.participant_reg_no || participant.cid || participant.registration_no || participant.reg_no || participant.registrationNo || 'N/A'
+  return (
+    participant.participant_reg_no ||
+    participant.cid ||
+    participant.registration_no ||
+    participant.reg_no ||
+    participant.registrationNo ||
+    'N/A'
+  )
 }
 
 // Helper function to find user data by registration number
 const findUserByRegNo = (regNo) => {
-  return allParticipants.value.find(p =>
-    p.cid === regNo ||
-    p.registration_no === regNo ||
-    p.reg_no === regNo ||
-    p.participant_reg_no === regNo
+  return allParticipants.value.find(
+    (p) =>
+      p.cid === regNo ||
+      p.registration_no === regNo ||
+      p.reg_no === regNo ||
+      p.participant_reg_no === regNo,
   )
 }
 
@@ -590,7 +779,7 @@ const userApplications = computed(() => {
 
     let isParticipant = false
     if (app.participants && Array.isArray(app.participants)) {
-      isParticipant = app.participants.some(participant => {
+      isParticipant = app.participants.some((participant) => {
         const participantCid = String(participant.participant_reg_no)
         return participantCid === userCid
       })
@@ -645,8 +834,10 @@ const getStatusClass = (application) => {
 }
 
 const isApprovedWithoutParticipants = (application) => {
-  return application.status?.toLowerCase() === 'approved' &&
-         (!application.participants || application.participants.length === 0)
+  return (
+    application.status?.toLowerCase() === 'approved' &&
+    (!application.participants || application.participants.length === 0)
+  )
 }
 
 const filteredApplications = computed(() => {
@@ -681,13 +872,12 @@ const fetchApplications = async () => {
   try {
     const [response, participantsResponse] = await Promise.all([
       apiService.getEpcCpdTasks(),
-      apiService.getEpcFullApplicationListByCid('')
+      apiService.getEpcFullApplicationListByCid(''),
     ])
 
     if (response.data && Array.isArray(response.data.results)) {
       applications.value = response.data.results.sort(
-        (a, b) =>
-          new Date(b.updated_at || b.created_at) - new Date(a.updated_at || a.created_at),
+        (a, b) => new Date(b.updated_at || b.created_at) - new Date(a.updated_at || a.created_at),
       )
     } else {
       applications.value = []
@@ -701,7 +891,6 @@ const fetchApplications = async () => {
     if (participantsResponse.data) {
       allParticipants.value = participantsResponse.data.results || participantsResponse.data || []
     }
-
   } catch (err) {
     error.value =
       err.response?.data?.detail ||
@@ -774,7 +963,7 @@ const addParticipants = (application) => {
   }
   closeViewModal()
   router.push(
-    `/admin/cme_cpd_provider/engineering_certification/cpd_approved_add_participants?id=${application.id}`
+    `/admin/cme_cpd_provider/engineering_certification/cpd_approved_add_participants?id=${application.id}`,
   )
 }
 

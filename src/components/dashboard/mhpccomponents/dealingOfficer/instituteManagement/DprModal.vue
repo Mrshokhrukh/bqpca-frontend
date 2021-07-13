@@ -532,7 +532,7 @@ const saveChanges = async () => {
   if (selectedFiles.value.institute_eoi_supporting_documents) {
     formData.append(
       'institute_eoi_supporting_documents',
-      selectedFiles.value.institute_eoi_supporting_documents
+      selectedFiles.value.institute_eoi_supporting_documents,
     )
   }
 
@@ -594,7 +594,7 @@ watch(
       errorMessage.value = ''
       saveError.value = ''
     }
-  }
+  },
 )
 
 watch(
@@ -605,7 +605,7 @@ watch(
       cancelEditing()
     }
   },
-  { deep: true }
+  { deep: true },
 )
 </script>
 

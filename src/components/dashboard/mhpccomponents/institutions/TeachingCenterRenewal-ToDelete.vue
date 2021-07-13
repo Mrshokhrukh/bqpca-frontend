@@ -7,7 +7,7 @@
         Manage and renew your teaching center registration
       </p>
     </div>
-    
+
     <!-- Loading State -->
     <div v-if="isLoading" class="flex justify-center my-8">
       <div class="inline-block animate-spin text-blue-600 text-3xl">⌛</div>
@@ -728,10 +728,10 @@ const confirmRenewal = async () => {
 const fetchData = async () => {
   isLoading.value = true
   apiError.value = false
-
+  const userCid = authStore.user?.cid || authStore.user?.id
   try {
     // Fetch teaching centers
-    const response = await apiServices.getMhpcTeachingCenters()
+    const response = await apiServices.getMhpcInstituteByCid(userCid)
 
     if (response && response.data && response.data.results) {
       teachingCenters.value = response.data.results

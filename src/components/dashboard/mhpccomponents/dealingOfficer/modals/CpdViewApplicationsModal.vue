@@ -326,7 +326,9 @@
                         </h4>
                         <div class="flex flex-col gap-4">
                           <button
-                            v-if="application.application_status === 'SUBMITTED' && !showApprovalForm"
+                            v-if="
+                              application.application_status === 'SUBMITTED' && !showApprovalForm
+                            "
                             type="button"
                             class="w-full px-5 py-2.5 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg shadow-sm flex items-center justify-center gap-2"
                             @click="showApprovalForm = true"
@@ -348,7 +350,9 @@
                           </button>
 
                           <button
-                            v-if="application.application_status === 'APPROVED' && !showCreditEditForm"
+                            v-if="
+                              application.application_status === 'APPROVED' && !showCreditEditForm
+                            "
                             type="button"
                             class="w-full px-5 py-2.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm flex items-center justify-center gap-2"
                             @click="showCreditEditForm = true"
@@ -460,7 +464,6 @@
                             </button>
                           </div>
                         </div>
-
                       </div>
                     </div>
                   </div>

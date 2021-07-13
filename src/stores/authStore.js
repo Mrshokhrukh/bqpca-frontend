@@ -82,8 +82,7 @@ export const useAuthStore = defineStore('auth', () => {
         if (
           user.value.role !== 'user' &&
           user.value.role !== 'cme_cpd_provider' &&
-          user.value.role !== 'institutions' &&
-          user.value.role !== 'legal_officer'
+          user.value.role !== 'institutions'
         ) {
           toast.error(
             'Admin/Internal role access is not permitted from the previous page. Please login from here',
@@ -102,8 +101,7 @@ export const useAuthStore = defineStore('auth', () => {
         if (
           user.value.role === 'user' ||
           user.value.role === 'cme_cpd_provider' ||
-          user.value.role === 'institutions' ||
-          user.value.role === 'legal_officer'
+          user.value.role === 'institutions'
         ) {
           toast.error('User role access is not permitted from the previous page.')
           // Clear state and storage

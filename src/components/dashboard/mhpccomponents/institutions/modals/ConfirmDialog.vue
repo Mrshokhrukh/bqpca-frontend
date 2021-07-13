@@ -16,7 +16,10 @@
         </button>
         <button
           @click="handleConfirm"
-          :class="['px-4 py-2 text-white rounded-md transition-colors', confirmButtonClass || 'bg-red-600 hover:bg-red-700']"
+          :class="[
+            'px-4 py-2 text-white rounded-md transition-colors',
+            confirmButtonClass || 'bg-red-600 hover:bg-red-700',
+          ]"
         >
           {{ confirmButtonText }}
         </button>
@@ -26,7 +29,6 @@
 </template>
 
 <script setup>
-
 defineProps({
   isVisible: {
     type: Boolean,
@@ -52,19 +54,19 @@ defineProps({
     type: String,
     default: null,
   },
-});
+})
 
-const emit = defineEmits(['confirm', 'cancel']);
+const emit = defineEmits(['confirm', 'cancel'])
 
 const handleConfirm = () => {
-  console.log('ConfirmDialog confirm called');
-  emit('confirm');
-};
+  console.log('ConfirmDialog confirm called')
+  emit('confirm')
+}
 
 const handleCancel = () => {
-  console.log('ConfirmDialog cancel called');
-  emit('cancel');
-};
+  console.log('ConfirmDialog cancel called')
+  emit('cancel')
+}
 </script>
 
 <style scoped>

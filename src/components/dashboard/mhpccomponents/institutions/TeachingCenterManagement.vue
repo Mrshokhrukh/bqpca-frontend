@@ -524,7 +524,7 @@ const teachingCenterPaymentModalRef = ref(null)
 const selectedApplicationForPayment = ref(null)
 
 const dzongkhagOptionsForCenter = computed(() =>
-  bhutanDzongkhagsGewogs.map((d) => ({ value: d.dzongkhag, label: d.dzongkhag }))
+  bhutanDzongkhagsGewogs.map((d) => ({ value: d.dzongkhag, label: d.dzongkhag })),
 )
 const gewogOptionsForCenter = computed(() => {
   if (!filterDzongkhag.value) return []
@@ -536,7 +536,7 @@ watch(
   () => filterDzongkhag.value,
   () => {
     filterGewog.value = ''
-  }
+  },
 )
 
 const filteredApplications = computed(() => {
@@ -627,7 +627,7 @@ const fetchPreceptorDetails = async (teachingCenterId) => {
       } else {
         console.warn(
           `Preceptor data for teaching center ${teachingCenterId} is malformed:`,
-          preceptor
+          preceptor,
         )
         return null
       }
@@ -640,7 +640,7 @@ const fetchPreceptorDetails = async (teachingCenterId) => {
       // Network or other errors
       console.error(
         `Network/other error fetching preceptor details for TC ${teachingCenterId}:`,
-        error.message
+        error.message,
       )
     }
     return null // For 404 or other errors, assume no preceptor
@@ -697,7 +697,7 @@ const fetchApplications = async () => {
             preceptorName: preceptorInfo ? preceptorInfo.name : null,
             preceptorId: preceptorInfo ? preceptorInfo.id : null,
           }
-        })
+        }),
       )
     }
     applications.value = fetchedApplications
@@ -799,7 +799,7 @@ const handleTeachingCenterPaymentCompleted = async (paymentData) => {
     paymentInitiationFormData.append('taxPayerDocumentNo', user.cid)
     paymentInitiationFormData.append(
       'totalPayableAmount',
-      teaching_hospital_registration.toString()
+      teaching_hospital_registration.toString(),
     )
     paymentInitiationFormData.append('description', 'Teaching Hospital Registration')
     paymentInitiationFormData.append('mobileNo', user.contact_number)
@@ -817,7 +817,7 @@ const handleTeachingCenterPaymentCompleted = async (paymentData) => {
     await apiServices.patchMhpcTeachingCenter(applicationToUpdate.id, updatePayload)
 
     toast.success(
-      `Payment initiated (Ref: ${paymentId.substring(0, 8)}...). Status will update shortly.`
+      `Payment initiated (Ref: ${paymentId.substring(0, 8)}...). Status will update shortly.`,
     )
     await fetchApplications() // Refresh to get latest status including payment
   } catch (error) {
@@ -860,7 +860,7 @@ const handlePreceptorSubmitSuccess = async () => {
 const confirmRemovePreceptor = (application) => {
   if (
     confirm(
-      `Are you sure you want to remove the preceptor "${application.preceptorName}" for ${application.center_name}? This action cannot be undone.`
+      `Are you sure you want to remove the preceptor "${application.preceptorName}" for ${application.center_name}? This action cannot be undone.`,
     )
   ) {
     removePreceptor(application)
@@ -949,7 +949,9 @@ input[type='text']:focus {
 
 .modal-details-fade-enter-active .bg-white,
 .modal-details-fade-leave-active .bg-white {
-  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+  transition:
+    opacity 0.3s ease-in-out,
+    transform 0.3s ease-in-out;
 }
 
 .modal-details-fade-enter-from .bg-white,
@@ -971,7 +973,9 @@ input[type='text']:focus {
 
 .modal-certificate-fade-enter-active .certificate-modal-content,
 .modal-certificate-fade-leave-active .certificate-modal-content {
-  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+  transition:
+    opacity 0.3s ease-in-out,
+    transform 0.3s ease-in-out;
 }
 
 .modal-certificate-fade-enter-from .certificate-modal-content,

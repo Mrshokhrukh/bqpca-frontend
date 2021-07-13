@@ -1,4 +1,3 @@
-
 <template>
   <div
     v-if="isOpen"
@@ -332,7 +331,7 @@
                           Status:
                           {{
                             formattedVerificationStatus(
-                              hospitalDetails.physical_verification_status
+                              hospitalDetails.physical_verification_status,
                             )
                           }}
                         </p>
@@ -651,6 +650,7 @@
 
 <script setup>
 import { ref, watch, computed } from 'vue'
+import { useToast } from 'vue-toastification'
 
 const props = defineProps({
   isOpen: Boolean,
@@ -682,6 +682,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['close-modal', 'approve', 'reject', 'submit-verification'])
+const toast = useToast()
 
 const localVerificationData = ref({
   date: '',
@@ -717,7 +718,7 @@ watch(
       actionAttempt.value = null
     }
   },
-  { immediate: true, deep: true }
+  { immediate: true, deep: true },
 )
 
 const todayDate = () => new Date().toISOString().split('T')[0]
@@ -790,7 +791,7 @@ const statusBadgeClass = computed(() => {
 })
 
 const isEffectivelyApproved = computed(
-  () => props.hospitalDetails?.tc_review_decision === 'Approved'
+  () => props.hospitalDetails?.tc_review_decision === 'Approved',
 )
 const isEffectivelyRejected = computed(() => {
   const decision = props.hospitalDetails?.tc_review_decision
@@ -817,7 +818,7 @@ const submitVerificationHandler = () => {
     !localVerificationData.value.report.trim() ||
     !localVerificationData.value.status
   ) {
-    alert('Please provide all verification details: date, report/notes, and decision/status.')
+    toast.error('Please provide all verification details: date, report/notes, and decision/status.')
     return
   }
   emit('submit-verification', {

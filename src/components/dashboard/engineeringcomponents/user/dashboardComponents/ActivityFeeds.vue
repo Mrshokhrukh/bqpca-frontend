@@ -14,10 +14,17 @@
       </div>
 
       <template v-else>
-        <div v-for="(activity, index) in sortedActivities" :key="index" class="flex items-start space-x-3">
+        <div
+          v-for="(activity, index) in sortedActivities"
+          :key="index"
+          class="flex items-start space-x-3"
+        >
           <div :class="['p-2 rounded-full', getActivityIconBgClass(activity.type)]">
-            <component :is="getActivityIcon(activity.type)" class="w-4 h-4"
-              :class="getActivityIconClass(activity.type)" />
+            <component
+              :is="getActivityIcon(activity.type)"
+              class="w-4 h-4"
+              :class="getActivityIconClass(activity.type)"
+            />
           </div>
           <div>
             <p class="text-sm font-medium">{{ activity.title }}</p>
@@ -133,7 +140,8 @@ const fetchActivities = async () => {
         if (dateObj?.isValid()) {
           tempActivities.push({
             type: 'CPD',
-            title: record.title_of_cpd || record.cpd_activity_topic || record.title || 'CPD Activity',
+            title:
+              record.title_of_cpd || record.cpd_activity_topic || record.title || 'CPD Activity',
             date: dateObj,
             cid_no: cid,
           })
@@ -211,7 +219,8 @@ const fetchActivities = async () => {
               const qualDateObj = getValidDate(qual)
               if (qualDateObj?.isValid() && (!latestDate || qualDateObj.isAfter(latestDate))) {
                 latestDate = qualDateObj
-                latestTitle = qual.qualification_name_display || qual.title || qual.name || 'New Qualification'
+                latestTitle =
+                  qual.qualification_name_display || qual.title || qual.name || 'New Qualification'
               }
             })
 
@@ -258,7 +267,11 @@ const fetchActivities = async () => {
                 const qualDateObj = getValidDate(qual)
                 if (qualDateObj?.isValid() && (!latestDate || qualDateObj.isAfter(latestDate))) {
                   latestDate = qualDateObj
-                  latestTitle = qual.qualification_name_display || qual.title || qual.name || 'New Qualification'
+                  latestTitle =
+                    qual.qualification_name_display ||
+                    qual.title ||
+                    qual.name ||
+                    'New Qualification'
                 }
               })
 

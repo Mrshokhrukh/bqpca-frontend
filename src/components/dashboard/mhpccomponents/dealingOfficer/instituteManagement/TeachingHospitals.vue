@@ -16,7 +16,7 @@
       v-if="alert.show"
       :class="`mb-4 p-4 rounded-md ${alert.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`"
     >
-       <div class="flex">
+      <div class="flex">
         <div class="flex-shrink-0">
           <svg
             v-if="alert.type === 'success'"
@@ -102,15 +102,21 @@
               <td class="table-td">{{ center.institute_details?.name_of_institution || 'N/A' }}</td>
               <td class="table-td font-medium text-gray-900">{{ center.center_name || 'N/A' }}</td>
               <td class="table-td">
-                {{ center.center_location || 'N/A' }}{{ center.state_dzongkhag ? `, ${center.state_dzongkhag}` : '' }}
+                {{ center.center_location || 'N/A'
+                }}{{ center.state_dzongkhag ? `, ${center.state_dzongkhag}` : '' }}
               </td>
               <td class="table-td">
-                <span v-if="center.target_category" class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-cyan-100 text-cyan-800">
+                <span
+                  v-if="center.target_category"
+                  class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-cyan-100 text-cyan-800"
+                >
                   {{ center.target_category }}
                 </span>
                 <span v-else>N/A</span>
               </td>
-              <td class="table-td">{{ center.created_at ? new Date(center.created_at).toLocaleDateString() : 'N/A' }}</td>
+              <td class="table-td">
+                {{ center.created_at ? new Date(center.created_at).toLocaleDateString() : 'N/A' }}
+              </td>
               <td class="table-td">
                 <span
                   class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
@@ -172,17 +178,48 @@
                 :class="{
                   'bg-green-100': confirmModal.action === 'approve',
                   'bg-blue-100': confirmModal.action === 'submit-verification',
-                  'bg-red-100': confirmModal.action === 'reject'
+                  'bg-red-100': confirmModal.action === 'reject',
                 }"
               >
                 <!-- Icon based on action -->
-                <svg v-if="confirmModal.action === 'approve'" class="h-6 w-6 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                <svg
+                  v-if="confirmModal.action === 'approve'"
+                  class="h-6 w-6 text-green-600"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
-                <svg v-else-if="confirmModal.action === 'submit-verification'" class="h-6 w-6 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg
+                  v-else-if="confirmModal.action === 'submit-verification'"
+                  class="h-6 w-6 text-blue-600"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
-                <svg v-else class="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" >
+                <svg
+                  v-else
+                  class="h-6 w-6 text-red-600"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
                   <path
                     stroke-linecap="round"
                     stroke-linejoin="round"
@@ -200,15 +237,25 @@
                     {{ confirmModal.message }}
                   </p>
                   <!-- Additional input for rejection reason if action is reject and payload structure needs it -->
-                   <div v-if="confirmModal.action === 'reject' && !confirmModal.payload?.tc_reason_if_rejected" class="mt-4">
-                      <label for="rejectionReasonConfirm" class="block text-sm font-medium text-gray-700">Rejection Reason (Required)</label>
-                      <textarea
-                        id="rejectionReasonConfirm"
-                        v-model="rejectionReasonInput"
-                        rows="3"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                        placeholder="Provide a clear reason for rejection..."
-                      ></textarea>
+                  <div
+                    v-if="
+                      confirmModal.action === 'reject' &&
+                      !confirmModal.payload?.tc_reason_if_rejected
+                    "
+                    class="mt-4"
+                  >
+                    <label
+                      for="rejectionReasonConfirm"
+                      class="block text-sm font-medium text-gray-700"
+                      >Rejection Reason (Required)</label
+                    >
+                    <textarea
+                      id="rejectionReasonConfirm"
+                      v-model="rejectionReasonInput"
+                      rows="3"
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                      placeholder="Provide a clear reason for rejection..."
+                    ></textarea>
                   </div>
                 </div>
               </div>
@@ -218,11 +265,20 @@
             <button
               type="button"
               @click="confirmAction"
-              :disabled="loading || (confirmModal.action === 'reject' && !confirmModal.payload?.tc_reason_if_rejected && !rejectionReasonInput.trim())"
+              :disabled="
+                loading ||
+                (confirmModal.action === 'reject' &&
+                  !confirmModal.payload?.tc_reason_if_rejected &&
+                  !rejectionReasonInput.trim())
+              "
               :class="`inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm
-                ${confirmModal.action === 'approve' ? 'bg-green-600 hover:bg-green-700 focus:ring-green-500 disabled:bg-green-300'
-                : confirmModal.action === 'submit-verification' ? 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500 disabled:bg-blue-300'
-                : 'bg-red-600 hover:bg-red-700 focus:ring-red-500 disabled:bg-red-300'}`"
+                ${
+                  confirmModal.action === 'approve'
+                    ? 'bg-green-600 hover:bg-green-700 focus:ring-green-500 disabled:bg-green-300'
+                    : confirmModal.action === 'submit-verification'
+                      ? 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500 disabled:bg-blue-300'
+                      : 'bg-red-600 hover:bg-red-700 focus:ring-red-500 disabled:bg-red-300'
+                }`"
             >
               <span v-if="loading && confirmModal.show">Processing...</span>
               <span v-else>{{ confirmModal.buttonText || 'Confirm' }}</span>
@@ -239,7 +295,6 @@
         </div>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -264,8 +319,7 @@ const confirmModal = ref({
   payload: null, // Data to be sent with the action (e.g., rejection reason, verification details)
   buttonText: 'Confirm',
 })
-const rejectionReasonInput = ref(''); // For the confirmation modal's textarea if needed
-
+const rejectionReasonInput = ref('') // For the confirmation modal's textarea if needed
 
 onMounted(async () => {
   await fetchTeachingCenters()
@@ -276,105 +330,116 @@ const fetchTeachingCenters = async () => {
   teachingCenters.value = [] // Clear previous data
   try {
     const response = await apiServices.getMhpcTeachingCenters()
-    console.log("API Response Raw for Teaching Centers:", response);
+    console.log('API Response Raw for Teaching Centers:', response)
 
-    let applicationsData = null;
+    let applicationsData = null
 
     if (response && response.data && Array.isArray(response.data.results)) {
-      applicationsData = response.data.results; // Standard DRF paginated response
+      applicationsData = response.data.results // Standard DRF paginated response
     } else if (response && response.data && Array.isArray(response.data)) {
-      applicationsData = response.data; // Non-paginated list
+      applicationsData = response.data // Non-paginated list
     } else if (response && Array.isArray(response.results) && !response.data) {
-      applicationsData = response.results; // Alternative paginated if axios strips 'data'
+      applicationsData = response.results // Alternative paginated if axios strips 'data'
     } else if (response && Array.isArray(response)) {
-      applicationsData = response; // Direct array response
+      applicationsData = response // Direct array response
     } else {
-      console.error('Unexpected API response structure for teaching centers:', response);
-      showAlert('error', 'Failed to load applications: Unexpected data format. Check console.');
+      console.error('Unexpected API response structure for teaching centers:', response)
+      showAlert('error', 'Failed to load applications: Unexpected data format. Check console.')
     }
 
     if (applicationsData && Array.isArray(applicationsData)) {
-      teachingCenters.value = applicationsData.map(app => ({
+      teachingCenters.value = applicationsData.map((app) => ({
         ...app,
-        institute_details: app.institute_details || { name_of_institution: 'N/A (Missing Institute Data)' }
-      }));
-      console.log("Processed teachingCenters.value:", teachingCenters.value);
-      if (teachingCenters.value.length === 0 && !alert.value.show) { // Only show if no other alert is active
-         // The v-else-if for no data message will handle this.
+        institute_details: app.institute_details || {
+          name_of_institution: 'N/A (Missing Institute Data)',
+        },
+      }))
+      console.log('Processed teachingCenters.value:', teachingCenters.value)
+      if (teachingCenters.value.length === 0 && !alert.value.show) {
+        // Only show if no other alert is active
+        // The v-else-if for no data message will handle this.
       }
     } else {
-      console.warn('applicationsData is not an array or is null after parsing:', applicationsData);
+      console.warn('applicationsData is not an array or is null after parsing:', applicationsData)
       if (!alert.value.show) {
         // showAlert('info', 'No teaching center applications found at this time.'); // Can be redundant with the "No data" message
       }
-      teachingCenters.value = [];
+      teachingCenters.value = []
     }
-
   } catch (error) {
-    console.error('Error fetching teaching center applications:', error);
-    let errorMessage = 'Failed to load applications.';
+    console.error('Error fetching teaching center applications:', error)
+    let errorMessage = 'Failed to load applications.'
     if (error.response) {
-      const data = error.response.data;
-      errorMessage += ` Status ${error.response.status}. `;
-      if (data && data.detail) errorMessage += data.detail;
-      else if (data && typeof data === 'object') errorMessage += JSON.stringify(data);
-      else if (typeof data === 'string') errorMessage += data;
+      const data = error.response.data
+      errorMessage += ` Status ${error.response.status}. `
+      if (data && data.detail) errorMessage += data.detail
+      else if (data && typeof data === 'object') errorMessage += JSON.stringify(data)
+      else if (typeof data === 'string') errorMessage += data
     } else if (error.request) {
-      errorMessage += ' No response from server. Check network connection.';
+      errorMessage += ' No response from server. Check network connection.'
     } else {
-      errorMessage += ` ${error.message || 'An unknown error occurred.'}`;
+      errorMessage += ` ${error.message || 'An unknown error occurred.'}`
     }
-    showAlert('error', errorMessage);
-    teachingCenters.value = [];
+    showAlert('error', errorMessage)
+    teachingCenters.value = []
   } finally {
-    loading.value = false;
+    loading.value = false
   }
 }
 
 const getStatusClass = (statusKey) => {
   // Match backend status keys (e.g., 'Pending', 'Approved', 'Rejected', 'VERIFIED_PV')
-  const status = String(statusKey).toLowerCase();
-  if (status === 'approved') return 'bg-green-100 text-green-800';
-  if (status === 'rejected' || status === 'regretted') return 'bg-red-100 text-red-800';
-  if (status === 'verification_completed' || status === 'verified_pv' || status === 'physically verified') return 'bg-blue-100 text-blue-800';
+  const status = String(statusKey).toLowerCase()
+  if (status === 'approved') return 'bg-green-100 text-green-800'
+  if (status === 'rejected' || status === 'regretted') return 'bg-red-100 text-red-800'
+  if (
+    status === 'verification_completed' ||
+    status === 'verified_pv' ||
+    status === 'physically verified'
+  )
+    return 'bg-blue-100 text-blue-800'
   // Default for 'Pending', 'Pending_Review', 'PENDING_PV', etc.
-  return 'bg-yellow-100 text-yellow-800';
-};
+  return 'bg-yellow-100 text-yellow-800'
+}
 
 const formatStatusText = (statusKey) => {
-  if (!statusKey) return 'Pending Review';
-  return String(statusKey).replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-};
+  if (!statusKey) return 'Pending Review'
+  return String(statusKey)
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, (l) => l.toUpperCase())
+}
 
 const getPaymentStatusClass = (statusKey) => {
-  const status = String(statusKey).toLowerCase();
-  if (status === 'paid') return 'bg-green-100 text-green-800';
-  if (status === 'awaiting_payment') return 'bg-purple-100 text-purple-800';
-  if (status === 'processing_payment') return 'bg-blue-100 text-blue-800';
-  if (status === 'failed') return 'bg-red-100 text-red-800';
-  return 'bg-gray-100 text-gray-800'; // For 'not_paid' or 'not_applicable'
-};
+  const status = String(statusKey).toLowerCase()
+  if (status === 'paid') return 'bg-green-100 text-green-800'
+  if (status === 'awaiting_payment') return 'bg-purple-100 text-purple-800'
+  if (status === 'processing_payment') return 'bg-blue-100 text-blue-800'
+  if (status === 'failed') return 'bg-red-100 text-red-800'
+  return 'bg-gray-100 text-gray-800' // For 'not_paid' or 'not_applicable'
+}
 
 const formatPaymentStatusText = (statusKey) => {
-  if (!statusKey) return 'N/A';
-  return String(statusKey).replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-};
+  if (!statusKey) return 'N/A'
+  return String(statusKey)
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, (l) => l.toUpperCase())
+}
 
 const openApplicationModal = (application) => {
-  console.log("Opening modal for application:", JSON.parse(JSON.stringify(application)));
-  selectedApplication.value = { ...application }; // Create a copy to avoid direct mutation if needed
-  isModalOpen.value = true;
+  console.log('Opening modal for application:', JSON.parse(JSON.stringify(application)))
+  selectedApplication.value = { ...application } // Create a copy to avoid direct mutation if needed
+  isModalOpen.value = true
 }
 
 const closeApplicationModal = () => {
-  isModalOpen.value = false;
-  selectedApplication.value = {};
+  isModalOpen.value = false
+  selectedApplication.value = {}
 }
 
 const triggerApprove = (/* approvalPayloadFromModal - if modal sends anything */) => {
   if (!selectedApplication.value || !selectedApplication.value.id) {
-    showAlert('error', 'No application selected for approval.');
-    return;
+    showAlert('error', 'No application selected for approval.')
+    return
   }
   confirmModal.value = {
     show: true,
@@ -382,18 +447,21 @@ const triggerApprove = (/* approvalPayloadFromModal - if modal sends anything */
     message: `Are you sure you want to approve the application for "${selectedApplication.value.center_name}"? This will enable payment for the institute.`,
     action: 'approve',
     centerId: selectedApplication.value.id,
-    payload: { /* approvalMessage: approvalPayloadFromModal?.message */ }, // Example if modal sends a message
+    payload: {
+      /* approvalMessage: approvalPayloadFromModal?.message */
+    }, // Example if modal sends a message
     buttonText: 'Approve',
-  };
-  rejectionReasonInput.value = ''; // Clear any previous input
+  }
+  rejectionReasonInput.value = '' // Clear any previous input
 }
 
-const triggerReject = (rejectionDetails) => { // Expects { rejectionReason: '...' } from modal
+const triggerReject = (rejectionDetails) => {
+  // Expects { rejectionReason: '...' } from modal
   if (!selectedApplication.value || !selectedApplication.value.id) {
-    showAlert('error', 'No application selected for rejection.');
-    return;
+    showAlert('error', 'No application selected for rejection.')
+    return
   }
-  const reason = rejectionDetails?.rejectionReason || '';
+  const reason = rejectionDetails?.rejectionReason || ''
   confirmModal.value = {
     show: true,
     title: 'Reject Application',
@@ -402,14 +470,14 @@ const triggerReject = (rejectionDetails) => { // Expects { rejectionReason: '...
     centerId: selectedApplication.value.id,
     payload: { tc_reason_if_rejected: reason }, // Pre-fill if modal already provided it
     buttonText: 'Reject',
-  };
-  rejectionReasonInput.value = reason; // Sync with textarea in confirm modal
+  }
+  rejectionReasonInput.value = reason // Sync with textarea in confirm modal
 }
 
 const triggerSubmitVerification = (verificationData) => {
   if (!selectedApplication.value || !selectedApplication.value.id) {
-    showAlert('error', 'No application selected for verification submission.');
-    return;
+    showAlert('error', 'No application selected for verification submission.')
+    return
   }
   confirmModal.value = {
     show: true,
@@ -419,101 +487,101 @@ const triggerSubmitVerification = (verificationData) => {
     centerId: selectedApplication.value.id,
     payload: verificationData, // The payload now contains file objects
     buttonText: 'Confirm Update',
-  };
-};
+  }
+}
 
 const confirmAction = async () => {
-  loading.value = true;
-  const { centerId, action, payload } = confirmModal.value;
+  loading.value = true
+  const { centerId, action, payload } = confirmModal.value
 
   try {
-    if (!centerId) throw new Error('Application ID is missing.');
+    if (!centerId) throw new Error('Application ID is missing.')
 
-    let successMessage = '';
-    let apiCall;
+    let successMessage = ''
+    let apiCall
 
     switch (action) {
       case 'approve':
-        apiCall = apiServices.patchMhpcTeachingCenter(centerId, { tc_review_decision: 'Approved' });
-        successMessage = 'Application approved successfully.';
-        break;
+        apiCall = apiServices.patchMhpcTeachingCenter(centerId, { tc_review_decision: 'Approved' })
+        successMessage = 'Application approved successfully.'
+        break
 
       case 'reject':
-        const reason = payload?.rejectionReason || rejectionReasonInput.value.trim();
+        const reason = payload?.rejectionReason || rejectionReasonInput.value.trim()
         if (!reason) {
-            showAlert('error', 'Rejection reason is required.');
-            loading.value = false;
-            return;
+          showAlert('error', 'Rejection reason is required.')
+          loading.value = false
+          return
         }
         apiCall = apiServices.patchMhpcTeachingCenter(centerId, {
           tc_review_decision: 'Rejected',
           tc_reason_if_rejected: reason,
-        });
-        successMessage = 'Application rejected successfully.';
-        break;
+        })
+        successMessage = 'Application rejected successfully.'
+        break
 
       case 'submit-verification':
-        const formData = new FormData();
-        formData.append('physical_verification_status', payload.verificationStatus);
-        formData.append('physical_verification_remarks', payload.verificationReport);
-        formData.append('send_to_user', payload.sendToUser);
+        const formData = new FormData()
+        formData.append('physical_verification_status', payload.verificationStatus)
+        formData.append('physical_verification_remarks', payload.verificationReport)
+        formData.append('send_to_user', payload.sendToUser)
 
         // Conditionally add dates if they are not null/empty
         if (payload.siteVisitScheduleDate) {
-          formData.append('site_visit_schedule_date', payload.siteVisitScheduleDate);
+          formData.append('site_visit_schedule_date', payload.siteVisitScheduleDate)
         }
         if (payload.actualVerificationDate) {
-          formData.append('physical_verification_date', payload.actualVerificationDate);
+          formData.append('physical_verification_date', payload.actualVerificationDate)
         }
 
         // Append officer attachments
         if (payload.officer_attachments && payload.officer_attachments.length > 0) {
           for (const file of payload.officer_attachments) {
-            formData.append('officer_attachments', file);
+            formData.append('officer_attachments', file)
           }
         }
 
         // Append officer report if it exists
         if (payload.officer_report) {
-          formData.append('tc_report', payload.officer_report);
+          formData.append('tc_report', payload.officer_report)
         }
 
-        console.log("PATCHING with FormData:", formData);
-        apiCall = apiServices.patchMhpcTeachingCenter(centerId, formData);
-        successMessage = 'Verification details updated successfully.';
-        break;
+        console.log('PATCHING with FormData:', formData)
+        apiCall = apiServices.patchMhpcTeachingCenter(centerId, formData)
+        successMessage = 'Verification details updated successfully.'
+        break
 
       default:
-        throw new Error('Invalid action specified.');
+        throw new Error('Invalid action specified.')
     }
 
-    await apiCall;
+    await apiCall
 
-    showAlert('success', successMessage);
-    confirmModal.value.show = false;
-    await fetchTeachingCenters(); // Refresh list
+    showAlert('success', successMessage)
+    confirmModal.value.show = false
+    await fetchTeachingCenters() // Refresh list
 
     // Refresh data in the open modal
-    const freshApp = teachingCenters.value.find(app => app.id === centerId);
+    const freshApp = teachingCenters.value.find((app) => app.id === centerId)
     if (freshApp) {
-      selectedApplication.value = { ...freshApp };
+      selectedApplication.value = { ...freshApp }
     } else {
-      closeApplicationModal();
+      closeApplicationModal()
     }
-
   } catch (error) {
     // ... (your existing error handling) ...
   } finally {
-    loading.value = false;
+    loading.value = false
   }
 }
 const showAlert = (type, message) => {
-  alert.value = { show: true, type, message };
+  alert.value = { show: true, type, message }
   setTimeout(() => {
-    if (alert.value.message === message) { // Only hide if it's still the same message
-        alert.value.show = false;
+    if (alert.value.message === message) {
+      // Only hide if it's still the same message
+      alert.value.show = false
     }
-  }, 7000);
+  }, 7000)
 }
 </script>
 

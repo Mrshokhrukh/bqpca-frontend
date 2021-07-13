@@ -121,7 +121,7 @@
               No recent feedback available.
             </p>
             <div
-              v-for="feedbackItem in recentFeedback.slice(0,3)"
+              v-for="feedbackItem in recentFeedback.slice(0, 3)"
               :key="feedbackItem.id"
               class="border-b last:border-0 pb-4 last:pb-0"
             >
@@ -156,7 +156,11 @@
           v-if="upcomingSchedule.length > 0"
           class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
         >
-          <div v-for="event in upcomingSchedule.slice(0,3)" :key="event.id" class="border rounded-lg p-4">
+          <div
+            v-for="event in upcomingSchedule.slice(0, 3)"
+            :key="event.id"
+            class="border rounded-lg p-4"
+          >
             <div class="flex items-start space-x-3">
               <div class="bg-gray-100 p-2 rounded text-center min-w-[3rem]">
                 <span class="text-sm font-bold block">{{ formatDate(event.date, 'dd') }}</span>
@@ -250,7 +254,8 @@ const getSessionStatus = (item) => {
   if (toDate && isPast(toDate)) {
     return 'Completed'
   }
-  if (!toDate && fromDate && isPast(fromDate)) { // Single day event in the past
+  if (!toDate && fromDate && isPast(fromDate)) {
+    // Single day event in the past
     return 'Completed'
   }
   return 'Approved' // Ongoing or approved without specific future/past date
@@ -264,9 +269,27 @@ onMounted(async () => {
       console.warn('User CID not found in localStorage. Cannot filter provider data.')
       // Potentially set an error state or show a message
       quickStats.value = [
-        { label: 'Total Sessions Conducted', value: 0, icon: Presentation, bgColor: 'bg-blue-100', iconColor: 'text-blue-500' },
-        { label: 'Total CPD Credits Awarded', value: 0, icon: Award, bgColor: 'bg-purple-100', iconColor: 'text-purple-500' },
-        { label: 'Average Rating', value: 'N/A', icon: Star, bgColor: 'bg-yellow-100', iconColor: 'text-yellow-500' },
+        {
+          label: 'Total Sessions Conducted',
+          value: 0,
+          icon: Presentation,
+          bgColor: 'bg-blue-100',
+          iconColor: 'text-blue-500',
+        },
+        {
+          label: 'Total CPD Credits Awarded',
+          value: 0,
+          icon: Award,
+          bgColor: 'bg-purple-100',
+          iconColor: 'text-purple-500',
+        },
+        {
+          label: 'Average Rating',
+          value: 'N/A',
+          icon: Star,
+          bgColor: 'bg-yellow-100',
+          iconColor: 'text-yellow-500',
+        },
       ]
       loading.value = false
       return
@@ -314,10 +337,10 @@ onMounted(async () => {
     // --- Training Sessions (Recent/Relevant) ---
     // Sort by creation date descending to get the latest proposals first for the summary
     const sortedProviderCpdData = [...providerCpdData].sort((a, b) => {
-        const dateA = a.created_at ? new Date(a.created_at) : 0;
-        const dateB = b.created_at ? new Date(b.created_at) : 0;
-        return dateB - dateA;
-    });
+      const dateA = a.created_at ? new Date(a.created_at) : 0
+      const dateB = b.created_at ? new Date(b.created_at) : 0
+      return dateB - dateA
+    })
 
     trainingSessions.value = sortedProviderCpdData.map((item) => ({
       id: item.id,
@@ -340,12 +363,13 @@ onMounted(async () => {
           return false
         }
       })
-      .sort((a, b) => (parseISO(a.from_date)) - (parseISO(b.from_date))) // Sort by upcoming date ascending
+      .sort((a, b) => parseISO(a.from_date) - parseISO(b.from_date)) // Sort by upcoming date ascending
       .map((item) => ({
         id: item.id,
         date: item.from_date,
         title: item.title_of_cpd || 'N/A',
-        time: item.start_time && item.end_time ? `${item.start_time} - ${item.end_time}` : 'Full Day', // Placeholder: use actual time if available
+        time:
+          item.start_time && item.end_time ? `${item.start_time} - ${item.end_time}` : 'Full Day', // Placeholder: use actual time if available
         participants: item.number_of_participants || 0,
         venue: item.venue || 'N/A',
       }))
@@ -353,7 +377,8 @@ onMounted(async () => {
     // --- Recent Feedback (Mock data, replace with API call) ---
     // Example: const feedbackResponse = await apiServices.getFeedbackForProvider(userCid);
     // recentFeedback.value = feedbackResponse.data.results || [];
-    recentFeedback.value = [ // Keeping mock data for now
+    recentFeedback.value = [
+      // Keeping mock data for now
       {
         id: 1,
         sessionTitle: 'Advanced Cardiac Life Support Update',
@@ -381,16 +406,35 @@ onMounted(async () => {
     // Set an error state to display a message to the user if desired
     // For now, just ensuring loading is false and some defaults are set.
     quickStats.value = [
-        { label: 'Total Sessions Conducted', value: 0, icon: Presentation, bgColor: 'bg-blue-100', iconColor: 'text-blue-500' },
-        { label: 'Total CPD Credits Awarded', value: 0, icon: Award, bgColor: 'bg-purple-100', iconColor: 'text-purple-500' },
-        { label: 'Average Rating', value: 'Error', icon: Star, bgColor: 'bg-yellow-100', iconColor: 'text-yellow-500' },
-      ];
+      {
+        label: 'Total Sessions Conducted',
+        value: 0,
+        icon: Presentation,
+        bgColor: 'bg-blue-100',
+        iconColor: 'text-blue-500',
+      },
+      {
+        label: 'Total CPD Credits Awarded',
+        value: 0,
+        icon: Award,
+        bgColor: 'bg-purple-100',
+        iconColor: 'text-purple-500',
+      },
+      {
+        label: 'Average Rating',
+        value: 'Error',
+        icon: Star,
+        bgColor: 'bg-yellow-100',
+        iconColor: 'text-yellow-500',
+      },
+    ]
   } finally {
     loading.value = false
   }
 })
 
-const formatDate = (dateString, formatStr = 'MMM dd, yyyy') => { // Default format changed for better readability
+const formatDate = (dateString, formatStr = 'MMM dd, yyyy') => {
+  // Default format changed for better readability
   if (!dateString) return 'N/A'
   try {
     return format(parseISO(dateString), formatStr) // Use parseISO for flexibility with input date strings

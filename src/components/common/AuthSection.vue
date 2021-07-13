@@ -258,7 +258,9 @@
 
           <!-- CID Number -->
           <div>
-            <label class="block text-sm font-medium text-gray-700">CID/Work Permit/Passport Number</label>
+            <label class="block text-sm font-medium text-gray-700"
+              >CID/Work Permit/Passport Number</label
+            >
             <input
               type="text"
               v-model="registerForm.cid"

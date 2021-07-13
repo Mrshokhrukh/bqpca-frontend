@@ -11,12 +11,12 @@
           <h2 class="text-xl font-semibold text-slate-900 mb-4">
             {{ isEditing ? 'Edit Engineering COGS Agency' : 'Add New Engineering COGS Agency' }}
           </h2>
-          
+
           <!-- Show error messages if any -->
           <div v-if="errorMessage" class="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
             <p class="text-red-700 text-sm">{{ errorMessage }}</p>
           </div>
-          
+
           <form @submit.prevent="handleSubmit">
             <div class="space-y-4">
               <div>
@@ -39,7 +39,7 @@
                   :disabled="isSubmitting"
                   class="flex-1 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {{ isSubmitting ? 'Saving...' : (isEditing ? 'Update Agency' : 'Add Agency') }}
+                  {{ isSubmitting ? 'Saving...' : isEditing ? 'Update Agency' : 'Add Agency' }}
                 </button>
                 <button
                   v-if="isEditing"

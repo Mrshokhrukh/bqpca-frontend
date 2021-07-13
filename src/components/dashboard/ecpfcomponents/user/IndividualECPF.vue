@@ -5,18 +5,27 @@
     </h1>
 
     <!-- Loading Indicator -->
-    <div v-if="isLoading" class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
+    <div
+      v-if="isLoading"
+      class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50"
+    >
       <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-white"></div>
       <p class="ml-4 text-white text-xl">Processing...</p>
     </div>
 
     <!-- Error Message -->
-    <div v-if="errorMessage" class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded break-words">
+    <div
+      v-if="errorMessage"
+      class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded break-words"
+    >
       <p><strong>Error:</strong> {{ errorMessage }}</p>
     </div>
 
     <!-- Success Message -->
-    <div v-if="successMessage" class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
+    <div
+      v-if="successMessage"
+      class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded"
+    >
       <p>{{ successMessage }}</p>
     </div>
 
@@ -27,16 +36,23 @@
 
       <!-- Contact & Address Section -->
       <!-- Use v-model to enable two-way binding -->
-      <ContactAddressSection v-model:contact-data="formData.contact" v-model:present-address="formData.presentAddress"
-        v-model:permanent-address="formData.permanentAddress" :dzongkhag-options="dzongkhagOptions" />
+      <ContactAddressSection
+        v-model:contact-data="formData.contact"
+        v-model:present-address="formData.presentAddress"
+        v-model:permanent-address="formData.permanentAddress"
+        :dzongkhag-options="dzongkhagOptions"
+      />
 
       <!-- Education Section -->
       <!-- Use v-model for two-way binding -->
       <EducationSection v-model:education-data="formData.education" />
 
       <!-- Proposal Details Section -->
-      <ProposalDetailsSection v-model:proposal-data="formData.proposal" :dzongkhag-options="dzongkhagOptions"
-        :firm-type-options="masterData.firmTypes" />
+      <ProposalDetailsSection
+        v-model:proposal-data="formData.proposal"
+        :dzongkhag-options="dzongkhagOptions"
+        :firm-type-options="masterData.firmTypes"
+      />
 
       <!-- Purpose Section -->
       <PurposeSection v-model:purpose-data="formData.purpose" />
@@ -45,13 +61,21 @@
       <LinkagesSection v-model:linkages="formData.linkages" />
 
       <!-- Financial Capacity Section -->
-      <FinancialCapacitySection v-model:financial-data="formData.financial"
+      <FinancialCapacitySection
+        v-model:financial-data="formData.financial"
         :financial-statement-file-name="formData.financialStatementFile?.name"
-        :budget-plan-file-name="formData.budgetPlanFile?.name" @update:file="handleChildFileUpload" />
+        :budget-plan-file-name="formData.budgetPlanFile?.name"
+        @update:file="handleChildFileUpload"
+      />
 
       <!-- services Category -->
-      <ServicesCategory :serviceCategories="serviceCategories" :selectedCategory="selectedCategory" :details="details"
-        @update:selectedCategory="selectedCategory = $event" @update:details="details = $event" />
+      <ServicesCategory
+        :serviceCategories="serviceCategories"
+        :selectedCategory="selectedCategory"
+        :details="details"
+        @update:selectedCategory="selectedCategory = $event"
+        @update:details="details = $event"
+      />
 
       <!-- SWOT Analysis Section -->
       <SwotAnalysisSection v-model:swot-data="formData.swot" />
@@ -60,25 +84,38 @@
       <FeesChargesSection v-model:fees="formData.fees" :total-fee-amount="totalFeeAmount" />
 
       <!-- Guarantor Details Section -->
-      <GuarantorDetailsSection v-model:guarantor-data="formData.guarantor"
-        :cid-copy-file-name="formData.guarantorCidCopyFile?.name" @update:file="handleChildFileUpload" />
+      <GuarantorDetailsSection
+        v-model:guarantor-data="formData.guarantor"
+        :cid-copy-file-name="formData.guarantorCidCopyFile?.name"
+        @update:file="handleChildFileUpload"
+      />
 
       <!-- Supporting Documents Section -->
-      <SupportingDocumentsSection :cv-file-name="formData.cvFile?.name" @update:file="handleChildFileUpload" />
+      <SupportingDocumentsSection
+        :cv-file-name="formData.cvFile?.name"
+        @update:file="handleChildFileUpload"
+      />
 
       <!-- Declaration -->
       <section class="p-6 bg-white rounded-lg shadow">
         <h2 class="text-xl font-semibold mb-4 text-blue-700">Declaration</h2>
         <div class="flex items-start">
           <div class="flex items-center h-5">
-            <input id="declaration" name="declaration" type="checkbox" v-model="formData.declarationAgreed" required
-              class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded" />
+            <input
+              id="declaration"
+              name="declaration"
+              type="checkbox"
+              v-model="formData.declarationAgreed"
+              required
+              class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded"
+            />
           </div>
           <div class="ml-3 text-sm">
-            <label for="declaration" class="font-medium text-gray-700">I hereby declare that the information provided
-              above is true and correct to the best
+            <label for="declaration" class="font-medium text-gray-700"
+              >I hereby declare that the information provided above is true and correct to the best
               of my knowledge and I agree to the terms and conditions.
-              <span class="text-red-500">*</span></label>
+              <span class="text-red-500">*</span></label
+            >
             <p class="text-gray-500">Agreeing to this declaration is mandatory for submission.</p>
           </div>
         </div>
@@ -86,18 +123,27 @@
 
       <!-- Action Buttons -->
       <div
-        class="pt-6 border-t border-gray-200 flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4">
-        <button type="button" @click="handleSaveDraft" :disabled="isLoading"
-          class="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
+        class="pt-6 border-t border-gray-200 flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4"
+      >
+        <button
+          type="button"
+          @click="handleSaveDraft"
+          :disabled="isLoading"
+          class="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
           {{ isLoading ? 'Saving...' : 'Save as Draft' }}
         </button>
-        <button type="submit" :disabled="!formData.declarationAgreed || isLoading" :class="[
-          'inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white',
-          formData.declarationAgreed && !isLoading
-            ? 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer'
-            : 'bg-blue-300 cursor-not-allowed',
-          'disabled:opacity-50 disabled:cursor-not-allowed',
-        ]">
+        <button
+          type="submit"
+          :disabled="!formData.declarationAgreed || isLoading"
+          :class="[
+            'inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white',
+            formData.declarationAgreed && !isLoading
+              ? 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer'
+              : 'bg-blue-300 cursor-not-allowed',
+            'disabled:opacity-50 disabled:cursor-not-allowed',
+          ]"
+        >
           {{ isLoading ? 'Submitting...' : 'Submit Application' }}
         </button>
       </div>
@@ -166,92 +212,92 @@ const dzongkhagOptions = ref([
 const getInitialFormData = () => ({
   // Basic applicant info
   applicant: {
-    cid: '',           // maps to: cid_no
-    name: '',          // maps to: applicants_name
-    gender: '',        // maps to: gender
-    dob: ''           // maps to: date_of_birth
+    cid: '', // maps to: cid_no
+    name: '', // maps to: applicants_name
+    gender: '', // maps to: gender
+    dob: '', // maps to: date_of_birth
   },
 
   // Contact info
   contact: {
-    contactNo: '',     // maps to: contact_no
-    email: ''          // maps to: email
+    contactNo: '', // maps to: contact_no
+    email: '', // maps to: email
   },
 
   // Present address
   presentAddress: {
-    officeNumber: '',  // maps to: office_number
-    flatNo: '',        // maps to: flat_no
-    buildingNo: '',    // maps to: building_no
-    location: '',      // maps to: location
-    gewogThrom: '',    // maps to: gewog_throm
+    officeNumber: '', // maps to: office_number
+    flatNo: '', // maps to: flat_no
+    buildingNo: '', // maps to: building_no
+    location: '', // maps to: location
+    gewogThrom: '', // maps to: gewog_throm
     dzongkhagThromde: '', // maps to: dzongkhag_thromde
   },
 
   // Permanent address
   permanentAddress: {
     villageChiwog: '', // maps to: permanent_village
-    gewog: '',         // maps to: permanent_gewog
-    dungkhag: '',      // maps to: permanent_dungkhag
-    dzongkhagThromde: '' // maps to: permanent_dzongkhag
+    gewog: '', // maps to: permanent_gewog
+    dungkhag: '', // maps to: permanent_dungkhag
+    dzongkhagThromde: '', // maps to: permanent_dzongkhag
   },
 
   // Education
   education: {
     qualification: '', // maps to: qualification
     instituteName: '', // maps to: institute_name
-    universityName: '' // maps to: university_name
+    universityName: '', // maps to: university_name
   },
 
   // Proposal
   proposal: {
-    name: '',          // maps to: proposed_firm_name
-    address: '',       // maps to: firm_address
-    location: '',      // maps to: firm_location
-    firmType: ''       // maps to: type_of_firm (ID)
+    name: '', // maps to: proposed_firm_name
+    address: '', // maps to: firm_address
+    location: '', // maps to: firm_location
+    firmType: '', // maps to: type_of_firm (ID)
   },
 
   // Purpose/Strategic info
   purpose: {
-    vision: '',        // maps to: vision
-    mission: '',       // maps to: mission
-    objective: ''      // maps to: objective
+    vision: '', // maps to: vision
+    mission: '', // maps to: mission
+    objective: '', // maps to: objective
   },
 
   // Financial
   financial: {
-    sourceOfFunding: '' // maps to: finance_plan
+    sourceOfFunding: '', // maps to: finance_plan
   },
 
   // SWOT
   swot: {
-    strengths: '',     // maps to: strengths
-    weaknesses: '',    // maps to: weaknesses
+    strengths: '', // maps to: strengths
+    weaknesses: '', // maps to: weaknesses
     opportunities: '', // maps to: opportunities
-    threats: ''        // maps to: threats
+    threats: '', // maps to: threats
   },
 
   // Guarantor
   guarantor: {
-    fullName: '',      // maps to: guarantor_name
-    cidNumber: '',     // maps to: guarantor_cid
-    relation: '',      // maps to: guarantor_relation
-    contactNumber: ''  // maps to: guarantor_contact
+    fullName: '', // maps to: guarantor_name
+    cidNumber: '', // maps to: guarantor_cid
+    relation: '', // maps to: guarantor_relation
+    contactNumber: '', // maps to: guarantor_contact
   },
 
   // Nested data structures (these are the important ones!)
-  linkages: [],        // maps to: ecpf_linkages (nested)
-  qualifications: [],  // maps to: ecpf_qualifications (nested)
-  services: [],        // maps to: ecpf_services (nested)
-  fees: [],           // maps to: fee_charges (nested)
+  linkages: [], // maps to: ecpf_linkages (nested)
+  qualifications: [], // maps to: ecpf_qualifications (nested)
+  services: [], // maps to: ecpf_services (nested)
+  fees: [], // maps to: fee_charges (nested)
   infrastructure: [], // maps to: ecpf_infrastructure (nested)
 
   // Files
   guarantorCidCopyFile: null, // maps to: guarantor_cid_copy
-  cvFile: null,              // maps to: cv
+  cvFile: null, // maps to: cv
 
   // Declaration
-  declarationAgreed: false,  // maps to: declaration
+  declarationAgreed: false, // maps to: declaration
 })
 
 // --- Reactive Form Data ---
@@ -261,7 +307,6 @@ const formData = reactive(getInitialFormData())
 const masterData = reactive({
   firmTypes: [],
 })
-
 
 // --- Computed Properties ---
 const totalFeeAmount = computed(() => {
@@ -352,115 +397,116 @@ const handleChildFileUpload = ({ file, field }) => {
 
 /** Prepares the FormData object for API submission */
 const prepareFormData = (submissionType) => {
-  const data = new FormData();
+  const data = new FormData()
 
   // --- 1. Top-Level Simple & File Fields (No changes here) ---
-  data.append('cid_no', formData.applicant.cid);
-  data.append('applicants_name', formData.applicant.name);
-  data.append('gender', formData.applicant.gender);
+  data.append('cid_no', formData.applicant.cid)
+  data.append('applicants_name', formData.applicant.name)
+  data.append('gender', formData.applicant.gender)
   if (formData.applicant.dob) {
-    data.append('date_of_birth', new Date(formData.applicant.dob).toISOString());
+    data.append('date_of_birth', new Date(formData.applicant.dob).toISOString())
   }
-  data.append('contact_no', formData.contact.contactNo);
-  data.append('email', formData.contact.email);
-  data.append('office_number', formData.presentAddress.officeNumber);
-  data.append('flat_no', formData.presentAddress.flatNo);
-  data.append('building_no', formData.presentAddress.buildingNo);
-  data.append('location', formData.presentAddress.location);
-  data.append('gewog_throm', formData.presentAddress.gewogThrom);
-  data.append('dzongkhag_thromde', formData.presentAddress.dzongkhagThromde);
-  data.append('permanent_village', formData.permanentAddress.villageChiwog);
-  data.append('permanent_gewog', formData.permanentAddress.gewog);
-  data.append('permanent_dungkhag', formData.permanentAddress.dungkhag);
-  data.append('permanent_dzongkhag', formData.permanentAddress.dzongkhagThromde);
-  data.append('qualification', formData.education.qualification);
-  data.append('institute_name', formData.education.instituteName);
-  data.append('university_name', formData.education.universityName);
-  data.append('proposed_firm_name', formData.proposal.name);
-  data.append('firm_address', formData.proposal.address);
-  data.append('firm_location', formData.proposal.location);
+  data.append('contact_no', formData.contact.contactNo)
+  data.append('email', formData.contact.email)
+  data.append('office_number', formData.presentAddress.officeNumber)
+  data.append('flat_no', formData.presentAddress.flatNo)
+  data.append('building_no', formData.presentAddress.buildingNo)
+  data.append('location', formData.presentAddress.location)
+  data.append('gewog_throm', formData.presentAddress.gewogThrom)
+  data.append('dzongkhag_thromde', formData.presentAddress.dzongkhagThromde)
+  data.append('permanent_village', formData.permanentAddress.villageChiwog)
+  data.append('permanent_gewog', formData.permanentAddress.gewog)
+  data.append('permanent_dungkhag', formData.permanentAddress.dungkhag)
+  data.append('permanent_dzongkhag', formData.permanentAddress.dzongkhagThromde)
+  data.append('qualification', formData.education.qualification)
+  data.append('institute_name', formData.education.instituteName)
+  data.append('university_name', formData.education.universityName)
+  data.append('proposed_firm_name', formData.proposal.name)
+  data.append('firm_address', formData.proposal.address)
+  data.append('firm_location', formData.proposal.location)
   if (formData.proposal.firmType) {
-    data.append('type_of_firm', formData.proposal.firmType);
+    data.append('type_of_firm', formData.proposal.firmType)
   }
-  data.append('vision', formData.purpose.vision);
-  data.append('mission', formData.purpose.mission);
-  data.append('objective', formData.purpose.objective);
-  data.append('finance_plan', formData.financial.sourceOfFunding);
-  data.append('strengths', formData.swot.strengths);
-  data.append('weaknesses', formData.swot.weaknesses);
-  data.append('opportunities', formData.swot.opportunities);
-  data.append('threats', formData.swot.threats);
-  data.append('guarantor_name', formData.guarantor.fullName);
-  data.append('guarantor_cid', formData.guarantor.cidNumber);
-  data.append('guarantor_relation', formData.guarantor.relation);
-  data.append('guarantor_contact', formData.guarantor.contactNumber);
+  data.append('vision', formData.purpose.vision)
+  data.append('mission', formData.purpose.mission)
+  data.append('objective', formData.purpose.objective)
+  data.append('finance_plan', formData.financial.sourceOfFunding)
+  data.append('strengths', formData.swot.strengths)
+  data.append('weaknesses', formData.swot.weaknesses)
+  data.append('opportunities', formData.swot.opportunities)
+  data.append('threats', formData.swot.threats)
+  data.append('guarantor_name', formData.guarantor.fullName)
+  data.append('guarantor_cid', formData.guarantor.cidNumber)
+  data.append('guarantor_relation', formData.guarantor.relation)
+  data.append('guarantor_contact', formData.guarantor.contactNumber)
 
   if (formData.guarantorCidCopyFile) {
-    data.append('guarantor_cid_copy', formData.guarantorCidCopyFile);
+    data.append('guarantor_cid_copy', formData.guarantorCidCopyFile)
   }
   if (formData.cvFile) {
-    data.append('cv', formData.cvFile);
+    data.append('cv', formData.cvFile)
   }
 
   // --- 2. Nested Data Structures (CORRECTED & ROBUST) ---
 
   // a) LINKAGES
   // **FIX 1: Filter out empty/incomplete linkages to prevent validation errors.**
-  const validLinkages = formData.linkages.filter(link =>
-    link.institution_name && link.institution_name.trim() !== '' &&
-    link.location && link.location.trim() !== '' &&
-    link.country && link.country.trim() !== '' &&
-    link.recognitionDocFile instanceof File && // Must be a File object
-    link.approvalDocFile instanceof File      // Must be a File object
-  );
+  const validLinkages = formData.linkages.filter(
+    (link) =>
+      link.institution_name &&
+      link.institution_name.trim() !== '' &&
+      link.location &&
+      link.location.trim() !== '' &&
+      link.country &&
+      link.country.trim() !== '' &&
+      link.recognitionDocFile instanceof File && // Must be a File object
+      link.approvalDocFile instanceof File, // Must be a File object
+  )
 
   // Create metadata ONLY from the valid linkages.
-  const linkagesMetadata = validLinkages.map(link => ({
+  const linkagesMetadata = validLinkages.map((link) => ({
     institution_name: link.institution_name,
     location: link.location,
     country: link.country,
-  }));
-  data.append('linkages', JSON.stringify(linkagesMetadata));
+  }))
+  data.append('linkages', JSON.stringify(linkagesMetadata))
 
   // Now, append files ensuring their index matches the metadata index.
   validLinkages.forEach((link, i) => {
-    data.append(`linkages[${i}][recognition_doc]`, link.recognitionDocFile);
-    data.append(`linkages[${i}][approval_doc]`, link.approvalDocFile);
-  });
-
+    data.append(`linkages[${i}][recognition_doc]`, link.recognitionDocFile)
+    data.append(`linkages[${i}][approval_doc]`, link.approvalDocFile)
+  })
 
   // b) OTHER NESTED DATA (Apply same filtering logic for robustness)
-  const validQualifications = formData.qualifications.filter(q => q.cid);
-  const validServices = formData.services.filter(s => s.service_category);
-  const validInfrastructure = formData.infrastructure.filter(i => i.particular);
+  const validQualifications = formData.qualifications.filter((q) => q.cid)
+  const validServices = formData.services.filter((s) => s.service_category)
+  const validInfrastructure = formData.infrastructure.filter((i) => i.particular)
 
-  data.append('qualifications', JSON.stringify(validQualifications));
-  data.append('services', JSON.stringify(validServices));
-  data.append('infrastructure', JSON.stringify(validInfrastructure));
+  data.append('qualifications', JSON.stringify(validQualifications))
+  data.append('services', JSON.stringify(validServices))
+  data.append('infrastructure', JSON.stringify(validInfrastructure))
   // Note: If qualifications also have files, apply the same pattern as linkages.
-
 
   // c) FEES
   // **FIX 2: Use the 'fees' key as expected by the backend's custom JSON handling.**
-  const validFees = formData.fees.filter(f => f.breakup && f.amount);
+  const validFees = formData.fees.filter((f) => f.breakup && f.amount)
   // The backend's create_fees_from_json expects `breakup`, `description`, `amount`.
-  const feesPayload = validFees.map(fee => ({
+  const feesPayload = validFees.map((fee) => ({
     breakup: fee.breakup,
     description: fee.description,
-    amount: fee.amount
-  }));
-  data.append('fees', JSON.stringify(feesPayload));
-
+    amount: fee.amount,
+  }))
+  data.append('fees', JSON.stringify(feesPayload))
 
   // --- 3. Status & Declaration Fields (Backend handles these) ---
-  data.append('status', submissionType); // 'draft' or 'submitted'
-  data.append('declaration_agreed', String(formData.declarationAgreed));
+  data.append('status', submissionType) // 'draft' or 'submitted'
+  data.append('declaration_agreed', String(formData.declarationAgreed))
 
   // Omit ForeignKey fields like 'verification_decision' if they are 0/null.
   // Your backend will handle the defaults.
 
-  return data;
-};
+  return data
+}
 
 /** Handles the final form submission */
 const handleSubmit = async () => {
@@ -494,42 +540,41 @@ const handleSubmit = async () => {
     resetForm() // <-- 5. Reset form after navigation starts
     // --- END SUCCESS ACTION ---
   } catch (error) {
-    console.error('Error submitting form:', error.response);
+    console.error('Error submitting form:', error.response)
 
     // **FIX 3: Build a user-friendly error message for the toast.**
-    let detailMessage = 'Submission failed. Please check the form for errors.'; // Default message
-    const errorData = error.response?.data;
+    let detailMessage = 'Submission failed. Please check the form for errors.' // Default message
+    const errorData = error.response?.data
 
     if (typeof errorData === 'object' && errorData !== null) {
       // Find the first error to display.
-      const firstErrorKey = Object.keys(errorData)[0];
-      const firstErrorValue = errorData[firstErrorKey];
+      const firstErrorKey = Object.keys(errorData)[0]
+      const firstErrorValue = errorData[firstErrorKey]
 
-      let errorText = '';
+      let errorText = ''
       if (Array.isArray(firstErrorValue)) {
         // Handle nested errors like for 'linkages'
         if (typeof firstErrorValue[0] === 'object') {
-          const nestedErrorKey = Object.keys(firstErrorValue[0])[0];
-          errorText = `${firstErrorKey}: ${firstErrorValue[0][nestedErrorKey][0]}`;
+          const nestedErrorKey = Object.keys(firstErrorValue[0])[0]
+          errorText = `${firstErrorKey}: ${firstErrorValue[0][nestedErrorKey][0]}`
         } else {
-          errorText = `${firstErrorKey}: ${firstErrorValue[0]}`;
+          errorText = `${firstErrorKey}: ${firstErrorValue[0]}`
         }
       } else if (typeof firstErrorValue === 'string') {
-        errorText = firstErrorValue;
+        errorText = firstErrorValue
       }
 
       if (errorText) {
-        detailMessage = errorText;
+        detailMessage = errorText
       }
     } else if (typeof errorData === 'string') {
-      detailMessage = errorData;
+      detailMessage = errorData
     }
 
-    toast.error(`Error: ${detailMessage}`); // This will now show a clean string.
-    window.scrollTo(0, 0);
-
+    toast.error(`Error: ${detailMessage}`) // This will now show a clean string.
+    window.scrollTo(0, 0)
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
 }
 
@@ -563,42 +608,41 @@ const handleSaveDraft = async () => {
     window.scrollTo(0, 0)
     // --- END DRAFT SUCCESS ACTION ---
   } catch (error) {
-    console.error('Error submitting form:', error.response);
+    console.error('Error submitting form:', error.response)
 
     // **FIX 3: Build a user-friendly error message for the toast.**
-    let detailMessage = 'Submission failed. Please check the form for errors.'; // Default message
-    const errorData = error.response?.data;
+    let detailMessage = 'Submission failed. Please check the form for errors.' // Default message
+    const errorData = error.response?.data
 
     if (typeof errorData === 'object' && errorData !== null) {
       // Find the first error to display.
-      const firstErrorKey = Object.keys(errorData)[0];
-      const firstErrorValue = errorData[firstErrorKey];
+      const firstErrorKey = Object.keys(errorData)[0]
+      const firstErrorValue = errorData[firstErrorKey]
 
-      let errorText = '';
+      let errorText = ''
       if (Array.isArray(firstErrorValue)) {
         // Handle nested errors like for 'linkages'
         if (typeof firstErrorValue[0] === 'object') {
-          const nestedErrorKey = Object.keys(firstErrorValue[0])[0];
-          errorText = `${firstErrorKey}: ${firstErrorValue[0][nestedErrorKey][0]}`;
+          const nestedErrorKey = Object.keys(firstErrorValue[0])[0]
+          errorText = `${firstErrorKey}: ${firstErrorValue[0][nestedErrorKey][0]}`
         } else {
-          errorText = `${firstErrorKey}: ${firstErrorValue[0]}`;
+          errorText = `${firstErrorKey}: ${firstErrorValue[0]}`
         }
       } else if (typeof firstErrorValue === 'string') {
-        errorText = firstErrorValue;
+        errorText = firstErrorValue
       }
 
       if (errorText) {
-        detailMessage = errorText;
+        detailMessage = errorText
       }
     } else if (typeof errorData === 'string') {
-      detailMessage = errorData;
+      detailMessage = errorData
     }
 
-    toast.error(`Error: ${detailMessage}`); // This will now show a clean string.
-    window.scrollTo(0, 0);
-
+    toast.error(`Error: ${detailMessage}`) // This will now show a clean string.
+    window.scrollTo(0, 0)
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
 }
 </script>

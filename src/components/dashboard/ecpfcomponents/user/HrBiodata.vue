@@ -11,15 +11,26 @@
           <h2 class="text-2xl font-semibold text-gray-800 mb-4">HR Details</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label for="hr_ecpf_name" class="block text-sm font-medium text-gray-700">ECPF Name:</label>
-              <input id="hr_ecpf_name" type="text" v-model="formData.ecpf_name"
+              <label for="hr_ecpf_name" class="block text-sm font-medium text-gray-700"
+                >ECPF Name:</label
+              >
+              <input
+                id="hr_ecpf_name"
+                type="text"
+                v-model="formData.ecpf_name"
                 class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                disabled />
+                disabled
+              />
             </div>
             <div>
-              <label for="hr_branch_ecpf" class="block text-sm font-medium text-gray-700">Branch ECPF:</label>
-              <select id="hr_branch_ecpf" v-model="formData.branch_ecpf"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              <label for="hr_branch_ecpf" class="block text-sm font-medium text-gray-700"
+                >Branch ECPF:</label
+              >
+              <select
+                id="hr_branch_ecpf"
+                v-model="formData.branch_ecpf"
+                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
                 <option value="" disabled>Select Branch</option>
                 <option v-for="branch in branches" :key="branch.id" :value="branch.id">
                   {{ branch.name }}
@@ -27,9 +38,14 @@
               </select>
             </div>
             <div>
-              <label for="hr_position" class="block text-sm font-medium text-gray-700">Position:</label>
-              <select id="hr_position" v-model="formData.position"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              <label for="hr_position" class="block text-sm font-medium text-gray-700"
+                >Position:</label
+              >
+              <select
+                id="hr_position"
+                v-model="formData.position"
+                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
                 <option value="" disabled>Select Position</option>
                 <option v-for="position in positions" :key="position.id" :value="position.id">
                   {{ position.name }}
@@ -37,58 +53,107 @@
               </select>
             </div>
             <div>
-              <label for="hr_cid" class="block text-sm font-medium text-gray-700">CID/Work Permit:</label>
-              <input id="hr_cid" type="text" v-model="formData.cid" @blur="searchAndValidateCID"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+              <label for="hr_cid" class="block text-sm font-medium text-gray-700"
+                >CID/Work Permit:</label
+              >
+              <input
+                id="hr_cid"
+                type="text"
+                v-model="formData.cid"
+                @blur="searchAndValidateCID"
+                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
               <p v-if="cidValidationError" class="text-red-500 text-xs mt-1">
                 {{ cidValidationError }}
               </p>
             </div>
             <div>
-              <label for="hr_full_name" class="block text-sm font-medium text-gray-700">Full Name:</label>
-              <input id="hr_full_name" type="text" v-model="formData.full_name"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+              <label for="hr_full_name" class="block text-sm font-medium text-gray-700"
+                >Full Name:</label
+              >
+              <input
+                id="hr_full_name"
+                type="text"
+                v-model="formData.full_name"
+                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
             </div>
             <div>
-              <label for="hr_date_of_birth" class="block text-sm font-medium text-gray-700">Date of Birth:</label>
-              <input id="hr_date_of_birth" type="date" v-model="formData.date_of_birth"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+              <label for="hr_date_of_birth" class="block text-sm font-medium text-gray-700"
+                >Date of Birth:</label
+              >
+              <input
+                id="hr_date_of_birth"
+                type="date"
+                v-model="formData.date_of_birth"
+                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
             </div>
             <div>
-              <label for="hr_qualification" class="block text-sm font-medium text-gray-700">Qualification:</label>
-              <select id="hr_qualification" v-model="formData.qualification"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              <label for="hr_qualification" class="block text-sm font-medium text-gray-700"
+                >Qualification:</label
+              >
+              <select
+                id="hr_qualification"
+                v-model="formData.qualification"
+                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
                 <option value="" disabled>Select Qualification</option>
-                <option v-for="qualification in qualifications" :key="qualification.id" :value="qualification.id">
+                <option
+                  v-for="qualification in qualifications"
+                  :key="qualification.id"
+                  :value="qualification.id"
+                >
                   {{ qualification.name }}
                 </option>
               </select>
             </div>
             <div>
-              <label for="hr_contact_number" class="block text-sm font-medium text-gray-700">Contact Number:</label>
-              <input id="hr_contact_number" type="number" v-model="formData.contact_number"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+              <label for="hr_contact_number" class="block text-sm font-medium text-gray-700"
+                >Contact Number:</label
+              >
+              <input
+                id="hr_contact_number"
+                type="number"
+                v-model="formData.contact_number"
+                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
             </div>
             <div>
-              <label for="hr_email_address" class="block text-sm font-medium text-gray-700">Email Address:</label>
-              <input id="hr_email_address" type="email" v-model="formData.email_address" @blur="validateEmail"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+              <label for="hr_email_address" class="block text-sm font-medium text-gray-700"
+                >Email Address:</label
+              >
+              <input
+                id="hr_email_address"
+                type="email"
+                v-model="formData.email_address"
+                @blur="validateEmail"
+                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
               <p v-if="emailValidationError" class="text-red-500 text-xs mt-1">
                 {{ emailValidationError }}
               </p>
             </div>
             <div>
-              <label for="hr_cv_certificates" class="block text-sm font-medium text-gray-700">CV & Certificates (PDF
-                only):</label>
-              <input id="hr_cv_certificates" type="file" @change="handleFileUpload" accept=".pdf"
-                class="mt-1 block w-full" />
+              <label for="hr_cv_certificates" class="block text-sm font-medium text-gray-700"
+                >CV & Certificates (PDF only):</label
+              >
+              <input
+                id="hr_cv_certificates"
+                type="file"
+                @change="handleFileUpload"
+                accept=".pdf"
+                class="mt-1 block w-full"
+              />
             </div>
           </div>
         </section>
 
         <div class="flex justify-end space-x-4">
-          <button type="submit"
-            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg shadow-sm transition-colors duration-200">
+          <button
+            type="submit"
+            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg shadow-sm transition-colors duration-200"
+          >
             Submit
           </button>
         </div>

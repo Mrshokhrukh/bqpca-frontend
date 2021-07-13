@@ -290,7 +290,7 @@ const fetchActivities = async (page = 1) => {
       cmeActivities.value = response.data.results
     } else {
       cmeActivities.value = []
-    }                                                                                                         
+    }
     currentPage.value = page
   } catch (error) {
     cmeActivities.value = []

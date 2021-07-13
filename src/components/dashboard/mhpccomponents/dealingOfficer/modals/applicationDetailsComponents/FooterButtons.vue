@@ -35,7 +35,8 @@
         </button>
         <!-- If you add more buttons here that trigger API calls, follow the pattern below -->
       </div>
-      <slot></slot> <!-- Slot for potentially other buttons from parent -->
+      <slot></slot>
+      <!-- Slot for potentially other buttons from parent -->
     </div>
   </div>
 </template>
@@ -49,7 +50,8 @@ const props = defineProps({
     type: Object,
     required: true,
   },
-  isLoading: { // This prop is received from the parent
+  isLoading: {
+    // This prop is received from the parent
     type: Boolean,
     default: false,
   },
@@ -74,5 +76,4 @@ const overallStatus = computed(() => {
     return 'Pending'
   }
 })
-
 </script>

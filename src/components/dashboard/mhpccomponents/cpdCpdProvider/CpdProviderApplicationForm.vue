@@ -2,24 +2,43 @@
   <div class="container mx-auto p-4 md:p-6 bg-gray-50 min-h-screen relative">
     <h1 class="text-3xl font-bold mb-8 text-center text-blue-700">CPD Provider Application Form</h1>
 
-    <div v-if="loading" class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
+    <div
+      v-if="loading"
+      class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50"
+    >
       <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
       <p class="ml-4 text-white text-xl">Processing...</p>
     </div>
 
     <div v-if="validationErrors.length > 0 || successMessage" class="mb-6 space-y-3">
-      <div v-if="validationErrors.length > 0"
-        class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md shadow" role="alert">
+      <div
+        v-if="validationErrors.length > 0"
+        class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md shadow"
+        role="alert"
+      >
         <p class="font-bold">Please correct the following errors:</p>
         <ul class="mt-2 list-disc list-inside text-sm">
           <li v-for="(error, index) in validationErrors" :key="`error-${index}`">{{ error }}</li>
         </ul>
       </div>
-      <div v-if="successMessage"
+      <div
+        v-if="successMessage"
         class="bg-green-100 border-l-4 border-green-500 text-green-700 p-6 rounded-lg shadow-lg flex items-center space-x-3 transition-all duration-300"
-        role="alert">
-        <svg class="h-8 w-8 text-green-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        role="alert"
+      >
+        <svg
+          class="h-8 w-8 text-green-500"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M5 13l4 4L19 7"
+          />
         </svg>
         <div>
           <p class="font-bold text-lg">Application Submitted Successfully!</p>
@@ -33,106 +52,163 @@
         <h2 class="text-xl font-semibold mb-4 text-gray-700 border-b pb-2">1. Applicant Details</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label class="block text-sm font-medium text-gray-700">CID No./Identity/Work Permit No.</label>
-            <input type="text" :value="applicant.cidNumber" disabled
+            <label class="block text-sm font-medium text-gray-700"
+              >CID No./Identity/Work Permit No.</label
+            >
+            <input
+              type="text"
+              :value="applicant.cidNumber"
+              disabled
               class="mt-1 block w-full bg-gray-100 rounded-md border-gray-300 shadow-sm sm:text-sm p-2"
-              placeholder="Auto-filled from login">
+              placeholder="Auto-filled from login"
+            />
           </div>
           <div class="md:col-span-1">
             <label class="block text-sm font-medium text-gray-700">Full Name</label>
-            <input type="text" :value="applicant.fullName" disabled
+            <input
+              type="text"
+              :value="applicant.fullName"
+              disabled
               class="mt-1 block w-full bg-gray-100 rounded-md border-gray-300 shadow-sm sm:text-sm p-2"
-              placeholder="Auto-filled from login">
+              placeholder="Auto-filled from login"
+            />
           </div>
           <div class="md:col-span-2">
-            <label for="agencyTrainingLocation"
-              class="block text-sm font-medium text-gray-700">Agency/Training Location <span
-                class="text-red-500">*</span></label>
-            <input type="text" id="agencyTrainingLocation" v-model="applicant.agencyTrainingLocation"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2">
-            <p v-if="applicantDetailsErrors.agencyTrainingLocation" class="mt-1 text-xs text-red-500">{{
-              applicantDetailsErrors.agencyTrainingLocation }}</p>
+            <label for="agencyTrainingLocation" class="block text-sm font-medium text-gray-700"
+              >Agency/Training Location <span class="text-red-500">*</span></label
+            >
+            <input
+              type="text"
+              id="agencyTrainingLocation"
+              v-model="applicant.agencyTrainingLocation"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2"
+            />
+            <p
+              v-if="applicantDetailsErrors.agencyTrainingLocation"
+              class="mt-1 text-xs text-red-500"
+            >
+              {{ applicantDetailsErrors.agencyTrainingLocation }}
+            </p>
           </div>
         </div>
       </section>
 
       <section class="p-6 bg-white shadow-lg rounded-lg">
-        <h2 class="text-xl font-semibold mb-4 text-gray-700 border-b pb-2">2. Application Details</h2>
+        <h2 class="text-xl font-semibold mb-4 text-gray-700 border-b pb-2">
+          2. Application Details
+        </h2>
         <div class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700">Is this CPD approved by KYGUMBS or an
-              International Agency? <span class="text-red-500">*</span></label>
+            <label class="block text-sm font-medium text-gray-700"
+              >Is this CPD approved by KYGUMBS or an International Agency?
+              <span class="text-red-500">*</span></label
+            >
             <div class="mt-2 space-x-4">
               <label class="inline-flex items-center">
-                <input type="radio" v-model="application.isApproved" value="true" name="isCpdApproved"
-                  @change="toggleApprovedFields" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300">
+                <input
+                  type="radio"
+                  v-model="application.isApproved"
+                  value="true"
+                  name="isCpdApproved"
+                  @change="toggleApprovedFields"
+                  class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300"
+                />
                 <span class="ml-2 text-sm text-gray-700">Yes</span>
               </label>
               <label class="inline-flex items-center">
-                <input type="radio" v-model="application.isApproved" value="false" name="isCpdApproved"
-                  @change="toggleApprovedFields" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300">
+                <input
+                  type="radio"
+                  v-model="application.isApproved"
+                  value="false"
+                  name="isCpdApproved"
+                  @change="toggleApprovedFields"
+                  class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300"
+                />
                 <span class="ml-2 text-sm text-gray-700">No</span>
               </label>
             </div>
           </div>
 
-              <div class="space-y-6">
-                <div>
-                  <div
-                    v-if="application.isApproved === 'true'"
-                    class="bg-indigo-50 p-4 rounded-lg border border-indigo-200"
-                  >
-                    <label for="approvalLetter" class="form-label"
-                      >Attach Approval Letter (PDF, max 5MB)
-                      <span class="text-rose-500">*</span></label
-                    >
-                    <input
-                      type="file"
-                      id="approvalLetter"
-                      @change="handleApprovalLetterUpload"
-                      accept=".pdf"
-                      class="form-input-file"
-                    />
-                    <p v-if="applicationDetailsErrors.approvalLetter" class="form-error-text">
-                      {{ applicationDetailsErrors.approvalLetter }}
-                    </p>
-                  </div>
-                </div>
+          <div class="space-y-6">
+            <div>
+              <div
+                v-if="application.isApproved === 'true'"
+                class="bg-indigo-50 p-4 rounded-lg border border-indigo-200"
+              >
+                <label for="approvalLetter" class="form-label"
+                  >Attach Approval Letter (PDF, max 5MB) <span class="text-rose-500">*</span></label
+                >
+                <input
+                  type="file"
+                  id="approvalLetter"
+                  @change="handleApprovalLetterUpload"
+                  accept=".pdf"
+                  class="form-input-file"
+                />
+                <p v-if="applicationDetailsErrors.approvalLetter" class="form-error-text">
+                  {{ applicationDetailsErrors.approvalLetter }}
+                </p>
               </div>
+            </div>
+          </div>
 
           <div class="space-y-4">
             <div>
-              <label for="cpdTitle" class="block text-sm font-medium text-gray-700">Title of CPD <span
-                  class="text-red-500">*</span></label>
-              <input type="text" id="cpdTitle" v-model="application.title"
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2">
-              <p v-if="applicationDetailsErrors.title" class="mt-1 text-xs text-red-500">{{
-                applicationDetailsErrors.title }}</p>
+              <label for="cpdTitle" class="block text-sm font-medium text-gray-700"
+                >Title of CPD <span class="text-red-500">*</span></label
+              >
+              <input
+                type="text"
+                id="cpdTitle"
+                v-model="application.title"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2"
+              />
+              <p v-if="applicationDetailsErrors.title" class="mt-1 text-xs text-red-500">
+                {{ applicationDetailsErrors.title }}
+              </p>
             </div>
             <div>
-              <label for="cpdVenue" class="block text-sm font-medium text-gray-700">Venue <span
-                  class="text-red-500">*</span></label>
-              <input type="text" id="cpdVenue" v-model="application.venue"
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2">
-              <p v-if="applicationDetailsErrors.venue" class="mt-1 text-xs text-red-500">{{
-                applicationDetailsErrors.venue }}</p>
+              <label for="cpdVenue" class="block text-sm font-medium text-gray-700"
+                >Venue <span class="text-red-500">*</span></label
+              >
+              <input
+                type="text"
+                id="cpdVenue"
+                v-model="application.venue"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2"
+              />
+              <p v-if="applicationDetailsErrors.venue" class="mt-1 text-xs text-red-500">
+                {{ applicationDetailsErrors.venue }}
+              </p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label for="fromDate" class="block text-sm font-medium text-gray-700">From Date <span
-                    class="text-red-500">*</span></label>
-                <input type="date" id="fromDate" v-model="application.fromDate"
-                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2">
-                <p v-if="applicationDetailsErrors.fromDate" class="mt-1 text-xs text-red-500">{{
-                  applicationDetailsErrors.fromDate }}</p>
+                <label for="fromDate" class="block text-sm font-medium text-gray-700"
+                  >From Date <span class="text-red-500">*</span></label
+                >
+                <input
+                  type="date"
+                  id="fromDate"
+                  v-model="application.fromDate"
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2"
+                />
+                <p v-if="applicationDetailsErrors.fromDate" class="mt-1 text-xs text-red-500">
+                  {{ applicationDetailsErrors.fromDate }}
+                </p>
               </div>
               <div>
-                <label for="toDate" class="block text-sm font-medium text-gray-700">To Date <span
-                    class="text-red-500">*</span></label>
-                <input type="date" id="toDate" v-model="application.toDate"
-                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2">
-                <p v-if="applicationDetailsErrors.toDate" class="mt-1 text-xs text-red-500">{{
-                  applicationDetailsErrors.toDate }}</p>
+                <label for="toDate" class="block text-sm font-medium text-gray-700"
+                  >To Date <span class="text-red-500">*</span></label
+                >
+                <input
+                  type="date"
+                  id="toDate"
+                  v-model="application.toDate"
+                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2"
+                />
+                <p v-if="applicationDetailsErrors.toDate" class="mt-1 text-xs text-red-500">
+                  {{ applicationDetailsErrors.toDate }}
+                </p>
               </div>
             </div>
           </div>
@@ -140,161 +216,267 @@
       </section>
 
       <section class="p-6 bg-white shadow-lg rounded-lg">
-        <h2 class="text-xl font-semibold mb-4 text-gray-700 border-b pb-2">3. CPD Providers Details (Host)</h2>
+        <h2 class="text-xl font-semibold mb-4 text-gray-700 border-b pb-2">
+          3. CPD Providers Details (Host)
+        </h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label for="cpdProvidingAgency" class="block text-sm font-medium text-gray-700">CPD Providing
-              Agency <span class="text-red-500">*</span></label>
-            <select id="cpdProvidingAgency" v-model="cpdProvider.agency"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2">
+            <label for="cpdProvidingAgency" class="block text-sm font-medium text-gray-700"
+              >CPD Providing Agency <span class="text-red-500">*</span></label
+            >
+            <select
+              id="cpdProvidingAgency"
+              v-model="cpdProvider.agency"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2"
+            >
               <option value="">Select Agency</option>
-              <option v-for="option in agencyOptions" :key="option.value" :value="option.value">{{
-                option.text }}</option>
+              <option v-for="option in agencyOptions" :key="option.value" :value="option.value">
+                {{ option.text }}
+              </option>
               <option value="other">Others (Specify)</option>
             </select>
-            <p v-if="cpdProviderErrors.agency" class="mt-1 text-xs text-red-500">{{ cpdProviderErrors.agency
-              }}</p>
+            <p v-if="cpdProviderErrors.agency" class="mt-1 text-xs text-red-500">
+              {{ cpdProviderErrors.agency }}
+            </p>
           </div>
           <div v-if="cpdProvider.agency === 'other'">
-            <label for="otherAgency" class="block text-sm font-medium text-gray-700">If Others, Specify
-              <span class="text-red-500">*</span></label>
-            <input type="text" id="otherAgency" v-model="cpdProvider.otherAgency"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2">
-            <p v-if="cpdProviderErrors.otherAgency" class="mt-1 text-xs text-red-500">{{
-              cpdProviderErrors.otherAgency }}</p>
+            <label for="otherAgency" class="block text-sm font-medium text-gray-700"
+              >If Others, Specify <span class="text-red-500">*</span></label
+            >
+            <input
+              type="text"
+              id="otherAgency"
+              v-model="cpdProvider.otherAgency"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2"
+            />
+            <p v-if="cpdProviderErrors.otherAgency" class="mt-1 text-xs text-red-500">
+              {{ cpdProviderErrors.otherAgency }}
+            </p>
           </div>
           <div>
-            <label for="reasonForConducting" class="block text-sm font-medium text-gray-700">Reason for
-              Conducting <span class="text-red-500">*</span></label>
-            <select id="reasonForConducting" v-model="cpdProvider.reason"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2">
+            <label for="reasonForConducting" class="block text-sm font-medium text-gray-700"
+              >Reason for Conducting <span class="text-red-500">*</span></label
+            >
+            <select
+              id="reasonForConducting"
+              v-model="cpdProvider.reason"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2"
+            >
               <option value="">Select Reason</option>
-              <option v-for="option in reasonOptions" :key="option.value" :value="option.value">{{
-                option.text }}</option>
+              <option v-for="option in reasonOptions" :key="option.value" :value="option.value">
+                {{ option.text }}
+              </option>
             </select>
-            <p v-if="cpdProviderErrors.reason" class="mt-1 text-xs text-red-500">{{ cpdProviderErrors.reason
-              }}</p>
+            <p v-if="cpdProviderErrors.reason" class="mt-1 text-xs text-red-500">
+              {{ cpdProviderErrors.reason }}
+            </p>
           </div>
           <div class="md:col-span-2">
-            <label for="reasonDetails" class="block text-sm font-medium text-gray-700">Reason Details <span
-                class="text-red-500">*</span></label>
-            <textarea id="reasonDetails" v-model="cpdProvider.reasonDetails" rows="3"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2"></textarea>
-            <p v-if="cpdProviderErrors.reasonDetails" class="mt-1 text-xs text-red-500">{{
-              cpdProviderErrors.reasonDetails }}</p>
+            <label for="reasonDetails" class="block text-sm font-medium text-gray-700"
+              >Reason Details <span class="text-red-500">*</span></label
+            >
+            <textarea
+              id="reasonDetails"
+              v-model="cpdProvider.reasonDetails"
+              rows="3"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2"
+            ></textarea>
+            <p v-if="cpdProviderErrors.reasonDetails" class="mt-1 text-xs text-red-500">
+              {{ cpdProviderErrors.reasonDetails }}
+            </p>
           </div>
         </div>
       </section>
 
       <section class="p-6 bg-white shadow-lg rounded-lg">
-        <h2 class="text-xl font-semibold mb-4 text-gray-700 border-b pb-2">4. Resource Persons Details</h2>
-        <div v-for="(person, index) in resourcePersons" :key="index"
-          class="mb-6 p-4 border border-gray-200 rounded-md space-y-3">
+        <h2 class="text-xl font-semibold mb-4 text-gray-700 border-b pb-2">
+          4. Resource Persons Details
+        </h2>
+        <div
+          v-for="(person, index) in resourcePersons"
+          :key="index"
+          class="mb-6 p-4 border border-gray-200 rounded-md space-y-3"
+        >
           <div class="flex justify-between items-center">
             <h3 class="text-md font-medium text-gray-600">Resource Person {{ index + 1 }}</h3>
-            <button v-if="resourcePersons.length > 1" @click.prevent="removeResourcePerson(index)"
-              type="button" class="text-sm text-red-600 hover:text-red-800">Remove</button>
+            <button
+              v-if="resourcePersons.length > 1"
+              @click.prevent="removeResourcePerson(index)"
+              type="button"
+              class="text-sm text-red-600 hover:text-red-800"
+            >
+              Remove
+            </button>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label :for="`rpSelect-${index}`" class="block text-sm font-medium text-gray-700">Select
-                Resource Person <span class="text-red-500">*</span></label>
-              <select :id="`rpSelect-${index}`" v-model="person.selectedPersonId"
+              <label :for="`rpSelect-${index}`" class="block text-sm font-medium text-gray-700"
+                >Select Resource Person <span class="text-red-500">*</span></label
+              >
+              <select
+                :id="`rpSelect-${index}`"
+                v-model="person.selectedPersonId"
                 @change="updateResourcePersonDetails(person)"
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5">
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5"
+              >
                 <option value="">-- Select Person --</option>
                 <option v-for="user in userRegistrations" :key="user.id" :value="user.id">
                   {{ user.full_name }} ({{ user.registration_no || user.cid_no }})
                 </option>
               </select>
-              <p v-if="resourcePersonsErrors[index]?.selectedPersonId" class="mt-1 text-xs text-red-500">
-                {{ resourcePersonsErrors[index].selectedPersonId }}</p>
-              <p v-if="person.regNo" class="mt-1 text-xs text-gray-500">RegNo/CID: {{ person.regNo }}</p>
+              <p
+                v-if="resourcePersonsErrors[index]?.selectedPersonId"
+                class="mt-1 text-xs text-red-500"
+              >
+                {{ resourcePersonsErrors[index].selectedPersonId }}
+              </p>
+              <p v-if="person.regNo" class="mt-1 text-xs text-gray-500">
+                RegNo/CID: {{ person.regNo }}
+              </p>
             </div>
             <div>
-              <label :for="`rpCertificates-${index}`" class="block text-sm font-medium text-gray-700">Doc
-                Supporting Expertise (PDF, max 5MB) <span class="text-red-500">*</span></label>
-              <input type="file" :id="`rpCertificates-${index}`"
-                @change="event => handleResourcePersonCertificateUpload(event, person, index)" accept=".pdf"
-                class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
-              <p v-if="resourcePersonsErrors[index]?.certificate" class="mt-1 text-xs text-red-500">{{
-                resourcePersonsErrors[index].certificate }}</p>
+              <label
+                :for="`rpCertificates-${index}`"
+                class="block text-sm font-medium text-gray-700"
+                >Doc Supporting Expertise (PDF, max 5MB) <span class="text-red-500">*</span></label
+              >
+              <input
+                type="file"
+                :id="`rpCertificates-${index}`"
+                @change="(event) => handleResourcePersonCertificateUpload(event, person, index)"
+                accept=".pdf"
+                class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+              />
+              <p v-if="resourcePersonsErrors[index]?.certificate" class="mt-1 text-xs text-red-500">
+                {{ resourcePersonsErrors[index].certificate }}
+              </p>
             </div>
           </div>
         </div>
-        <button @click.prevent="addResourcePerson" type="button"
-          class="mt-2 text-sm text-blue-600 hover:text-blue-800 font-semibold py-2 px-4 border border-blue-500 rounded hover:bg-blue-50">
+        <button
+          @click.prevent="addResourcePerson"
+          type="button"
+          class="mt-2 text-sm text-blue-600 hover:text-blue-800 font-semibold py-2 px-4 border border-blue-500 rounded hover:bg-blue-50"
+        >
           + Add Resource Person
         </button>
       </section>
 
       <section class="p-6 bg-white shadow-lg rounded-lg">
-        <h2 class="text-xl font-semibold mb-4 text-gray-700 border-b pb-2">5. Teaching Learning Method</h2>
+        <h2 class="text-xl font-semibold mb-4 text-gray-700 border-b pb-2">
+          5. Teaching Learning Method
+        </h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label for="cpdType" class="block text-sm font-medium text-gray-700">Type of CPD <span
-                class="text-red-500">*</span></label>
-            <select id="cpdType" v-model="teachingMethod.type"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2">
+            <label for="cpdType" class="block text-sm font-medium text-gray-700"
+              >Type of CPD <span class="text-red-500">*</span></label
+            >
+            <select
+              id="cpdType"
+              v-model="teachingMethod.type"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2"
+            >
               <option value="">Select Type</option>
-              <option v-for="option in cpdTypeOptions" :key="option.value" :value="option.value">{{
-                option.text }}</option>
+              <option v-for="option in cpdTypeOptions" :key="option.value" :value="option.value">
+                {{ option.text }}
+              </option>
             </select>
-            <p v-if="teachingLearningErrors.type" class="mt-1 text-xs text-red-500">{{
-              teachingLearningErrors.type }}</p>
+            <p v-if="teachingLearningErrors.type" class="mt-1 text-xs text-red-500">
+              {{ teachingLearningErrors.type }}
+            </p>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Methodologies <span
-                class="text-red-500">*</span></label>
+            <label class="block text-sm font-medium text-gray-700"
+              >Methodologies <span class="text-red-500">*</span></label
+            >
             <div class="mt-1 max-h-40 overflow-y-auto border rounded-md p-2">
               <div v-for="option in methodologyOptions" :key="option.value">
                 <label class="inline-flex items-center w-full py-1">
-                  <input type="checkbox" :value="option.value" v-model="selectedMethodologies"
-                    class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded">
+                  <input
+                    type="checkbox"
+                    :value="option.value"
+                    v-model="selectedMethodologies"
+                    class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded"
+                  />
                   <span class="ml-2 text-sm text-gray-700">{{ option.text }}</span>
                 </label>
               </div>
             </div>
-            <p v-if="teachingLearningErrors.selectedMethodologies" class="mt-1 text-xs text-red-500">{{
-              teachingLearningErrors.selectedMethodologies }}</p>
+            <p
+              v-if="teachingLearningErrors.selectedMethodologies"
+              class="mt-1 text-xs text-red-500"
+            >
+              {{ teachingLearningErrors.selectedMethodologies }}
+            </p>
           </div>
           <div class="md:col-span-2">
-            <label for="expectedOutcome" class="block text-sm font-medium text-gray-700">Expected Outcome
-              <span class="text-red-500">*</span></label>
-            <textarea id="expectedOutcome" v-model="teachingMethod.expectedOutcome" rows="3"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2"></textarea>
-            <p v-if="teachingLearningErrors.expectedOutcome" class="mt-1 text-xs text-red-500">{{
-              teachingLearningErrors.expectedOutcome }}</p>
+            <label for="expectedOutcome" class="block text-sm font-medium text-gray-700"
+              >Expected Outcome <span class="text-red-500">*</span></label
+            >
+            <textarea
+              id="expectedOutcome"
+              v-model="teachingMethod.expectedOutcome"
+              rows="3"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2"
+            ></textarea>
+            <p v-if="teachingLearningErrors.expectedOutcome" class="mt-1 text-xs text-red-500">
+              {{ teachingLearningErrors.expectedOutcome }}
+            </p>
           </div>
         </div>
 
         <div class="mt-6">
-          <h3 class="text-md font-semibold mb-2 text-gray-600">Activities & Durations (Total Credits will be
-            sum of durations)</h3>
-          <p v-if="teachingLearningErrors.teachingMethods" class="mb-2 text-xs text-red-500">{{
-            teachingLearningErrors.teachingMethods }}</p>
-          <div v-for="(method, index) in teachingMethods" :key="index"
-            class="mb-4 p-3 border rounded-md grid grid-cols-1 md:grid-cols-[1fr_auto_auto] gap-3 items-end">
+          <h3 class="text-md font-semibold mb-2 text-gray-600">
+            Activities & Durations (Total Credits will be sum of durations)
+          </h3>
+          <p v-if="teachingLearningErrors.teachingMethods" class="mb-2 text-xs text-red-500">
+            {{ teachingLearningErrors.teachingMethods }}
+          </p>
+          <div
+            v-for="(method, index) in teachingMethods"
+            :key="index"
+            class="mb-4 p-3 border rounded-md grid grid-cols-1 md:grid-cols-[1fr_auto_auto] gap-3 items-end"
+          >
             <div class="flex-grow">
-              <label :for="`activity-${index}`" class="block text-sm font-medium text-gray-700">Activity
-                {{ index + 1 }} <span class="text-red-500">*</span></label>
-              <textarea :id="`activity-${index}`" v-model="method.activity" @input="calculateTotalHours"
+              <label :for="`activity-${index}`" class="block text-sm font-medium text-gray-700"
+                >Activity {{ index + 1 }} <span class="text-red-500">*</span></label
+              >
+              <textarea
+                :id="`activity-${index}`"
+                v-model="method.activity"
+                @input="calculateTotalHours"
                 rows="2"
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2"></textarea>
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2"
+              ></textarea>
             </div>
             <div>
-              <label :for="`duration-${index}`" class="block text-sm font-medium text-gray-700">Duration
-                (Hours) <span class="text-red-500">*</span></label>
-              <input type="number" :id="`duration-${index}`" v-model.number="method.duration"
-                @input="calculateTotalHours" min="0.1" step="0.1"
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2">
+              <label :for="`duration-${index}`" class="block text-sm font-medium text-gray-700"
+                >Duration (Hours) <span class="text-red-500">*</span></label
+              >
+              <input
+                type="number"
+                :id="`duration-${index}`"
+                v-model.number="method.duration"
+                @input="calculateTotalHours"
+                min="0.1"
+                step="0.1"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2"
+              />
             </div>
-            <button v-if="teachingMethods.length > 1" @click.prevent="removeTeachingMethod(index)"
+            <button
+              v-if="teachingMethods.length > 1"
+              @click.prevent="removeTeachingMethod(index)"
               type="button"
-              class="text-sm text-red-600 hover:text-red-800 self-center md:self-end h-10 px-3 py-2 border border-red-300 rounded-md hover:bg-red-50 mb-1">Remove</button>
+              class="text-sm text-red-600 hover:text-red-800 self-center md:self-end h-10 px-3 py-2 border border-red-300 rounded-md hover:bg-red-50 mb-1"
+            >
+              Remove
+            </button>
           </div>
-          <button @click.prevent="addTeachingMethod" type="button"
-            class="text-sm text-blue-600 hover:text-blue-800 font-semibold py-2 px-4 border border-blue-500 rounded hover:bg-blue-50">
+          <button
+            @click.prevent="addTeachingMethod"
+            type="button"
+            class="text-sm text-blue-600 hover:text-blue-800 font-semibold py-2 px-4 border border-blue-500 rounded hover:bg-blue-50"
+          >
             + Add Activity/Duration
           </button>
           <div class="mt-4 text-right font-semibold">
@@ -304,148 +486,245 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
           <div class="md:col-span-2">
-            <label for="courseDocument" class="block text-sm font-medium text-gray-700">Course Document
-              (PDF, max 5MB) <span class="text-red-500">*</span></label>
-            <input type="file" id="courseDocument" @change="handleCourseDocumentUpload" accept=".pdf"
-              class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
-            <p v-if="teachingLearningErrors.courseDocument" class="mt-1 text-xs text-red-500">{{
-              teachingLearningErrors.courseDocument }}</p>
+            <label for="courseDocument" class="block text-sm font-medium text-gray-700"
+              >Course Document (PDF, max 5MB) <span class="text-red-500">*</span></label
+            >
+            <input
+              type="file"
+              id="courseDocument"
+              @change="handleCourseDocumentUpload"
+              accept=".pdf"
+              class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+            />
+            <p v-if="teachingLearningErrors.courseDocument" class="mt-1 text-xs text-red-500">
+              {{ teachingLearningErrors.courseDocument }}
+            </p>
           </div>
         </div>
       </section>
 
       <section class="p-6 bg-white shadow-lg rounded-lg">
-        <h2 class="text-xl font-semibold mb-4 text-gray-700 border-b pb-2">6. Target Audience / Participants
-          Details</h2>
-        <div v-if="!areOptionsLoaded" class="text-center text-gray-600 py-4">Loading participation options...
+        <h2 class="text-xl font-semibold mb-4 text-gray-700 border-b pb-2">
+          6. Target Audience / Participants Details
+        </h2>
+        <div v-if="!areOptionsLoaded" class="text-center text-gray-600 py-4">
+          Loading participation options...
         </div>
         <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label class="block text-sm font-medium text-gray-700">Target Participation Category <span
-                class="text-red-500">*</span></label>
+            <label class="block text-sm font-medium text-gray-700"
+              >Target Participation Category <span class="text-red-500">*</span></label
+            >
             <div class="mt-1 max-h-40 overflow-y-auto border rounded-md p-2">
               <div v-for="option in participationCategoryOptions" :key="option.value">
                 <label class="inline-flex items-center w-full py-1">
-                  <input type="checkbox" :value="option.value"
+                  <input
+                    type="checkbox"
+                    :value="option.value"
                     v-model="participantDetails.category"
-                    class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded">
+                    class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded"
+                  />
                   <span class="ml-2 text-sm text-gray-700">{{ option.text }}</span>
                 </label>
               </div>
             </div>
-            <p v-if="participantDetailsErrors.categories" class="mt-1 text-xs text-red-500">{{
-              participantDetailsErrors.categories }}</p>
+            <p v-if="participantDetailsErrors.categories" class="mt-1 text-xs text-red-500">
+              {{ participantDetailsErrors.categories }}
+            </p>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">Target Participant Sub-category <span
-                v-if="filteredSubcategoryOptions.length > 0 && participantDetails.category.length > 0"
-                class="text-red-500">*</span></label>
+            <label class="block text-sm font-medium text-gray-700"
+              >Target Participant Sub-category
+              <span
+                v-if="
+                  filteredSubcategoryOptions.length > 0 && participantDetails.category.length > 0
+                "
+                class="text-red-500"
+                >*</span
+              ></label
+            >
             <div class="mt-1 max-h-40 overflow-y-auto border rounded-md p-2">
               <div v-if="filteredSubcategoryOptions.length > 0">
                 <div v-for="option in filteredSubcategoryOptions" :key="option.value">
                   <label class="inline-flex items-center w-full py-1">
-                    <input type="checkbox" :value="option.value"
+                    <input
+                      type="checkbox"
+                      :value="option.value"
                       v-model="participantDetails.subcategory"
-                      class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded">
-                    <span class="ml-2 text-sm text-gray-700">{{ option.text }} ({{
-                      getCategoryName(option.categoryId) }})</span>
+                      class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded"
+                    />
+                    <span class="ml-2 text-sm text-gray-700"
+                      >{{ option.text }} ({{ getCategoryName(option.categoryId) }})</span
+                    >
                   </label>
                 </div>
               </div>
-              <div v-else-if="participantDetails.category.length > 0"
-                class="text-sm text-gray-500 p-2">
+              <div
+                v-else-if="participantDetails.category.length > 0"
+                class="text-sm text-gray-500 p-2"
+              >
                 No subcategories available for the selected category/ies.
               </div>
               <div v-else class="text-sm text-gray-500 p-2">
                 Please select a participation category first.
               </div>
             </div>
-            <p v-if="participantDetailsErrors.subcategories" class="mt-1 text-xs text-red-500">{{
-              participantDetailsErrors.subcategories }}</p>
+            <p v-if="participantDetailsErrors.subcategories" class="mt-1 text-xs text-red-500">
+              {{ participantDetailsErrors.subcategories }}
+            </p>
           </div>
           <div>
-            <label for="numberOfParticipants" class="block text-sm font-medium text-gray-700">Expected
-              Number of Participants <span class="text-red-500">*</span></label>
-            <input type="number" id="numberOfParticipants" v-model.number="participantDetails.number"
+            <label for="numberOfParticipants" class="block text-sm font-medium text-gray-700"
+              >Expected Number of Participants <span class="text-red-500">*</span></label
+            >
+            <input
+              type="number"
+              id="numberOfParticipants"
+              v-model.number="participantDetails.number"
               min="1"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2">
-            <p v-if="participantDetailsErrors.number" class="mt-1 text-xs text-red-500">{{
-              participantDetailsErrors.number }}</p>
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2"
+            />
+            <p v-if="participantDetailsErrors.number" class="mt-1 text-xs text-red-500">
+              {{ participantDetailsErrors.number }}
+            </p>
           </div>
           <div class="md:col-span-2">
-            <label for="relevanceToProfession" class="block text-sm font-medium text-gray-700">Relevance to
-              Topic/Profession <span v-if="participantDetails.category.length > 1" class="text-red-500">*</span></label>
-            <textarea id="relevanceToProfession" v-model="participantDetails.relevance" rows="3"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2"></textarea>
-            <p v-if="participantDetailsErrors.relevance" class="mt-1 text-xs text-red-500">{{
-              participantDetailsErrors.relevance }}</p>
+            <label for="relevanceToProfession" class="block text-sm font-medium text-gray-700"
+              >Relevance to Topic/Profession
+              <span v-if="participantDetails.category.length > 1" class="text-red-500"
+                >*</span
+              ></label
+            >
+            <textarea
+              id="relevanceToProfession"
+              v-model="participantDetails.relevance"
+              rows="3"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2"
+            ></textarea>
+            <p v-if="participantDetailsErrors.relevance" class="mt-1 text-xs text-red-500">
+              {{ participantDetailsErrors.relevance }}
+            </p>
           </div>
         </div>
       </section>
 
       <section v-if="application.isApproved === 'true'" class="p-6 bg-white shadow-lg rounded-lg">
-        <h2 class="text-xl font-semibold mb-4 text-gray-700 border-b pb-2">Approved CPD - Participant & Document
-          Management</h2>
+        <h2 class="text-xl font-semibold mb-4 text-gray-700 border-b pb-2">
+          Approved CPD - Participant & Document Management
+        </h2>
         <div>
-          <label for="generalAttachment" class="block text-sm font-medium text-gray-700">General Attachment
-            (e.g., Detailed Program - PDF, max 5MB) <span class="text-red-500">*</span></label>
-          <input type="file" id="generalAttachment" @change="handleAttachmentUpload" accept=".pdf"
-            class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
-          <p v-if="approvedCpdErrors.attachment" class="mt-1 text-xs text-red-500">{{
-            approvedCpdErrors.attachment }}</p>
+          <label for="generalAttachment" class="block text-sm font-medium text-gray-700"
+            >General Attachment (e.g., Detailed Program - PDF, max 5MB)
+            <span class="text-red-500">*</span></label
+          >
+          <input
+            type="file"
+            id="generalAttachment"
+            @change="handleAttachmentUpload"
+            accept=".pdf"
+            class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+          />
+          <p v-if="approvedCpdErrors.attachment" class="mt-1 text-xs text-red-500">
+            {{ approvedCpdErrors.attachment }}
+          </p>
         </div>
 
-        <h3 class="text-md font-semibold mt-6 mb-2 text-gray-600">List Participants (Optional at this stage)
+        <h3 class="text-md font-semibold mt-6 mb-2 text-gray-600">
+          List Participants (Optional at this stage)
         </h3>
-        <div v-for="(participant, index) in participants" :key="index"
-          class="mb-4 p-3 border rounded-md grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-3 items-end">
+        <div
+          v-for="(participant, index) in participants"
+          :key="index"
+          class="mb-4 p-3 border rounded-md grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-3 items-end"
+        >
           <div>
-            <label :for="`participantRegNo-${index}`"
-              class="block text-sm font-medium text-gray-700">Participant RegNo/CID <span
-                class="text-red-500">*</span></label>
-            <input type="text" :id="`participantRegNo-${index}`" v-model="participant.regNo"
+            <label
+              :for="`participantRegNo-${index}`"
+              class="block text-sm font-medium text-gray-700"
+              >Participant RegNo/CID <span class="text-red-500">*</span></label
+            >
+            <input
+              type="text"
+              :id="`participantRegNo-${index}`"
+              v-model="participant.regNo"
               @blur="fetchParticipantName(participant)"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm p-2">
-            <p v-if="approvedCpdErrors.participants && approvedCpdErrors.participants[index]?.regNo"
-              class="mt-1 text-xs text-red-500">{{ approvedCpdErrors.participants[index].regNo }}</p>
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm p-2"
+            />
+            <p
+              v-if="approvedCpdErrors.participants && approvedCpdErrors.participants[index]?.regNo"
+              class="mt-1 text-xs text-red-500"
+            >
+              {{ approvedCpdErrors.participants[index].regNo }}
+            </p>
           </div>
           <div>
-            <label :for="`participantName-${index}`"
-              class="block text-sm font-medium text-gray-700">Participant Name</label>
-            <input type="text" :id="`participantName-${index}`" v-model="participant.name" readonly
-              class="mt-1 block w-full bg-gray-100 rounded-md border-gray-300 shadow-sm sm:text-sm p-2">
+            <label :for="`participantName-${index}`" class="block text-sm font-medium text-gray-700"
+              >Participant Name</label
+            >
+            <input
+              type="text"
+              :id="`participantName-${index}`"
+              v-model="participant.name"
+              readonly
+              class="mt-1 block w-full bg-gray-100 rounded-md border-gray-300 shadow-sm sm:text-sm p-2"
+            />
           </div>
-          <button @click.prevent="removeParticipant(index)" type="button"
-            class="text-sm text-red-600 hover:text-red-800 self-center md:self-end h-10 px-3 py-2 border border-red-300 rounded-md hover:bg-red-50 mb-1">Remove</button>
+          <button
+            @click.prevent="removeParticipant(index)"
+            type="button"
+            class="text-sm text-red-600 hover:text-red-800 self-center md:self-end h-10 px-3 py-2 border border-red-300 rounded-md hover:bg-red-50 mb-1"
+          >
+            Remove
+          </button>
         </div>
-        <button @click.prevent="addParticipant" type="button"
-          class="mt-2 text-sm text-blue-600 hover:text-blue-800 font-semibold py-2 px-4 border border-blue-500 rounded hover:bg-blue-50">
+        <button
+          @click.prevent="addParticipant"
+          type="button"
+          class="mt-2 text-sm text-blue-600 hover:text-blue-800 font-semibold py-2 px-4 border border-blue-500 rounded hover:bg-blue-50"
+        >
           + Add Participant
         </button>
 
-        <div v-if="participants.filter(p => p.regNo?.trim()).length > 0" class="mt-6">
-          <label for="attendanceSheet" class="block text-sm font-medium text-gray-700">Attendance Sheet
-            (PDF, max 5MB) <span class="text-red-500">*</span></label>
-          <input type="file" id="attendanceSheet" @change="handleAttendanceSheetUpload" accept=".pdf"
-            class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
-          <p v-if="approvedCpdErrors.attendanceSheet" class="mt-1 text-xs text-red-500">{{
-            approvedCpdErrors.attendanceSheet }}</p>
+        <div v-if="participants.filter((p) => p.regNo?.trim()).length > 0" class="mt-6">
+          <label for="attendanceSheet" class="block text-sm font-medium text-gray-700"
+            >Attendance Sheet (PDF, max 5MB) <span class="text-red-500">*</span></label
+          >
+          <input
+            type="file"
+            id="attendanceSheet"
+            @change="handleAttendanceSheetUpload"
+            accept=".pdf"
+            class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+          />
+          <p v-if="approvedCpdErrors.attendanceSheet" class="mt-1 text-xs text-red-500">
+            {{ approvedCpdErrors.attendanceSheet }}
+          </p>
         </div>
       </section>
 
       <section class="p-6 bg-white shadow-lg rounded-lg">
         <h2 class="text-xl font-semibold mb-4 text-gray-700 border-b pb-2">7. Actions</h2>
         <div class="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4">
-          <button @click.prevent="cancelForm" type="button"
-            class="w-full sm:w-auto px-6 py-2.5 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+          <button
+            @click.prevent="cancelForm"
+            type="button"
+            class="w-full sm:w-auto px-6 py-2.5 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
             Cancel
           </button>
-          <button @click.prevent="saveDraft" :disabled="loading" type="button"
-            class="w-full sm:w-auto px-6 py-2.5 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-yellow-500 hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 disabled:opacity-50">
+          <button
+            @click.prevent="saveDraft"
+            :disabled="loading"
+            type="button"
+            class="w-full sm:w-auto px-6 py-2.5 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-yellow-500 hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 disabled:opacity-50"
+          >
             {{ loading && currentAction === 'draft' ? 'Saving...' : 'Save as Draft' }}
           </button>
-          <button type="submit" :disabled="loading"
-            class="w-full sm:w-auto px-6 py-2.5 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50">
+          <button
+            type="submit"
+            :disabled="loading"
+            class="w-full sm:w-auto px-6 py-2.5 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+          >
             {{ loading && currentAction === 'submit' ? 'Submitting...' : 'Submit Application' }}
           </button>
         </div>
@@ -453,22 +732,38 @@
     </form>
 
     <div v-if="showConfirmation" class="fixed inset-0 z-40 overflow-y-auto">
-      <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+      <div
+        class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0"
+      >
         <div class="fixed inset-0 transition-opacity" aria-hidden="true">
           <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
         </div>
         <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true"></span>
         <div
           class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
-          role="dialog" aria-modal="true" aria-labelledby="modal-headline">
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-headline"
+        >
           <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <div class="sm:flex sm:items-start">
               <div
-                class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">
-                <svg class="h-6 w-6 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none"
-                  viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.79 4 4 0 .863-.27 1.66-.744 2.26l-1.003 1.003c-.391.391-.391 1.023 0 1.414.391.391 1.023.391 1.414 0l1.003-1.003c.64-.64.976-1.493.976-2.384 0-2.67-2.13-4.8-4.8-4.8S7.2 8.33 7.2 11c0 .552.448 1 1 1s1-.448 1-1c0-.369.057-.729.167-1.067l.118-.372zM12 18a1 1 0 100-2 1 1 0 000 2z" />
+                class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10"
+              >
+                <svg
+                  class="h-6 w-6 text-blue-600"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.79 4 4 0 .863-.27 1.66-.744 2.26l-1.003 1.003c-.391.391-.391 1.023 0 1.414.391.391 1.023.391 1.414 0l1.003-1.003c.64-.64.976-1.493.976-2.384 0-2.67-2.13-4.8-4.8-4.8S7.2 8.33 7.2 11c0 .552.448 1 1 1s1-.448 1-1c0-.369.057-.729.167-1.067l.118-.372zM12 18a1 1 0 100-2 1 1 0 000 2z"
+                  />
                 </svg>
               </div>
               <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
@@ -484,12 +779,20 @@
             </div>
           </div>
           <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-            <button @click="confirmSubmit" :disabled="loading" type="button"
-              class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50">
+            <button
+              @click="confirmSubmit"
+              :disabled="loading"
+              type="button"
+              class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50"
+            >
               {{ loading && currentAction === 'submit' ? 'Submitting...' : 'Yes, Submit' }}
             </button>
-            <button @click="showConfirmation = false" :disabled="loading" type="button"
-              class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50">
+            <button
+              @click="showConfirmation = false"
+              :disabled="loading"
+              type="button"
+              class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50"
+            >
               Cancel
             </button>
           </div>
@@ -500,25 +803,25 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed } from 'vue';
-import { useAuthStore } from '@/stores/authStore';
-import { useRouter } from 'vue-router';
-import apiService from '@/services/services';
+import { ref, reactive, onMounted, computed } from 'vue'
+import { useAuthStore } from '@/stores/authStore'
+import { useRouter } from 'vue-router'
+import apiService from '@/services/services'
 
-const authStore = useAuthStore();
-const router = useRouter();
+const authStore = useAuthStore()
+const router = useRouter()
 
-const loading = ref(false);
-const currentAction = ref('');
-const showConfirmation = ref(false);
-const successMessage = ref('');
-const userRegistrations = ref([]);
+const loading = ref(false)
+const currentAction = ref('')
+const showConfirmation = ref(false)
+const successMessage = ref('')
+const userRegistrations = ref([])
 
 const applicant = reactive({
   cidNumber: '',
   fullName: '',
   agencyTrainingLocation: '',
-});
+})
 
 const application = reactive({
   isApproved: 'false',
@@ -526,251 +829,270 @@ const application = reactive({
   venue: '',
   fromDate: '',
   toDate: '',
-});
+})
 
 const cpdProvider = reactive({
   agency: '',
   otherAgency: '',
   reason: '',
   reasonDetails: '',
-});
+})
 
 const resourcePersons = ref([
   {
     selectedPersonId: '',
     name: '',
     regNo: '',
-    certificate: null
-  }
+    certificate: null,
+  },
 ])
 
 const teachingMethod = reactive({
   type: '',
   expectedOutcome: '',
-});
-const selectedMethodologies = ref([]);
-const teachingMethods = ref([{ activity: '', duration: null }]);
+})
+const selectedMethodologies = ref([])
+const teachingMethods = ref([{ activity: '', duration: null }])
 
-const totalHours = ref(0);
-const calculatedCredits = ref(0);
+const totalHours = ref(0)
+const calculatedCredits = ref(0)
 
 const participantDetails = reactive({
   category: [],
   subcategory: [],
   number: null,
   relevance: '',
-});
+})
 
-const participants = ref([]);
+const participants = ref([])
 
 const approvalLetter = ref(null)
 const courseDocument = ref(null)
 const attendanceSheet = ref(null)
 const attachment = ref(null)
 
-const agencyOptions = ref([]);
-const reasonOptions = ref([]);
-const cpdTypeOptions = ref([]);
-const methodologyOptions = ref([]);
-const participationCategoryOptions = ref([]);
-const participantSubcategoryOptions = ref([]);
-const areOptionsLoaded = ref(false);
+const agencyOptions = ref([])
+const reasonOptions = ref([])
+const cpdTypeOptions = ref([])
+const methodologyOptions = ref([])
+const participationCategoryOptions = ref([])
+const participantSubcategoryOptions = ref([])
+const areOptionsLoaded = ref(false)
 
-const validationErrors = ref([]);
-const applicantDetailsErrors = ref({});
-const applicationDetailsErrors = ref({});
-const cpdProviderErrors = ref({});
-const resourcePersonsErrors = ref([]);
-const teachingLearningErrors = ref({});
-const participantDetailsErrors = ref({});
-const approvedCpdErrors = ref({});
+const validationErrors = ref([])
+const applicantDetailsErrors = ref({})
+const applicationDetailsErrors = ref({})
+const cpdProviderErrors = ref({})
+const resourcePersonsErrors = ref([])
+const teachingLearningErrors = ref({})
+const participantDetailsErrors = ref({})
+const approvedCpdErrors = ref({})
 
 const filteredSubcategoryOptions = computed(() => {
   if (!participantDetails.category || participantDetails.category.length === 0) {
-    return [];
+    return []
   }
-  return participantSubcategoryOptions.value.filter(subOpt =>
-    participantDetails.category.includes(subOpt.categoryId)
-  );
-});
+  return participantSubcategoryOptions.value.filter((subOpt) =>
+    participantDetails.category.includes(subOpt.categoryId),
+  )
+})
 
 const getCategoryName = (categoryId) => {
-  const category = participationCategoryOptions.value.find(cat => cat.value === categoryId);
-  return category ? category.text : '';
-};
+  const category = participationCategoryOptions.value.find((cat) => cat.value === categoryId)
+  return category ? category.text : ''
+}
 
 const addResourcePerson = () => {
-  resourcePersons.value.push({ selectedPersonId: '', name: '', regNo: '', certificate: null });
-  resourcePersonsErrors.value.push({});
-};
+  resourcePersons.value.push({ selectedPersonId: '', name: '', regNo: '', certificate: null })
+  resourcePersonsErrors.value.push({})
+}
 
 const removeResourcePerson = (index) => {
-  resourcePersons.value.splice(index, 1);
-  resourcePersonsErrors.value.splice(index, 1);
-};
+  resourcePersons.value.splice(index, 1)
+  resourcePersonsErrors.value.splice(index, 1)
+}
 
 const updateResourcePersonDetails = (person) => {
-  const selectedUser = userRegistrations.value.find(u => u.id === person.selectedPersonId);
+  const selectedUser = userRegistrations.value.find((u) => u.id === person.selectedPersonId)
   if (selectedUser) {
-    person.name = selectedUser.full_name;
-    person.regNo = selectedUser.registration_no || selectedUser.cid_no;
+    person.name = selectedUser.full_name
+    person.regNo = selectedUser.registration_no || selectedUser.cid_no
   } else {
-    person.name = '';
-    person.regNo = '';
+    person.name = ''
+    person.regNo = ''
   }
-};
+}
 
 const toggleApprovedFields = () => {
-  const isNowApproved = application.isApproved === 'true';
+  const isNowApproved = application.isApproved === 'true'
   if (!isNowApproved) {
     approvalLetter.value = null
     participants.value = []
     attendanceSheet.value = null
     attachment.value = null
-    if (applicationDetailsErrors.value.approvalLetter) delete applicationDetailsErrors.value.approvalLetter;
-    approvedCpdErrors.value = {};
+    if (applicationDetailsErrors.value.approvalLetter)
+      delete applicationDetailsErrors.value.approvalLetter
+    approvedCpdErrors.value = {}
   }
 }
 
 const handleFileUpload = (event, fileRef, maxSizeMB = 5, errorFieldKey, errorObjectRef) => {
-  const file = event.target.files?.[0];
+  const file = event.target.files?.[0]
   if (errorObjectRef.value[errorFieldKey]) {
-      delete errorObjectRef.value[errorFieldKey];
+    delete errorObjectRef.value[errorFieldKey]
   }
-  const mainErrorMsgKey = errorFieldKey.replace(/([A-Z])/g, ' $1').toLowerCase();
-  validationErrors.value = validationErrors.value.filter(e => !e.toLowerCase().includes(mainErrorMsgKey));
+  const mainErrorMsgKey = errorFieldKey.replace(/([A-Z])/g, ' $1').toLowerCase()
+  validationErrors.value = validationErrors.value.filter(
+    (e) => !e.toLowerCase().includes(mainErrorMsgKey),
+  )
 
   if (file) {
     if (file.type === 'application/pdf' && file.size <= maxSizeMB * 1024 * 1024) {
-      fileRef.value = file;
+      fileRef.value = file
     } else {
-      fileRef.value = null;
-      event.target.value = '';
-      const errorMsg = `Invalid file. Must be PDF and max ${maxSizeMB}MB.`;
-      errorObjectRef.value[errorFieldKey] = errorMsg;
+      fileRef.value = null
+      event.target.value = ''
+      const errorMsg = `Invalid file. Must be PDF and max ${maxSizeMB}MB.`
+      errorObjectRef.value[errorFieldKey] = errorMsg
     }
   } else {
-    fileRef.value = null;
+    fileRef.value = null
   }
-};
+}
 
 const handleResourcePersonCertificateUpload = (event, person, index) => {
-  const file = event.target.files?.[0];
-  const maxSizeMB = 5;
+  const file = event.target.files?.[0]
+  const maxSizeMB = 5
 
-  if (!resourcePersonsErrors.value[index]) resourcePersonsErrors.value[index] = {};
+  if (!resourcePersonsErrors.value[index]) resourcePersonsErrors.value[index] = {}
   if (resourcePersonsErrors.value[index].certificate) {
-      delete resourcePersonsErrors.value[index].certificate;
+    delete resourcePersonsErrors.value[index].certificate
   }
-  validationErrors.value = validationErrors.value.filter(e => !e.toLowerCase().includes(`resource person ${index + 1} certificate`));
+  validationErrors.value = validationErrors.value.filter(
+    (e) => !e.toLowerCase().includes(`resource person ${index + 1} certificate`),
+  )
 
   if (file) {
     if (file.type === 'application/pdf' && file.size <= maxSizeMB * 1024 * 1024) {
-      person.certificate = file;
+      person.certificate = file
     } else {
-      person.certificate = null;
-      event.target.value = '';
-      const errorMsg = `Invalid file. Must be PDF and max ${maxSizeMB}MB.`;
-      resourcePersonsErrors.value[index].certificate = errorMsg;
+      person.certificate = null
+      event.target.value = ''
+      const errorMsg = `Invalid file. Must be PDF and max ${maxSizeMB}MB.`
+      resourcePersonsErrors.value[index].certificate = errorMsg
     }
   } else {
-    person.certificate = null;
+    person.certificate = null
   }
-};
+}
 
-const handleApprovalLetterUpload = (event) => handleFileUpload(event, approvalLetter, 5, 'approvalLetter', applicationDetailsErrors);
-const handleCourseDocumentUpload = (event) => handleFileUpload(event, courseDocument, 5, 'courseDocument', teachingLearningErrors);
-const handleAttendanceSheetUpload = (event) => handleFileUpload(event, attendanceSheet, 5, 'attendanceSheet', approvedCpdErrors);
-const handleAttachmentUpload = (event) => handleFileUpload(event, attachment, 5, 'attachment', approvedCpdErrors);
+const handleApprovalLetterUpload = (event) =>
+  handleFileUpload(event, approvalLetter, 5, 'approvalLetter', applicationDetailsErrors)
+const handleCourseDocumentUpload = (event) =>
+  handleFileUpload(event, courseDocument, 5, 'courseDocument', teachingLearningErrors)
+const handleAttendanceSheetUpload = (event) =>
+  handleFileUpload(event, attendanceSheet, 5, 'attendanceSheet', approvedCpdErrors)
+const handleAttachmentUpload = (event) =>
+  handleFileUpload(event, attachment, 5, 'attachment', approvedCpdErrors)
 
 const addTeachingMethod = () => {
-  teachingMethods.value.push({ activity: '', duration: null });
-};
+  teachingMethods.value.push({ activity: '', duration: null })
+}
 
 const removeTeachingMethod = (index) => {
-  teachingMethods.value.splice(index, 1);
-  calculateTotalHours();
-};
+  teachingMethods.value.splice(index, 1)
+  calculateTotalHours()
+}
 
 const calculateTotalHours = () => {
   totalHours.value = teachingMethods.value.reduce((sum, method) => {
-    return sum + (Number(method.duration) || 0);
-  }, 0);
-  calculatedCredits.value = totalHours.value;
-};
+    return sum + (Number(method.duration) || 0)
+  }, 0)
+  calculatedCredits.value = totalHours.value
+}
 
 const addParticipant = () => {
-  participants.value.push({ regNo: '', name: '' });
-    if (approvedCpdErrors.value.participants && approvedCpdErrors.value.participants.length < participants.value.length) {
-    approvedCpdErrors.value.participants.push({});
+  participants.value.push({ regNo: '', name: '' })
+  if (
+    approvedCpdErrors.value.participants &&
+    approvedCpdErrors.value.participants.length < participants.value.length
+  ) {
+    approvedCpdErrors.value.participants.push({})
   } else if (!approvedCpdErrors.value.participants) {
-    approvedCpdErrors.value.participants = participants.value.map(() => ({}));
+    approvedCpdErrors.value.participants = participants.value.map(() => ({}))
   }
-};
+}
 
 const removeParticipant = (index) => {
-  participants.value.splice(index, 1);
+  participants.value.splice(index, 1)
   if (approvedCpdErrors.value.participants) {
-    approvedCpdErrors.value.participants.splice(index, 1);
+    approvedCpdErrors.value.participants.splice(index, 1)
   }
-};
+}
 
 const fetchParticipantName = async (participant) => {
   if (!participant.regNo?.trim()) {
-    participant.name = '';
-    return;
+    participant.name = ''
+    return
   }
-  const existingUser = userRegistrations.value.find(u => u.registration_no === participant.regNo.trim() || u.cid_no === participant.regNo.trim());
+  const existingUser = userRegistrations.value.find(
+    (u) => u.registration_no === participant.regNo.trim() || u.cid_no === participant.regNo.trim(),
+  )
   if (existingUser) {
-    participant.name = existingUser.full_name;
-    return;
+    participant.name = existingUser.full_name
+    return
   }
   try {
-    currentAction.value = 'fetch_participant'; loading.value = true;
-    const response = await apiService.getMhpcFullApplicationListByCid(participant.regNo.trim());
-    const foundUser = response.data?.results?.find(app => app.registration_no === participant.regNo.trim() || app.cid_no === participant.regNo.trim());
+    currentAction.value = 'fetch_participant'
+    loading.value = true
+    const response = await apiService.getMhpcFullApplicationListByCid(participant.regNo.trim())
+    const foundUser = response.data?.results?.find(
+      (app) =>
+        app.registration_no === participant.regNo.trim() || app.cid_no === participant.regNo.trim(),
+    )
 
     if (foundUser) {
-      participant.name = foundUser.full_name || 'Name not available';
-      if (!userRegistrations.value.some(u => u.id === foundUser.id)) {
+      participant.name = foundUser.full_name || 'Name not available'
+      if (!userRegistrations.value.some((u) => u.id === foundUser.id)) {
         userRegistrations.value.push({
-            id: foundUser.id,
-            registration_no: foundUser.registration_no,
-            full_name: foundUser.full_name,
-            cid_no: foundUser.cid_no,
-        });
-        userRegistrations.value.sort((a,b) => a.full_name.localeCompare(b.full_name));
+          id: foundUser.id,
+          registration_no: foundUser.registration_no,
+          full_name: foundUser.full_name,
+          cid_no: foundUser.cid_no,
+        })
+        userRegistrations.value.sort((a, b) => a.full_name.localeCompare(b.full_name))
       }
     } else {
-      participant.name = 'Not Found';
+      participant.name = 'Not Found'
     }
   } catch (error) {
-    console.error('Error fetching participant name:', error);
-    participant.name = 'Error fetching';
+    console.error('Error fetching participant name:', error)
+    participant.name = 'Error fetching'
   } finally {
-    loading.value = false; currentAction.value = '';
+    loading.value = false
+    currentAction.value = ''
   }
-};
+}
 
 const validateForm = (forDraft = false) => {
-  validationErrors.value = [];
-  applicantDetailsErrors.value = {};
-  applicationDetailsErrors.value = {};
-  cpdProviderErrors.value = {};
-  resourcePersonsErrors.value = resourcePersons.value.map(() => ({}));
-  teachingLearningErrors.value = {};
-  participantDetailsErrors.value = {};
-  approvedCpdErrors.value = {};
+  validationErrors.value = []
+  applicantDetailsErrors.value = {}
+  applicationDetailsErrors.value = {}
+  cpdProviderErrors.value = {}
+  resourcePersonsErrors.value = resourcePersons.value.map(() => ({}))
+  teachingLearningErrors.value = {}
+  participantDetailsErrors.value = {}
+  approvedCpdErrors.value = {}
   if (application.isApproved === 'true') {
-    approvedCpdErrors.value.participants = participants.value.map(() => ({}));
+    approvedCpdErrors.value.participants = participants.value.map(() => ({}))
   }
 
-  let isValid = true;
+  let isValid = true
 
   if (!forDraft && !applicant.agencyTrainingLocation?.trim()) {
     console.log(
       '[Validation] Applicant Details: agencyTrainingLocation missing',
-      applicant.agencyTrainingLocation
+      applicant.agencyTrainingLocation,
     )
     applicantDetailsErrors.value.agencyTrainingLocation = 'Agency/Training Location is required.'
     isValid = false
@@ -805,7 +1127,7 @@ const validateForm = (forDraft = false) => {
     console.log(
       '[Validation] Application Details: fromDate > toDate',
       application.fromDate,
-      application.toDate
+      application.toDate,
     )
     applicationDetailsErrors.value.toDate = 'To Date must be on or after From Date.'
     isValid = false
@@ -813,7 +1135,7 @@ const validateForm = (forDraft = false) => {
   if (application.isApproved === 'true' && !forDraft && !approvalLetter.value) {
     console.log(
       '[Validation] Application Details: approvalLetter required for approved',
-      approvalLetter.value
+      approvalLetter.value,
     )
     applicationDetailsErrors.value.approvalLetter =
       'Approval Letter is required if CPD is approved.'
@@ -841,14 +1163,16 @@ const validateForm = (forDraft = false) => {
     isValid = false
   }
 
-  const hasAtLeastOneResourcePersonForNonDraft = resourcePersons.value.some(p => p.selectedPersonId && p.certificate);
+  const hasAtLeastOneResourcePersonForNonDraft = resourcePersons.value.some(
+    (p) => p.selectedPersonId && p.certificate,
+  )
   if (!forDraft && resourcePersons.value.length > 0 && !hasAtLeastOneResourcePersonForNonDraft) {
     console.log(
       '[Validation] Resource Persons: No complete resource person',
-      JSON.parse(JSON.stringify(resourcePersons.value))
+      JSON.parse(JSON.stringify(resourcePersons.value)),
     )
     validationErrors.value.push(
-      'At least one resource person with both selection and certificate is required for non-draft submissions.'
+      'At least one resource person with both selection and certificate is required for non-draft submissions.',
     )
     isValid = false
     resourcePersons.value.forEach((person, index) => {
@@ -863,7 +1187,7 @@ const validateForm = (forDraft = false) => {
       if (!person.selectedPersonId && !person.certificate && (person.name || person.regNo)) {
         console.log(
           `[Validation] Resource Person ${index + 1}: both missing but has name/regNo`,
-          person
+          person,
         )
         resourcePersonsErrors.value[index].selectedPersonId = 'Person selection required.'
         resourcePersonsErrors.value[index].certificate = 'Certificate required.'
@@ -872,7 +1196,7 @@ const validateForm = (forDraft = false) => {
   } else if (!forDraft && resourcePersons.value.length === 0) {
     console.log('[Validation] Resource Persons: No resource persons added')
     validationErrors.value.push(
-      'At least one Resource Person is required for non-draft submissions.'
+      'At least one Resource Person is required for non-draft submissions.',
     )
     isValid = false
   }
@@ -885,7 +1209,7 @@ const validateForm = (forDraft = false) => {
   if (!forDraft && selectedMethodologies.value.length === 0) {
     console.log(
       '[Validation] Teaching Method: selectedMethodologies missing',
-      selectedMethodologies.value
+      selectedMethodologies.value,
     )
     teachingLearningErrors.value.selectedMethodologies =
       'At least one Methodology must be selected.'
@@ -894,17 +1218,19 @@ const validateForm = (forDraft = false) => {
   if (!forDraft && !teachingMethod.expectedOutcome?.trim()) {
     console.log(
       '[Validation] Teaching Method: expectedOutcome missing',
-      teachingMethod.expectedOutcome
+      teachingMethod.expectedOutcome,
     )
     teachingLearningErrors.value.expectedOutcome = 'Expected Outcome is required.'
     isValid = false
   }
   if (!forDraft) {
-    const hasCompleteMethod = teachingMethods.value.some(m => m.activity?.trim() && m.duration && Number(m.duration) > 0);
+    const hasCompleteMethod = teachingMethods.value.some(
+      (m) => m.activity?.trim() && m.duration && Number(m.duration) > 0,
+    )
     if (teachingMethods.value.length === 0 || !hasCompleteMethod) {
       console.log(
         '[Validation] Teaching Method: No complete teaching method',
-        JSON.parse(JSON.stringify(teachingMethods.value))
+        JSON.parse(JSON.stringify(teachingMethods.value)),
       )
       teachingLearningErrors.value.teachingMethods =
         'At least one Activity with a positive Duration is required.'
@@ -935,11 +1261,11 @@ const validateForm = (forDraft = false) => {
       participantDetailsErrors.value.categories = 'Target Participation Category is required.'
       isValid = false
     }
-    const subcategoriesAvailable = filteredSubcategoryOptions.value.length > 0;
+    const subcategoriesAvailable = filteredSubcategoryOptions.value.length > 0
     if (subcategoriesAvailable && participantDetails.subcategory.length === 0) {
       console.log(
         '[Validation] Participants: subcategory required but missing',
-        participantDetails.subcategory
+        participantDetails.subcategory,
       )
       participantDetailsErrors.value.subcategories =
         'Participant Sub-category is required if available for selected categories.'
@@ -954,7 +1280,7 @@ const validateForm = (forDraft = false) => {
     if (participantDetails.category.length > 1 && !participantDetails.relevance?.trim()) {
       console.log(
         '[Validation] Participants: relevance required for multiple categories',
-        participantDetails.relevance
+        participantDetails.relevance,
       )
       participantDetailsErrors.value.relevance =
         'Relevance to Topic/Profession is required for multiple categories.'
@@ -968,16 +1294,19 @@ const validateForm = (forDraft = false) => {
 
   if (application.isApproved === 'true' && !forDraft) {
     if (!attachment.value) {
-      console.log('[Validation] Approved CPD: attachment (General Attachment) missing', attachment.value);
-      approvedCpdErrors.value.attachment = 'General Attachment is required for approved CPD.';
-      isValid = false;
+      console.log(
+        '[Validation] Approved CPD: attachment (General Attachment) missing',
+        attachment.value,
+      )
+      approvedCpdErrors.value.attachment = 'General Attachment is required for approved CPD.'
+      isValid = false
     }
 
     const validListedParticipants = participants.value.filter((p) => p.regNo?.trim())
     if (validListedParticipants.length > 0 && !attendanceSheet.value) {
       console.log(
         '[Validation] Approved CPD: attendanceSheet required for listed participants',
-        attendanceSheet.value
+        attendanceSheet.value,
       )
       approvedCpdErrors.value.attendanceSheet =
         'Attendance Sheet is required if participants are listed.'
@@ -1010,142 +1339,148 @@ const validateForm = (forDraft = false) => {
   } else {
     console.log('[Validation] Form is valid')
   }
-  return isValid;
-};
+  return isValid
+}
 
 const prepareFormData = (isDraft = false) => {
-  const fd = new FormData();
+  const fd = new FormData()
 
-  fd.append('registration_no', '');
-  fd.append('cid_no', applicant.cidNumber || '');
-  fd.append('full_name', applicant.fullName || '');
-  fd.append('proposed_training_location', applicant.agencyTrainingLocation?.trim() || '');
+  fd.append('registration_no', '')
+  fd.append('cid_no', applicant.cidNumber || '')
+  fd.append('full_name', applicant.fullName || '')
+  fd.append('proposed_training_location', applicant.agencyTrainingLocation?.trim() || '')
 
-  fd.append('title_of_cpd', application.title?.trim() || '');
-  fd.append('venue', application.venue?.trim() || '');
-  fd.append('from_date', application.fromDate || '');
-  fd.append('to_date', application.toDate || '');
+  fd.append('title_of_cpd', application.title?.trim() || '')
+  fd.append('venue', application.venue?.trim() || '')
+  fd.append('from_date', application.fromDate || '')
+  fd.append('to_date', application.toDate || '')
 
-  fd.append('cpd_providing_agency', cpdProvider.agency || '');
+  fd.append('cpd_providing_agency', cpdProvider.agency || '')
   if (cpdProvider.agency === 'other') {
-    fd.append('if_others_specify', cpdProvider.otherAgency?.trim() || '');
+    fd.append('if_others_specify', cpdProvider.otherAgency?.trim() || '')
   } else if (isDraft) {
-    fd.append('if_others_specify', '');
+    fd.append('if_others_specify', '')
   }
-  fd.append('reason_for_conducting', cpdProvider.reason || '');
-  fd.append('reason_for_details', cpdProvider.reasonDetails?.trim() || '');
+  fd.append('reason_for_conducting', cpdProvider.reason || '')
+  fd.append('reason_for_details', cpdProvider.reasonDetails?.trim() || '')
 
-  fd.append('type_of_cpd', teachingMethod.type || '');
-  fd.append('expected_outcome', teachingMethod.expectedOutcome?.trim() || '');
-  fd.append('duration', totalHours.value || 0);
-  fd.append('duration_in_hours', totalHours.value || 0);
-  fd.append('credit', calculatedCredits.value || 0);
+  fd.append('type_of_cpd', teachingMethod.type || '')
+  fd.append('expected_outcome', teachingMethod.expectedOutcome?.trim() || '')
+  fd.append('duration', totalHours.value || 0)
+  fd.append('duration_in_hours', totalHours.value || 0)
+  fd.append('credit', calculatedCredits.value || 0)
 
   if (courseDocument.value) {
-    fd.append('course_document', courseDocument.value);
+    fd.append('course_document', courseDocument.value)
   } else if (isDraft) {
-    fd.append('course_document', '');
+    fd.append('course_document', '')
   }
 
-  fd.append('number_of_participants', participantDetails.number || 0);
-  fd.append('relevance_to_topic', participantDetails.relevance?.trim() || '');
+  fd.append('number_of_participants', participantDetails.number || 0)
+  fd.append('relevance_to_topic', participantDetails.relevance?.trim() || '')
 
   if (attachment.value) {
-    fd.append('attachment', attachment.value);
+    fd.append('attachment', attachment.value)
   } else if (isDraft) {
-    fd.append('attachment', '');
+    fd.append('attachment', '')
   }
 
   if (attendanceSheet.value) {
-    fd.append('attendance_sheet_attachment', attendanceSheet.value);
+    fd.append('attendance_sheet_attachment', attendanceSheet.value)
   } else if (isDraft) {
-    fd.append('attendance_sheet_attachment', '');
+    fd.append('attendance_sheet_attachment', '')
   }
 
-  fd.append('is_draft', isDraft);
-  fd.append('application_status', isDraft ? 'DRAFT' : 'SUBMITTED');
-  fd.append('status_remarks', '');
+  fd.append('is_draft', isDraft)
+  fd.append('application_status', isDraft ? 'DRAFT' : 'SUBMITTED')
+  fd.append('status_remarks', '')
 
-  const isCpdApprovedFlag = application.isApproved === 'true';
-  fd.append('is_cpd_approved', isCpdApprovedFlag);
+  const isCpdApprovedFlag = application.isApproved === 'true'
+  fd.append('is_cpd_approved', isCpdApprovedFlag)
   if (isCpdApprovedFlag) {
     if (approvalLetter.value) {
-      fd.append('approval_letter_attachment', approvalLetter.value);
+      fd.append('approval_letter_attachment', approvalLetter.value)
     } else if (isDraft) {
-      fd.append('approval_letter_attachment', '');
+      fd.append('approval_letter_attachment', '')
     }
 
     if (!isDraft) {
-        fd.append('approved_at', new Date().toISOString());
+      fd.append('approved_at', new Date().toISOString())
     } else {
-        fd.append('approved_at', '');
+      fd.append('approved_at', '')
     }
   } else {
     if (isDraft) {
-      fd.append('approval_letter_attachment', '');
-      fd.append('approved_at', '');
+      fd.append('approval_letter_attachment', '')
+      fd.append('approved_at', '')
     }
   }
 
   const learningMethodsToSend = teachingMethods.value
-    .filter(method => method.activity?.trim() || method.duration)
-    .map(method => ({
+    .filter((method) => method.activity?.trim() || method.duration)
+    .map((method) => ({
       activities: method.activity?.trim() || '',
 
-      duration: (method.duration !== null && method.duration !== undefined) ? Number(method.duration) : null,
-    }));
-  fd.append('learning_methods', JSON.stringify(learningMethodsToSend));
+      duration:
+        method.duration !== null && method.duration !== undefined ? Number(method.duration) : null,
+    }))
+  fd.append('learning_methods', JSON.stringify(learningMethodsToSend))
   // Resource Persons
   const resourcesToSend = resourcePersons.value
-    .filter(person => person.selectedPersonId || person.certificate)
+    .filter((person) => person.selectedPersonId || person.certificate)
     .map((person) => {
-      const selectedUser = userRegistrations.value.find(u => u.id === person.selectedPersonId);
-      const regNoToUse = selectedUser ? (selectedUser.registration_no || selectedUser.cid_no) : (person.regNo || '');
-      const nameToUse = selectedUser ? selectedUser.full_name : (person.name || '');
+      const selectedUser = userRegistrations.value.find((u) => u.id === person.selectedPersonId)
+      const regNoToUse = selectedUser
+        ? selectedUser.registration_no || selectedUser.cid_no
+        : person.regNo || ''
+      const nameToUse = selectedUser ? selectedUser.full_name : person.name || ''
 
       // The keys now match the backend serializer fields
       return {
         resource_person_reg_no: regNoToUse,
         resource_person_name: nameToUse,
-      };
-    });
-  fd.append('resources', JSON.stringify(resourcesToSend));
+      }
+    })
+  fd.append('resources', JSON.stringify(resourcesToSend))
 
   // Append resource person certificates with dynamic field names as your backend expects: resource_file_X
   resourcePersons.value.forEach((person, index) => {
     if (person.certificate) {
-      fd.append(`resource_file_${index}`, person.certificate); // CHANGED THIS KEY
+      fd.append(`resource_file_${index}`, person.certificate) // CHANGED THIS KEY
     }
-  });
+  })
 
   const participantsToSend = participants.value
-    .filter(p => p.regNo?.trim())
-    .map(p => ({
+    .filter((p) => p.regNo?.trim())
+    .map((p) => ({
       registration_no: p.regNo?.trim() || '',
       full_name: p.name?.trim() || '',
-    }));
-  fd.append('participants', JSON.stringify(participantsToSend));
+    }))
+  fd.append('participants', JSON.stringify(participantsToSend))
 
-  const methodologiesToSend = selectedMethodologies.value.map(methodId => ({
-    methodology_name: methodId
-  }));
-  fd.append('methodologies', JSON.stringify(methodologiesToSend));
+  const methodologiesToSend = selectedMethodologies.value.map((methodId) => ({
+    methodology_name: methodId,
+  }))
+  fd.append('methodologies', JSON.stringify(methodologiesToSend))
 
-  fd.append('target_participant_categories', JSON.stringify(participantDetails.category || []));
-  fd.append('target_participant_subcategories', JSON.stringify(participantDetails.subcategory || []));
+  fd.append('target_participant_categories', JSON.stringify(participantDetails.category || []))
+  fd.append(
+    'target_participant_subcategories',
+    JSON.stringify(participantDetails.subcategory || []),
+  )
 
   if (authStore.user?.id) {
-    fd.append('user_id', authStore.user.id);
+    fd.append('user_id', authStore.user.id)
   }
 
-  console.log('--- FormData being sent (isDraft:', isDraft, ') ---');
+  console.log('--- FormData being sent (isDraft:', isDraft, ') ---')
   for (let pair of fd.entries()) {
-    console.log(`${pair[0]}:`, pair[1] instanceof File ? pair[1].name : pair[1]);
+    console.log(`${pair[0]}:`, pair[1] instanceof File ? pair[1].name : pair[1])
   }
-  console.log('-----------------------------------------');
+  console.log('-----------------------------------------')
 
-  return fd;
-};
+  return fd
+}
 
 const resetFormState = () => {
   applicant.agencyTrainingLocation = ''
@@ -1156,43 +1491,43 @@ const resetFormState = () => {
   application.toDate = ''
   approvalLetter.value = null
 
-    cpdProvider.agency = '';
-    cpdProvider.otherAgency = '';
-    cpdProvider.reason = '';
-    cpdProvider.reasonDetails = '';
+  cpdProvider.agency = ''
+  cpdProvider.otherAgency = ''
+  cpdProvider.reason = ''
+  cpdProvider.reasonDetails = ''
 
-    resourcePersons.value = [{ selectedPersonId: '', name: '', regNo: '', certificate: null }];
-    resourcePersonsErrors.value = [{}];
+  resourcePersons.value = [{ selectedPersonId: '', name: '', regNo: '', certificate: null }]
+  resourcePersonsErrors.value = [{}]
 
-    teachingMethod.type = '';
-    teachingMethod.expectedOutcome = '';
-    selectedMethodologies.value = [];
-    teachingMethods.value = [{ activity: '', duration: null }];
-    totalHours.value = 0;
-    calculatedCredits.value = 0;
-    courseDocument.value = null;
-    participantDetails.category = [];
-    participantDetails.subcategory = [];
-    participantDetails.number = null;
-    participantDetails.relevance = '';
+  teachingMethod.type = ''
+  teachingMethod.expectedOutcome = ''
+  selectedMethodologies.value = []
+  teachingMethods.value = [{ activity: '', duration: null }]
+  totalHours.value = 0
+  calculatedCredits.value = 0
+  courseDocument.value = null
+  participantDetails.category = []
+  participantDetails.subcategory = []
+  participantDetails.number = null
+  participantDetails.relevance = ''
 
-    participants.value = [];
-    attendanceSheet.value = null;
-    attachment.value = null;
+  participants.value = []
+  attendanceSheet.value = null
+  attachment.value = null
 
-    validationErrors.value = [];
-    applicantDetailsErrors.value = {};
-    applicationDetailsErrors.value = {};
-    cpdProviderErrors.value = {};
-    teachingLearningErrors.value = {};
-    participantDetailsErrors.value = {};
-    approvedCpdErrors.value = {};
+  validationErrors.value = []
+  applicantDetailsErrors.value = {}
+  applicationDetailsErrors.value = {}
+  cpdProviderErrors.value = {}
+  teachingLearningErrors.value = {}
+  participantDetailsErrors.value = {}
+  approvedCpdErrors.value = {}
 
-    successMessage.value = '';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-};
+  successMessage.value = ''
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
 
-const DRAFT_STORAGE_KEY = 'cpdProviderApplicationDraft';
+const DRAFT_STORAGE_KEY = 'cpdProviderApplicationDraft'
 
 const saveDraft = () => {
   try {
@@ -1202,177 +1537,208 @@ const saveDraft = () => {
       cpdProvider: { ...cpdProvider },
       resourcePersons: JSON.parse(JSON.stringify(resourcePersons.value)),
       teachingMethod: { ...teachingMethod },
-      selectedMethodologies: [ ...selectedMethodologies.value ],
+      selectedMethodologies: [...selectedMethodologies.value],
       teachingMethods: JSON.parse(JSON.stringify(teachingMethods.value)),
       participantDetails: { ...participantDetails },
       participants: JSON.parse(JSON.stringify(participants.value)),
-    };
-    localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(draftData));
-    successMessage.value = 'Draft saved successfully to your browser. It will be here when you get back.';
-    setTimeout(() => { successMessage.value = ''; }, 5000);
+    }
+    localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(draftData))
+    successMessage.value =
+      'Draft saved successfully to your browser. It will be here when you get back.'
+    setTimeout(() => {
+      successMessage.value = ''
+    }, 5000)
   } catch (error) {
-    console.error('Error saving draft to local storage:', error);
-    validationErrors.value = ['Failed to save draft. Your browser might be out of space or in private mode.'];
+    console.error('Error saving draft to local storage:', error)
+    validationErrors.value = [
+      'Failed to save draft. Your browser might be out of space or in private mode.',
+    ]
   }
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-};
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
 
 const loadDraft = () => {
   try {
-    const savedDraft = localStorage.getItem(DRAFT_STORAGE_KEY);
+    const savedDraft = localStorage.getItem(DRAFT_STORAGE_KEY)
     if (savedDraft) {
-      const draftData = JSON.parse(savedDraft);
-      Object.assign(applicant, draftData.applicant);
-      Object.assign(application, draftData.application);
-      Object.assign(cpdProvider, draftData.cpdProvider);
-      resourcePersons.value = draftData.resourcePersons || [{ selectedPersonId: '', name: '', regNo: '', certificate: null }];
-      Object.assign(teachingMethod, draftData.teachingMethod);
-      selectedMethodologies.value = draftData.selectedMethodologies || [];
-      teachingMethods.value = draftData.teachingMethods || [{ activity: '', duration: null }];
-      Object.assign(participantDetails, draftData.participantDetails);
-      participants.value = draftData.participants || [];
+      const draftData = JSON.parse(savedDraft)
+      Object.assign(applicant, draftData.applicant)
+      Object.assign(application, draftData.application)
+      Object.assign(cpdProvider, draftData.cpdProvider)
+      resourcePersons.value = draftData.resourcePersons || [
+        { selectedPersonId: '', name: '', regNo: '', certificate: null },
+      ]
+      Object.assign(teachingMethod, draftData.teachingMethod)
+      selectedMethodologies.value = draftData.selectedMethodologies || []
+      teachingMethods.value = draftData.teachingMethods || [{ activity: '', duration: null }]
+      Object.assign(participantDetails, draftData.participantDetails)
+      participants.value = draftData.participants || []
 
-      calculateTotalHours();
-      successMessage.value = 'Loaded saved draft. Please re-select any required files before submitting.';
-      setTimeout(() => { successMessage.value = ''; }, 7000);
+      calculateTotalHours()
+      successMessage.value =
+        'Loaded saved draft. Please re-select any required files before submitting.'
+      setTimeout(() => {
+        successMessage.value = ''
+      }, 7000)
     }
   } catch (error) {
-    console.error('Error loading draft from local storage:', error);
-    validationErrors.value = ['Could not load saved draft due to an error.'];
+    console.error('Error loading draft from local storage:', error)
+    validationErrors.value = ['Could not load saved draft due to an error.']
   }
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-};
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
 
 const handleSubmit = () => {
   if (validateForm(false)) {
-    showConfirmation.value = true;
+    showConfirmation.value = true
   } else {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
-};
+}
 
 const confirmSubmit = async () => {
-  currentAction.value = 'submit';
-  showConfirmation.value = false;
+  currentAction.value = 'submit'
+  showConfirmation.value = false
 
   if (!validateForm(false)) {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    currentAction.value = '';
-    return;
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+    currentAction.value = ''
+    return
   }
 
   try {
-    loading.value = true;
-    const fd = prepareFormData(false);
-    await apiService.createMhpcCpdTask(fd);
-    localStorage.removeItem(DRAFT_STORAGE_KEY);
-    successMessage.value = 'Application submitted successfully! Redirecting to dashboard...';
-    resetFormState();
+    loading.value = true
+    const fd = prepareFormData(false)
+    await apiService.createMhpcCpdTask(fd)
+    localStorage.removeItem(DRAFT_STORAGE_KEY)
+    successMessage.value = 'Application submitted successfully! Redirecting to dashboard...'
+    resetFormState()
     setTimeout(() => {
-        successMessage.value = '';
-        router.push('/admin/cme_cpd_provider/health_certification/dashboard');
-    }, 3000);
+      successMessage.value = ''
+      router.push('/admin/cme_cpd_provider/health_certification/dashboard')
+    }, 3000)
   } catch (error) {
-    console.error('Error submitting application:', error);
-    validationErrors.value = ['Submission failed. Please review the errors below.'];
-      if (error.response?.data) {
-        Object.entries(error.response.data).forEach(([key, value]) => {
-            if (key === 'detail' && typeof value === 'string') {
-                validationErrors.value.push(value);
-            } else if (Array.isArray(value)) {
-                validationErrors.value.push(`${key}: ${value.join(', ')}`);
-            } else if (typeof value === 'object') {
-                Object.entries(value).forEach(([subKey, subValue]) => {
-                    validationErrors.value.push(`${key}.${subKey}: ${Array.isArray(subValue) ? subValue.join(', ') : subValue}`);
-                });
-            } else {
-                validationErrors.value.push(`${key}: ${value}`);
-            }
-        });
+    console.error('Error submitting application:', error)
+    validationErrors.value = ['Submission failed. Please review the errors below.']
+    if (error.response?.data) {
+      Object.entries(error.response.data).forEach(([key, value]) => {
+        if (key === 'detail' && typeof value === 'string') {
+          validationErrors.value.push(value)
+        } else if (Array.isArray(value)) {
+          validationErrors.value.push(`${key}: ${value.join(', ')}`)
+        } else if (typeof value === 'object') {
+          Object.entries(value).forEach(([subKey, subValue]) => {
+            validationErrors.value.push(
+              `${key}.${subKey}: ${Array.isArray(subValue) ? subValue.join(', ') : subValue}`,
+            )
+          })
+        } else {
+          validationErrors.value.push(`${key}: ${value}`)
+        }
+      })
     } else {
-        validationErrors.value.push('An unexpected error occurred. Please try again.');
+      validationErrors.value.push('An unexpected error occurred. Please try again.')
     }
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   } finally {
-    loading.value = false;
-    currentAction.value = '';
+    loading.value = false
+    currentAction.value = ''
   }
-};
+}
 
 const cancelForm = () => {
   if (confirm('Are you sure you want to cancel? Any unsaved changes will be lost.')) {
-    localStorage.removeItem(DRAFT_STORAGE_KEY);
-    resetFormState();
-    router.push('/admin/cme_cpd_provider/health_certification/dashboard');
+    localStorage.removeItem(DRAFT_STORAGE_KEY)
+    resetFormState()
+    router.push('/admin/cme_cpd_provider/health_certification/dashboard')
   }
-};
+}
 
 const fetchUserRegistrations = async () => {
   try {
-    const response = await apiService.getMhpcNewApplications();
+    const response = await apiService.getMhpcNewApplications()
     if (response.data?.results && Array.isArray(response.data.results)) {
-      userRegistrations.value = response.data.results.map(app => ({
-        id: app.id,
-        registration_no: app.registration_no,
-        full_name: app.full_name,
-        cid_no: app.cid_no,
-      })).sort((a,b) => a.full_name.localeCompare(b.full_name));
+      userRegistrations.value = response.data.results
+        .map((app) => ({
+          id: app.id,
+          registration_no: app.registration_no,
+          full_name: app.full_name,
+          cid_no: app.cid_no,
+        }))
+        .sort((a, b) => a.full_name.localeCompare(b.full_name))
     }
   } catch (error) {
-    console.error('Error fetching user registrations for lookup:', error);
+    console.error('Error fetching user registrations for lookup:', error)
   }
-};
+}
 
 const loadDropdownOptions = async () => {
-  areOptionsLoaded.value = false;
+  areOptionsLoaded.value = false
   try {
-    currentAction.value = 'load_options'; loading.value = true;
-    const [
-      agencyRes, reasonRes, cpdTypeRes, methodologyRes, categoriesRes, subcategoriesRes
-    ] = await Promise.all([
-      apiService.getProvidingAgency(),
-      apiService.getReasonForCoducting(),
-      apiService.getMhpcMastersCpdActivities(),
-      apiService.getMhpcMastersCpdMethodologies(),
-      apiService.getMhpcMasterData('personnel-categories'),
-      apiService.getMhpcMastersSubCategories(),
-    ]);
+    currentAction.value = 'load_options'
+    loading.value = true
+    const [agencyRes, reasonRes, cpdTypeRes, methodologyRes, categoriesRes, subcategoriesRes] =
+      await Promise.all([
+        apiService.getProvidingAgency(),
+        apiService.getReasonForCoducting(),
+        apiService.getMhpcMastersCpdActivities(),
+        apiService.getMhpcMastersCpdMethodologies(),
+        apiService.getMhpcMasterData('personnel-categories'),
+        apiService.getMhpcMastersSubCategories(),
+      ])
 
-    agencyOptions.value = agencyRes?.data?.results?.map(item => ({ text: item.name, value: item.id })) || [];
-    reasonOptions.value = reasonRes?.data?.results?.map(item => ({ text: item.name, value: item.id })) || [];
-    cpdTypeOptions.value = cpdTypeRes?.data?.results?.map(item => ({ text: item.cme_activity_name, value: item.id })) || [];
-    methodologyOptions.value = methodologyRes?.data?.results?.map(item => ({ text: item.methodology_name, value: item.id })) || [];
+    agencyOptions.value =
+      agencyRes?.data?.results?.map((item) => ({ text: item.name, value: item.id })) || []
+    reasonOptions.value =
+      reasonRes?.data?.results?.map((item) => ({ text: item.name, value: item.id })) || []
+    cpdTypeOptions.value =
+      cpdTypeRes?.data?.results?.map((item) => ({
+        text: item.cme_activity_name,
+        value: item.id,
+      })) || []
+    methodologyOptions.value =
+      methodologyRes?.data?.results?.map((item) => ({
+        text: item.methodology_name,
+        value: item.id,
+      })) || []
 
-    participationCategoryOptions.value = categoriesRes?.data?.results?.map(cat => ({ text: cat.category_name, value: cat.id })) || [];
+    participationCategoryOptions.value =
+      categoriesRes?.data?.results?.map((cat) => ({ text: cat.category_name, value: cat.id })) || []
 
-    participantSubcategoryOptions.value = subcategoriesRes?.data?.results?.map(sub => ({ text: sub.sub_category_name, value: sub.id, categoryId: sub.category_name })) || [];
-
+    participantSubcategoryOptions.value =
+      subcategoriesRes?.data?.results?.map((sub) => ({
+        text: sub.sub_category_name,
+        value: sub.id,
+        categoryId: sub.category_name,
+      })) || []
   } catch (error) {
-    console.error('Error loading dropdown options:', error);
-    validationErrors.value.push('Failed to load form options. Please refresh.');
+    console.error('Error loading dropdown options:', error)
+    validationErrors.value.push('Failed to load form options. Please refresh.')
   } finally {
-    loading.value = false; currentAction.value = '';
-    areOptionsLoaded.value = true;
+    loading.value = false
+    currentAction.value = ''
+    areOptionsLoaded.value = true
   }
-};
+}
 
 onMounted(async () => {
   if (authStore.user) {
-    applicant.cidNumber = authStore.user.cid || '';
-    applicant.fullName = [authStore.user.first_name, authStore.user.middle_name, authStore.user.last_name]
-      .filter(Boolean).join(' ') || '';
+    applicant.cidNumber = authStore.user.cid || ''
+    applicant.fullName =
+      [authStore.user.first_name, authStore.user.middle_name, authStore.user.last_name]
+        .filter(Boolean)
+        .join(' ') || ''
   }
-  resourcePersonsErrors.value = resourcePersons.value.map(() => ({}));
+  resourcePersonsErrors.value = resourcePersons.value.map(() => ({}))
   if (application.isApproved === 'true') {
-      approvedCpdErrors.value.participants = participants.value.map(() => ({}));
+    approvedCpdErrors.value.participants = participants.value.map(() => ({}))
   }
 
-  calculateTotalHours();
-  await fetchUserRegistrations();
-  await loadDropdownOptions();
-  loadDraft();
-});
-
+  calculateTotalHours()
+  await fetchUserRegistrations()
+  await loadDropdownOptions()
+  loadDraft()
+})
 </script>
 
 <style scoped>

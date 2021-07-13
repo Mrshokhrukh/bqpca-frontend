@@ -72,12 +72,12 @@
               currentPaymentStatus === 'pending'
                 ? 'bg-yellow-400'
                 : currentPaymentStatus === 'processing payment'
-                ? 'bg-blue-400'
-                : currentPaymentStatus === 'completed'
-                ? 'bg-green-400'
-                : currentPaymentStatus === 'failed'
-                ? 'bg-red-400'
-                : 'bg-gray-300',
+                  ? 'bg-blue-400'
+                  : currentPaymentStatus === 'completed'
+                    ? 'bg-green-400'
+                    : currentPaymentStatus === 'failed'
+                      ? 'bg-red-400'
+                      : 'bg-gray-300',
             ]"
           >
           </span>
@@ -87,24 +87,24 @@
               currentPaymentStatus === 'pending'
                 ? 'text-yellow-600'
                 : currentPaymentStatus === 'processing payment'
-                ? 'text-blue-600'
-                : currentPaymentStatus === 'completed'
-                ? 'text-green-600'
-                : currentPaymentStatus === 'failed'
-                ? 'text-red-600'
-                : 'text-gray-600',
+                  ? 'text-blue-600'
+                  : currentPaymentStatus === 'completed'
+                    ? 'text-green-600'
+                    : currentPaymentStatus === 'failed'
+                      ? 'text-red-600'
+                      : 'text-gray-600',
             ]"
           >
             {{
               currentPaymentStatus === 'pending'
                 ? 'Pending'
                 : currentPaymentStatus === 'processing payment'
-                ? 'Processing Payment'
-                : currentPaymentStatus === 'completed'
-                ? 'Completed'
-                : currentPaymentStatus === 'failed'
-                ? 'Failed'
-                : props.qualification.payment_status || 'Unknown'
+                  ? 'Processing Payment'
+                  : currentPaymentStatus === 'completed'
+                    ? 'Completed'
+                    : currentPaymentStatus === 'failed'
+                      ? 'Failed'
+                      : props.qualification.payment_status || 'Unknown'
             }}
           </span>
         </div>
@@ -218,8 +218,8 @@
                   currentPaymentStatus === 'processing payment'
                     ? '(Payment in progress)'
                     : currentPaymentStatus === 'failed'
-                    ? '(Payment failed)'
-                    : '(Requires payment completion)'
+                      ? '(Payment failed)'
+                      : '(Requires payment completion)'
                 }}
               </span>
             </h5>
@@ -255,7 +255,10 @@
           </div>
         </div>
       </div>
-      <div v-if="errorMessage && !localLoading && !props.isLoading" class="text-red-500 text-sm mt-2">
+      <div
+        v-if="errorMessage && !localLoading && !props.isLoading"
+        class="text-red-500 text-sm mt-2"
+      >
         {{ errorMessage }}
       </div>
     </div>
@@ -309,7 +312,7 @@ watch(
       editableData.value = JSON.parse(JSON.stringify(newVal))
     }
   },
-  { deep: true }
+  { deep: true },
 )
 
 const startEditing = () => {
@@ -328,72 +331,76 @@ const cancelEditing = () => {
 
 const saveChanges = async () => {
   // Prevent multiple save attempts while loading
-  if (localLoading.value || props.isLoading) return;
+  if (localLoading.value || props.isLoading) return
 
   // Clear any previous error messages
-  errorMessage.value = '';
+  errorMessage.value = ''
 
   // Set local loading state
-  localLoading.value = true;
+  localLoading.value = true
 
   // Validate qualification ID
   if (!props.qualification.id) {
-    console.error('Qualification ID is missing.');
-    errorMessage.value = 'Qualification details are missing.';
-    localLoading.value = false;
-    return;
+    console.error('Qualification ID is missing.')
+    errorMessage.value = 'Qualification details are missing.'
+    localLoading.value = false
+    return
   }
 
   // Identify changed fields
-  const changedFields = {};
+  const changedFields = {}
   for (const key in editableData.value) {
     if (!isEqual(editableData.value[key], originalData.value[key])) {
-      changedFields[key] = editableData.value[key];
+      changedFields[key] = editableData.value[key]
     }
   }
 
   // If no changes, exit editing mode and hide loading
   if (Object.keys(changedFields).length === 0) {
-    isEditing.value = false;
-    localLoading.value = false;
-    return;
+    isEditing.value = false
+    localLoading.value = false
+    return
   }
 
   try {
     // Prepare form data for the API call
-    const formData = new FormData();
+    const formData = new FormData()
     for (const key in changedFields) {
       if (Object.prototype.hasOwnProperty.call(changedFields, key)) {
-        const value = changedFields[key];
-        formData.append(key, value === null || value === undefined ? '' : value);
+        const value = changedFields[key]
+        formData.append(key, value === null || value === undefined ? '' : value)
       }
     }
 
     // Make the API call
-    await apiServices.patchMhpcNewQualification(props.qualification.id, formData);
+    await apiServices.patchMhpcNewQualification(props.qualification.id, formData)
 
     // Update original data and exit editing mode
-    originalData.value = JSON.parse(JSON.stringify(editableData.value));
-    isEditing.value = false;
+    originalData.value = JSON.parse(JSON.stringify(editableData.value))
+    isEditing.value = false
 
     // Notify parent to refresh data
-    emit('update');
+    emit('update')
   } catch (error) {
     // Handle any errors
-    console.error('Error saving changes:', error);
-    errorMessage.value = error.response?.data?.message || 'Failed to save changes.';
+    console.error('Error saving changes:', error)
+    errorMessage.value = error.response?.data?.message || 'Failed to save changes.'
   } finally {
     // Ensure loading state is reset
-    localLoading.value = false;
+    localLoading.value = false
   }
-};
+}
 
 const getStatusClass = (status) => {
   switch (status?.toLowerCase()) {
-    case 'pending': return 'bg-yellow-400';
-    case 'approved': return 'bg-green-400';
-    case 'regretted': return 'bg-red-400';
-    default: return 'bg-gray-300';
+    case 'pending':
+      return 'bg-yellow-400'
+    case 'approved':
+      return 'bg-green-400'
+    case 'regretted':
+      return 'bg-red-400'
+    default:
+      return 'bg-gray-300'
   }
 }
 </script>

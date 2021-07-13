@@ -784,7 +784,7 @@ const fetchComplaintProfessionalCategories = async () => {
       }
     } else {
       throw new Error(
-        'Invalid data structure for complaint professional categories received from API.'
+        'Invalid data structure for complaint professional categories received from API.',
       )
     }
   } catch (error) {

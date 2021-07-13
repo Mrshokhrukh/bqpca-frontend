@@ -17,8 +17,8 @@
         </div>
         <span
           class="font-semibold text-lg tracking-wide text-slate-100 group-hover:text-primary transition-colors"
-        >BQPCA Console</span>
-
+          >BQPCA Console</span
+        >
       </router-link>
       <button
         @click="toggleSidebar"
@@ -155,14 +155,14 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { X as XIcon, LogOut, ChevronDown } from 'lucide-vue-next'
 
 const route = useRoute()
 const activeMenu = ref(null) // Keep track of the currently open menu
 
-defineProps({
+const props = defineProps({
   sidebarOpen: Boolean,
   filteredNavigationItems: Array,
 })
@@ -183,8 +183,22 @@ const handleLogout = () => {
 }
 
 const isChildActive = (children) => {
+  if (!children) return false
   return children.some((child) => route.path === child.route)
 }
+
+// This function finds the parent of the active child route and sets it as the active menu
+const updateActiveMenuOnRouteChange = () => {
+  const parentMenu = props.filteredNavigationItems.find(
+    (item) => item.children && isChildActive(item.children),
+  )
+  if (parentMenu) {
+    activeMenu.value = parentMenu.name
+  }
+}
+
+// Watch for route changes to update which parent menu is open, and run immediately on load
+watch(() => route.path, updateActiveMenuOnRouteChange, { immediate: true })
 </script>
 
 <style scoped>
