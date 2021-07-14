@@ -10,20 +10,13 @@
 
     <!-- Card Body -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div
-        v-for="(value, key) in displayData"
-        :key="key"
-        class="bg-gray-50 p-4 rounded-lg border border-gray-200"
-      >
+      <div v-for="(value, key) in displayData" :key="key" class="bg-gray-50 p-4 rounded-lg border border-gray-200">
         <div class="text-sm font-medium text-gray-500">{{ key }}</div>
         <!-- Dynamic Styling for Statuses -->
-        <div
-          v-if="
-            key === 'Review Status' || key === 'Endorsement Decision' || key === 'Payment Complete'
-          "
-          :class="getStatusClass(value)"
-          class="text-base mt-1 font-semibold inline-flex items-center px-3 py-1 rounded-full"
-        >
+        <div v-if="
+          key === 'Review Status' || key === 'Endorsement Decision' || key === 'Payment Complete'
+        " :class="getStatusClass(value)"
+          class="text-base mt-1 font-semibold inline-flex items-center px-3 py-1 rounded-full">
           {{ value }}
         </div>
         <div v-else class="text-base text-gray-900 mt-1">{{ value }}</div>
@@ -76,15 +69,15 @@ const fetchApplications = async () => {
 
     // Filter by current user's CID
     if (authStore.user?.cid) {
-      applications.value = allApplications.filter((app) => app.cid_no === authStore.user.cid)
+      applications.value = allApplications.filter(app => app.cid_no === authStore.user.cid)
     } else {
       applications.value = []
     }
 
     if (applications.value.length > 0) {
       // Get the most recent application
-      application.value = applications.value.sort(
-        (a, b) => new Date(b.created_at || b.updated_at) - new Date(a.created_at || a.updated_at),
+      application.value = applications.value.sort((a, b) =>
+        new Date(b.created_at || b.updated_at) - new Date(a.created_at || a.updated_at)
       )[0]
     } else {
       application.value = null
@@ -109,13 +102,13 @@ const displayData = computed(() => {
 
   // Handle nested objects safely
   const getNestedValue = (obj, path, fallback = 'N/A') => {
-    return obj && obj[path] ? obj[path].name || obj[path] : fallback
+    return obj && obj[path] ? (obj[path].name || obj[path]) : fallback
   }
 
   return {
-    Agency: getNestedValue(application.value, 'agency'),
-    Department: getNestedValue(application.value, 'department'),
-    Workplace: getNestedValue(application.value, 'workplace'),
+    'Agency': getNestedValue(application.value, 'agency'),
+    'Department': getNestedValue(application.value, 'department'),
+    'Workplace': getNestedValue(application.value, 'workplace'),
     'Review Status': application.value.review_status || 'Pending',
     'Endorsement Decision': application.value.endorsement_decision || 'Pending',
     'Payment Complete': application.value.is_payment_complete ? 'Yes' : 'No',

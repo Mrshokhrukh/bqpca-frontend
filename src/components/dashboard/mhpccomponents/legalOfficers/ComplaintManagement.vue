@@ -138,7 +138,7 @@
           <button
             @click="fetchPaginatedComplaints(pagination.currentPage + 1)"
             :disabled="!pagination.next || isLoading"
-            class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            class=" brackets.ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Next
           </button>
@@ -215,7 +215,7 @@
           d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
         />
       </svg>
-      <p class="mt-2 text-gray-600">No complaints found.</p>
+      <p ecta class="mt-2 text-gray-600">No complaints found.</p>
     </div>
 
     <!-- Combined Details, Link Respondent, and Status Modal -->
@@ -389,10 +389,13 @@
           </section>
 
           <!-- Section 2: Link Respondent Professional -->
-          <section class="pt-4">
+          <section class="pt-4" :class="{ 'opacity-50 pointer-events-none': isResolved }">
             <h4 class="text-lg font-medium text-gray-800 mb-3 border-b pb-2">
               Link Respondent Professional
             </h4>
+            <p v-if="isResolved" class="text-sm text-red-600 mb-2">
+              Linking is disabled because the complaint status is Resolved.
+            </p>
             <p class="text-sm text-gray-600 mb-2">
               Currently Linked Respondent:
               <strong class="text-gray-700">
@@ -436,12 +439,14 @@
                     "
                     class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                     autocomplete="off"
+                    :disabled="isResolved"
                   />
                   <button
                     v-if="selectedRespondentToLink"
                     @click="clearRespondentSelection"
                     class="absolute inset-y-0 right-8 pr-3 flex items-center text-gray-400 hover:text-gray-600"
                     title="Clear selection"
+                    :disabled="isResolved"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -461,6 +466,7 @@
                   <button
                     @click="toggleRespondentDropdown"
                     class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-600"
+                    :disabled="isResolved"
                   >
                     <svg
                       class="h-5 w-5"
@@ -506,9 +512,7 @@
                     v-else-if="respondentSearchQuery && !isLoadingLinkableRespondents"
                     class="text-sm text-gray-500 py-2 px-3"
                   >
-                    No professionals found matching "{{
-                      respondentSearchQuery
-                    }}".
+                    No professionals found matching "{{ respondentSearchQuery }}".
                   </ul>
                   <ul
                     v-else-if="
@@ -524,7 +528,7 @@
               </div>
               <button
                 @click="confirmLinkRespondent"
-                :disabled="!selectedRespondentToLink || isSubmittingRespondentLink"
+                :disabled="!selectedRespondentToLink || isSubmittingRespondentLink || isResolved"
                 class="mt-2 w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
               >
                 {{ isSubmittingRespondentLink ? 'Linking...' : 'Confirm Link Respondent' }}
@@ -533,10 +537,13 @@
           </section>
 
           <!-- Section 3: Update Status -->
-          <section class="pt-4">
+          <section class="pt-4" :class="{ 'opacity-50 pointer-events-none': isResolved }">
             <h4 class="text-lg font-medium text-gray-800 mb-3 border-b pb-2">
               Update Status & Remarks
             </h4>
+            <p v-if="isResolved" class="text-sm text-red-600 mb-2">
+              Status and remarks updates are disabled because the complaint status is Resolved.
+            </p>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label for="complaintStatus" class="block text-sm font-medium text-gray-700"
@@ -546,6 +553,7 @@
                   v-model="selectedStatusNameForUpdate"
                   id="complaintStatus"
                   class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                  :disabled="isResolved"
                 >
                   <option disabled value="">Select a status</option>
                   <option
@@ -567,16 +575,17 @@
                   rows="3"
                   class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                   :placeholder="selectedComplaint.remarks ? 'Update remarks...' : 'Add remarks...'"
+                  :disabled="isResolved"
                 ></textarea>
               </div>
             </div>
             <button
               @click="confirmUpdateStatus"
               :disabled="
-                !selectedStatusNameForUpdate ||
+                (!selectedStatusNameForUpdate ||
                 (selectedStatusNameForUpdate === selectedComplaint.status &&
                   complaintRemarks.trim() === (selectedComplaint.remarks || '').trim()) ||
-                isSubmittingStatusUpdate
+                isSubmittingStatusUpdate || isResolved)
               "
               class="mt-4 w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
             >
@@ -635,6 +644,11 @@ const isSubmittingRespondentLink = ref(false)
 
 // For status update
 const isSubmittingStatusUpdate = ref(false)
+
+// Computed property to check if complaint status is Resolved
+const isResolved = computed(() => 
+  selectedComplaint.value?.status?.toLowerCase() === 'resolved'
+)
 
 const pagination = reactive({
   currentPage: 1,
@@ -866,18 +880,21 @@ const closeCombinedModal = () => {
 }
 
 const selectRespondentToLink = (professional) => {
+  if (isResolved.value) return
   selectedRespondentToLink.value = professional
   respondentSearchQuery.value = '' // Clear search query to show selected in placeholder
   isRespondentDropdownOpen.value = false
 }
 
 const clearRespondentSelection = () => {
+  if (isResolved.value) return
   selectedRespondentToLink.value = null
   respondentSearchQuery.value = ''
   isRespondentDropdownOpen.value = true // Optionally re-open dropdown
 }
 
 const toggleRespondentDropdown = () => {
+  if (isResolved.value) return
   isRespondentDropdownOpen.value = !isRespondentDropdownOpen.value
   if (
     isRespondentDropdownOpen.value &&
@@ -889,7 +906,7 @@ const toggleRespondentDropdown = () => {
 }
 
 const confirmLinkRespondent = async () => {
-  if (!selectedComplaint.value || !selectedRespondentToLink.value) return
+  if (!selectedComplaint.value || !selectedRespondentToLink.value || isResolved.value) return
   isSubmittingRespondentLink.value = true
   try {
     const payload = {
@@ -910,9 +927,6 @@ const confirmLinkRespondent = async () => {
     if (selectedComplaint.value) {
       selectedComplaint.value = { ...selectedComplaint.value, ...updatedComplaintResponse.data }
     }
-    // Optionally clear selection after successful link
-    // selectedRespondentToLink.value = null;
-    // respondentSearchQuery.value = '';
   } catch (error) {
     console.error('Failed to link respondent to complaint:', error)
     const errorMsg =
@@ -926,7 +940,7 @@ const confirmLinkRespondent = async () => {
 }
 
 const confirmUpdateStatus = async () => {
-  if (!selectedComplaint.value || !selectedStatusNameForUpdate.value) return
+  if (!selectedComplaint.value || !selectedStatusNameForUpdate.value || isResolved.value) return
   const statusChanged = selectedStatusNameForUpdate.value !== selectedComplaint.value.status
   const remarksChanged =
     complaintRemarks.value.trim() !== (selectedComplaint.value.remarks || '').trim()
@@ -1028,7 +1042,6 @@ const getStatusClass = (statusName) => {
 onMounted(() => {
   fetchComplaints()
   fetchMasterStatuses()
-  // fetchAllLinkableRespondents(); // Fetched on modal open if list is empty, or pre-fetch if desired
 })
 </script>
 

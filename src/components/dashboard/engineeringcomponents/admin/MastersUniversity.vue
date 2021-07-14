@@ -15,9 +15,7 @@
             <div class="space-y-4">
               <!-- Country Dropdown -->
               <div>
-                <label for="country" class="block text-sm font-medium text-slate-700"
-                  >Country</label
-                >
+                <label for="country" class="block text-sm font-medium text-slate-700">Country</label>
                 <select
                   id="country"
                   v-model="formData.country"
@@ -25,7 +23,11 @@
                   required
                 >
                   <option value="" disabled>Select a country</option>
-                  <option v-for="country in countries" :key="country.code" :value="country.code">
+                  <option 
+                    v-for="country in countries" 
+                    :key="country.code" 
+                    :value="country.code"
+                  >
                     {{ country.name }}
                   </option>
                 </select>
@@ -239,6 +241,7 @@ import {
   AlertDialogTitle,
 } from 'radix-vue'
 
+
 const countries = ref([
   { code: 'AF', name: 'Afghanistan' },
   { code: 'AL', name: 'Albania' },
@@ -288,7 +291,7 @@ const countries = ref([
   { code: 'CD', name: 'Congo (Democratic Republic)' },
   { code: 'CK', name: 'Cook Islands' },
   { code: 'CR', name: 'Costa Rica' },
-  { code: 'CI', name: "Côte d'Ivoire" },
+  { code: 'CI', name: 'Côte d\'Ivoire' },
   { code: 'HR', name: 'Croatia' },
   { code: 'CU', name: 'Cuba' },
   { code: 'CW', name: 'Curaçao' },
@@ -479,11 +482,11 @@ const countries = ref([
   { code: 'EH', name: 'Western Sahara' },
   { code: 'YE', name: 'Yemen' },
   { code: 'ZM', name: 'Zambia' },
-  { code: 'ZW', name: 'Zimbabwe' },
+  { code: 'ZW', name: 'Zimbabwe' }
 ])
 
 const getCountryName = (countryCode) => {
-  const country = countries.value.find((c) => c.code === countryCode)
+  const country = countries.value.find(c => c.code === countryCode)
   return country ? country.name : countryCode
 }
 // State

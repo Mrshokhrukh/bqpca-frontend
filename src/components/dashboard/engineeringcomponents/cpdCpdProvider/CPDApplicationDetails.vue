@@ -8,116 +8,70 @@
     <div class="bg-white border rounded-xl shadow-lg p-6">
       <div class="space-y-8">
         <div>
-          <ApplicantDetailsForm
-            :applicant="applicant"
-            @update:applicant="(updatedData) => Object.assign(applicant, updatedData)"
-          />
+          <ApplicantDetailsForm :applicant="applicant"
+            @update:applicant="(updatedData) => Object.assign(applicant, updatedData)" />
         </div>
         <div>
-          <ApplicationDetailsForm
-            :application="application"
-            :handle-approval-letter-upload="handleApprovalLetterUpload"
-            @update:modelValue="handleApplicationUpdate"
-            @approval-change="toggleApprovedFields"
-          />
-          <CpdProviderForm
-            :cpd-provider="cpdProvider"
-            :agency-options="agencyOptions"
-            :reason-options="reasonOptions"
-            @update:cpdProvider="handleCpdProviderUpdate"
-          />
-          <ResourcePersonsForm
-            :resource-persons="resourcePersons"
+          <ApplicationDetailsForm :application="application" :handle-approval-letter-upload="handleApprovalLetterUpload"
+            @update:modelValue="handleApplicationUpdate" @approval-change="toggleApprovedFields" />
+          <CpdProviderForm :cpd-provider="cpdProvider" :agency-options="agencyOptions" :reason-options="reasonOptions"
+            @update:cpdProvider="handleCpdProviderUpdate" />
+          <ResourcePersonsForm :resource-persons="resourcePersons"
             :resource-person-certificate="resourcePersonCertificate"
             :fetch-resource-person-details="fetchResourcePersonDetails"
-            :handle-certificate-upload="handleCertificateUpload"
-            :add-resource-person="addResourcePerson"
-            :remove-resource-person="removeResourcePerson"
-            :user-registrations="userRegistrations"
-            @update:resourcePersons="handleResourcePersonsUpdate"
-          />
+            :handle-certificate-upload="handleCertificateUpload" :add-resource-person="addResourcePerson"
+            :remove-resource-person="removeResourcePerson" :user-registrations="userRegistrations"
+            @update:resourcePersons="handleResourcePersonsUpdate" />
         </div>
         <div>
-          <TeachingLearningMethodForm
-            :teaching-method="teachingMethod"
-            :cpd-type-options="cpdTypeOptions"
-            :methodology-options="methodologyOptions"
-            :selected-methodologies="selectedMethodologies"
-            :teaching-methods="teachingMethods"
-            :total-hours="totalHours"
-            :course-document-file="courseDocument"
-            :handle-course-document-upload="handleCourseDocumentUpload"
-            :add-teaching-method="addTeachingMethod"
+          <TeachingLearningMethodForm :teaching-method="teachingMethod" :cpd-type-options="cpdTypeOptions"
+            :methodology-options="methodologyOptions" :selected-methodologies="selectedMethodologies"
+            :teaching-methods="teachingMethods" :total-hours="totalHours" :course-document-file="courseDocument"
+            :handle-course-document-upload="handleCourseDocumentUpload" :add-teaching-method="addTeachingMethod"
             :remove-teaching-method="removeTeachingMethod"
             @update:teachingMethod="(data) => Object.assign(teachingMethod, data)"
             @update:selectedMethodologies="handleMethodologiesUpdate"
-            @update:teachingMethods="handleTeachingMethodsUpdate"
-          />
+            @update:teachingMethods="handleTeachingMethodsUpdate" />
         </div>
         <template v-if="areOptionsLoaded">
           <div>
-            <ParticipantsDetailsForm
-              :key="participantFormKey"
-              :participant-details="participantDetails"
+            <ParticipantsDetailsForm :key="participantFormKey" :participant-details="participantDetails"
               @update:participantDetails="handleParticipantDetailsUpdate"
               :participation-category-options="participationCategoryOptions"
-              :participant-subcategory-options="participantSubcategoryOptions"
-            />
+              :participant-subcategory-options="participantSubcategoryOptions" />
           </div>
         </template>
         <div v-else class="bg-white border rounded-xl shadow-sm p-6 text-center my-4">
           <p class="text-gray-600 font-semibold">
-            <svg
-              aria-hidden="true"
+            <svg aria-hidden="true"
               class="inline w-6 h-6 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
-              viewBox="0 0 100 101"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
+              viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
                 d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                fill="currentColor"
-              />
+                fill="currentColor" />
               <path
                 d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                fill="currentFill"
-              />
+                fill="currentFill" />
             </svg>
             Loading participation options...
           </p>
         </div>
         <div>
-          <ApprovedCpdForm
-            :is-cpd-approved="isCpdApproved"
-            :participants="participants"
-            :attendance-sheet="attendanceSheet"
-            :handle-attendance-sheet-upload="handleAttendanceSheetUpload"
-            :add-participant="addParticipant"
-            :remove-participant="removeParticipant"
-            :fetch-participant-name="fetchParticipantName"
-            :attachment="attachment"
-            :handle-attachment-upload="handleAttachmentUpload"
-            :application="application"
-          />
+          <ApprovedCpdForm :is-cpd-approved="isCpdApproved" :participants="participants"
+            :attendance-sheet="attendanceSheet" :handle-attendance-sheet-upload="handleAttendanceSheetUpload"
+            :add-participant="addParticipant" :remove-participant="removeParticipant"
+            :fetch-participant-name="fetchParticipantName" :attachment="attachment"
+            :handle-attachment-upload="handleAttachmentUpload" :application="application" />
         </div>
         <div>
-          <FormActions
-            :loading="loading"
-            :form-valid="isFormValid"
-            @save-draft="saveDraft"
-            @submit="handleSubmit"
-            @cancel="cancelForm"
-          />
+          <FormActions :loading="loading" :form-valid="isFormValid" @save-draft="saveDraft" @submit="handleSubmit"
+            @cancel="cancelForm" />
         </div>
       </div>
     </div>
 
-    <ConfirmationModal
-      :show-confirmation="showConfirmation"
-      :loading="loading"
-      :confirm-submit="confirmSubmit"
-      @update:showConfirmation="showConfirmation = $event"
-    />
+    <ConfirmationModal :show-confirmation="showConfirmation" :loading="loading" :confirm-submit="confirmSubmit"
+      @update:showConfirmation="showConfirmation = $event" />
   </div>
 </template>
 
@@ -181,7 +135,7 @@ const userRegistrations = ref([])
 const applicant = reactive({
   registrationNumber: '',
   cidNumber: '', // Will be populated by watcher
-  fullName: '', // Will be populated by watcher
+  fullName: '',  // Will be populated by watcher
   agencyTrainingLocation: '',
 })
 
@@ -253,21 +207,20 @@ watch(
   () => authStore.user,
   (currentUser) => {
     if (currentUser) {
-      applicant.cidNumber = currentUser.cid || ''
-      applicant.fullName =
-        [currentUser.first_name, currentUser.middle_name, currentUser.last_name]
-          .filter(Boolean)
-          .join(' ') || ''
+      applicant.cidNumber = currentUser.cid || '';
+      applicant.fullName = [currentUser.first_name, currentUser.middle_name, currentUser.last_name]
+        .filter(Boolean)
+        .join(' ') || '';
       // If applicant.registrationNumber also comes from authStore.user, set it here.
       // e.g., applicant.registrationNumber = currentUser.registrationNumber || '';
     } else {
       // Clear fields if user becomes null (e.g., logout)
-      applicant.cidNumber = ''
-      applicant.fullName = ''
+      applicant.cidNumber = '';
+      applicant.fullName = '';
       // applicant.registrationNumber = ''; // Also clear if it's from authStore
     }
   },
-  { immediate: true, deep: true }, // immediate ensures it runs on mount, deep for nested changes
+  { immediate: true, deep: true } // immediate ensures it runs on mount, deep for nested changes
 )
 
 watch(
@@ -277,8 +230,9 @@ watch(
     // that are not covered by toggleApprovedFields or computed properties.
     // For example, if other parts of the application need to react directly.
   },
-  { immediate: true },
+  { immediate: true }
 )
+
 
 // --- Methods ---
 
@@ -299,12 +253,12 @@ const handleResourcePersonsUpdate = (updatedResourcePersons) => {
 }
 
 const handleTeachingMethodsUpdate = (updatedMethods) => {
-  teachingMethods.value = [...updatedMethods]
-  calculateTotalHours()
+  teachingMethods.value = [...updatedMethods];
+  calculateTotalHours();
 }
 
 const handleMethodologiesUpdate = (updatedMethodologies) => {
-  selectedMethodologies.value = [...updatedMethodologies]
+  selectedMethodologies.value = [...updatedMethodologies];
 }
 
 const genericFileHandler = (event, fileRef, fieldName) => {
@@ -326,16 +280,11 @@ const genericFileHandler = (event, fileRef, fieldName) => {
   }
 }
 
-const handleApprovalLetterUpload = (event) =>
-  genericFileHandler(event, approvalLetter, 'Approval Letter')
-const handleCertificateUpload = (event) =>
-  genericFileHandler(event, resourcePersonCertificate, 'Resource Person Certificate')
-const handleCourseDocumentUpload = (event) =>
-  genericFileHandler(event, courseDocument, 'Course Document')
-const handleAttendanceSheetUpload = (event) =>
-  genericFileHandler(event, attendanceSheet, 'Attendance Sheet')
-const handleAttachmentUpload = (event) =>
-  genericFileHandler(event, attachment, 'General Attachment')
+const handleApprovalLetterUpload = (event) => genericFileHandler(event, approvalLetter, 'Approval Letter')
+const handleCertificateUpload = (event) => genericFileHandler(event, resourcePersonCertificate, 'Resource Person Certificate')
+const handleCourseDocumentUpload = (event) => genericFileHandler(event, courseDocument, 'Course Document')
+const handleAttendanceSheetUpload = (event) => genericFileHandler(event, attendanceSheet, 'Attendance Sheet')
+const handleAttachmentUpload = (event) => genericFileHandler(event, attachment, 'General Attachment')
 
 const fetchResourcePersonDetails = async (person) => {
   if (!person.regNo) {
@@ -346,14 +295,13 @@ const fetchResourcePersonDetails = async (person) => {
   try {
     const response = await apiService.getEpcFullApplicationListByCid('')
     if (response.data && response.data.results && Array.isArray(response.data.results)) {
-      const matchingApplication = response.data.results.find(
-        (app) => app.registration_no === person.regNo,
-      )
+      const matchingApplication = response.data.results.find(app => app.registration_no === person.regNo)
       person.name = matchingApplication ? matchingApplication.full_name || '' : ''
     } else {
       person.name = ''
     }
   } catch {
+    
     person.name = ''
   } finally {
     loading.value = false
@@ -369,9 +317,7 @@ const fetchParticipantName = async (participant) => {
   try {
     const response = await apiService.getEpcFullApplicationListByCid('')
     if (response.data && response.data.results && Array.isArray(response.data.results)) {
-      const matchingApplication = response.data.results.find(
-        (app) => app.registration_no === participant.regNo,
-      )
+      const matchingApplication = response.data.results.find(app => app.registration_no === participant.regNo)
       participant.name = matchingApplication ? matchingApplication.full_name || '' : ''
     } else {
       participant.name = ''
@@ -426,17 +372,15 @@ const loadDropdownOptions = async () => {
     reasonOptions.value = mapToOptions(responses[1]?.data, 'name', 'id')
     cpdTypeOptions.value = mapToOptions(responses[2]?.data, 'cpd_activity_name', 'id')
     methodologyOptions.value = mapToOptions(responses[3]?.data, 'methodology_name', 'id')
-    participationCategoryOptions.value =
-      responses[4]?.data?.results?.map((cat) => ({
-        text: cat.participation_category_name || cat.category_name,
-        value: cat.id,
-      })) || []
-    participantSubcategoryOptions.value =
-      responses[5]?.data?.results?.map((sub) => ({
-        text: sub.participation_sub_category_name || sub.sub_category_name,
-        value: sub.id,
-        categoryId: sub.participation_category_name || sub.category_id || sub.category,
-      })) || []
+    participationCategoryOptions.value = responses[4]?.data?.results?.map(cat => ({
+      text: cat.participation_category_name || cat.category_name,
+      value: cat.id
+    })) || []
+    participantSubcategoryOptions.value = responses[5]?.data?.results?.map(sub => ({
+      text: sub.participation_sub_category_name || sub.sub_category_name,
+      value: sub.id,
+      categoryId: sub.participation_category_name || sub.category_id || sub.category
+    })) || []
   } catch {
     validationErrors.value = ['Error loading form data. Please refresh the page.']
   } finally {
@@ -480,19 +424,14 @@ const performValidation = () => {
   validationErrors.value = []
 
   // Basic validations
-  if (!applicant.agencyTrainingLocation)
-    validationErrors.value.push('Agency/Training Location is required.')
+  if (!applicant.agencyTrainingLocation) validationErrors.value.push('Agency/Training Location is required.')
 
   if (!isCpdApproved.value) {
     if (!application.title) validationErrors.value.push('Title of CPD is required.')
     if (!application.venue) validationErrors.value.push('Venue is required.')
     if (!application.fromDate) validationErrors.value.push('From Date is required.')
     if (!application.toDate) validationErrors.value.push('To Date is required.')
-    if (
-      application.fromDate &&
-      application.toDate &&
-      new Date(application.fromDate) > new Date(application.toDate)
-    ) {
+    if (application.fromDate && application.toDate && new Date(application.fromDate) > new Date(application.toDate)) {
       validationErrors.value.push('From Date cannot be later than To Date.')
     }
   } else if (isCpdApproved.value && !approvalLetter.value) {
@@ -501,22 +440,19 @@ const performValidation = () => {
 
   // CPD Provider validations
   if (!cpdProvider.agency) validationErrors.value.push('CPD Providing Agency is required.')
-  if (cpdProvider.agency === 'other' && !cpdProvider.otherAgency)
-    validationErrors.value.push('Please specify the Other Agency.')
+  if (cpdProvider.agency === 'other' && !cpdProvider.otherAgency) validationErrors.value.push('Please specify the Other Agency.')
   if (!cpdProvider.reason) validationErrors.value.push('Reason for Conducting is required.')
   if (!cpdProvider.reasonDetails) validationErrors.value.push('Reason Details are required.')
 
   // Resource Persons validations
-  if (resourcePersons.value.some((person) => !person.regNo))
-    validationErrors.value.push('Registration Number is required for all Resource Persons.')
-  if (!resourcePersonCertificate.value)
-    validationErrors.value.push('Document supporting expertise of Resource Persons is required.')
+  if (resourcePersons.value.some((person) => !person.regNo)) validationErrors.value.push('Registration Number is required for all Resource Persons.')
+  if (!resourcePersonCertificate.value) validationErrors.value.push('Document supporting expertise of Resource Persons is required.')
 
   // Teaching Method validations (FIXED)
   if (!teachingMethod.type) validationErrors.value.push('Type of CPD is required.')
 
   // Check selectedMethodologies array properly
-  console.log('Validation - selectedMethodologies:', selectedMethodologies.value) // Debug log
+  console.log('Validation - selectedMethodologies:', selectedMethodologies.value); // Debug log
   if (!Array.isArray(selectedMethodologies.value) || selectedMethodologies.value.length === 0) {
     validationErrors.value.push('At least one Methodology must be selected.')
   }
@@ -524,63 +460,46 @@ const performValidation = () => {
   if (!teachingMethod.expectedOutcome) validationErrors.value.push('Expected Outcome is required.')
 
   // Check teachingMethods array properly
-  console.log('Validation - teachingMethods:', teachingMethods.value) // Debug log
-  const validTeachingMethods = teachingMethods.value.filter(
-    (method) =>
-      method.activity &&
-      method.activity.trim() !== '' &&
-      method.duration &&
-      Number(method.duration) > 0,
-  )
+  console.log('Validation - teachingMethods:', teachingMethods.value); // Debug log
+  const validTeachingMethods = teachingMethods.value.filter(method =>
+    method.activity && method.activity.trim() !== '' &&
+    method.duration && Number(method.duration) > 0
+  );
 
   if (validTeachingMethods.length === 0) {
-    validationErrors.value.push(
-      'At least one Teaching Method with activity and positive duration is required.',
-    )
+    validationErrors.value.push('At least one Teaching Method with activity and positive duration is required.')
   }
 
-  if (!courseDocument.value)
-    validationErrors.value.push('Course Document/Program Outline is required.')
+  if (!courseDocument.value) validationErrors.value.push('Course Document/Program Outline is required.')
 
   // Participant Details validations (only if options are loaded)
   if (areOptionsLoaded.value) {
     if (!Array.isArray(participantDetails.category) || participantDetails.category.length === 0) {
       validationErrors.value.push('At least one Participation Category is required.')
     }
-    if (
-      !Array.isArray(participantDetails.subcategory) ||
-      participantDetails.subcategory.length === 0
-    ) {
+    if (!Array.isArray(participantDetails.subcategory) || participantDetails.subcategory.length === 0) {
       validationErrors.value.push('At least one Participant Sub-Category is required.')
     }
     if (!participantDetails.number || participantDetails.number <= 0) {
       validationErrors.value.push('Number of Participants must be a positive number.')
     }
-    if (
-      Array.isArray(participantDetails.category) &&
-      participantDetails.category.length > 1 &&
-      !participantDetails.relevance
-    ) {
-      validationErrors.value.push(
-        'Relevance to profession is required when multiple participation categories are selected.',
-      )
+    if (Array.isArray(participantDetails.category) && participantDetails.category.length > 1 && !participantDetails.relevance) {
+      validationErrors.value.push('Relevance to profession is required when multiple participation categories are selected.')
     }
   }
 
   // Approved CPD specific validations
   if (isCpdApproved.value) {
-    if (!attachment.value)
-      validationErrors.value.push('General Attachment is required for approved CPD.')
+    if (!attachment.value) validationErrors.value.push('General Attachment is required for approved CPD.')
     if (participants.value.length > 0 && !attendanceSheet.value) {
-      validationErrors.value.push(
-        'Attendance Sheet is required when participants are listed for an approved CPD.',
-      )
+      validationErrors.value.push('Attendance Sheet is required when participants are listed for an approved CPD.')
     }
   }
 
-  console.log('Validation errors:', validationErrors.value) // Debug log
+  console.log('Validation errors:', validationErrors.value); // Debug log
   return validationErrors.value.length === 0
 }
+
 
 const prepareFormData = (isDraft = false) => {
   const formData = new FormData()
@@ -597,43 +516,27 @@ const prepareFormData = (isDraft = false) => {
     if (approvalLetter.value) formData.append('approval_letter_attachment', approvalLetter.value)
     if (attachment.value) formData.append('general_approved_cpd_attachment', attachment.value)
   }
-  formData.append(
-    'cpd_providing_agency',
-    cpdProvider.agency === 'other' ? '' : parseInt(cpdProvider.agency, 10) || '',
-  )
-  if (cpdProvider.agency === 'other')
-    formData.append('if_others_specify', cpdProvider.otherAgency || '')
+  formData.append('cpd_providing_agency', cpdProvider.agency === 'other' ? '' : parseInt(cpdProvider.agency, 10) || '')
+  if (cpdProvider.agency === 'other') formData.append('if_others_specify', cpdProvider.otherAgency || '')
   formData.append('reason_for_conducting', parseInt(cpdProvider.reason, 10) || '')
   formData.append('reason_for_details', cpdProvider.reasonDetails)
   const validResourcePersons = resourcePersons.value
     .filter((person) => person.regNo && person.name)
     .map((person) => ({ resource_person_reg_no: person.regNo, resource_person_name: person.name }))
-  if (validResourcePersons.length > 0)
-    formData.append('resources', JSON.stringify(validResourcePersons))
-  if (resourcePersonCertificate.value)
-    formData.append('document_supporting_expertise', resourcePersonCertificate.value)
+  if (validResourcePersons.length > 0) formData.append('resources', JSON.stringify(validResourcePersons))
+  if (resourcePersonCertificate.value) formData.append('document_supporting_expertise', resourcePersonCertificate.value)
   formData.append('type_of_cpd', teachingMethod.type)
-  const validMethodologies = selectedMethodologies.value.map((methodId) => ({
-    methodology_name: methodId,
-  }))
-  if (validMethodologies.length > 0)
-    formData.append('methodologies', JSON.stringify(validMethodologies))
+  const validMethodologies = selectedMethodologies.value.map((methodId) => ({ methodology_name: methodId }))
+  if (validMethodologies.length > 0) formData.append('methodologies', JSON.stringify(validMethodologies))
   const validLearningMethods = teachingMethods.value
     .filter((method) => method.activity && method.duration > 0)
     .map((method) => ({ activities: method.activity, duration: method.duration }))
-  if (validLearningMethods.length > 0)
-    formData.append('learning_methods', JSON.stringify(validLearningMethods))
+  if (validLearningMethods.length > 0) formData.append('learning_methods', JSON.stringify(validLearningMethods))
   formData.append('expected_outcome', teachingMethod.expectedOutcome)
   if (courseDocument.value) formData.append('course_document', courseDocument.value)
   if (areOptionsLoaded.value) {
-    formData.append(
-      'participation_category',
-      JSON.stringify(participantDetails.category.map((c) => c.value || c)),
-    )
-    formData.append(
-      'participant_sub_category',
-      JSON.stringify(participantDetails.subcategory.map((s) => s.value || s)),
-    )
+    formData.append('participation_category', JSON.stringify(participantDetails.category.map(c => c.value || c)))
+    formData.append('participant_sub_category', JSON.stringify(participantDetails.subcategory.map(s => s.value || s)))
     formData.append('number_of_participants', participantDetails.number || 0)
     formData.append('relevance_to_topic', participantDetails.relevance || '')
   }
@@ -645,8 +548,7 @@ const prepareFormData = (isDraft = false) => {
         cpd_credits: calculatedCredits.value,
         review_status: 'Pending',
       }))
-    if (validParticipants.length > 0)
-      formData.append('participants', JSON.stringify(validParticipants))
+    if (validParticipants.length > 0) formData.append('participants', JSON.stringify(validParticipants))
     if (attendanceSheet.value) formData.append('attendance_sheet_attachment', attendanceSheet.value)
   }
   formData.append('is_draft', isDraft)
@@ -655,16 +557,12 @@ const prepareFormData = (isDraft = false) => {
 
 const saveDraft = async () => {
   if (!applicant.agencyTrainingLocation && !application.title && !isCpdApproved.value) {
-    validationErrors.value = [
-      'Please fill in at least Agency/Training Location or Title of CPD (if not pre-approved) to save a draft.',
-    ]
+    validationErrors.value = ['Please fill in at least Agency/Training Location or Title of CPD (if not pre-approved) to save a draft.']
     window.scrollTo({ top: 0, behavior: 'smooth' })
     return
   }
   if (isCpdApproved.value && !approvalLetter.value) {
-    validationErrors.value = [
-      'Please upload the Approval Letter to save a draft for a pre-approved CPD.',
-    ]
+    validationErrors.value = ['Please upload the Approval Letter to save a draft for a pre-approved CPD.']
     window.scrollTo({ top: 0, behavior: 'smooth' })
     return
   }
@@ -674,9 +572,7 @@ const saveDraft = async () => {
     const formData = prepareFormData(true)
     await apiService.createEpcCpdTask(formData)
     successMessage.value = 'Draft saved successfully!'
-    setTimeout(() => {
-      successMessage.value = ''
-    }, 3000)
+    setTimeout(() => { successMessage.value = '' }, 3000)
   } catch (error) {
     validationErrors.value = ['An error occurred while saving the draft.']
     if (error.response && error.response.data) {
@@ -727,15 +623,15 @@ const cancelForm = () => {
 }
 
 onMounted(async () => {
-  loading.value = true
+  loading.value = true;
   // Applicant details (cid, fullName) are now populated by the watcher for authStore.user.
   // The watcher runs with immediate: true, so it will populate on mount if authStore.user is available.
 
   // Fetch other necessary data
   await Promise.all([
     fetchUserRegistrations(), // This might populate applicant.registrationNumber or userRegistrations for lookups
-    loadDropdownOptions(), // Load all dropdowns
-  ])
+    loadDropdownOptions()     // Load all dropdowns
+  ]);
 
   // Initialize form based on modelValue prop (e.g., for editing an existing application)
   if (props.modelValue) {
@@ -749,8 +645,9 @@ onMounted(async () => {
     }
   }
 
-  calculateTotalHours() // Initial calculation
+  calculateTotalHours(); // Initial calculation
 
-  loading.value = false
+  loading.value = false;
 })
+
 </script>

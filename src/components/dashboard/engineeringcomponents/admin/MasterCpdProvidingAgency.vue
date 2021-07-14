@@ -105,9 +105,7 @@
                   <div>
                     <h3 class="font-medium text-slate-900">{{ agency.name }}</h3>
                     <p class="text-sm text-slate-600 mt-1">
-                      <span
-                        class="inline-flex items-center px-2 py-1 rounded-md bg-slate-100 text-slate-700 text-xs font-medium"
-                      >
+                      <span class="inline-flex items-center px-2 py-1 rounded-md bg-slate-100 text-slate-700 text-xs font-medium">
                         {{ agency.short_name }}
                       </span>
                     </p>
@@ -250,7 +248,8 @@ const filteredAgencies = computed(() => {
   return agencies.value.filter((agency) => {
     const query = searchQuery.value.toLowerCase()
     return (
-      agency.name.toLowerCase().includes(query) || agency.short_name.toLowerCase().includes(query)
+      agency.name.toLowerCase().includes(query) ||
+      agency.short_name.toLowerCase().includes(query)
     )
   })
 })

@@ -20,37 +20,21 @@
 
     <!-- Deadlines Display -->
     <div v-else class="space-y-4">
-      <div
-        v-for="(deadline, index) in sortedDeadlines"
-        :key="index"
-        class="flex items-start space-x-3"
-      >
+      <div v-for="(deadline, index) in sortedDeadlines" :key="index" class="flex items-start space-x-3">
         <div :class="['p-2 rounded-full', getDeadlineTypeClass(deadline.type)]">
-          <component
-            :is="getDeadlineIcon(deadline.type)"
-            class="w-4 h-4"
-            :class="getDeadlineIconClass(deadline.type)"
-          />
+          <component :is="getDeadlineIcon(deadline.type)" class="w-4 h-4"
+            :class="getDeadlineIconClass(deadline.type)" />
         </div>
         <div class="flex-1">
           <div class="flex items-center justify-between">
             <p class="text-sm font-medium">{{ deadline.title }}</p>
-            <span
-              v-if="deadline.urgency"
-              :class="[
-                'px-2 py-1 rounded-full text-xs font-medium',
-                getUrgencyClass(deadline.urgency),
-              ]"
-            >
+            <span v-if="deadline.urgency"
+              :class="['px-2 py-1 rounded-full text-xs font-medium', getUrgencyClass(deadline.urgency)]">
               {{ deadline.urgency }}
             </span>
           </div>
           <p class="text-xs text-gray-500">Due: {{ formatDate(deadline.date) }}</p>
-          <p
-            v-if="deadline.daysUntil !== null"
-            class="text-xs"
-            :class="getDaysUntilClass(deadline.daysUntil)"
-          >
+          <p v-if="deadline.daysUntil !== null" class="text-xs" :class="getDaysUntilClass(deadline.daysUntil)">
             {{ getDaysUntilText(deadline.daysUntil) }}
           </p>
         </div>
@@ -107,12 +91,11 @@ const fetchDeadlines = async () => {
     const now = dayjs()
 
     // 1. Qualification Expiry Deadlines from applications
-    const applications =
-      props.applications.length > 0 ? props.applications : await fetchApplications()
+    const applications = props.applications.length > 0 ? props.applications : await fetchApplications()
 
-    applications.forEach((app) => {
+    applications.forEach(app => {
       if (app.cid_no === cid && app.user_qualifications) {
-        app.user_qualifications.forEach((qual) => {
+        app.user_qualifications.forEach(qual => {
           if (qual.endorsement_decision === 'Approved' && qual.expiry_date) {
             const expiryDate = dayjs(qual.expiry_date)
             const daysUntil = expiryDate.diff(now, 'day')
@@ -130,7 +113,7 @@ const fetchDeadlines = async () => {
                 date: expiryDate,
                 daysUntil: daysUntil,
                 urgency: urgency,
-                priority: daysUntil <= 0 ? 1 : daysUntil <= 14 ? 2 : daysUntil <= 90 ? 3 : 4,
+                priority: daysUntil <= 0 ? 1 : daysUntil <= 14 ? 2 : daysUntil <= 90 ? 3 : 4
               })
             }
           }
@@ -147,27 +130,22 @@ const fetchDeadlines = async () => {
           ? cpdResponse.data
           : []
 
-      const userCpdRecords = cpdData.filter((record) => record.cid_no === cid)
+      const userCpdRecords = cpdData.filter(record => record.cid_no === cid)
       const currentYearStart = dayjs().startOf('year')
       const currentYearEnd = dayjs().endOf('year')
 
       // Calculate CPD credits for current year
       const currentYearCredits = userCpdRecords
-        .filter((record) => {
+        .filter(record => {
           const recordDate = dayjs(record.created_at)
-          return (
-            recordDate.isAfter(currentYearStart) &&
-            recordDate.isBefore(currentYearEnd) &&
-            record.review_status === 'Approved'
-          )
+          return recordDate.isAfter(currentYearStart) && recordDate.isBefore(currentYearEnd) && record.review_status === 'Approved'
         })
         .reduce((total, record) => total + (record.cpd_credit || 0), 0)
 
       // If user has approved qualifications and insufficient CPD credits
-      const hasApprovedQual = applications.some(
-        (app) =>
-          app.cid_no === cid &&
-          app.user_qualifications?.some((qual) => qual.endorsement_decision === 'Approved'),
+      const hasApprovedQual = applications.some(app =>
+        app.cid_no === cid &&
+        app.user_qualifications?.some(qual => qual.endorsement_decision === 'Approved')
       )
 
       if (hasApprovedQual && currentYearCredits < 50) {
@@ -182,7 +160,7 @@ const fetchDeadlines = async () => {
           date: currentYearEnd,
           daysUntil: daysUntilYearEnd,
           urgency: urgency,
-          priority: daysUntilYearEnd <= 30 ? 2 : daysUntilYearEnd <= 90 ? 3 : 5,
+          priority: daysUntilYearEnd <= 30 ? 2 : daysUntilYearEnd <= 90 ? 3 : 5
         })
       }
     } catch (cpdError) {
@@ -198,24 +176,23 @@ const fetchDeadlines = async () => {
           ? cogsResponse.data
           : []
 
-      const userCogsRecords = cogsData.filter((record) => record.cid_no === cid)
+      const userCogsRecords = cogsData.filter(record => record.cid_no === cid)
 
-      userCogsRecords.forEach((cogs) => {
+      userCogsRecords.forEach(cogs => {
         if (cogs.review_status === 'Pending' && cogs.created_at) {
           const submissionDate = dayjs(cogs.created_at)
           // Assume 30-day processing time for CoGS applications
           const expectedDecisionDate = submissionDate.add(30, 'day')
           const daysUntil = expectedDecisionDate.diff(now, 'day')
 
-          if (daysUntil >= -7) {
-            // Show for a week after expected date
+          if (daysUntil >= -7) { // Show for a week after expected date
             tempDeadlines.push({
               type: 'CoGS',
               title: 'CoGS Application Decision Expected',
               date: expectedDecisionDate,
               daysUntil: daysUntil,
               urgency: daysUntil <= 0 ? 'Overdue' : null,
-              priority: daysUntil <= 0 ? 2 : 6,
+              priority: daysUntil <= 0 ? 2 : 6
             })
           }
         }
@@ -225,9 +202,9 @@ const fetchDeadlines = async () => {
     }
 
     // 4. Renewal Period Reminders
-    applications.forEach((app) => {
+    applications.forEach(app => {
       if (app.cid_no === cid && app.user_qualifications) {
-        app.user_qualifications.forEach((qual) => {
+        app.user_qualifications.forEach(qual => {
           if (qual.endorsement_decision === 'Approved' && qual.expiry_date) {
             const expiryDate = dayjs(qual.expiry_date)
             const renewalStartDate = expiryDate.subtract(3, 'month') // 3 months before expiry
@@ -241,7 +218,7 @@ const fetchDeadlines = async () => {
                 date: renewalStartDate,
                 daysUntil: daysUntilRenewalPeriod,
                 urgency: daysUntilRenewalPeriod <= 30 ? 'Urgent' : null,
-                priority: daysUntilRenewalPeriod <= 30 ? 3 : 7,
+                priority: daysUntilRenewalPeriod <= 30 ? 3 : 7
               })
             }
           }
@@ -250,6 +227,7 @@ const fetchDeadlines = async () => {
     })
 
     deadlines.value = tempDeadlines
+
   } catch (err) {
     console.error('Error fetching deadlines:', err)
     error.value = 'Failed to load deadlines'

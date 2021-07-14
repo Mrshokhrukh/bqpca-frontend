@@ -1,9 +1,7 @@
 <template>
   <div class="w-full mx-auto px-4 sm:px-6 py-8 bg-gray-50 min-h-screen">
-    <PageHeader
-      title="Certificate of Good Standing (CoGS) Application"
-      subtitle="Please fill in all required fields marked with an asterisk (*). Ensure all information provided is accurate and up-to-date."
-    >
+    <PageHeader title="Certificate of Good Standing (CoGS) Application"
+      subtitle="Please fill in all required fields marked with an asterisk (*). Ensure all information provided is accurate and up-to-date.">
       <template #icon>
         <FileText class="w-6 h-6 text-blue-600" />
       </template>
@@ -17,15 +15,11 @@
 
       <!-- Section 1: Supervisor Details -->
       <div
-        class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-xl group"
-      >
-        <div
-          class="p-5 sm:p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 via-blue-50 to-blue-50"
-        >
+        class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-xl group">
+        <div class="p-5 sm:p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 via-blue-50 to-blue-50">
           <div class="flex items-center space-x-4">
             <div
-              class="flex-shrink-0 w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-xl shadow-md transition-transform group-hover:scale-105"
-            >
+              class="flex-shrink-0 w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-xl shadow-md transition-transform group-hover:scale-105">
               1
             </div>
             <div>
@@ -41,16 +35,10 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
             <!-- Supervisor Name -->
             <div class="space-y-1.5">
-              <label class="block text-sm font-medium text-gray-700 required" for="supervisor_name"
-                >Supervisor's Name</label
-              >
-              <input
-                type="text"
-                id="supervisor_name"
-                v-model="form.supervisor_name"
-                class="form-input"
-                placeholder="Enter supervisor's full name"
-              />
+              <label class="block text-sm font-medium text-gray-700 required" for="supervisor_name">Supervisor's
+                Name</label>
+              <input type="text" id="supervisor_name" v-model="form.supervisor_name" class="form-input"
+                placeholder="Enter supervisor's full name" />
               <span v-if="errors.supervisor_name" class="error-message">{{
                 errors.supervisor_name
               }}</span>
@@ -58,18 +46,10 @@
 
             <!-- Supervisor Designation -->
             <div class="space-y-1.5">
-              <label
-                class="block text-sm font-medium text-gray-700 required"
-                for="supervisor_designation"
-                >Supervisor's Designation</label
-              >
-              <input
-                type="text"
-                id="supervisor_designation"
-                v-model="form.supervisor_designation"
-                class="form-input"
-                placeholder="e.g., Head of Department"
-              />
+              <label class="block text-sm font-medium text-gray-700 required" for="supervisor_designation">Supervisor's
+                Designation</label>
+              <input type="text" id="supervisor_designation" v-model="form.supervisor_designation" class="form-input"
+                placeholder="e.g., Head of Department" />
               <span v-if="errors.supervisor_designation" class="error-message">{{
                 errors.supervisor_designation
               }}</span>
@@ -77,51 +57,32 @@
 
             <!-- Agency / Organization -->
             <div class="space-y-1.5">
-              <label class="block text-sm font-medium text-gray-700 required" for="agency"
-                >Agency / Organization</label
-              >
+              <label class="block text-sm font-medium text-gray-700 required" for="agency">Agency / Organization</label>
               <Listbox v-model="form.agency" as="div">
                 <div class="relative">
                   <ListboxButton class="form-input text-left w-full">
                     <span class="block truncate">{{ selectedAgencyName || 'Select Agency' }}</span>
-                    <span
-                      class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2"
-                    >
+                    <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                       <ChevronDown class="h-5 w-5 text-gray-400" aria-hidden="true" />
                     </span>
                   </ListboxButton>
-                  <transition
-                    leave-active-class="transition duration-100 ease-in"
-                    leave-from-class="opacity-100"
-                    leave-to-class="opacity-0"
-                  >
+                  <transition leave-active-class="transition duration-100 ease-in" leave-from-class="opacity-100"
+                    leave-to-class="opacity-0">
                     <ListboxOptions
-                      class="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm"
-                    >
-                      <ListboxOption
-                        v-for="agency in agencyOptions"
-                        :key="agency.id"
-                        :value="agency.id"
-                        v-slot="{ active, selected }"
-                      >
-                        <li
-                          :class="[
-                            active ? 'text-white bg-blue-600' : 'text-gray-900',
-                            'cursor-default select-none relative py-2 pl-10 pr-4',
-                          ]"
-                        >
-                          <span
-                            :class="[selected ? 'font-semibold' : 'font-normal', 'block truncate']"
-                          >
+                      class="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                      <ListboxOption v-for="agency in agencyOptions" :key="agency.id" :value="agency.id"
+                        v-slot="{ active, selected }">
+                        <li :class="[
+                          active ? 'text-white bg-blue-600' : 'text-gray-900',
+                          'cursor-default select-none relative py-2 pl-10 pr-4',
+                        ]">
+                          <span :class="[selected ? 'font-semibold' : 'font-normal', 'block truncate']">
                             {{ agency.name }}
                           </span>
-                          <span
-                            v-if="selected"
-                            :class="[
-                              active ? 'text-white' : 'text-blue-600',
-                              'absolute inset-y-0 left-0 flex items-center pl-3',
-                            ]"
-                          >
+                          <span v-if="selected" :class="[
+                            active ? 'text-white' : 'text-blue-600',
+                            'absolute inset-y-0 left-0 flex items-center pl-3',
+                          ]">
                             <Check class="h-5 w-5" aria-hidden="true" />
                           </span>
                         </li>
@@ -135,53 +96,32 @@
 
             <!-- Department -->
             <div class="space-y-1.5">
-              <label class="block text-sm font-medium text-gray-700" for="department"
-                >Department</label
-              >
+              <label class="block text-sm font-medium text-gray-700" for="department">Department</label>
               <Listbox v-model="form.department" as="div">
                 <div class="relative">
                   <ListboxButton class="form-input text-left w-full">
-                    <span class="block truncate">{{
-                      selectedDepartmentName || 'Select Department (Optional)'
-                    }}</span>
-                    <span
-                      class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2"
-                    >
+                    <span class="block truncate">{{ selectedDepartmentName || 'Select Department (Optional)' }}</span>
+                    <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                       <ChevronDown class="h-5 w-5 text-gray-400" aria-hidden="true" />
                     </span>
                   </ListboxButton>
-                  <transition
-                    leave-active-class="transition duration-100 ease-in"
-                    leave-from-class="opacity-100"
-                    leave-to-class="opacity-0"
-                  >
+                  <transition leave-active-class="transition duration-100 ease-in" leave-from-class="opacity-100"
+                    leave-to-class="opacity-0">
                     <ListboxOptions
-                      class="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm"
-                    >
-                      <ListboxOption
-                        v-for="department in departmentOptions"
-                        :key="department.id"
-                        :value="department.id"
-                        v-slot="{ active, selected }"
-                      >
-                        <li
-                          :class="[
-                            active ? 'text-white bg-blue-600' : 'text-gray-900',
-                            'cursor-default select-none relative py-2 pl-10 pr-4',
-                          ]"
-                        >
-                          <span
-                            :class="[selected ? 'font-semibold' : 'font-normal', 'block truncate']"
-                          >
+                      class="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                      <ListboxOption v-for="department in departmentOptions" :key="department.id" :value="department.id"
+                        v-slot="{ active, selected }">
+                        <li :class="[
+                          active ? 'text-white bg-blue-600' : 'text-gray-900',
+                          'cursor-default select-none relative py-2 pl-10 pr-4',
+                        ]">
+                          <span :class="[selected ? 'font-semibold' : 'font-normal', 'block truncate']">
                             {{ department.name }}
                           </span>
-                          <span
-                            v-if="selected"
-                            :class="[
-                              active ? 'text-white' : 'text-blue-600',
-                              'absolute inset-y-0 left-0 flex items-center pl-3',
-                            ]"
-                          >
+                          <span v-if="selected" :class="[
+                            active ? 'text-white' : 'text-blue-600',
+                            'absolute inset-y-0 left-0 flex items-center pl-3',
+                          ]">
                             <Check class="h-5 w-5" aria-hidden="true" />
                           </span>
                         </li>
@@ -195,53 +135,32 @@
 
             <!-- Workplace -->
             <div class="space-y-1.5">
-              <label class="block text-sm font-medium text-gray-700" for="workplace"
-                >Workplace</label
-              >
+              <label class="block text-sm font-medium text-gray-700" for="workplace">Workplace</label>
               <Listbox v-model="form.workplace" as="div">
                 <div class="relative">
                   <ListboxButton class="form-input text-left w-full">
-                    <span class="block truncate">{{
-                      selectedWorkplaceName || 'Select Workplace (Optional)'
-                    }}</span>
-                    <span
-                      class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2"
-                    >
+                    <span class="block truncate">{{ selectedWorkplaceName || 'Select Workplace (Optional)' }}</span>
+                    <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                       <ChevronDown class="h-5 w-5 text-gray-400" aria-hidden="true" />
                     </span>
                   </ListboxButton>
-                  <transition
-                    leave-active-class="transition duration-100 ease-in"
-                    leave-from-class="opacity-100"
-                    leave-to-class="opacity-0"
-                  >
+                  <transition leave-active-class="transition duration-100 ease-in" leave-from-class="opacity-100"
+                    leave-to-class="opacity-0">
                     <ListboxOptions
-                      class="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm"
-                    >
-                      <ListboxOption
-                        v-for="workplace in workplaceOptions"
-                        :key="workplace.id"
-                        :value="workplace.id"
-                        v-slot="{ active, selected }"
-                      >
-                        <li
-                          :class="[
-                            active ? 'text-white bg-blue-600' : 'text-gray-900',
-                            'cursor-default select-none relative py-2 pl-10 pr-4',
-                          ]"
-                        >
-                          <span
-                            :class="[selected ? 'font-semibold' : 'font-normal', 'block truncate']"
-                          >
+                      class="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                      <ListboxOption v-for="workplace in workplaceOptions" :key="workplace.id" :value="workplace.id"
+                        v-slot="{ active, selected }">
+                        <li :class="[
+                          active ? 'text-white bg-blue-600' : 'text-gray-900',
+                          'cursor-default select-none relative py-2 pl-10 pr-4',
+                        ]">
+                          <span :class="[selected ? 'font-semibold' : 'font-normal', 'block truncate']">
                             {{ workplace.name }}
                           </span>
-                          <span
-                            v-if="selected"
-                            :class="[
-                              active ? 'text-white' : 'text-blue-600',
-                              'absolute inset-y-0 left-0 flex items-center pl-3',
-                            ]"
-                          >
+                          <span v-if="selected" :class="[
+                            active ? 'text-white' : 'text-blue-600',
+                            'absolute inset-y-0 left-0 flex items-center pl-3',
+                          ]">
                             <Check class="h-5 w-5" aria-hidden="true" />
                           </span>
                         </li>
@@ -255,21 +174,14 @@
 
             <!-- Custom Workplace Input (appears when "Other" is selected) -->
             <div v-if="showCustomWorkplaceInput" class="space-y-1.5 md:col-start-1">
-              <label
-                class="block text-sm font-medium text-gray-700 required"
-                for="custom_workplace_name"
-                >Specify Workplace Name</label
-              >
-              <input
-                type="text"
-                id="custom_workplace_name"
-                v-model="form.custom_workplace_name"
-                class="form-input"
-                placeholder="Enter your workplace name"
-              />
+              <label class="block text-sm font-medium text-gray-700 required" for="custom_workplace_name">Specify
+                Workplace
+                Name</label>
+              <input type="text" id="custom_workplace_name" v-model="form.custom_workplace_name" class="form-input"
+                placeholder="Enter your workplace name" />
               <span v-if="errors.custom_workplace_name" class="error-message">{{
                 errors.custom_workplace_name
-              }}</span>
+                }}</span>
               <p class="text-xs text-gray-500">
                 This will create a new workplace entry in our system.
               </p>
@@ -277,16 +189,10 @@
 
             <!-- Supervisor Contact Number -->
             <div class="space-y-1.5">
-              <label class="block text-sm font-medium text-gray-700 required" for="contact_number"
-                >Supervisor's Contact Number</label
-              >
-              <input
-                type="tel"
-                id="contact_number"
-                v-model="form.contact_number"
-                class="form-input"
-                placeholder="Enter 8-digit mobile number"
-              />
+              <label class="block text-sm font-medium text-gray-700 required" for="contact_number">Supervisor's Contact
+                Number</label>
+              <input type="tel" id="contact_number" v-model="form.contact_number" class="form-input"
+                placeholder="Enter 8-digit mobile number" />
               <span v-if="errors.contact_number" class="error-message">{{
                 errors.contact_number
               }}</span>
@@ -294,16 +200,10 @@
 
             <!-- Supervisor Email -->
             <div class="space-y-1.5 md:col-span-2">
-              <label class="block text-sm font-medium text-gray-700 required" for="email_address"
-                >Supervisor's Email Address</label
-              >
-              <input
-                type="email"
-                id="email_address"
-                v-model="form.email_address"
-                class="form-input"
-                placeholder="Enter valid official email"
-              />
+              <label class="block text-sm font-medium text-gray-700 required" for="email_address">Supervisor's Email
+                Address</label>
+              <input type="email" id="email_address" v-model="form.email_address" class="form-input"
+                placeholder="Enter valid official email" />
               <span v-if="errors.email_address" class="error-message">{{
                 errors.email_address
               }}</span>
@@ -311,18 +211,10 @@
 
             <!-- Reason for Application -->
             <div class="space-y-1.5 md:col-span-2">
-              <label
-                class="block text-sm font-medium text-gray-700 required"
-                for="reason_for_application"
-                >Reason for Application</label
-              >
-              <textarea
-                id="reason_for_application"
-                v-model="form.reason_for_application"
-                class="form-input"
-                rows="3"
-                placeholder="Briefly state why you need this certificate"
-              ></textarea>
+              <label class="block text-sm font-medium text-gray-700 required" for="reason_for_application">Reason for
+                Application</label>
+              <textarea id="reason_for_application" v-model="form.reason_for_application" class="form-input" rows="3"
+                placeholder="Briefly state why you need this certificate"></textarea>
               <span v-if="errors.reason_for_application" class="error-message">{{
                 errors.reason_for_application
               }}</span>
@@ -333,15 +225,11 @@
 
       <!-- Section 2: Recipient Details -->
       <div
-        class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-xl group"
-      >
-        <div
-          class="p-5 sm:p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 via-blue-50 to-blue-50"
-        >
+        class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-xl group">
+        <div class="p-5 sm:p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 via-blue-50 to-blue-50">
           <div class="flex items-center space-x-4">
             <div
-              class="flex-shrink-0 w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-xl shadow-md transition-transform group-hover:scale-105"
-            >
+              class="flex-shrink-0 w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-xl shadow-md transition-transform group-hover:scale-105">
               2
             </div>
             <div>
@@ -356,73 +244,47 @@
         <div class="p-6 sm:p-8">
           <div class="mb-6">
             <label class="flex items-center cursor-pointer">
-              <Switch
-                v-model="isRecipientSelf"
-                :class="[
-                  isRecipientSelf ? 'bg-blue-600' : 'bg-gray-200',
-                  'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
-                ]"
-              >
+              <Switch v-model="isRecipientSelf" :class="[
+                isRecipientSelf ? 'bg-blue-600' : 'bg-gray-200',
+                'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
+              ]">
                 <span class="sr-only">Toggle recipient</span>
-                <span
-                  :class="[
-                    isRecipientSelf ? 'translate-x-5' : 'translate-x-0',
-                    'pointer-events-none relative inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
-                  ]"
-                >
-                  <span
-                    :class="[
-                      isRecipientSelf
-                        ? 'opacity-0 duration-100 ease-out'
-                        : 'opacity-100 duration-200 ease-in',
-                      'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity',
-                    ]"
-                    aria-hidden="true"
-                  ></span>
-                  <span
-                    :class="[
-                      isRecipientSelf
-                        ? 'opacity-100 duration-200 ease-in'
-                        : 'opacity-0 duration-100 ease-out',
-                      'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity',
-                    ]"
-                    aria-hidden="true"
-                  ></span>
+                <span :class="[
+                  isRecipientSelf ? 'translate-x-5' : 'translate-x-0',
+                  'pointer-events-none relative inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
+                ]">
+                  <span :class="[
+                    isRecipientSelf
+                      ? 'opacity-0 duration-100 ease-out'
+                      : 'opacity-100 duration-200 ease-in',
+                    'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity',
+                  ]" aria-hidden="true"></span>
+                  <span :class="[
+                    isRecipientSelf
+                      ? 'opacity-100 duration-200 ease-in'
+                      : 'opacity-0 duration-100 ease-out',
+                    'absolute inset-0 flex h-full w-full items-center justify-center transition-opacity',
+                  ]" aria-hidden="true"></span>
                 </span>
               </Switch>
               <span class="ml-3">
                 <span class="text-sm font-medium text-gray-900">Recipient is Self</span>
-                <span class="text-xs text-gray-500 block"
-                  >(Toggle if certificate is for another person/organization)</span
-                >
+                <span class="text-xs text-gray-500 block">(Toggle if certificate is for another
+                  person/organization)</span>
               </span>
             </label>
           </div>
 
-          <TransitionRoot
-            :show="!isRecipientSelf"
-            enter="transition-opacity duration-300 ease-out"
-            enter-from="opacity-0"
-            enter-to="opacity-100"
-            leave="transition-opacity duration-200 ease-in"
-            leave-from="opacity-100"
-            leave-to="opacity-0"
-            as="div"
-          >
+          <TransitionRoot :show="!isRecipientSelf" enter="transition-opacity duration-300 ease-out"
+            enter-from="opacity-0" enter-to="opacity-100" leave="transition-opacity duration-200 ease-in"
+            leave-from="opacity-100" leave-to="opacity-0" as="div">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
               <!-- Recipient Name -->
               <div class="space-y-1.5">
-                <label class="block text-sm font-medium text-gray-700 required" for="recipient_name"
-                  >Recipient's Name</label
-                >
-                <input
-                  type="text"
-                  id="recipient_name"
-                  v-model="form.recipient_name"
-                  class="form-input"
-                  placeholder="Enter recipient's full name"
-                  :disabled="isRecipientSelf"
-                />
+                <label class="block text-sm font-medium text-gray-700 required" for="recipient_name">Recipient's
+                  Name</label>
+                <input type="text" id="recipient_name" v-model="form.recipient_name" class="form-input"
+                  placeholder="Enter recipient's full name" :disabled="isRecipientSelf" />
                 <span v-if="errors.recipient_name" class="error-message">{{
                   errors.recipient_name
                 }}</span>
@@ -430,19 +292,11 @@
 
               <!-- Recipient Contact Number -->
               <div class="space-y-1.5">
-                <label
-                  class="block text-sm font-medium text-gray-700 required"
-                  for="recipient_contact_number"
-                  >Recipient's Contact Number</label
-                >
-                <input
-                  type="tel"
-                  id="recipient_contact_number"
-                  v-model="form.recipient_contact_number"
-                  class="form-input"
-                  placeholder="Enter recipient's contact no."
-                  :disabled="isRecipientSelf"
-                />
+                <label class="block text-sm font-medium text-gray-700 required"
+                  for="recipient_contact_number">Recipient's
+                  Contact Number</label>
+                <input type="tel" id="recipient_contact_number" v-model="form.recipient_contact_number"
+                  class="form-input" placeholder="Enter recipient's contact no." :disabled="isRecipientSelf" />
                 <span v-if="errors.recipient_contact_number" class="error-message">{{
                   errors.recipient_contact_number
                 }}</span>
@@ -450,19 +304,10 @@
 
               <!-- Recipient Email -->
               <div class="space-y-1.5">
-                <label
-                  class="block text-sm font-medium text-gray-700 required"
-                  for="recipient_email"
-                  >Recipient's Email</label
-                >
-                <input
-                  type="email"
-                  id="recipient_email"
-                  v-model="form.recipient_email"
-                  class="form-input"
-                  placeholder="Enter recipient's email address"
-                  :disabled="isRecipientSelf"
-                />
+                <label class="block text-sm font-medium text-gray-700 required" for="recipient_email">Recipient's
+                  Email</label>
+                <input type="email" id="recipient_email" v-model="form.recipient_email" class="form-input"
+                  placeholder="Enter recipient's email address" :disabled="isRecipientSelf" />
                 <span v-if="errors.recipient_email" class="error-message">{{
                   errors.recipient_email
                 }}</span>
@@ -470,49 +315,28 @@
 
               <!-- Recipient Address -->
               <div class="space-y-1.5">
-                <label class="block text-sm font-medium text-gray-700 required" for="address"
-                  >Recipient's Full Address</label
-                >
-                <input
-                  type="text"
-                  id="address"
-                  v-model="form.address"
-                  class="form-input"
-                  placeholder="Street, City, Country"
-                  :disabled="isRecipientSelf"
-                />
+                <label class="block text-sm font-medium text-gray-700 required" for="address">Recipient's Full
+                  Address</label>
+                <input type="text" id="address" v-model="form.address" class="form-input"
+                  placeholder="Street, City, Country" :disabled="isRecipientSelf" />
                 <span v-if="errors.address" class="error-message">{{ errors.address }}</span>
               </div>
 
               <!-- Recipient PO Box -->
               <div class="space-y-1.5">
-                <label class="block text-sm font-medium text-gray-700" for="po_box"
-                  >Recipient's PO. Box (Optional)</label
-                >
-                <input
-                  type="text"
-                  id="po_box"
-                  v-model="form.po_box"
-                  class="form-input"
-                  placeholder="Enter PO Box if applicable"
-                  :disabled="isRecipientSelf"
-                />
+                <label class="block text-sm font-medium text-gray-700" for="po_box">Recipient's PO. Box
+                  (Optional)</label>
+                <input type="text" id="po_box" v-model="form.po_box" class="form-input"
+                  placeholder="Enter PO Box if applicable" :disabled="isRecipientSelf" />
                 <span v-if="errors.po_box" class="error-message">{{ errors.po_box }}</span>
               </div>
 
               <!-- Recipient Zip Code -->
               <div class="space-y-1.5">
-                <label class="block text-sm font-medium text-gray-700" for="zip_code"
-                  >Recipient's Zip/Postal Code (Optional)</label
-                >
-                <input
-                  type="text"
-                  id="zip_code"
-                  v-model="form.zip_code"
-                  class="form-input"
-                  placeholder="Enter zip code if applicable"
-                  :disabled="isRecipientSelf"
-                />
+                <label class="block text-sm font-medium text-gray-700" for="zip_code">Recipient's Zip/Postal Code
+                  (Optional)</label>
+                <input type="text" id="zip_code" v-model="form.zip_code" class="form-input"
+                  placeholder="Enter zip code if applicable" :disabled="isRecipientSelf" />
                 <span v-if="errors.zip_code" class="error-message">{{ errors.zip_code }}</span>
               </div>
             </div>
@@ -522,15 +346,11 @@
 
       <!-- Section 3: Declaration & Submission -->
       <div
-        class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-xl group"
-      >
-        <div
-          class="p-5 sm:p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 via-blue-50 to-blue-50"
-        >
+        class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-xl group">
+        <div class="p-5 sm:p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 via-blue-50 to-blue-50">
           <div class="flex items-center space-x-4">
             <div
-              class="flex-shrink-0 w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-xl shadow-md transition-transform group-hover:scale-105"
-            >
+              class="flex-shrink-0 w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-xl shadow-md transition-transform group-hover:scale-105">
               3
             </div>
             <div>
@@ -554,24 +374,13 @@
             </p>
           </div>
           <div class="flex items-start space-x-3">
-            <input
-              type="checkbox"
-              v-model="form.declaration"
-              id="declarationCheckbox"
-              class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 mt-0.5 flex-shrink-0"
-            />
-            <label
-              for="declarationCheckbox"
-              class="text-sm text-gray-700 select-none cursor-pointer"
-            >
+            <input type="checkbox" v-model="form.declaration" id="declarationCheckbox"
+              class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 mt-0.5 flex-shrink-0" />
+            <label for="declarationCheckbox" class="text-sm text-gray-700 select-none cursor-pointer">
               I confirm that I have read the declaration above and agree to the
-              <button
-                type="button"
-                @click.stop="openTermsModal"
-                class="text-blue-600 hover:text-blue-800 hover:underline font-medium ml-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 rounded"
-              >
-                Terms & Conditions</button
-              >. <span class="text-red-600 font-medium">*</span>
+              <button type="button" @click.stop="openTermsModal"
+                class="text-blue-600 hover:text-blue-800 hover:underline font-medium ml-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 rounded">
+                Terms & Conditions</button>. <span class="text-red-600 font-medium">*</span>
             </label>
           </div>
           <span v-if="errors.declaration" class="error-message block mt-2">{{
@@ -588,11 +397,8 @@
       <!-- Action Buttons -->
       <div class="flex justify-end space-x-4 pt-4">
         <button type="button" @click="cancelForm" class="btn btn-secondary">Cancel</button>
-        <button
-          type="submit"
-          :disabled="!form.declaration"
-          class="btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
-        >
+        <button type="submit" :disabled="!form.declaration"
+          class="btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed">
           Submit Application
         </button>
       </div>
@@ -601,39 +407,24 @@
     <!-- Terms Modal -->
     <TransitionRoot as="template" :show="showTermsModal">
       <Dialog as="div" class="relative z-50" @close="closeTermsModal">
-        <TransitionChild
-          as="template"
-          enter="ease-out duration-300"
-          enter-from="opacity-0"
-          enter-to="opacity-100"
-          leave="ease-in duration-200"
-          leave-from="opacity-100"
-          leave-to="opacity-0"
-        >
+        <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100"
+          leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
           <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
         </TransitionChild>
 
         <div class="fixed inset-0 z-10 overflow-y-auto">
-          <div
-            class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0"
-          >
-            <TransitionChild
-              as="template"
-              enter="ease-out duration-300"
+          <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+            <TransitionChild as="template" enter="ease-out duration-300"
               enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-              enter-to="opacity-100 translate-y-0 sm:scale-100"
-              leave="ease-in duration-200"
+              enter-to="opacity-100 translate-y-0 sm:scale-100" leave="ease-in duration-200"
               leave-from="opacity-100 translate-y-0 sm:scale-100"
-              leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-            >
+              leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
               <DialogPanel
-                class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg"
-              >
+                class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
                 <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                   <div class="sm:flex sm:items-start">
                     <div
-                      class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10"
-                    >
+                      class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">
                       <FileText class="h-6 w-6 text-blue-600" aria-hidden="true" />
                     </div>
                     <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
@@ -681,18 +472,14 @@
                   </div>
                 </div>
                 <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                  <button
-                    type="button"
+                  <button type="button"
                     class="inline-flex w-full justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm"
-                    @click="closeTermsModal"
-                  >
+                    @click="closeTermsModal">
                     I Understand & Agree
                   </button>
-                  <button
-                    type="button"
+                  <button type="button"
                     class="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                    @click="closeTermsModal"
-                  >
+                    @click="closeTermsModal">
                     Cancel
                   </button>
                 </div>
@@ -797,9 +584,9 @@ const fetchMasterData = async () => {
     // Process agencies
     if (agenciesResponse.status === 'fulfilled' && agenciesResponse.value.data) {
       const agenciesData = agenciesResponse.value.data.results || agenciesResponse.value.data
-      agencyOptions.value = Array.isArray(agenciesData)
-        ? agenciesData.sort((a, b) => (a.name || '').localeCompare(b.name || ''))
-        : []
+      agencyOptions.value = Array.isArray(agenciesData) ? agenciesData.sort((a, b) =>
+        (a.name || '').localeCompare(b.name || '')
+      ) : []
     } else {
       console.error('Agency data format unexpected:', agenciesResponse)
       agencyOptions.value = []
@@ -807,11 +594,10 @@ const fetchMasterData = async () => {
 
     // Process departments
     if (departmentsResponse.status === 'fulfilled' && departmentsResponse.value.data) {
-      const departmentsData =
-        departmentsResponse.value.data.results || departmentsResponse.value.data
-      departmentOptions.value = Array.isArray(departmentsData)
-        ? departmentsData.sort((a, b) => (a.name || '').localeCompare(b.name || ''))
-        : []
+      const departmentsData = departmentsResponse.value.data.results || departmentsResponse.value.data
+      departmentOptions.value = Array.isArray(departmentsData) ? departmentsData.sort((a, b) =>
+        (a.name || '').localeCompare(b.name || '')
+      ) : []
     } else {
       console.error('Department data format unexpected:', departmentsResponse)
       departmentOptions.value = []
@@ -820,23 +606,26 @@ const fetchMasterData = async () => {
     // Process workplaces
     if (workplacesResponse.status === 'fulfilled' && workplacesResponse.value.data) {
       const workplacesData = workplacesResponse.value.data.results || workplacesResponse.value.data
-      const sortedWorkplaces = Array.isArray(workplacesData)
-        ? workplacesData.sort((a, b) => (a.name || '').localeCompare(b.name || ''))
-        : []
+      const sortedWorkplaces = Array.isArray(workplacesData) ? workplacesData.sort((a, b) =>
+        (a.name || '').localeCompare(b.name || '')
+      ) : []
       workplaceOptions.value = [
         ...sortedWorkplaces,
-        { id: 'other', name: 'Other (Please specify)' },
+        { id: 'other', name: 'Other (Please specify)' }
       ]
     } else {
       console.error('Workplace data format unexpected:', workplacesResponse)
       workplaceOptions.value = [{ id: 'other', name: 'Other (Please specify)' }]
     }
+
+
   } catch (error) {
     toast.error('Failed to load master data.')
     console.error('Error fetching master data:', error)
     agencyOptions.value = []
     departmentOptions.value = []
     workplaceOptions.value = [{ id: 'other', name: 'Other (Please specify)' }]
+
   }
 }
 
@@ -962,7 +751,7 @@ const submitForm = async () => {
           console.error('Custom workplace creation failed:', workplaceError)
           message.value = 'Failed to create custom workplace. Please try again.'
           messageClass.value = 'bg-red-100 text-red-800 border border-red-200'
-          return // Stop submission if workplace creation fails
+          return
         }
       }
 
@@ -1014,7 +803,6 @@ const submitForm = async () => {
         messageClass.value = 'bg-red-100 text-red-800 border border-red-200'
       }
     } catch (error) {
-      // Default generic error message
       message.value = 'An error occurred during submission. Please try again.'
       messageClass.value = 'bg-red-100 text-red-800 border border-red-200'
 
@@ -1031,7 +819,6 @@ const submitForm = async () => {
             toast.error(serverErrors.cid_no[0])
             message.value = serverErrors.cid_no[0]
           } else {
-            // Handle other validation errors (assign to fields and show generic toast)
             let otherErrorsFound = false
             Object.keys(serverErrors).forEach((key) => {
               if (
@@ -1060,7 +847,7 @@ const submitForm = async () => {
             }
           }
         } else {
-          // Handle other non-400 server errors
+
           const detail =
             error.response.data?.detail ||
             `Server error occurred (Status: ${error.response.status}).`
@@ -1155,7 +942,7 @@ const createCustomWorkplace = async (workplaceName) => {
   try {
     const response = await apiService.createEpcCogsWorkplace({
       name: workplaceName.trim(),
-      is_active: true,
+      is_active: true
     })
 
     if (response.status === 201 && response.data) {
@@ -1167,6 +954,7 @@ const createCustomWorkplace = async (workplaceName) => {
     throw error
   }
 }
+
 
 const updateRecipientDetails = () => {
   if (isRecipientSelf.value) {

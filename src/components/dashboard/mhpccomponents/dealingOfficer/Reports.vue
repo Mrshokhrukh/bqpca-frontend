@@ -23,7 +23,7 @@
         </div>
       </template>
     </DOPageHeader>
-
+    
     <!-- Filters Section -->
     <div class="my-6 bg-white p-5 rounded-lg shadow-sm border border-gray-200">
       <div class="flex justify-between items-center mb-4">

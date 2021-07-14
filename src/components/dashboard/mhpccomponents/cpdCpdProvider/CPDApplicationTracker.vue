@@ -359,7 +359,7 @@
                 </dd>
               </div>
             </dl>
-            '''
+
             <div
               v-if="
                 section.title === 'Resource Persons' &&
@@ -420,7 +420,6 @@
                 </tbody>
               </table>
             </div>
-            ''
           </div>
         </div>
 

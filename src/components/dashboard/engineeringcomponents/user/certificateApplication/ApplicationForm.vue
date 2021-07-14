@@ -1,35 +1,22 @@
 <template>
   <div class="mx-auto py-8">
     <!-- Existing Loading Overlay (unchanged) -->
-    <div
-      v-if="isLoadingExistingApplication"
-      class="fixed inset-0 bg-white bg-opacity-75 z-50 flex items-center justify-center"
-    >
+    <div v-if="isLoadingExistingApplication"
+      class="fixed inset-0 bg-white bg-opacity-75 z-50 flex items-center justify-center">
       <div class="text-center">
-        <div
-          class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"
-        ></div>
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
         <p class="text-gray-600">Checking for existing application...</p>
       </div>
     </div>
 
     <!-- NEW: Redirect Overlay -->
-    <div
-      v-if="isRedirecting"
-      class="fixed inset-0 bg-white bg-opacity-90 z-50 flex items-center justify-center"
-    >
+    <div v-if="isRedirecting" class="fixed inset-0 bg-white bg-opacity-90 z-50 flex items-center justify-center">
       <div class="text-center">
         <div class="animate-pulse">
-          <svg
-            class="w-16 h-16 text-green-600 mx-auto mb-4"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
-            <path
-              fill-rule="evenodd"
+          <svg class="w-16 h-16 text-green-600 mx-auto mb-4" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd"
               d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-              clip-rule="evenodd"
-            ></path>
+              clip-rule="evenodd"></path>
           </svg>
         </div>
         <h3 class="text-lg font-semibold text-gray-900 mb-2">Application Complete!</h3>
@@ -40,56 +27,26 @@
 
     <!-- Confirmation Modal (unchanged) -->
     <TransitionRoot as="template" :show="isConfirmationModalOpen">
-      <Dialog
-        as="div"
-        class="relative z-10 fixed inset-0 z-10 w-screen"
-        @close="isConfirmationModalOpen = false"
-      >
-        <TransitionChild
-          as="template"
-          enter="ease-out duration-300"
-          enter-from="opacity-0"
-          enter-to="opacity-100"
-          leave="ease-in duration-200"
-          leave-from="opacity-100"
-          leave-to="opacity-0"
-        >
+      <Dialog as="div" class="relative z-10 fixed inset-0 z-10 w-screen" @close="isConfirmationModalOpen = false">
+        <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100"
+          leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
           <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
         </TransitionChild>
 
         <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
-          <div
-            class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0"
-          >
-            <TransitionChild
-              as="template"
-              enter="ease-out duration-300"
+          <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+            <TransitionChild as="template" enter="ease-out duration-300"
               enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-              enter-to="opacity-100 translate-y-0 sm:scale-100"
-              leave="ease-in duration-200"
+              enter-to="opacity-100 translate-y-0 sm:scale-100" leave="ease-in duration-200"
               leave-from="opacity-100 translate-y-0 sm:scale-100"
-              leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-            >
+              leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
               <DialogPanel
-                class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6"
-              >
+                class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
                 <div>
-                  <div
-                    class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100"
-                  >
-                    <svg
-                      class="h-6 w-6 text-green-600"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke-width="1.5"
-                      stroke="currentColor"
-                      aria-hidden="true"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M4.5 12.75l6 6 9-13.5"
-                      />
+                  <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
+                    <svg class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                      stroke="currentColor" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                     </svg>
                   </div>
                   <div class="mt-3 text-center sm:mt-5">
@@ -105,28 +62,15 @@
                   </div>
                 </div>
                 <div class="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
-                  <button
-                    type="button"
+                  <button type="button"
                     class="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2"
-                    @click="handleSubmitActual"
-                    :disabled="isSubmitting"
-                  >
-                    {{
-                      isSubmitting
-                        ? existingQualification
-                          ? 'Updating...'
-                          : 'Submitting...'
-                        : existingQualification
-                          ? 'Update Application'
-                          : 'Submit Application'
-                    }}
+                    @click="handleSubmitActual" :disabled="isSubmitting">
+                    {{ isSubmitting ? (existingQualification ? 'Updating...' : 'Submitting...') : (existingQualification
+                      ? 'Update Application' : 'Submit Application') }}
                   </button>
-                  <button
-                    type="button"
+                  <button type="button"
                     class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0"
-                    @click="isConfirmationModalOpen = false"
-                    :disabled="isSubmitting"
-                  >
+                    @click="isConfirmationModalOpen = false" :disabled="isSubmitting">
                     Cancel
                   </button>
                 </div>
@@ -147,18 +91,12 @@
       <div class="mb-4">
         <div class="flex items-center justify-center space-x-4">
           <div class="flex items-center">
-            <div
-              :class="[
-                'w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold',
-                stage >= 1 ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-600',
-              ]"
-            >
+            <div :class="['w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold',
+              stage >= 1 ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-600']">
               <svg v-if="stage > 1" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  fill-rule="evenodd"
+                <path fill-rule="evenodd"
                   d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                  clip-rule="evenodd"
-                ></path>
+                  clip-rule="evenodd"></path>
               </svg>
               <span v-else>1</span>
             </div>
@@ -168,18 +106,12 @@
           <div :class="['w-8 h-0.5', stage >= 2 ? 'bg-blue-600' : 'bg-gray-300']"></div>
 
           <div class="flex items-center">
-            <div
-              :class="[
-                'w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold',
-                stage >= 2 ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-600',
-              ]"
-            >
+            <div :class="['w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold',
+              stage >= 2 ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-600']">
               <svg v-if="stage > 2" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  fill-rule="evenodd"
+                <path fill-rule="evenodd"
                   d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                  clip-rule="evenodd"
-                ></path>
+                  clip-rule="evenodd"></path>
               </svg>
               <span v-else>2</span>
             </div>
@@ -189,12 +121,8 @@
           <div :class="['w-8 h-0.5', stage >= 3 ? 'bg-blue-600' : 'bg-gray-300']"></div>
 
           <div class="flex items-center">
-            <div
-              :class="[
-                'w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold',
-                stage >= 3 ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-600',
-              ]"
-            >
+            <div :class="['w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold',
+              stage >= 3 ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-600']">
               3
             </div>
             <span class="ml-2 text-sm font-medium text-gray-700">Review</span>
@@ -203,29 +131,21 @@
       </div>
 
       <!-- UPDATED: Resume message with !isRedirecting condition -->
-      <div
-        v-if="existingApplication && !isRedirecting"
-        class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4"
-      >
+      <div v-if="existingApplication && !isRedirecting" class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
         <div class="flex items-center">
           <svg class="w-5 h-5 text-blue-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
-            <path
-              fill-rule="evenodd"
+            <path fill-rule="evenodd"
               d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-              clip-rule="evenodd"
-            ></path>
+              clip-rule="evenodd"></path>
           </svg>
           <div>
             <p class="text-sm font-medium text-blue-800">
-              {{
-                existingQualification ? 'Resuming Your Application' : 'Continuing Your Application'
-              }}
+              {{ existingQualification ? 'Resuming Your Application' : 'Continuing Your Application' }}
             </p>
             <p class="text-sm text-blue-600">
-              {{
-                existingQualification
-                  ? 'We found your previous application with qualification details. You can review or make changes.'
-                  : 'Your personal information has been saved. Please complete the qualification details.'
+              {{ existingQualification
+                ? 'We found your previous application with qualification details. You can review or make changes.'
+                : 'Your personal information has been saved. Please complete the qualification details.'
               }}
             </p>
           </div>
@@ -233,18 +153,14 @@
       </div>
 
       <p class="text-gray-600 text-center max-w-2xl mx-auto">
-        Please fill in all required fields marked with an asterisk (<span class="text-red-600"
-          >*</span
-        >). Ensure all information provided is accurate and up-to-date.
+        Please fill in all required fields marked with an asterisk (<span class="text-red-600">*</span>). Ensure all
+        information provided is accurate and up-to-date.
       </p>
     </div>
 
     <!-- UPDATED: Stage 1 Form with !isRedirecting condition -->
-    <form
-      @submit.prevent="handleNext"
-      class="bg-white border rounded-xl shadow-sm p-6"
-      v-if="stage === 1 && !isRedirecting"
-    >
+    <form @submit.prevent="handleNext" class="bg-white border rounded-xl shadow-sm p-6"
+      v-if="stage === 1 && !isRedirecting">
       <h3 class="text-lg font-semibold text-gray-900 my-4">Step 1: Personal Information</h3>
       <!-- Form Sections -->
       <div class="border-b border-gray-200 bg-gray-50 p-6 rounded-t-xl">
@@ -261,49 +177,34 @@
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700 required">CID No.</label>
               <div class="relative">
-                <input
-                  v-model="localFormData.cid_no"
-                  type="number"
+                <input v-model="localFormData.cid_no" type="number"
                   class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 py-1 px-2 text-sm pr-10"
-                  placeholder="Enter 11-digit CID number"
-                  @input="fetchDCRCData"
-                  :disabled="isLoadingDCRC || isLoadingExistingApplication"
-                />
+                  placeholder="Enter 11-digit CID number" @input="fetchDCRCData"
+                  :disabled="isLoadingDCRC || isLoadingExistingApplication" />
 
                 <!-- Loading indicator for CID checking -->
-                <div
-                  v-if="isLoadingExistingApplication"
-                  class="absolute inset-y-0 right-0 flex items-center pr-3"
-                >
+                <div v-if="isLoadingExistingApplication" class="absolute inset-y-0 right-0 flex items-center pr-3">
                   <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
                 </div>
               </div>
 
               <!-- Status messages -->
               <div class="mt-1">
-                <span v-if="isLoadingDCRC" class="text-sm text-blue-500"
-                  >Fetching citizen details...</span
-                >
-                <span v-else-if="isLoadingExistingApplication" class="text-sm text-blue-500"
-                  >Checking for existing application...</span
-                >
+                <span v-if="isLoadingDCRC" class="text-sm text-blue-500">Fetching citizen details...</span>
+                <span v-else-if="isLoadingExistingApplication" class="text-sm text-blue-500">Checking for existing
+                  application...</span>
                 <span v-else-if="existingApplication && isCIDValid" class="text-sm text-green-600">
                   ✓ Found existing application
                 </span>
-                <span v-else-if="errors.cid_no" class="text-sm text-red-500">{{
-                  errors.cid_no
-                }}</span>
+                <span v-else-if="errors.cid_no" class="text-sm text-red-500">{{ errors.cid_no }}</span>
               </div>
             </div>
 
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700 required">Dzongkhag</label>
-              <input
-                type="text"
-                v-model="localFormData.dzongkhag"
+              <input type="text" v-model="localFormData.dzongkhag"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 py-1 px-2 text-sm bg-gray-100"
-                readonly
-              />
+                readonly />
               <span v-if="errors.dzongkhag" class="text-sm text-red-500 mt-1">{{
                 errors.dzongkhag
               }}</span>
@@ -311,23 +212,17 @@
 
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700 required">Gewog</label>
-              <input
-                type="text"
-                v-model="localFormData.gewog"
+              <input type="text" v-model="localFormData.gewog"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 py-1 px-2 text-sm bg-gray-100"
-                readonly
-              />
+                readonly />
               <span v-if="errors.gewog" class="text-sm text-red-500 mt-1">{{ errors.gewog }}</span>
             </div>
 
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700 required">Village</label>
-              <input
-                type="text"
-                v-model="localFormData.village"
+              <input type="text" v-model="localFormData.village"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 py-1 px-2 text-sm bg-gray-100"
-                readonly
-              />
+                readonly />
               <span v-if="errors.village" class="text-sm text-red-500 mt-1">{{
                 errors.village
               }}</span>
@@ -337,15 +232,10 @@
           <template v-else>
             <!-- Non-CID Fields -->
             <div class="col-span-1">
-              <label class="block text-sm font-medium text-gray-700 required"
-                >Identity / Work Permit No</label
-              >
-              <input
-                v-model="localFormData.workPermitNo"
-                type="text"
+              <label class="block text-sm font-medium text-gray-700 required">Identity / Work Permit No</label>
+              <input v-model="localFormData.workPermitNo" type="text"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 py-1 px-2 text-sm"
-                placeholder="Identity / Work Permit No"
-              />
+                placeholder="Identity / Work Permit No" />
               <span v-if="errors.workPermitNo" class="text-sm text-red-500 mt-1">{{
                 errors.workPermitNo
               }}</span>
@@ -353,10 +243,8 @@
 
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700 required">Nationality</label>
-              <select
-                v-model="localFormData.nationality"
-                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 py-1 px-2 text-sm"
-              >
+              <select v-model="localFormData.nationality"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 py-1 px-2 text-sm">
                 <option value="">SELECT NATIONALITY</option>
                 <option v-for="country in countries" :key="country.code" :value="country.name">
                   {{ country.name }}
@@ -369,10 +257,8 @@
 
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700 required">Country</label>
-              <select
-                v-model="localFormData.country"
-                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 py-1 px-2 text-sm"
-              >
+              <select v-model="localFormData.country"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 py-1 px-2 text-sm">
                 <option value="">SELECT COUNTRY</option>
                 <option v-for="country in countries" :key="country.code" :value="country.name">
                   {{ country.name }}
@@ -380,39 +266,30 @@
               </select>
               <span v-if="errors.country" class="text-sm text-red-500 mt-1">{{
                 errors.country
-              }}</span>
+                }}</span>
             </div>
 
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700">State</label>
-              <input
-                v-model="localFormData.state"
-                type="text"
+              <input v-model="localFormData.state" type="text"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 py-1 px-2 text-sm"
-                placeholder="State"
-              />
+                placeholder="State" />
               <span v-if="errors.state" class="text-sm text-red-500 mt-1">{{ errors.state }}</span>
             </div>
 
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700">City</label>
-              <input
-                v-model="localFormData.city"
-                type="text"
+              <input v-model="localFormData.city" type="text"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 py-1 px-2 text-sm"
-                placeholder="City"
-              />
+                placeholder="City" />
               <span v-if="errors.city" class="text-sm text-red-500 mt-1">{{ errors.city }}</span>
             </div>
 
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700 required">Mobile Number</label>
-              <input
-                v-model="localFormData.mobileNumber"
-                type="tel"
+              <input v-model="localFormData.mobileNumber" type="tel"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 py-1 px-2 text-sm"
-                placeholder="Mobile Number (e.g., 17xxxxxx)"
-              />
+                placeholder="Mobile Number (e.g., 17xxxxxx)" />
               <span v-if="errors.mobileNumber" class="text-sm text-red-500 mt-1">{{
                 errors.mobileNumber
               }}</span>
@@ -420,13 +297,9 @@
 
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700 required">Email Address</label>
-              <input
-                v-model="localFormData.email_address"
-                type="email"
+              <input v-model="localFormData.email_address" type="email"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 py-1 px-2 text-sm bg-gray-100"
-                placeholder="Email Address"
-                readonly
-              />
+                placeholder="Email Address" readonly />
               <span v-if="errors.email_address" class="text-sm text-red-500 mt-1">{{
                 errors.email_address
               }}</span>
@@ -436,16 +309,10 @@
           <!-- Common Fields -->
           <div class="col-span-1">
             <label class="block text-sm font-medium text-gray-700 required">Full Name</label>
-            <input
-              v-model="localFormData.full_name"
-              type="text"
-              :class="[
-                'mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 py-1 px-2 text-sm',
-                selectedType === 'cid' ? 'bg-gray-100' : '',
-              ]"
-              placeholder="Enter full name"
-              :readonly="selectedType === 'cid'"
-            />
+            <input v-model="localFormData.full_name" type="text" :class="[
+              'mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 py-1 px-2 text-sm',
+              selectedType === 'cid' ? 'bg-gray-100' : '',
+            ]" placeholder="Enter full name" :readonly="selectedType === 'cid'" />
             <span v-if="errors.full_name" class="text-sm text-red-500 mt-1">{{
               errors.full_name
             }}</span>
@@ -453,14 +320,10 @@
 
           <div class="col-span-1">
             <label class="block text-sm font-medium text-gray-700 required">Gender</label>
-            <select
-              v-model="localFormData.gender"
-              :class="[
-                'mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 py-1 px-2 text-sm',
-                selectedType === 'cid' ? 'bg-gray-100' : '',
-              ]"
-              :disabled="selectedType === 'cid'"
-            >
+            <select v-model="localFormData.gender" :class="[
+              'mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 py-1 px-2 text-sm',
+              selectedType === 'cid' ? 'bg-gray-100' : '',
+            ]" :disabled="selectedType === 'cid'">
               <option value="">Select Gender</option>
               <option value="male">Male</option>
               <option value="female">Female</option>
@@ -471,15 +334,10 @@
 
           <div class="col-span-1">
             <label class="block text-sm font-medium text-gray-700 required">Date of Birth</label>
-            <input
-              type="date"
-              v-model="localFormData.date_of_birth"
-              :class="[
-                'mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 py-1 px-2 text-sm',
-                selectedType === 'cid' ? 'bg-gray-100' : '',
-              ]"
-              :readonly="selectedType === 'cid'"
-            />
+            <input type="date" v-model="localFormData.date_of_birth" :class="[
+              'mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 py-1 px-2 text-sm',
+              selectedType === 'cid' ? 'bg-gray-100' : '',
+            ]" :readonly="selectedType === 'cid'" />
             <span v-if="errors.date_of_birth" class="text-sm text-red-500 mt-1">{{
               errors.date_of_birth
             }}</span>
@@ -487,12 +345,9 @@
 
           <div class="col-span-1">
             <label class="block text-sm font-medium text-gray-700 required">Contact Number</label>
-            <input
-              v-model="localFormData.contact_no"
-              type="tel"
+            <input v-model="localFormData.contact_no" type="tel"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 py-1 px-2 text-sm"
-              placeholder="Enter phone number (e.g. 17xxxxxx)"
-            />
+              placeholder="Enter phone number (e.g. 17xxxxxx)" />
             <span v-if="errors.contact_no" class="text-sm text-red-500 mt-1">{{
               errors.contact_no
             }}</span>
@@ -505,15 +360,11 @@
             <h3 class="text-lg font-semibold text-gray-900 mb-4">Passport Photo</h3>
             <div class="flex items-start space-x-4">
               <div class="flex-1">
-                <label class="block text-sm font-medium text-gray-700 required"
-                  >Upload Passport Photo (Max 2MB, JPG/PNG)</label
-                >
-                <input
-                  type="file"
-                  @change="handlePassportPhotoSelect"
+                <label class="block text-sm font-medium text-gray-700 required">Upload Passport Photo (Max 2MB,
+                  JPG/PNG)</label>
+                <input type="file" @change="handlePassportPhotoSelect"
                   class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                  accept=".jpg,.jpeg,.png"
-                />
+                  accept=".jpg,.jpeg,.png" />
                 <span v-if="errors.passport_photo" class="text-sm text-red-500 mt-1">{{
                   errors.passport_photo
                 }}</span>
@@ -528,37 +379,22 @@
 
         <!-- Form Actions -->
         <div class="mt-12 flex justify-end space-x-4">
-          <button
-            type="button"
-            @click="$emit('back')"
-            class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors"
-          >
+          <button type="button" @click="$emit('back')"
+            class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
             Back
           </button>
-          <button
-            type="submit"
+          <button type="submit"
             class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
-            :disabled="isLoadingDCRC || isSubmitting || isLoadingExistingApplication"
-          >
-            {{
-              isSubmitting
-                ? applicationId
-                  ? 'Updating...'
-                  : 'Saving...'
-                : applicationId
-                  ? 'Update & Continue'
-                  : 'Next'
-            }}
+            :disabled="isLoadingDCRC || isSubmitting || isLoadingExistingApplication">
+            {{ isSubmitting ? (applicationId ? 'Updating...' : 'Saving...') : (applicationId ? 'Update & Continue' :
+              'Next') }}
           </button>
         </div>
 
         <!-- Add a "Start New Application" button for cases where user wants to start fresh -->
         <div v-if="existingApplication && stage === 1" class="mt-4 text-center">
-          <button
-            type="button"
-            @click="startNewApplication"
-            class="text-sm text-gray-500 hover:text-gray-700 underline"
-          >
+          <button type="button" @click="startNewApplication"
+            class="text-sm text-gray-500 hover:text-gray-700 underline">
             Start a completely new application instead
           </button>
         </div>
@@ -566,11 +402,8 @@
     </form>
 
     <!-- UPDATED: Stage 2 Form with !isRedirecting condition -->
-    <form
-      @submit.prevent="openConfirmationModal"
-      class="bg-white border rounded-xl shadow-sm p-6"
-      v-else-if="stage === 2 && !isRedirecting"
-    >
+    <form @submit.prevent="openConfirmationModal" class="bg-white border rounded-xl shadow-sm p-6"
+      v-else-if="stage === 2 && !isRedirecting">
       <h3 class="text-lg font-semibold text-gray-900 my-4">
         Step 2: Engineering Qualification & Documents
       </h3>
@@ -579,15 +412,12 @@
         <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
           <h3 class="text-lg font-semibold text-gray-900 mb-4">Qualification Details</h3>
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
+
             <!-- Qualification Type (unchanged) -->
             <div class="col-span-1">
-              <label class="block text-sm font-medium text-gray-700 required"
-                >Qualification Type</label
-              >
-              <select
-                v-model="localFormData.qualification_type"
-                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 py-1 px-2 text-sm"
-              >
+              <label class="block text-sm font-medium text-gray-700 required">Qualification Type</label>
+              <select v-model="localFormData.qualification_type"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 py-1 px-2 text-sm">
                 <option value="">Select Qualification Type</option>
                 <option v-for="type in qualificationTypes" :key="type.id" :value="type.id">
                   {{ type.qualification_type_name }}
@@ -600,43 +430,26 @@
 
             <!-- Qualification Name with Add New Option -->
             <div class="col-span-1">
-              <label class="block text-sm font-medium text-gray-700 required"
-                >Qualification Name</label
-              >
-              <select
-                v-model="qualificationNameSelection"
-                @change="handleQualificationNameChange"
+              <label class="block text-sm font-medium text-gray-700 required">Qualification Name</label>
+              <select v-model="qualificationNameSelection" @change="handleQualificationNameChange"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 py-1 px-2 text-sm"
-                :disabled="!localFormData.qualification_type"
-              >
+                :disabled="!localFormData.qualification_type">
                 <option value="">Select Qualification Name</option>
-                <option
-                  v-for="qualification in filteredQualifications"
-                  :key="qualification.id"
-                  :value="qualification.id"
-                >
+                <option v-for="qualification in filteredQualifications" :key="qualification.id"
+                  :value="qualification.id">
                   {{ qualification.qualification }}
                 </option>
-                <option value="add_new" class="text-blue-600 font-medium">
-                  + Add New Qualification
-                </option>
+                <option value="add_new" class="text-blue-600 font-medium">+ Add New Qualification</option>
               </select>
 
               <!-- Show custom qualification input if "add_new" is selected -->
               <div v-if="qualificationNameSelection === 'add_new'" class="mt-2">
-                <input
-                  v-model="newQualificationName"
-                  type="text"
-                  placeholder="Enter new qualification name"
+                <input v-model="newQualificationName" type="text" placeholder="Enter new qualification name"
                   class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 py-1 px-2 text-sm"
-                  maxlength="200"
-                  @input="delete errors.qualification_name"
-                />
+                  maxlength="200" @input="delete errors.qualification_name" />
                 <div class="mt-1">
                   <p class="text-xs text-blue-600">
-                    This will be added to the system under "{{
-                      getSelectedQualificationTypeName()
-                    }}" for future use
+                    This will be added to the system under "{{ getSelectedQualificationTypeName() }}" for future use
                   </p>
                   <p class="text-xs text-gray-500">
                     {{ newQualificationName.length }}/200 characters
@@ -651,53 +464,32 @@
 
             <!-- Institute/University with Add New Option -->
             <div class="col-span-1">
-              <label class="block text-sm font-medium text-gray-700 required"
-                >Institute/University</label
-              >
-              <select
-                v-model="instituteSelection"
-                @change="handleInstituteChange"
-                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 py-1 px-2 text-sm"
-              >
+              <label class="block text-sm font-medium text-gray-700 required">Institute/University</label>
+              <select v-model="instituteSelection" @change="handleInstituteChange"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 py-1 px-2 text-sm">
                 <option value="">Select Institute/University</option>
                 <!-- UPDATED: Use helper function to display country names -->
-                <option
-                  v-for="university in universities"
-                  :key="university.id"
-                  :value="university.id"
-                >
+                <option v-for="university in universities" :key="university.id" :value="university.id">
                   {{ getUniversityDisplayText(university) }}
                 </option>
-                <option value="add_new" class="text-blue-600 font-medium">
-                  + Add New Institute/University
-                </option>
+                <option value="add_new" class="text-blue-600 font-medium">+ Add New Institute/University</option>
               </select>
 
               <!-- Show custom institute inputs if "add_new" is selected -->
               <div v-if="instituteSelection === 'add_new'" class="mt-2 space-y-2">
                 <div>
-                  <input
-                    v-model="newInstitute.institute_name"
-                    type="text"
-                    placeholder="Institute/College Name"
+                  <input v-model="newInstitute.institute_name" type="text" placeholder="Institute/College Name"
                     class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 py-1 px-2 text-sm"
-                    maxlength="200"
-                    @input="delete errors.institute"
-                  />
+                    maxlength="200" @input="delete errors.institute" />
                   <p class="text-xs text-gray-500 mt-1">
                     {{ (newInstitute.institute_name || '').length }}/200 characters
                   </p>
                 </div>
 
                 <div>
-                  <input
-                    v-model="newInstitute.university"
-                    type="text"
-                    placeholder="University Name"
+                  <input v-model="newInstitute.university" type="text" placeholder="University Name"
                     class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 py-1 px-2 text-sm"
-                    maxlength="200"
-                    @input="delete errors.institute"
-                  />
+                    maxlength="200" @input="delete errors.institute" />
                   <p class="text-xs text-gray-500 mt-1">
                     {{ (newInstitute.university || '').length }}/200 characters
                   </p>
@@ -705,11 +497,9 @@
 
                 <!-- UPDATED: Country dropdown shows names but stores codes -->
                 <div>
-                  <select
-                    v-model="newInstitute.country"
+                  <select v-model="newInstitute.country"
                     class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 py-1 px-2 text-sm"
-                    @change="delete errors.institute"
-                  >
+                    @change="delete errors.institute">
                     <option value="">Select Country</option>
                     <option v-for="country in countries" :key="country.code" :value="country.code">
                       {{ country.name }}
@@ -723,14 +513,11 @@
                 <!-- UPDATED: Preview shows country name but form stores country code -->
                 <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
                   <p class="text-xs text-blue-700">
-                    <strong>Preview:</strong>
-                    {{ newInstitute.institute_name || 'Institute Name' }} ({{
-                      newInstitute.university || 'University Name'
-                    }}, {{ getCountryName(newInstitute.country) || 'Country' }})
+                    <strong>Preview:</strong> {{ newInstitute.institute_name || 'Institute Name' }}
+                    ({{ newInstitute.university || 'University Name' }}, {{ getCountryName(newInstitute.country) ||
+                      'Country' }})
                   </p>
-                  <p class="text-xs text-blue-600 mt-1">
-                    This institute will be added to the system for future use
-                  </p>
+                  <p class="text-xs text-blue-600 mt-1">This institute will be added to the system for future use</p>
                   <p class="text-xs text-gray-500 mt-1">
                     Country code to be sent: {{ newInstitute.country || 'None selected' }}
                   </p>
@@ -738,14 +525,10 @@
 
                 <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
                   <p class="text-xs text-blue-700">
-                    <strong>Preview:</strong>
-                    {{ newInstitute.institute_name || 'Institute Name' }} ({{
-                      newInstitute.university || 'University Name'
-                    }}, {{ newInstitute.country || 'Country' }})
+                    <strong>Preview:</strong> {{ newInstitute.institute_name || 'Institute Name' }}
+                    ({{ newInstitute.university || 'University Name' }}, {{ newInstitute.country || 'Country' }})
                   </p>
-                  <p class="text-xs text-blue-600 mt-1">
-                    This institute will be added to the system for future use
-                  </p>
+                  <p class="text-xs text-blue-600 mt-1">This institute will be added to the system for future use</p>
                 </div>
               </div>
 
@@ -756,15 +539,10 @@
 
             <!-- Year of Completion (unchanged) -->
             <div class="col-span-1">
-              <label class="block text-sm font-medium text-gray-700 required"
-                >Year of Completion</label
-              >
-              <input
-                type="month"
-                v-model="localFormData.year_of_completion"
+              <label class="block text-sm font-medium text-gray-700 required">Year of Completion</label>
+              <input type="month" v-model="localFormData.year_of_completion"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 py-1 px-2 text-sm"
-                placeholder="YYYY-MM"
-              />
+                placeholder="YYYY-MM" />
               <span class="text-xs text-gray-500">Select month and year</span>
               <span v-if="errors.year_of_completion" class="text-sm text-red-500 mt-1">{{
                 errors.year_of_completion
@@ -784,83 +562,65 @@
             </h3>
             <!-- Progress indicator -->
             <div class="text-sm font-medium">
-              <span
-                :class="[
-                  'px-3 py-1 rounded-full text-xs',
-                  getDocumentValidationSummary().totalUploaded ===
-                  getDocumentValidationSummary().totalRequired
-                    ? 'bg-green-100 text-green-800'
-                    : 'bg-orange-100 text-orange-800',
-                ]"
-              >
-                {{ getDocumentValidationSummary().totalUploaded }} /
-                {{ getDocumentValidationSummary().totalRequired }}
+              <span :class="[
+                'px-3 py-1 rounded-full text-xs',
+                getDocumentValidationSummary().totalUploaded === getDocumentValidationSummary().totalRequired
+                  ? 'bg-green-100 text-green-800'
+                  : 'bg-orange-100 text-orange-800'
+              ]">
+                {{ getDocumentValidationSummary().totalUploaded }} / {{ getDocumentValidationSummary().totalRequired }}
                 Complete
               </span>
             </div>
           </div>
 
           <p class="text-sm text-gray-500 mb-4">
-            All document types listed below are <strong>mandatory</strong>. Please upload all
-            required documents to proceed with your application.
+            All document types listed below are <strong>mandatory</strong>. Please upload all required documents to
+            proceed
+            with your application.
           </p>
 
           <!-- Show missing documents summary if any -->
-          <div
-            v-if="getDocumentValidationSummary().missing.length > 0"
-            class="bg-orange-50 border-l-4 border-orange-400 p-4 mb-4"
-          >
+          <div v-if="getDocumentValidationSummary().missing.length > 0"
+            class="bg-orange-50 border-l-4 border-orange-400 p-4 mb-4">
             <div class="flex">
               <div class="flex-shrink-0">
                 <svg class="h-5 w-5 text-orange-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path
-                    fill-rule="evenodd"
+                  <path fill-rule="evenodd"
                     d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                    clip-rule="evenodd"
-                  />
+                    clip-rule="evenodd" />
                 </svg>
               </div>
               <div class="ml-3">
                 <p class="text-sm text-orange-700">
-                  <strong>Missing Documents:</strong>
-                  {{ getDocumentValidationSummary().missing.join(', ') }}
+                  <strong>Missing Documents:</strong> {{ getDocumentValidationSummary().missing.join(', ') }}
                 </p>
               </div>
             </div>
           </div>
 
           <div class="space-y-4">
-            <div
-              v-for="(doc, index) in supportingDocuments"
-              :key="index"
-              :class="[
-                'flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 p-4 rounded-lg border',
-                doc.files && doc.files.length > 0
-                  ? 'bg-green-50 border-green-200'
-                  : 'bg-white border-gray-100',
-              ]"
-            >
+            <div v-for="(doc, index) in supportingDocuments" :key="index" :class="[
+              'flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 p-4 rounded-lg border',
+              doc.files && doc.files.length > 0
+                ? 'bg-green-50 border-green-200'
+                : 'bg-white border-gray-100'
+            ]">
               <div class="w-full sm:w-1/3">
                 <label class="block text-xs font-medium text-gray-600 mb-1">
                   Document Type<span class="text-red-500">*</span>
                 </label>
                 <!-- Document type is read-only since it's pre-populated -->
                 <div class="flex items-center">
-                  <input
-                    type="text"
-                    :value="getDocumentTypeName(doc.type)"
+                  <input type="text" :value="getDocumentTypeName(doc.type)"
                     class="block w-full rounded-lg border-gray-300 shadow-sm bg-gray-100 py-1 px-2 text-sm cursor-not-allowed"
-                    readonly
-                    disabled
-                  />
+                    readonly disabled />
                   <!-- Success indicator for uploaded documents -->
                   <div v-if="doc.files && doc.files.length > 0" class="ml-2">
                     <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                      <path
-                        fill-rule="evenodd"
+                      <path fill-rule="evenodd"
                         d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                        clip-rule="evenodd"
-                      />
+                        clip-rule="evenodd" />
                     </svg>
                   </div>
                 </div>
@@ -869,20 +629,13 @@
                 <label class="block text-xs font-medium text-gray-600 mb-1">
                   Upload File<span class="text-red-500">*</span>
                 </label>
-                <input
-                  type="file"
-                  @change="(e) => handleFileSelect(e, index)"
+                <input type="file" @change="(e) => handleFileSelect(e, index)"
                   class="block w-full text-sm text-gray-500 file:mr-4 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                  required
-                />
+                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required />
 
                 <!-- Display selected file names with success styling -->
-                <div
-                  v-if="doc.files && doc.files.length > 0"
-                  class="text-xs text-green-700 mt-1 font-medium"
-                >
-                  ✓ Selected: {{ doc.files.map((f) => f.name).join(', ') }}
+                <div v-if="doc.files && doc.files.length > 0" class="text-xs text-green-700 mt-1 font-medium">
+                  ✓ Selected: {{doc.files.map((f) => f.name).join(', ')}}
                 </div>
 
                 <!-- Show validation error for this specific document -->
@@ -898,11 +651,9 @@
             <div class="flex">
               <div class="flex-shrink-0">
                 <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path
-                    fill-rule="evenodd"
+                  <path fill-rule="evenodd"
                     d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                    clip-rule="evenodd"
-                  />
+                    clip-rule="evenodd" />
                 </svg>
               </div>
               <div class="ml-3">
@@ -913,27 +664,19 @@
 
           <!-- Success message when all documents are uploaded -->
           <div
-            v-if="
-              getDocumentValidationSummary().totalUploaded ===
-                getDocumentValidationSummary().totalRequired &&
-              getDocumentValidationSummary().totalRequired > 0
-            "
-            class="bg-green-50 border-l-4 border-green-400 p-4 mt-4"
-          >
+            v-if="getDocumentValidationSummary().totalUploaded === getDocumentValidationSummary().totalRequired && getDocumentValidationSummary().totalRequired > 0"
+            class="bg-green-50 border-l-4 border-green-400 p-4 mt-4">
             <div class="flex">
               <div class="flex-shrink-0">
                 <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path
-                    fill-rule="evenodd"
+                  <path fill-rule="evenodd"
                     d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                    clip-rule="evenodd"
-                  />
+                    clip-rule="evenodd" />
                 </svg>
               </div>
               <div class="ml-3">
                 <p class="text-sm text-green-700">
-                  <strong>All required documents uploaded!</strong> You can now proceed with your
-                  application.
+                  <strong>All required documents uploaded!</strong> You can now proceed with your application.
                 </p>
               </div>
             </div>
@@ -947,27 +690,19 @@
         <div class="space-y-4">
           <div>
             <label class="block text-sm font-medium text-gray-700">Remarks</label>
-            <textarea
-              v-model="localFormData.remarks"
-              rows="3"
+            <textarea v-model="localFormData.remarks" rows="3"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 py-1 px-2 text-sm"
-              placeholder="Enter any additional remarks or comments (optional)"
-            ></textarea>
+              placeholder="Enter any additional remarks or comments (optional)"></textarea>
           </div>
 
           <div class="flex items-start space-x-3 bg-white p-4 rounded-lg border border-gray-100">
-            <input
-              id="declaration-checkbox"
-              type="checkbox"
-              v-model="localFormData.declaration"
-              class="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-            />
+            <input id="declaration-checkbox" type="checkbox" v-model="localFormData.declaration"
+              class="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
             <label for="declaration-checkbox" class="text-sm text-gray-700">
               <span class="font-medium">
                 I hereby declare that all the information provided above is true and correct to the
                 best of my knowledge. I understand that any false statements may result in the
-                rejection of my registration.</span
-              >
+                rejection of my registration.</span>
               <span class="text-red-500">*</span>
             </label>
           </div>
@@ -980,53 +715,37 @@
       <!-- Form Actions -->
       <!-- UPDATED: Form Actions with enhanced validation feedback -->
       <div class="mt-12 flex justify-end space-x-4">
-        <button
-          type="button"
-          @click="stage = 1"
+        <button type="button" @click="stage = 1"
           class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors"
-          :disabled="isSubmitting"
-        >
+          :disabled="isSubmitting">
           Back
         </button>
-        <button
-          type="submit"
-          :class="[
-            'px-6 py-3 rounded-lg transition-colors text-white font-medium min-w-[200px]',
-            !localFormData.declaration ||
-            getDocumentValidationSummary().totalUploaded !==
-              getDocumentValidationSummary().totalRequired ||
-            isSubmitting
-              ? 'bg-gray-400 cursor-not-allowed'
-              : 'bg-blue-600 hover:bg-blue-700',
-          ]"
-          :disabled="
-            !localFormData.declaration ||
-            getDocumentValidationSummary().totalUploaded !==
-              getDocumentValidationSummary().totalRequired ||
-            isSubmitting
-          "
-        >
+        <button type="submit" :class="[
+          'px-6 py-3 rounded-lg transition-colors text-white font-medium min-w-[200px]',
+          (!localFormData.declaration || getDocumentValidationSummary().totalUploaded !== getDocumentValidationSummary().totalRequired || isSubmitting)
+            ? 'bg-gray-400 cursor-not-allowed'
+            : 'bg-blue-600 hover:bg-blue-700'
+        ]"
+          :disabled="!localFormData.declaration || getDocumentValidationSummary().totalUploaded !== getDocumentValidationSummary().totalRequired || isSubmitting">
+
           <div class="flex items-center justify-center space-x-2">
             <!-- Loading spinner -->
-            <div
-              v-if="isSubmitting"
-              class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"
-            ></div>
+            <div v-if="isSubmitting" class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
 
             <!-- Button text based on state -->
             <span v-if="isSubmitting">
               {{ getSubmissionStatusText() }}
             </span>
             <span
-              v-else-if="
-                getDocumentValidationSummary().totalUploaded !==
-                getDocumentValidationSummary().totalRequired
-              "
-            >
+              v-else-if="getDocumentValidationSummary().totalUploaded !== getDocumentValidationSummary().totalRequired">
               Upload All Documents ({{ getDocumentValidationSummary().missing.length }} Missing)
             </span>
-            <span v-else-if="hasNewEntries()"> Submit & Add New {{ getNewEntriesText() }} </span>
-            <span v-else> Submit Registration </span>
+            <span v-else-if="hasNewEntries()">
+              Submit & Add New {{ getNewEntriesText() }}
+            </span>
+            <span v-else>
+              Submit Registration
+            </span>
           </div>
         </button>
       </div>
@@ -1037,82 +756,52 @@
           {{ getSubmissionProgressText() }}
         </div>
         <div class="mt-2 w-full bg-gray-200 rounded-full h-2">
-          <div
-            class="bg-blue-600 h-2 rounded-full transition-all duration-300"
-            :style="{ width: getSubmissionProgress() + '%' }"
-          ></div>
+          <div class="bg-blue-600 h-2 rounded-full transition-all duration-300"
+            :style="{ width: getSubmissionProgress() + '%' }"></div>
         </div>
       </div>
 
       <!-- Summary of what will be added -->
-      <div
-        v-if="hasNewEntries() && !isSubmitting"
-        class="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4"
-      >
-        <h4 class="text-sm font-medium text-blue-800 mb-2">
-          New entries will be added to the system:
-        </h4>
+      <div v-if="hasNewEntries() && !isSubmitting" class="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <h4 class="text-sm font-medium text-blue-800 mb-2">New entries will be added to the system:</h4>
         <ul class="text-sm text-blue-700 space-y-1">
           <li v-if="hasNewQualification()" class="flex items-center">
             <svg class="w-4 h-4 mr-2 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
               <path
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
-              />
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" />
             </svg>
-            Qualification: <strong>{{ newQualificationName }}</strong> ({{
-              getSelectedQualificationTypeName()
-            }})
+            Qualification: <strong>{{ newQualificationName }}</strong> ({{ getSelectedQualificationTypeName() }})
           </li>
           <li v-if="hasNewInstitute()" class="flex items-center">
             <svg class="w-4 h-4 mr-2 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
               <path
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
-              />
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" />
             </svg>
             Institute: <strong>{{ newInstitute.institute_name }}</strong>
-            <span v-if="newInstitute.university"
-              >({{ newInstitute.university }}, {{ newInstitute.country }})</span
-            >
+            <span v-if="newInstitute.university">({{ newInstitute.university }}, {{ newInstitute.country }})</span>
           </li>
         </ul>
-        <p class="text-xs text-blue-600 mt-2">
-          These will be available for future applicants to select from.
-        </p>
+        <p class="text-xs text-blue-600 mt-2">These will be available for future applicants to select from.</p>
       </div>
 
       <!-- Validation summary when documents are missing -->
-      <div
-        v-if="getDocumentValidationSummary().missing.length > 0 && !isSubmitting"
-        class="mt-4 text-center"
-      >
+      <div v-if="getDocumentValidationSummary().missing.length > 0 && !isSubmitting" class="mt-4 text-center">
         <p class="text-sm text-gray-600">
-          Please upload
-          <strong>{{ getDocumentValidationSummary().missing.length }}</strong> remaining document{{
-            getDocumentValidationSummary().missing.length > 1 ? 's' : ''
-          }}
+          Please upload <strong>{{ getDocumentValidationSummary().missing.length }}</strong>
+          remaining document{{ getDocumentValidationSummary().missing.length > 1 ? 's' : '' }}
           to enable submission.
         </p>
       </div>
     </form>
 
     <!-- NEW: Fallback content when no form should be shown -->
-    <div
-      v-else-if="!isLoadingExistingApplication && !isRedirecting"
-      class="bg-white border rounded-xl shadow-sm p-6 text-center"
-    >
+    <div v-else-if="!isLoadingExistingApplication && !isRedirecting"
+      class="bg-white border rounded-xl shadow-sm p-6 text-center">
       <div class="py-12">
-        <svg
-          class="w-12 h-12 text-gray-400 mx-auto mb-4"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-          ></path>
+        <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+          </path>
         </svg>
         <h3 class="text-lg font-medium text-gray-900 mb-2">Loading Application</h3>
         <p class="text-gray-500">Please wait while we prepare your application form...</p>
@@ -1173,7 +862,7 @@ const newQualificationName = ref('')
 const newInstitute = reactive({
   institute_name: '',
   university: '',
-  country: '',
+  country: ''
 })
 
 // Track submission progress for better UX
@@ -1239,7 +928,7 @@ const createNewQualification = async () => {
     // Ensure we're sending the data in the correct format
     const qualificationData = {
       qualification: newQualificationName.value.trim(),
-      qualification_type: Number(localFormData.qualification_type),
+      qualification_type: Number(localFormData.qualification_type)
     }
 
     // console.log('Creating new qualification with data:', qualificationData)
@@ -1288,12 +977,8 @@ const createNewQualification = async () => {
         // Handle field-specific errors
         errorMessage = Object.entries(errors)
           .map(([key, value]) => {
-            const fieldName =
-              key === 'qualification'
-                ? 'Qualification name'
-                : key === 'qualification_type'
-                  ? 'Qualification type'
-                  : key
+            const fieldName = key === 'qualification' ? 'Qualification name' :
+              key === 'qualification_type' ? 'Qualification type' : key
             const errorText = Array.isArray(value) ? value.join(', ') : value
             return `${fieldName}: ${errorText}`
           })
@@ -1316,7 +1001,7 @@ const createNewInstitute = async () => {
     const instituteData = {
       institute_name: newInstitute.institute_name.trim(),
       university: newInstitute.university.trim(),
-      country: newInstitute.country, // This is already the country code from the dropdown value
+      country: newInstitute.country // This is already the country code from the dropdown value
     }
 
     // console.log('Creating new institute with data:', instituteData)
@@ -1361,14 +1046,9 @@ const createNewInstitute = async () => {
       if (typeof errors === 'object') {
         errorMessage = Object.entries(errors)
           .map(([key, value]) => {
-            const fieldName =
-              key === 'institute_name'
-                ? 'Institute name'
-                : key === 'university'
-                  ? 'University name'
-                  : key === 'country'
-                    ? 'Country'
-                    : key
+            const fieldName = key === 'institute_name' ? 'Institute name' :
+              key === 'university' ? 'University name' :
+                key === 'country' ? 'Country' : key
             const errorText = Array.isArray(value) ? value.join(', ') : value
             return `${fieldName}: ${errorText}`
           })
@@ -1396,10 +1076,9 @@ const validateNewQualification = () => {
   }
 
   // Check for duplicates in existing qualifications
-  const existingQual = qualifications.value.find(
-    (q) =>
-      q.qualification.toLowerCase().trim() === newQualificationName.value.toLowerCase().trim() &&
-      q.qualification_type === Number(localFormData.qualification_type),
+  const existingQual = qualifications.value.find(q =>
+    q.qualification.toLowerCase().trim() === newQualificationName.value.toLowerCase().trim() &&
+    q.qualification_type === Number(localFormData.qualification_type)
   )
 
   if (existingQual) {
@@ -1445,11 +1124,10 @@ const validateNewInstitute = () => {
 
   // Check for duplicates in existing universities
   // Note: existing universities should also have country codes, not names
-  const existingUni = universities.value.find(
-    (u) =>
-      u.institute_name.toLowerCase().trim() === newInstitute.institute_name.toLowerCase().trim() &&
-      u.university.toLowerCase().trim() === newInstitute.university.toLowerCase().trim() &&
-      u.country === newInstitute.country, // Compare country codes
+  const existingUni = universities.value.find(u =>
+    u.institute_name.toLowerCase().trim() === newInstitute.institute_name.toLowerCase().trim() &&
+    u.university.toLowerCase().trim() === newInstitute.university.toLowerCase().trim() &&
+    u.country === newInstitute.country // Compare country codes
   )
 
   if (existingUni) {
@@ -1484,9 +1162,7 @@ const getSubmissionProgressText = () => {
     case 'qualification':
       return 'Step 1: Creating new qualification in system'
     case 'institute':
-      return hasNewQualification()
-        ? 'Step 2: Creating new institute in system'
-        : 'Step 1: Creating new institute in system'
+      return hasNewQualification() ? 'Step 2: Creating new institute in system' : 'Step 1: Creating new institute in system'
     case 'application': {
       const stepNum = (hasNewQualification() ? 1 : 0) + (hasNewInstitute() ? 1 : 0) + 1
       return `Step ${stepNum}: Submitting your application`
@@ -1565,7 +1241,7 @@ const filteredQualifications = computed(() => {
     return []
   }
   return qualifications.value.filter(
-    (qual) => qual.qualification_type === Number(localFormData.qualification_type),
+    qual => qual.qualification_type === Number(localFormData.qualification_type)
   )
 })
 
@@ -1573,9 +1249,10 @@ const countries = ref(countryData)
 
 // ADD these helper functions for country code conversion
 const getCountryName = (countryCode) => {
-  const country = countries.value.find((c) => c.code === countryCode)
+  const country = countries.value.find(c => c.code === countryCode)
   return country ? country.name : countryCode
 }
+
 
 const handleFileSelect = (event, index) => {
   const files = Array.from(event.target.files)
@@ -1638,7 +1315,7 @@ const checkExistingApplication = async () => {
             const qualResponse = await apiService.getEpcNewQualifications()
             if (qualResponse.data && qualResponse.data.results) {
               existingQualification.value = qualResponse.data.results.find(
-                (qual) => qual.application === applicationId,
+                qual => qual.application === applicationId
               )
             }
           } catch {
@@ -1662,8 +1339,7 @@ const checkExistingApplication = async () => {
 
       if (allAppsResponse.data && allAppsResponse.data.results) {
         const userApp = allAppsResponse.data.results.find(
-          (app) =>
-            app.email_address === (user?.email || localFormData.email_address) && !app.cid_holder,
+          app => app.email_address === (user?.email || localFormData.email_address) && !app.cid_holder
         )
 
         if (userApp) {
@@ -1673,7 +1349,7 @@ const checkExistingApplication = async () => {
             const qualResponse = await apiService.getEpcNewQualifications()
             if (qualResponse.data && qualResponse.data.results) {
               existingQualification.value = qualResponse.data.results.find(
-                (qual) => qual.application === userApp.id,
+                qual => qual.application === userApp.id
               )
             }
           } catch {
@@ -1731,9 +1407,7 @@ const populateFormFromExistingData = () => {
 
     // Handle existing qualification name
     if (qual.qualification_name) {
-      const existingQual = qualifications.value.find(
-        (q) => q.id === Number(qual.qualification_name),
-      )
+      const existingQual = qualifications.value.find(q => q.id === Number(qual.qualification_name))
       if (existingQual) {
         // Found in current list, set both form data and selection
         localFormData.qualification_name = Number(qual.qualification_name)
@@ -1749,9 +1423,7 @@ const populateFormFromExistingData = () => {
 
     // Handle existing institute
     if (qual.institute_university) {
-      const existingInstitute = universities.value.find(
-        (u) => u.id === Number(qual.institute_university),
-      )
+      const existingInstitute = universities.value.find(u => u.id === Number(qual.institute_university))
       if (existingInstitute) {
         // Found in current list, set both form data and selection
         localFormData.institute = Number(qual.institute_university)
@@ -1782,7 +1454,7 @@ const populateFormFromExistingData = () => {
     qualification_name: localFormData.qualification_name,
     institute: localFormData.institute,
     qualificationNameSelection: qualificationNameSelection.value,
-    instituteSelection: instituteSelection.value,
+    instituteSelection: instituteSelection.value
   })
 }
 
@@ -1808,18 +1480,18 @@ const populateFormFromExistingData = () => {
 // ADD a helper function to handle document validation errors
 const getDocumentValidationSummary = () => {
   const missingDocs = supportingDocuments.value
-    .filter((doc) => !doc.files || doc.files.length === 0)
-    .map((doc) => getDocumentTypeName(doc.type))
+    .filter(doc => !doc.files || doc.files.length === 0)
+    .map(doc => getDocumentTypeName(doc.type))
 
   const uploadedDocs = supportingDocuments.value
-    .filter((doc) => doc.files && doc.files.length > 0)
-    .map((doc) => getDocumentTypeName(doc.type))
+    .filter(doc => doc.files && doc.files.length > 0)
+    .map(doc => getDocumentTypeName(doc.type))
 
   return {
     missing: missingDocs,
     uploaded: uploadedDocs,
     totalRequired: fetchedDocumentTypes.value.length,
-    totalUploaded: uploadedDocs.length,
+    totalUploaded: uploadedDocs.length
   }
 }
 
@@ -1831,11 +1503,9 @@ const determineStartingStage = () => {
   if (existingQualification.value) {
     // Both application and qualification exist
     // Check if it's already submitted or completed - redirect to my_applications
-    if (
-      existingQualification.value.is_active === true ||
+    if (existingQualification.value.is_active === true ||
       existingQualification.value.status === 'submitted' ||
-      existingQualification.value.status === 'completed'
-    ) {
+      existingQualification.value.status === 'completed') {
       return 'redirect' // Special value to indicate we should redirect
     } else {
       return 2 // Qualification exists but not completed, continue from step 2
@@ -1852,9 +1522,7 @@ const showProgressMessage = (startingStage) => {
       toast.info('Starting new application')
       break
     case 2:
-      toast.success(
-        'Your personal information has been saved. Continuing with qualification details.',
-      )
+      toast.success('Your personal information has been saved. Continuing with qualification details.')
       break
     case 'redirect':
       toast.success('Your application is already complete. Redirecting to your applications...')
@@ -1870,11 +1538,7 @@ const redirectToMyApplications = () => {
 }
 
 const startNewApplication = () => {
-  if (
-    confirm(
-      'Are you sure you want to start a new application? This will not affect your existing application, but you will create a separate one.',
-    )
-  ) {
+  if (confirm('Are you sure you want to start a new application? This will not affect your existing application, but you will create a separate one.')) {
     existingApplication.value = null
     existingQualification.value = null
     applicationId.value = null
@@ -1914,7 +1578,7 @@ const startNewApplication = () => {
     Object.assign(localFormData, initialFormData)
 
     const newRegistration = registrationTypes.value.find(
-      (type) => type.name.toLowerCase() === 'new registration',
+      type => type.name.toLowerCase() === 'new registration'
     )
     if (newRegistration) {
       localFormData.registration_type = newRegistration.id
@@ -1929,9 +1593,7 @@ const startNewApplication = () => {
 //  this helper function for qualification
 const getSelectedQualificationTypeName = () => {
   if (!localFormData.qualification_type) return 'Selected Type'
-  const qualType = qualificationTypes.value.find(
-    (type) => type.id === Number(localFormData.qualification_type),
-  )
+  const qualType = qualificationTypes.value.find(type => type.id === Number(localFormData.qualification_type))
   return qualType ? qualType.qualification_type_name : 'Selected Type'
 }
 // Validation functions
@@ -2029,7 +1691,7 @@ const validateFormStageTwo = () => {
   let isValid = true
 
   // Clear individual document errors first
-  supportingDocuments.value.forEach((doc) => {
+  supportingDocuments.value.forEach(doc => {
     doc.error = null
   })
 
@@ -2124,23 +1786,23 @@ const validateFormStageTwo = () => {
     institute: localFormData.institute,
     hasNewQualification: hasNewQualification(),
     hasNewInstitute: hasNewInstitute(),
-    errors: Object.keys(errors),
+    errors: Object.keys(errors)
   })
 
   return isValid
 }
 
 const getDocumentTypeName = (typeId) => {
-  const docType = fetchedDocumentTypes.value.find((type) => type.id === typeId)
+  const docType = fetchedDocumentTypes.value.find(type => type.id === typeId)
   return docType ? docType.document_name : 'Unknown Document Type'
 }
 const initializeSupportingDocuments = () => {
   if (fetchedDocumentTypes.value.length > 0) {
-    supportingDocuments.value = fetchedDocumentTypes.value.map((docType) => ({
+    supportingDocuments.value = fetchedDocumentTypes.value.map(docType => ({
       type: docType.id,
       files: [],
       description: '',
-      error: null, // For individual document validation errors
+      error: null // For individual document validation errors
     }))
     // console.log('Initialized supporting documents with all types:', supportingDocuments.value)
   }
@@ -2206,8 +1868,8 @@ const fetchDCRCData = async () => {
     } else {
       throw new Error(
         response.data?.message ||
-          response.data?.error ||
-          'Citizen not found or invalid data received.',
+        response.data?.error ||
+        'Citizen not found or invalid data received.',
       )
     }
   } catch (error) {
@@ -2301,6 +1963,7 @@ const handleNext = async () => {
       await apiService.patchEpcNewApplication(applicationId.value, apiFormData)
       toast.success('Personal information updated successfully!')
       stage.value = 2
+
     } catch (error) {
       console.error('Error updating application:', error)
       let errorMessage = 'Failed to update personal information.'
@@ -2339,7 +2002,8 @@ const handleNext = async () => {
 
   if (localFormData.registration_date)
     apiFormData.append('registration_date', localFormData.registration_date)
-  if (localFormData.expiry_date) apiFormData.append('expiry_date', localFormData.expiry_date)
+  if (localFormData.expiry_date)
+    apiFormData.append('expiry_date', localFormData.expiry_date)
 
   if (localFormData.cid_holder) {
     apiFormData.append('cid_no', localFormData.cid_no)
@@ -2493,7 +2157,7 @@ const handleSubmitActual = async () => {
     // Find registration type by name (case-insensitive, allow typo)
     const getNewRegistrationTypeId = () => {
       const match = registrationTypes.value.find(
-        (t) => t.name && t.name.toLowerCase().replace(/[^a-z]/g, '') === 'newregistration',
+        t => t.name && t.name.toLowerCase().replace(/[^a-z]/g, '') === 'newregistration'
       )
       return match ? match.id : null
     }
@@ -2553,8 +2217,9 @@ const handleSubmitActual = async () => {
 
     // Navigate to dashboard after a brief delay to show completion
     setTimeout(() => {
-      router.push('/admin/user/engineering_certification/dashboard')
+      router.push("/admin/user/engineering_certification/dashboard")
     }, 1500)
+
   } catch (error) {
     console.error('Error during application submission:', error)
     let errorMessage = 'Application submission failed.'
@@ -2581,34 +2246,31 @@ const handleSubmitActual = async () => {
 }
 
 // NOW define the watch functions - AFTER localFormData is declared
-watch(
-  () => localFormData.cid_no,
-  async (newCid) => {
-    if (props.selectedType === 'cid' && newCid && isCIDValid.value) {
-      existingApplication.value = null
-      existingQualification.value = null
+watch(() => localFormData.cid_no, async (newCid) => {
+  if (props.selectedType === 'cid' && newCid && isCIDValid.value) {
+    existingApplication.value = null
+    existingQualification.value = null
 
-      const hasExisting = await checkExistingApplication()
+    const hasExisting = await checkExistingApplication()
 
-      if (hasExisting) {
-        populateFormFromExistingData()
-        const startingStage = determineStartingStage()
+    if (hasExisting) {
+      populateFormFromExistingData()
+      const startingStage = determineStartingStage()
 
-        if (startingStage === 'redirect') {
-          showProgressMessage(startingStage)
-          redirectToMyApplications()
-          return
-        }
+      if (startingStage === 'redirect') {
+        showProgressMessage(startingStage)
+        redirectToMyApplications()
+        return
+      }
 
-        // Only change stage if we're currently on stage 1 and not redirecting
-        if (stage.value === 1) {
-          stage.value = startingStage
-          showProgressMessage(startingStage)
-        }
+      // Only change stage if we're currently on stage 1 and not redirecting
+      if (stage.value === 1) {
+        stage.value = startingStage
+        showProgressMessage(startingStage)
       }
     }
-  },
-)
+  }
+})
 
 watch(
   () => localFormData,
@@ -2618,67 +2280,52 @@ watch(
   { deep: true },
 )
 
-watch(
-  () => localFormData.qualification_type,
-  (newType) => {
-    if (newType) {
-      const currentQualStillValid = filteredQualifications.value.some(
-        (qual) => qual.id === Number(qualificationNameSelection.value),
-      )
+watch(() => localFormData.qualification_type, (newType) => {
+  if (newType) {
+    const currentQualStillValid = filteredQualifications.value.some(
+      qual => qual.id === Number(qualificationNameSelection.value)
+    )
 
-      if (!currentQualStillValid && qualificationNameSelection.value !== 'add_new') {
-        qualificationNameSelection.value = ''
-        localFormData.qualification_name = ''
-      }
-    } else {
+    if (!currentQualStillValid && qualificationNameSelection.value !== 'add_new') {
       qualificationNameSelection.value = ''
       localFormData.qualification_name = ''
-      newQualificationName.value = ''
     }
-  },
-)
+  } else {
+    qualificationNameSelection.value = ''
+    localFormData.qualification_name = ''
+    newQualificationName.value = ''
+  }
+})
 
 // ADD watch for clearing new entries when switching back
-watch(
-  () => qualificationNameSelection.value,
-  (newValue) => {
-    if (newValue !== 'add_new') {
-      newQualificationName.value = ''
-    }
-  },
-)
+watch(() => qualificationNameSelection.value, (newValue) => {
+  if (newValue !== 'add_new') {
+    newQualificationName.value = ''
+  }
+})
 
-watch(
-  () => instituteSelection.value,
-  (newValue) => {
-    if (newValue !== 'add_new') {
-      newInstitute.institute_name = ''
-      newInstitute.university = ''
-      newInstitute.country = ''
-    }
-  },
-)
+watch(() => instituteSelection.value, (newValue) => {
+  if (newValue !== 'add_new') {
+    newInstitute.institute_name = ''
+    newInstitute.university = ''
+    newInstitute.country = ''
+  }
+})
 
 // ADD watch for clearing new entries when switching back
-watch(
-  () => qualificationNameSelection.value,
-  (newValue) => {
-    if (newValue !== 'add_new') {
-      newQualificationName.value = ''
-    }
-  },
-)
+watch(() => qualificationNameSelection.value, (newValue) => {
+  if (newValue !== 'add_new') {
+    newQualificationName.value = ''
+  }
+})
 
-watch(
-  () => instituteSelection.value,
-  (newValue) => {
-    if (newValue !== 'add_new') {
-      newInstitute.institute_name = ''
-      newInstitute.university = ''
-      newInstitute.country = ''
-    }
-  },
-)
+watch(() => instituteSelection.value, (newValue) => {
+  if (newValue !== 'add_new') {
+    newInstitute.institute_name = ''
+    newInstitute.university = ''
+    newInstitute.country = ''
+  }
+})
 
 // Finally, the onMounted function
 // UPDATE the onMounted function
@@ -2709,7 +2356,7 @@ onMounted(async () => {
     // console.log('Document Types:', fetchedDocumentTypes.value)
 
     const newRegistration = registrationTypes.value.find(
-      (type) => type.name.toLowerCase() === 'new registration',
+      type => type.name.toLowerCase() === 'new registration'
     )
 
     if (newRegistration) {
@@ -2746,6 +2393,7 @@ onMounted(async () => {
         showProgressMessage(startingStage)
       }
     }
+
   } catch (error) {
     console.error('Error during initialization:', error)
     toast.error('Failed to fetch essential data. Please refresh or contact support.')
@@ -2762,6 +2410,7 @@ onMounted(async () => {
 
 /* Keep scrollbar styling if desired for specific elements, but not globally */
 @supports (-webkit-appearance: none) {
+
   /* Apply to specific scrollable containers if needed, e.g., modal content */
   /* Example: .modal-scroll-content::-webkit-scrollbar { ... } */
   /* General scrollbar styling for elements using overflow-y-auto might still be useful */

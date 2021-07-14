@@ -1,3 +1,4 @@
+
 <template>
   <div class="max-w-7xl mx-auto px-4 py-8">
     <!-- Page Header -->
@@ -296,7 +297,7 @@ const fetchInstituteData = async () => {
     if (response && response.data && response.data.results) {
       // Filter institutes to find one matching the user's CID and expired status
       const userInstitutes = response.data.results.filter(
-        (institute) => institute.CID.toLowerCase() === userCid.value.toLowerCase(),
+        (institute) => institute.CID.toLowerCase() === userCid.value.toLowerCase()
       )
 
       // Find the first expired institute
@@ -414,13 +415,13 @@ const handlePaymentCompleted = async (paymentData) => {
       toast.error(
         error.response.data?.detail ||
           JSON.stringify(error.response.data) ||
-          error.response.statusText,
+          error.response.statusText
       )
     } else if (error.request) {
       toast.error('Network Error: No response from server')
     } else {
       toast.error(
-        `Payment request generated successfully, but there was an error confirming the payment. Contact support with payment ID: ${paymentId}`,
+        `Payment request generated successfully, but there was an error confirming the payment. Contact support with payment ID: ${paymentId}`
       )
     }
   } finally {
@@ -436,3 +437,4 @@ onMounted(fetchInstituteData)
 <style scoped>
 /* Component-specific styles */
 </style>
+

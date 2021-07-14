@@ -25,7 +25,7 @@
             leave-to="opacity-0 scale-95"
           >
             <DialogPanel
-              v-if="internalCapa.id"
+              v-if="capa !== null"
               class="w-full max-w-3xl transform overflow-hidden rounded-xl bg-white shadow-xl transition-all max-h-[90vh] flex flex-col"
             >
               <!-- Modal Header -->
@@ -35,9 +35,9 @@
                 <div class="flex items-center justify-between">
                   <div>
                     <DialogTitle as="h3" class="text-xl font-semibold text-gray-900">
-                      CAPA Details
+                      {{ internalCapa.id ? 'CAPA Details' : 'Add New CAPA' }}
                     </DialogTitle>
-                    <p class="mt-1 text-sm text-gray-500">
+                    <p v-if="internalCapa.id" class="mt-1 text-sm text-gray-500">
                       Facility: {{ capa.institute?.name_of_institution }}
                     </p>
                   </div>
@@ -214,7 +214,8 @@ import { useToast } from 'vue-toastification'
 const props = defineProps({
   capa: {
     type: Object,
-    required: true,
+    required: false,
+    default: null,
   },
 })
 
@@ -227,7 +228,14 @@ watchEffect(() => {
   if (props.capa) {
     internalCapa.value = JSON.parse(JSON.stringify(props.capa))
   } else {
-    internalCapa.value = {}
+    internalCapa.value = { // Initialize with default values for a new CAPA
+      root_cause: '',
+      capa: '',
+      implementation_timeline: '',
+      management_comment: '',
+      user_remarks: '',
+      // Add any other default fields for a new CAPA here
+    }
   }
 })
 
@@ -252,10 +260,21 @@ const submitCapa = async () => {
       user_remarks: internalCapa.value.user_remarks,
     }
 
-    const response = await apiServices.patchMhpcCapa(internalCapa.value.id, dataToSubmit)
+    let response;
+    let successMessage;
 
-    toast.success('CAPA plan submitted successfully!')
-    emit('capa-updated', response.data)
+    if (internalCapa.value.id) {
+      // Existing CAPA: PATCH request
+      response = await apiServices.patchMhpcCapa(internalCapa.value.id, dataToSubmit);
+      successMessage = 'CAPA plan updated successfully!';
+    } else {
+      // New CAPA: POST request
+      response = await apiServices.postMhpcCapa(dataToSubmit);
+      successMessage = 'New CAPA added successfully!';
+    }
+
+    toast.success(successMessage);
+    emit('capa-updated', response.data);
   } catch (error) {
     console.error('Error updating CAPA:', error)
     toast.error(error.response?.data?.message || 'Failed to update CAPA. Please try again.')

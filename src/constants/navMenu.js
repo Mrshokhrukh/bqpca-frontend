@@ -956,10 +956,10 @@ const serviceSpecificMenuItems = {
             route: (serviceType) =>
               `/admin/dealing_officer/${serviceType}/education_program_management`,
           },
-          {
-            name: 'Reports',
-            route: (serviceType) => `/admin/dealing_officer/${serviceType}/institute_report`,
-          },
+          // {
+          //   name: 'Reports',
+          //   route: (serviceType) => `/admin/dealing_officer/${serviceType}/institute_report`,
+          // },
         ],
       },
       {

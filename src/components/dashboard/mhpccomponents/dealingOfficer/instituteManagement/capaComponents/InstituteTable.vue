@@ -11,8 +11,8 @@
         </tr>
       </thead>
       <tbody class="bg-white divide-y divide-gray-200">
-        <!-- FIX: The prop is named 'institutes', but we iterate it as 'capa' for clarity -->
-        <tr v-for="capa in institutes" :key="capa.id" class="hover:bg-gray-50 transition-colors">
+        <!-- FIX: The prop is named 'capas', but we iterate it as 'capa' for clarity -->
+        <tr v-for="capa in capas" :key="capa.id" class="hover:bg-gray-50 transition-colors">
           <td class="px-6 py-4 whitespace-nowrap">
             <!-- FIX: Accessing nested data correctly from the API response object -->
             <div class="text-sm font-medium text-gray-900">{{ capa.institute?.name_of_institution || 'N/A' }}</div>
@@ -43,7 +43,7 @@
 <script setup>
 defineProps({
   // This prop receives an array of full CAPA objects
-  institutes: { type: Array, required: true },
+  capas: { type: Array, required: true },
 });
 defineEmits(['view-details']);
 

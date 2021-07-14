@@ -1,44 +1,28 @@
 <template>
   <TransitionRoot appear :show="application !== null" as="template">
     <Dialog as="div" @close="$emit('close')" class="relative z-50">
-      <TransitionChild
-        as="div"
-        enter="duration-300 ease-out"
-        enter-from="opacity-0"
-        enter-to="opacity-100"
-        leave="duration-200 ease-in"
-        leave-from="opacity-100"
-        leave-to="opacity-0"
-      >
+      <TransitionChild as="div" enter="duration-300 ease-out" enter-from="opacity-0" enter-to="opacity-100"
+        leave="duration-200 ease-in" leave-from="opacity-100" leave-to="opacity-0">
         <div class="fixed inset-0 bg-black/80 backdrop-blur-sm" />
       </TransitionChild>
 
       <div class="fixed inset-0 overflow-y-auto">
         <div class="flex min-h-full items-center justify-center p-4">
-          <TransitionChild
-            as="div"
-            enter="duration-300 ease-out"
-            enter-from="opacity-0 scale-95"
-            enter-to="opacity-100 scale-100"
-            leave="duration-200 ease-in"
-            leave-from="opacity-100 scale-100"
-            leave-to="opacity-0 scale-95"
-          >
+          <TransitionChild as="div" enter="duration-300 ease-out" enter-from="opacity-0 scale-95"
+            enter-to="opacity-100 scale-100" leave="duration-200 ease-in" leave-from="opacity-100 scale-100"
+            leave-to="opacity-0 scale-95">
             <DialogPanel
               class="w-full max-w-8xl transform overflow-hidden rounded-2xl bg-gray-50 shadow-2xl transition-all"
-              v-if="application"
-            >
+              v-if="application">
               <div class="relative">
-                <div
-                  :class="[
-                    'px-8 py-6 border-b relative overflow-hidden',
-                    {
-                      'bg-yellow-50 border-yellow-100': getApplicationStatus() === 'Pending',
-                      'bg-green-50 border-green-100': getApplicationStatus() === 'Approved',
-                      'bg-red-50 border-red-100': getApplicationStatus() === 'Regretted',
-                    },
-                  ]"
-                >
+                <div :class="[
+                  'px-8 py-6 border-b relative overflow-hidden',
+                  {
+                    'bg-yellow-50 border-yellow-100': getApplicationStatus() === 'Pending',
+                    'bg-green-50 border-green-100': getApplicationStatus() === 'Approved',
+                    'bg-red-50 border-red-100': getApplicationStatus() === 'Regretted',
+                  },
+                ]">
                   <div class="flex items-center justify-between relative z-10">
                     <div class="flex items-center space-x-4">
                       <div class="p-3 bg-white rounded-lg shadow-sm">
@@ -54,31 +38,24 @@
                       </div>
                     </div>
                     <div class="flex items-center space-x-4">
-                      <span
-                        :class="[
-                          'px-5 py-2.5 rounded-full text-sm font-medium inline-flex items-center space-x-2 shadow-sm',
-                          {
-                            'bg-yellow-100 text-yellow-800': getApplicationStatus() === 'Pending',
-                            'bg-green-100 text-green-800': getApplicationStatus() === 'Approved',
-                            'bg-red-100 text-red-800': getApplicationStatus() === 'Regretted',
-                          },
-                        ]"
-                      >
-                        <Circle
-                          class="h-4 w-4"
-                          :class="{
-                            'text-yellow-500': getApplicationStatus() === 'Pending',
-                            'text-green-500': getApplicationStatus() === 'Approved',
-                            'text-red-500': getApplicationStatus() === 'Regretted',
-                          }"
-                        />
+                      <span :class="[
+                        'px-5 py-2.5 rounded-full text-sm font-medium inline-flex items-center space-x-2 shadow-sm',
+                        {
+                          'bg-yellow-100 text-yellow-800': getApplicationStatus() === 'Pending',
+                          'bg-green-100 text-green-800': getApplicationStatus() === 'Approved',
+                          'bg-red-100 text-red-800': getApplicationStatus() === 'Regretted',
+                        },
+                      ]">
+                        <Circle class="h-4 w-4" :class="{
+                          'text-yellow-500': getApplicationStatus() === 'Pending',
+                          'text-green-500': getApplicationStatus() === 'Approved',
+                          'text-red-500': getApplicationStatus() === 'Regretted',
+                        }" />
                         <span>{{ getApplicationStatus() }}</span>
                       </span>
-                      <button
-                        type="button"
+                      <button type="button"
                         class="p-2 text-gray-400 hover:text-gray-500 transition-colors rounded-full hover:bg-white"
-                        @click="$emit('close')"
-                      >
+                        @click="$emit('close')">
                         <span class="sr-only">Close</span>
                         <X class="h-6 w-6" />
                       </button>
@@ -94,13 +71,9 @@
                 <div class="px-8 py-6 bg-white max-h-[calc(100vh-200px)] overflow-y-auto">
                   <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <div class="lg:col-span-1 space-y-6">
-                      <div
-                        class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden"
-                      >
+                      <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
                         <div class="p-6">
-                          <h4
-                            class="text-lg font-medium text-gray-900 mb-6 flex items-center space-x-2"
-                          >
+                          <h4 class="text-lg font-medium text-gray-900 mb-6 flex items-center space-x-2">
                             <User class="h-5 w-5 text-gray-500" />
                             <span>Personal Information</span>
                           </h4>
@@ -146,60 +119,38 @@
                       </div>
 
                       <div
-                        v-if="
-                          application.course_document ||
-                          application.document_supporting_expertise ||
-                          application.attendance_sheet_attachment
-                        "
-                        class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden"
-                      >
+                        v-if="application.course_document || application.document_supporting_expertise || application.attendance_sheet_attachment"
+                        class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
                         <div class="p-6">
-                          <h4
-                            class="text-lg font-medium text-gray-900 mb-6 flex items-center space-x-2"
-                          >
+                          <h4 class="text-lg font-medium text-gray-900 mb-6 flex items-center space-x-2">
                             <Paperclip class="h-5 w-5 text-gray-500" />
                             <span>Attachments</span>
                           </h4>
                           <div class="space-y-3">
-                            <div
-                              v-if="application.course_document"
-                              class="p-4 bg-gray-50 rounded-lg flex flex-col items-center space-y-3"
-                            >
+                            <div v-if="application.course_document"
+                              class="p-4 bg-gray-50 rounded-lg flex flex-col items-center space-y-3">
                               <FileText class="h-8 w-8 text-gray-400" />
                               <p class="text-sm text-gray-900 text-center">Course Document</p>
-                              <a
-                                :href="application.course_document"
-                                target="_blank"
-                                class="px-3 py-1.5 text-xs font-medium text-blue-600 bg-white border border-blue-300 rounded-lg shadow-sm hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-                              >
+                              <a :href="application.course_document" target="_blank"
+                                class="px-3 py-1.5 text-xs font-medium text-blue-600 bg-white border border-blue-300 rounded-lg shadow-sm hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
                                 View Document
                               </a>
                             </div>
-                            <div
-                              v-if="application.document_supporting_expertise"
-                              class="p-4 bg-gray-50 rounded-lg flex flex-col items-center space-y-3"
-                            >
+                            <div v-if="application.document_supporting_expertise"
+                              class="p-4 bg-gray-50 rounded-lg flex flex-col items-center space-y-3">
                               <FileText class="h-8 w-8 text-gray-400" />
                               <p class="text-sm text-gray-900 text-center">Supporting Expertise</p>
-                              <a
-                                :href="application.document_supporting_expertise"
-                                target="_blank"
-                                class="px-3 py-1.5 text-xs font-medium text-blue-600 bg-white border border-blue-300 rounded-lg shadow-sm hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-                              >
+                              <a :href="application.document_supporting_expertise" target="_blank"
+                                class="px-3 py-1.5 text-xs font-medium text-blue-600 bg-white border border-blue-300 rounded-lg shadow-sm hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
                                 View Document
                               </a>
                             </div>
-                            <div
-                              v-if="application.attendance_sheet_attachment"
-                              class="p-4 bg-gray-50 rounded-lg flex flex-col items-center space-y-3"
-                            >
+                            <div v-if="application.attendance_sheet_attachment"
+                              class="p-4 bg-gray-50 rounded-lg flex flex-col items-center space-y-3">
                               <FileText class="h-8 w-8 text-gray-400" />
                               <p class="text-sm text-gray-900 text-center">Attendance Sheet</p>
-                              <a
-                                :href="application.attendance_sheet_attachment"
-                                target="_blank"
-                                class="px-3 py-1.5 text-xs font-medium text-blue-600 bg-white border border-blue-300 rounded-lg shadow-sm hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-                              >
+                              <a :href="application.attendance_sheet_attachment" target="_blank"
+                                class="px-3 py-1.5 text-xs font-medium text-blue-600 bg-white border border-blue-300 rounded-lg shadow-sm hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
                                 View Document
                               </a>
                             </div>
@@ -209,13 +160,9 @@
                     </div>
 
                     <div class="lg:col-span-2 space-y-6">
-                      <div
-                        class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden"
-                      >
+                      <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
                         <div class="p-6">
-                          <h4
-                            class="text-lg font-medium text-gray-900 mb-6 flex items-center space-x-2"
-                          >
+                          <h4 class="text-lg font-medium text-gray-900 mb-6 flex items-center space-x-2">
                             <BookOpen class="h-5 w-5 text-gray-500" />
                             <span>CPD Details</span>
                           </h4>
@@ -245,18 +192,14 @@
                               <p class="text-sm font-medium text-gray-500">CPD Providing Agency</p>
                               <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
                                 <UserCheck class="h-4 w-4 text-gray-400" />
-                                <span>{{
-                                  getCpdProvidingAgencyName(application.cpd_providing_agency)
-                                }}</span>
+                                <span>{{ getCpdProvidingAgencyName(application.cpd_providing_agency) }}</span>
                               </p>
                             </div>
                             <div class="p-4 bg-gray-50 rounded-lg">
                               <p class="text-sm font-medium text-gray-500">From Date</p>
                               <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
                                 <Calendar class="h-4 w-4 text-gray-400" />
-                                <span>{{
-                                  formatDate(application.from_date) || 'Not provided'
-                                }}</span>
+                                <span>{{ formatDate(application.from_date) || 'Not provided' }}</span>
                               </p>
                             </div>
                             <div class="p-4 bg-gray-50 rounded-lg">
@@ -270,31 +213,24 @@
                               <p class="text-sm font-medium text-gray-500">Duration (Hours)</p>
                               <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
                                 <Clock class="h-4 w-4 text-gray-400" />
-                                <span>{{
-                                  application.total_duration_hours ||
-                                  application.duration_in_hours ||
-                                  'Not provided'
-                                }}</span>
+                                <span>
+                                  {{ application.total_duration_hours || application.duration_in_hours || 'Notprovided'
+                                  }}
+                                </span>
                               </p>
                             </div>
                             <div class="p-4 bg-gray-50 rounded-lg">
                               <p class="text-sm font-medium text-gray-500">Expected Participants</p>
                               <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
                                 <Users class="h-4 w-4 text-gray-400" />
-                                <span>{{
-                                  application.number_of_participants || 'Notprovided'
-                                }}</span>
+                                <span>{{ application.number_of_participants || 'Notprovided' }}</span>
                               </p>
                             </div>
                             <div class="md:col-span-2 p-4 bg-gray-50 rounded-lg">
-                              <p class="text-sm font-medium text-gray-500">
-                                Proposed Training Location
-                              </p>
+                              <p class="text-sm font-medium text-gray-500">Proposed Training Location</p>
                               <p class="text-sm text-gray-900 mt-2 flex items-start space-x-2">
                                 <UserCircle class="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
-                                <span>{{
-                                  application.proposed_training_location || 'Not provided'
-                                }}</span>
+                                <span>{{ application.proposed_training_location || 'Not provided' }}</span>
                               </p>
                             </div>
                             <div class="md:col-span-2 p-4 bg-gray-50 rounded-lg">
@@ -308,25 +244,17 @@
                               <p class="text-sm font-medium text-gray-500">Reason for Conducting</p>
                               <p class="text-sm text-gray-900 mt-2 flex items-start space-x-2">
                                 <MessageSquare class="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
-                                <span>{{
-                                  getReasonForConductingName(application.reason_for_conducting)
-                                }}</span>
+                                <span>{{ getReasonForConductingName(application.reason_for_conducting) }}</span>
                               </p>
                             </div>
-                            <div
-                              v-if="application.reason_for_details"
-                              class="md:col-span-2 p-4 bg-gray-50 rounded-lg"
-                            >
+                            <div v-if="application.reason_for_details" class="md:col-span-2 p-4 bg-gray-50 rounded-lg">
                               <p class="text-sm font-medium text-gray-500">Reason Details</p>
                               <p class="text-sm text-gray-900 mt-2 flex items-start space-x-2">
                                 <MessageSquare class="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
                                 <span>{{ application.reason_for_details }}</span>
                               </p>
                             </div>
-                            <div
-                              v-if="application.activities_summary"
-                              class="md:col-span-2 p-4 bg-gray-50 rounded-lg"
-                            >
+                            <div v-if="application.activities_summary" class="md:col-span-2 p-4 bg-gray-50 rounded-lg">
                               <p class="text-sm font-medium text-gray-500">Activities Summary</p>
                               <p class="text-sm text-gray-900 mt-2 flex items-start space-x-2">
                                 <Activity class="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
@@ -337,38 +265,24 @@
 
                           <!-- Learning Methods, Resources, Methodologies -->
                           <div
-                            v-if="
-                              application.learning_methods?.length ||
-                              application.resources?.length ||
-                              application.methodologies?.length
-                            "
-                            class="mt-6 space-y-6"
-                          >
+                            v-if="application.learning_methods?.length || application.resources?.length || application.methodologies?.length"
+                            class="mt-6 space-y-6">
+
                             <!-- Learning Methods -->
-                            <div
-                              v-if="application.learning_methods?.length"
-                              class="p-6 bg-blue-50 rounded-lg border border-blue-200"
-                            >
-                              <h5
-                                class="text-base font-semibold text-blue-900 mb-4 flex items-center space-x-2"
-                              >
+                            <div v-if="application.learning_methods?.length"
+                              class="p-6 bg-blue-50 rounded-lg border border-blue-200">
+                              <h5 class="text-base font-semibold text-blue-900 mb-4 flex items-center space-x-2">
                                 <BookOpen class="h-5 w-5 text-blue-600" />
                                 <span>Learning Methods & Activities</span>
                               </h5>
                               <div class="space-y-3">
-                                <div
-                                  v-for="method in application.learning_methods"
-                                  :key="method.id"
-                                  class="p-4 bg-white rounded-lg border border-blue-100 shadow-sm"
-                                >
+                                <div v-for="method in application.learning_methods" :key="method.id"
+                                  class="p-4 bg-white rounded-lg border border-blue-100 shadow-sm">
                                   <div class="flex items-start justify-between">
                                     <div class="flex-1">
-                                      <p class="text-sm font-medium text-gray-900 mb-2">
-                                        {{ method.activities || 'Activity not specified' }}
-                                      </p>
-                                      <div
-                                        class="flex items-center space-x-4 text-xs text-gray-600"
-                                      >
+                                      <p class="text-sm font-medium text-gray-900 mb-2">{{ method.activities ||
+                                        'Activity not specified' }}</p>
+                                      <div class="flex items-center space-x-4 text-xs text-gray-600">
                                         <span class="flex items-center space-x-1">
                                           <Clock class="h-3 w-3" />
                                           <span>{{ method.duration || 0 }} hours</span>
@@ -377,8 +291,7 @@
                                     </div>
                                     <div class="ml-4">
                                       <span
-                                        class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full font-medium"
-                                      >
+                                        class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full font-medium">
                                         Activity #{{ method.id }}
                                       </span>
                                     </div>
@@ -388,22 +301,15 @@
                             </div>
 
                             <!-- Resources with Credits Editing -->
-                            <div
-                              v-if="application.resources?.length"
-                              class="p-6 bg-green-50 rounded-lg border border-green-200"
-                            >
-                              <h5
-                                class="text-base font-semibold text-green-900 mb-4 flex items-center space-x-2"
-                              >
+                            <div v-if="application.resources?.length"
+                              class="p-6 bg-green-50 rounded-lg border border-green-200">
+                              <h5 class="text-base font-semibold text-green-900 mb-4 flex items-center space-x-2">
                                 <Users class="h-5 w-5 text-green-600" />
                                 <span>Resource Persons</span>
                               </h5>
                               <div class="space-y-3">
-                                <div
-                                  v-for="resource in application.resources"
-                                  :key="resource.id"
-                                  class="p-4 bg-white rounded-lg border border-green-100 shadow-sm"
-                                >
+                                <div v-for="resource in application.resources" :key="resource.id"
+                                  class="p-4 bg-white rounded-lg border border-green-100 shadow-sm">
                                   <div class="flex items-center justify-between">
                                     <div class="flex items-center space-x-3">
                                       <div class="p-2 bg-green-100 rounded-full">
@@ -414,8 +320,7 @@
                                           {{ resource.resource_person_name || 'Name not provided' }}
                                         </p>
                                         <p class="text-xs text-gray-600">
-                                          Reg. No:
-                                          {{ resource.resource_person_reg_no || 'Not specified' }}
+                                          Reg. No: {{ resource.resource_person_reg_no || 'Not specified' }}
                                         </p>
 
                                         <!-- Credits section for resource person -->
@@ -423,24 +328,16 @@
                                           <div>
                                             <p class="text-xs text-gray-500">Review Status</p>
                                             <span
-                                              class="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800"
-                                            >
+                                              class="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
                                               Resource Person
                                             </span>
                                           </div>
                                           <div>
                                             <p class="text-xs text-gray-500">CPD Credits</p>
-                                            <div
-                                              v-if="editingResource === resource.id"
-                                              class="mt-1"
-                                            >
-                                              <input
-                                                v-model.number="resourceCredits[resource.id]"
-                                                type="number"
-                                                min="0"
+                                            <div v-if="editingResource === resource.id" class="mt-1">
+                                              <input v-model.number="resourceCredits[resource.id]" type="number" min="0"
                                                 step="0.5"
-                                                class="w-20 px-2 py-1 text-sm bg-white border border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                                              />
+                                                class="w-20 px-2 py-1 text-sm bg-white border border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:border-green-500" />
                                             </div>
                                             <p v-else class="text-sm font-medium text-gray-900">
                                               {{ getResourceCredits(resource) || 0 }}
@@ -449,11 +346,8 @@
                                         </div>
 
                                         <div v-if="resource.resource_document" class="mt-2">
-                                          <a
-                                            :href="resource.resource_document"
-                                            target="_blank"
-                                            class="inline-flex items-center px-2 py-1 text-xs font-medium text-blue-600 bg-blue-50 border border-blue-300 rounded hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-                                          >
+                                          <a :href="resource.resource_document" target="_blank"
+                                            class="inline-flex items-center px-2 py-1 text-xs font-medium text-blue-600 bg-blue-50 border border-blue-300 rounded hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
                                             <FileText class="h-3 w-3 mr-1" />
                                             View Document
                                           </a>
@@ -462,24 +356,18 @@
                                     </div>
                                     <div class="flex items-center space-x-2 ml-4">
                                       <!-- Edit buttons for resource person -->
-                                      <button
-                                        v-if="editingResource !== resource.id"
+                                      <button v-if="editingResource !== resource.id"
                                         @click="startEditingResource(resource)"
-                                        class="px-3 py-1.5 text-xs font-medium text-green-600 bg-green-50 border border-green-200 rounded hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors"
-                                      >
+                                        class="px-3 py-1.5 text-xs font-medium text-green-600 bg-green-50 border border-green-200 rounded hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors">
                                         Edit Credits
                                       </button>
                                       <template v-else>
-                                        <button
-                                          @click="saveResource(resource)"
-                                          class="px-3 py-1.5 text-xs font-medium text-white bg-green-600 rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors"
-                                        >
+                                        <button @click="saveResource(resource)"
+                                          class="px-3 py-1.5 text-xs font-medium text-white bg-green-600 rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors">
                                           Save
                                         </button>
-                                        <button
-                                          @click="cancelEditingResource()"
-                                          class="px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-100 rounded hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors"
-                                        >
+                                        <button @click="cancelEditingResource()"
+                                          class="px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-100 rounded hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors">
                                           Cancel
                                         </button>
                                       </template>
@@ -490,22 +378,15 @@
                             </div>
 
                             <!-- Methodologies -->
-                            <div
-                              v-if="application.methodologies?.length"
-                              class="p-6 bg-purple-50 rounded-lg border border-purple-200"
-                            >
-                              <h5
-                                class="text-base font-semibold text-purple-900 mb-4 flex items-center space-x-2"
-                              >
+                            <div v-if="application.methodologies?.length"
+                              class="p-6 bg-purple-50 rounded-lg border border-purple-200">
+                              <h5 class="text-base font-semibold text-purple-900 mb-4 flex items-center space-x-2">
                                 <Activity class="h-5 w-5 text-purple-600" />
                                 <span>Training Methodologies</span>
                               </h5>
                               <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                <div
-                                  v-for="methodology in application.methodologies"
-                                  :key="methodology.id"
-                                  class="p-4 bg-white rounded-lg border border-purple-100 shadow-sm"
-                                >
+                                <div v-for="methodology in application.methodologies" :key="methodology.id"
+                                  class="p-4 bg-white rounded-lg border border-purple-100 shadow-sm">
                                   <div class="flex items-center space-x-3">
                                     <div class="p-2 bg-purple-100 rounded-full">
                                       <Activity class="h-4 w-4 text-purple-600" />
@@ -524,23 +405,16 @@
                       </div>
 
                       <!-- Participants Section -->
-                      <div
-                        v-if="application.participants && application.participants.length > 0"
-                        class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden"
-                      >
+                      <div v-if="application.participants && application.participants.length > 0"
+                        class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
                         <div class="p-6">
-                          <h4
-                            class="text-lg font-medium text-gray-900 mb-6 flex items-center space-x-2"
-                          >
+                          <h4 class="text-lg font-medium text-gray-900 mb-6 flex items-center space-x-2">
                             <Users class="h-5 w-5 text-gray-500" />
                             <span>Participants ({{ application.participants.length }})</span>
                           </h4>
                           <div class="space-y-4">
-                            <div
-                              v-for="participant in application.participants"
-                              :key="participant.id"
-                              class="p-4 bg-gray-50 rounded-lg border border-gray-200"
-                            >
+                            <div v-for="participant in application.participants" :key="participant.id"
+                              class="p-4 bg-gray-50 rounded-lg border border-gray-200">
                               <div class="flex items-center justify-between">
                                 <div class="flex-1">
                                   <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -558,35 +432,23 @@
                                     </div>
                                     <div>
                                       <p class="text-xs text-gray-500">Review Status</p>
-                                      <span
-                                        :class="[
-                                          'inline-flex px-2 py-1 text-xs font-medium rounded-full',
-                                          {
-                                            'bg-yellow-100 text-yellow-800':
-                                              participant.review_status === 'Pending',
-                                            'bg-green-100 text-green-800':
-                                              participant.review_status === 'Approved',
-                                            'bg-red-100 text-red-800':
-                                              participant.review_status === 'Rejected',
-                                          },
-                                        ]"
-                                      >
+                                      <span :class="[
+                                        'inline-flex px-2 py-1 text-xs font-medium rounded-full',
+                                        {
+                                          'bg-yellow-100 text-yellow-800': participant.review_status === 'Pending',
+                                          'bg-green-100 text-green-800': participant.review_status === 'Approved',
+                                          'bg-red-100 text-red-800': participant.review_status === 'Rejected',
+                                        },
+                                      ]">
                                         {{ participant.review_status || 'Pending' }}
                                       </span>
                                     </div>
                                     <div>
                                       <p class="text-xs text-gray-500">CPD Credits</p>
-                                      <div
-                                        v-if="editingParticipant === participant.id"
-                                        class="mt-1"
-                                      >
-                                        <input
-                                          v-model.number="participantCredits[participant.id]"
-                                          type="number"
-                                          min="0"
+                                      <div v-if="editingParticipant === participant.id" class="mt-1">
+                                        <input v-model.number="participantCredits[participant.id]" type="number" min="0"
                                           step="0.5"
-                                          class="w-20 px-2 py-1 text-sm bg-white border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                        />
+                                          class="w-20 px-2 py-1 text-sm bg-white border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
                                       </div>
                                       <p v-else class="text-sm font-medium text-gray-900">
                                         {{ participant.cpd_credits || 0 }}
@@ -595,30 +457,22 @@
                                   </div>
                                   <div v-if="participant.review_remarks" class="mt-3">
                                     <p class="text-xs text-gray-500">Remarks</p>
-                                    <p class="text-sm text-gray-700">
-                                      {{ participant.review_remarks }}
-                                    </p>
+                                    <p class="text-sm text-gray-700">{{ participant.review_remarks }}</p>
                                   </div>
                                 </div>
                                 <div class="flex items-center space-x-2 ml-4">
-                                  <button
-                                    v-if="editingParticipant !== participant.id"
+                                  <button v-if="editingParticipant !== participant.id"
                                     @click="startEditingParticipant(participant)"
-                                    class="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-                                  >
+                                    class="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
                                     Edit
                                   </button>
                                   <template v-else>
-                                    <button
-                                      @click="saveParticipant(participant)"
-                                      class="px-3 py-1.5 text-xs font-medium text-white bg-green-600 rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors"
-                                    >
+                                    <button @click="saveParticipant(participant)"
+                                      class="px-3 py-1.5 text-xs font-medium text-white bg-green-600 rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors">
                                       Save
                                     </button>
-                                    <button
-                                      @click="cancelEditingParticipant()"
-                                      class="px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-100 rounded hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors"
-                                    >
+                                    <button @click="cancelEditingParticipant()"
+                                      class="px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-100 rounded hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors">
                                       Cancel
                                     </button>
                                   </template>
@@ -629,13 +483,9 @@
                         </div>
                       </div>
 
-                      <div
-                        class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden"
-                      >
+                      <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
                         <div class="p-6">
-                          <h4
-                            class="text-lg font-medium text-gray-900 mb-6 flex items-center space-x-2"
-                          >
+                          <h4 class="text-lg font-medium text-gray-900 mb-6 flex items-center space-x-2">
                             <ClipboardCheck class="h-5 w-5 text-gray-500" />
                             <span>Review Details</span>
                           </h4>
@@ -643,18 +493,10 @@
                             <div class="p-4 bg-gray-50 rounded-lg">
                               <p class="text-sm font-medium text-gray-500">Expected CPD Credits</p>
                               <div v-if="isEditing" class="mt-2">
-                                <input
-                                  v-model.number="editedApplication.credit"
-                                  type="number"
-                                  min="0"
-                                  step="0.5"
-                                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                />
+                                <input v-model.number="editedApplication.credit" type="number" min="0" step="0.5"
+                                  class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
                               </div>
-                              <p
-                                v-else
-                                class="text-sm text-gray-900 mt-2 flex items-center space-x-2"
-                              >
+                              <p v-else class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
                                 <Award class="h-4 w-4 text-gray-400" />
                                 <span>{{ application.credit || '0' }}</span>
                               </p>
@@ -670,132 +512,89 @@
                         </div>
                       </div>
 
-                      <div
-                        class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden"
-                      >
+                      <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
                         <div class="p-6">
-                          <h4
-                            class="text-lg font-medium text-gray-900 mb-6 flex items-center space-x-2"
-                          >
+                          <h4 class="text-lg font-medium text-gray-900 mb-6 flex items-center space-x-2">
                             <CheckCircle class="h-5 w-5 text-gray-500" />
                             <span>Review Action</span>
                           </h4>
 
-                          <div
-                            v-if="showApprovalForm"
-                            class="p-6 bg-green-50 rounded-xl border border-green-200 mb-4 transition-all"
-                          >
-                            <h5
-                              class="text-base font-medium text-green-800 mb-4 flex items-center space-x-2"
-                            >
+                          <div v-if="showApprovalForm"
+                            class="p-6 bg-green-50 rounded-xl border border-green-200 mb-4 transition-all">
+
+                            <h5 class="text-base font-medium text-green-800 mb-4 flex items-center space-x-2">
                               <CheckCircle class="h-4 w-4 text-green-600" />
                               <span>Approve Application</span>
                             </h5>
                             <div class="space-y-4">
                               <div>
-                                <label class="block text-sm font-medium text-gray-700"
-                                  >Assigned CPD Credits <span class="text-red-600">*</span></label
-                                >
-                                <input
-                                  v-model.number="approvalCredits"
-                                  type="number"
-                                  min="0"
-                                  step="0.5"
-                                  class="mt-1 w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                                />
+                                <label class="block text-sm font-medium text-gray-700">Assigned CPD Credits <span
+                                    class="text-red-600">*</span></label>
+                                <input v-model.number="approvalCredits" type="number" min="0" step="0.5"
+                                  class="mt-1 w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500" />
                               </div>
                               <div>
-                                <label class="block text-sm font-medium text-gray-700"
-                                  >Approval Notes</label
-                                >
-                                <textarea
-                                  v-model="approvalMessage"
-                                  rows="3"
+                                <label class="block text-sm font-medium text-gray-700">Approval Notes</label>
+                                <textarea v-model="approvalMessage" rows="3"
                                   class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                                  placeholder="Enter any notes for approval..."
-                                ></textarea>
+                                  placeholder="Enter any notes for approval..."></textarea>
                               </div>
                               <div class="flex justify-end space-x-3">
-                                <button
-                                  @click="showApprovalForm = false"
-                                  class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors"
-                                >
+                                <button @click="showApprovalForm = false"
+                                  class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors">
                                   Cancel
                                 </button>
-                                <button
-                                  @click="approveApplication"
-                                  class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
-                                >
+                                <button @click="approveApplication"
+                                  class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors">
                                   Confirm Approval
                                 </button>
                               </div>
                             </div>
                           </div>
 
-                          <div
-                            v-if="showRejectionForm"
-                            class="p-6 bg-red-50 rounded-xl border border-red-200 mb-4 transition-all"
-                          >
-                            <h5
-                              class="text-base font-medium text-red-800 mb-4 flex items-center space-x-2"
-                            >
+                          <div v-if="showRejectionForm"
+                            class="p-6 bg-red-50 rounded-xl border border-red-200 mb-4 transition-all">
+                            <h5 class="text-base font-medium text-red-800 mb-4 flex items-center space-x-2">
                               <XCircle class="h-4 w-4 text-red-600" />
                               <span>Reject Application</span>
                             </h5>
                             <div class="space-y-4">
                               <div>
-                                <label class="block text-sm font-medium text-gray-700"
-                                  >Rejection Reason <span class="text-red-600">*</span></label
-                                >
-                                <textarea
-                                  v-model="rejectionMessage"
-                                  rows="3"
+                                <label class="block text-sm font-medium text-gray-700">Rejection Reason <span
+                                    class="text-red-600">*</span></label>
+                                <textarea v-model="rejectionMessage" rows="3"
                                   class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
-                                  placeholder="Please provide a reason for rejection..."
-                                ></textarea>
-                                <p
-                                  v-if="rejectionError"
-                                  class="mt-1 text-sm text-red-600 flex items-center"
-                                >
+                                  placeholder="Please provide a reason for rejection..."></textarea>
+                                <p v-if="rejectionError" class="mt-1 text-sm text-red-600 flex items-center">
                                   <AlertCircle class="h-3 w-3 mr-1" />
                                   {{ rejectionError }}
                                 </p>
                               </div>
                               <div class="flex justify-end space-x-3">
-                                <button
-                                  @click="
-                                    showRejectionForm = false
-                                    rejectionError = ''
-                                  "
-                                  class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors"
-                                >
+                                <button @click="
+                                  showRejectionForm = false;
+                                rejectionError = '';
+                                "
+                                  class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors">
                                   Cancel
                                 </button>
-                                <button
-                                  @click="rejectApplication"
-                                  class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
-                                >
+                                <button @click="rejectApplication"
+                                  class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">
                                   Confirm Rejection
                                 </button>
                               </div>
                             </div>
                           </div>
 
-                          <div
-                            v-if="!showApprovalForm && !showRejectionForm && !isEditing"
-                            class="flex items-center space-x-4"
-                          >
-                            <button
-                              @click="handleApprovalClick"
-                              class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors flex items-center space-x-2"
-                            >
+                          <div v-if="!showApprovalForm && !showRejectionForm && !isEditing"
+                            class="flex items-center space-x-4">
+                            <button @click="handleApprovalClick"
+                              class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors flex items-center space-x-2">
                               <CheckCircle class="h-4 w-4" />
                               <span>Approve Application</span>
                             </button>
-                            <button
-                              @click="handleRejectionClick"
-                              class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors flex items-center space-x-2"
-                            >
+                            <button @click="handleRejectionClick"
+                              class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors flex items-center space-x-2">
                               <XCircle class="h-4 w-4" />
                               <span>Reject Application</span>
                             </button>
@@ -809,31 +608,23 @@
                 <div class="px-8 py-4 bg-gray-50 border-t border-gray-200">
                   <div class="flex justify-between items-center">
                     <div class="flex items-center space-x-4">
-                      <button
-                        @click="startEditing"
-                        v-if="!isEditing"
-                        class="px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg shadow-sm hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors flex items-center space-x-2"
-                      >
+                      <button @click="startEditing" v-if="!isEditing"
+                        class="px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg shadow-sm hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors flex items-center space-x-2">
                         <Pencil class="h-4 w-4" />
                         <span>Edit Credits</span>
                       </button>
                     </div>
                     <div class="flex items-center space-x-4">
-                      <button
-                        type="button"
+                      <button type="button"
                         class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors flex items-center space-x-2"
-                        @click="$emit('close')"
-                      >
+                        @click="$emit('close')">
                         <X class="h-4 w-4" />
                         <span>Close</span>
                       </button>
 
-                      <button
-                        v-if="isEditing"
-                        type="button"
+                      <button v-if="isEditing" type="button"
                         class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors flex items-center space-x-2"
-                        @click="saveChanges"
-                      >
+                        @click="saveChanges">
                         <Check class="h-4 w-4" />
                         <span>Save Changes</span>
                       </button>
@@ -937,7 +728,7 @@ const cpdTypeMap = {
   3: 'Online Course',
   4: 'Conference',
   5: 'Training Program',
-  6: 'Other',
+  6: 'Other'
 }
 
 const getCpdTypeName = (typeId) => {
@@ -953,7 +744,7 @@ const cpdProvidingAgencyMap = {
   4: 'Institution of Civil Engineers (ICE)',
   5: 'American Society of Civil Engineers (ASCE)',
   6: 'Institute of Electrical and Electronics Engineers (IEEE)',
-  7: 'Other',
+  7: 'Other'
 }
 
 const getCpdProvidingAgencyName = (agencyId) => {
@@ -969,7 +760,7 @@ const reasonForConductingMap = {
   4: 'Career Advancement',
   5: 'Industry Updates',
   6: 'Knowledge Sharing',
-  7: 'Other',
+  7: 'Other'
 }
 
 const getReasonForConductingName = (reasonId) => {
@@ -988,7 +779,7 @@ const methodologyMap = {
   7: 'Simulation',
   8: 'E-Learning',
   9: 'Field Work',
-  10: 'Other',
+  10: 'Other'
 }
 
 // Add this new function after the watch
@@ -1050,24 +841,16 @@ const getParticipantRegNo = (participant) => {
   }
 
   // Check direct fields - for CPD task participants, participant_reg_no is the main field
-  return (
-    participant.participant_reg_no ||
-    participant.cid ||
-    participant.registration_no ||
-    participant.reg_no ||
-    participant.registrationNo ||
-    'N/A'
-  )
+  return participant.participant_reg_no || participant.cid || participant.registration_no || participant.reg_no || participant.registrationNo || 'N/A'
 }
 
 // Helper function to find user data by registration number
 const findUserByRegNo = (regNo) => {
-  return allParticipants.value.find(
-    (p) =>
-      p.cid === regNo ||
-      p.registration_no === regNo ||
-      p.reg_no === regNo ||
-      p.participant_reg_no === regNo,
+  return allParticipants.value.find(p =>
+    p.cid === regNo ||
+    p.registration_no === regNo ||
+    p.reg_no === regNo ||
+    p.participant_reg_no === regNo
   )
 }
 
@@ -1100,7 +883,7 @@ const saveResource = (resource) => {
     emit('updateParticipant', {
       id: resourceParticipant.id,
       cpd_credits: resourceCredits.value[resource.id],
-      review_status: 'Approved',
+      review_status: 'Approved'
     })
   }
 
@@ -1117,8 +900,8 @@ const getResourceCredits = (resource) => {
 const findResourceAsParticipant = (resource) => {
   // Find the resource person in the participants array by matching registration number
   const resourceRegNo = resource.resource_person_reg_no
-  return props.application.participants?.find(
-    (participant) => getParticipantRegNo(participant) === resourceRegNo,
+  return props.application.participants?.find(participant =>
+    getParticipantRegNo(participant) === resourceRegNo
   )
 }
 
@@ -1143,8 +926,10 @@ watch(
       fetchParticipantsData()
     }
   },
-  { immediate: true },
+  { immediate: true }
 )
+
+
 
 const getApplicationStatus = () => {
   const status = props.application?.status || 'pending'
@@ -1166,7 +951,7 @@ const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric',
+      day: 'numeric'
     })
   } catch (error) {
     return dateString
@@ -1214,7 +999,7 @@ const saveParticipant = (participant) => {
   emit('updateParticipant', {
     id: participant.id,
     cpd_credits: participantCredits.value[participant.id],
-    review_status: 'Approved',
+    review_status: 'Approved'
   })
 
   editingParticipant.value = null
@@ -1303,6 +1088,7 @@ const handleRejectionClick = () => {
 }
 
 @keyframes pulse {
+
   0%,
   100% {
     opacity: 1;

@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-7xl mx-auto p-6">
+  <div class="mx-auto p-6">
     <!-- Header -->
     <div class="mb-8">
       <h2 class="text-3xl font-bold text-gray-900">Program Applications</h2>
@@ -123,7 +123,8 @@
       :confirmButtonText="confirmDialog.confirmButtonText"
       :confirmButtonClass="confirmDialog.confirmButtonClass"
       :showRemarks="actionContext.type === 'approve' || actionContext.type === 'reject'"
-      v-model:remarks="actionContext.remarks"
+      :remarks="actionContext.remarks"
+      @update:remarks="val => actionContext.remarks = val"
       @confirm="executeAction"
       @cancel="closeConfirmModal"
     />

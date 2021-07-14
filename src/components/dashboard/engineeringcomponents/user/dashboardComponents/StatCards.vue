@@ -14,10 +14,8 @@
         <span>{{ totalCpdCredits }}/50 points</span>
       </div>
       <div class="w-full bg-gray-200 rounded-full h-3">
-        <div
-          class="bg-blue-500 h-3 rounded-full transition-all duration-300"
-          :style="{ width: `${progressPercentage}%` }"
-        ></div>
+        <div class="bg-blue-500 h-3 rounded-full transition-all duration-300"
+          :style="{ width: `${progressPercentage}%` }"></div>
       </div>
       <p class="text-lg text-gray-900 mt-4">
         Total CPD Applications: <span class="font-semibold">{{ relevantApplications.length }}</span>
@@ -26,12 +24,8 @@
 
     <!-- Status Cards -->
     <div class="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
-      <div
-        v-for="(count, status) in statusCounts"
-        :key="status"
-        :class="statusCardClasses(status)"
-        class="p-4 rounded-lg shadow-sm flex flex-col items-center justify-center"
-      >
+      <div v-for="(count, status) in statusCounts" :key="status" :class="statusCardClasses(status)"
+        class="p-4 rounded-lg shadow-sm flex flex-col items-center justify-center">
         <div class="text-2xl font-bold" :class="statusTextClasses(status)">{{ count || 0 }}</div>
         <div class="text-sm text-gray-600 mt-1">{{ status }}</div>
       </div>

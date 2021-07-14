@@ -1,32 +1,37 @@
 <template>
-  <div class="w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 bg-gray-50 min-h-screen">
-    <InstituteHeader
-      title="Module Definition Management"
-      subtitle="Add, view, and manage all educational module definitions."
-      :show-actions="false"
-    />
+  <div class="min-h-screen bg-gray-50">
+    <div class="container mx-auto px-4 py-10 sm:px-6 lg:px-8">
+      <header class="mb-8">
+        <h1 class="text-3xl font-bold tracking-tight text-gray-900">
+          Module Definition Management
+        </h1>
+        <p class="mt-1 text-base text-gray-500">
+          A centralized hub to seamlessly add, view, and manage all educational module definitions.
+        </p>
+      </header>
 
-    <div class="mt-8">
-      <div class="flex justify-end mb-6">
+      <div class="mb-6 flex justify-end">
         <button @click="openAddDefinitionModal" type="button" class="btn btn-primary">
-          <PlusIcon class="w-5 h-5 mr-2 -ml-1" aria-hidden="true" />
+          <PlusIcon class="mr-2 h-5 w-5" aria-hidden="true" />
           Add New Module Definition
         </button>
       </div>
 
-      <div v-if="pageError" class="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 shadow-sm">
+      <div v-if="pageError" class="mb-6 rounded-lg border border-red-200 bg-red-50 p-4 shadow-sm">
         <div class="flex">
           <div class="flex-shrink-0">
-            <XCircleIcon class="h-6 w-6 text-red-500" aria-hidden="true" />
+            <XCircleIcon class="h-6 w-6 text-red-400" aria-hidden="true" />
           </div>
           <div class="ml-3">
-            <h3 class="text-sm font-semibold text-red-800">An Error Occurred</h3>
-            <p class="mt-1 text-sm text-red-700">{{ pageError }}</p>
+            <h3 class="text-sm font-medium text-red-800">An Error Occurred</h3>
+            <div class="mt-2 text-sm text-red-700">
+              <p>{{ pageError }}</p>
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
+      <div class="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg">
         <ModuleManagementModal ref="moduleDefinitionTableRef" @error="handleChildError" />
       </div>
     </div>
@@ -53,7 +58,7 @@ const openAddDefinitionModal = () => {
 
 const handleChildError = (errorMessage) => {
   pageError.value = errorMessage
-  // You might want to clear the error after some time or on user action
+  // Automatically clear the error message after 7 seconds
   setTimeout(() => {
     pageError.value = null
   }, 7000)
@@ -70,7 +75,7 @@ const modalForm = ref({ id: null, name: '', description: '' })
 
 const filteredModules = computed(() => {
   return modules.value.filter((module) =>
-    module.name.toLowerCase().includes(searchQuery.value.toLowerCase()),
+    module.name.toLowerCase().includes(searchQuery.value.toLowerCase())
   )
 })
 
@@ -109,16 +114,12 @@ const closeModal = () => {
 </script>
 
 <style scoped>
+/* Using Tailwind's @apply for maintainable and utility-first styling */
 .btn {
-  @apply inline-flex items-center justify-center rounded-lg border py-2.5 px-5 text-sm font-semibold shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-150 disabled:opacity-70 disabled:cursor-not-allowed;
+  @apply inline-flex items-center justify-center rounded-md border border-transparent px-4 py-2 text-sm font-semibold shadow-sm ring-offset-white transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70;
 }
+
 .btn-primary {
-  @apply border-transparent bg-purple-600 text-white hover:bg-purple-700 focus:ring-purple-500;
-}
-.module-management {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #f9f9f9;
+  @apply bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500;
 }
 </style>

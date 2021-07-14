@@ -222,8 +222,9 @@ const fetchWorkplaces = async () => {
     if (Array.isArray(response.data?.results)) {
       workplaces.value = response.data.results
     } else if (Array.isArray(response.data)) {
-      workplaces.value = response.data
-    } else {
+      workplaces.value = response.data;
+    }
+     else {
       console.error('API response did not contain an array of results.')
       workplaces.value = [] // Default to empty array on error or unexpected format
     }
@@ -262,17 +263,14 @@ watch(searchQuery, () => {
 })
 
 // Watch for changes in workplaces that might affect total pages
-watch(
-  workplaces,
-  () => {
+watch(workplaces, () => {
     if (currentPage.value > totalPages.value && totalPages.value > 0) {
-      currentPage.value = totalPages.value
+        currentPage.value = totalPages.value;
     } else if (totalPages.value === 0) {
-      currentPage.value = 1
+        currentPage.value = 1;
     }
-  },
-  { deep: true },
-)
+}, { deep: true });
+
 
 // Methods
 const handleSubmit = async () => {
@@ -293,7 +291,7 @@ const handleSubmit = async () => {
       workplaces.value.push(response.data) // Assuming API returns the created object with an ID
     }
     resetForm()
-    await fetchWorkplaces() // Re-fetch to ensure data consistency and proper pagination
+    await fetchWorkplaces(); // Re-fetch to ensure data consistency and proper pagination
   } catch (error) {
     console.error('Error saving workplace:', error.response?.data || error.message || error)
   }
@@ -302,7 +300,7 @@ const handleSubmit = async () => {
 const startEdit = (workplace) => {
   formData.value = { ...workplace }
   isEditing.value = true
-  window.scrollTo({ top: 0, behavior: 'smooth' }) // Scroll to top for better UX
+  window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top for better UX
 }
 
 const resetForm = () => {
@@ -334,11 +332,12 @@ const confirmDelete = async () => {
     // CORRECTED: Using the function name from your API service definition
     await apiServices.deleteEpcCogsWorkplace(workplaceToDelete.value.id)
     closeDeleteModal()
-    await fetchWorkplaces() // Re-fetch to update the list and pagination
+    await fetchWorkplaces(); // Re-fetch to update the list and pagination
   } catch (error) {
     console.error('Error deleting workplace:', error.response?.data || error.message || error)
   }
 }
+
 </script>
 
 <style scoped>

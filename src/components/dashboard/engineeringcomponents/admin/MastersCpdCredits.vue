@@ -1,3 +1,4 @@
+
 <template>
   <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-50 p-4 lg:p-8">
     <div class="max-w-[1600px] mx-auto">
@@ -11,12 +12,12 @@
           <h2 class="text-xl font-semibold text-slate-900 mb-4">
             {{ isEditing ? 'Edit CPD Credit' : 'Add New CPD Credit' }}
           </h2>
-
+          
           <!-- Show error messages if any -->
           <div v-if="errorMessage" class="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
             <p class="text-red-700 text-sm">{{ errorMessage }}</p>
           </div>
-
+          
           <form @submit.prevent="handleSubmit">
             <div class="space-y-4">
               <div>
@@ -31,9 +32,7 @@
                   placeholder="Enter CPD credit duration (e.g., 1:30:00 for 1 hour 30 minutes)"
                   required
                 />
-                <p class="mt-1 text-sm text-slate-500">
-                  Format: HH:MM:SS (e.g., 1:30:00 for 1.5 hours)
-                </p>
+                <p class="mt-1 text-sm text-slate-500">Format: HH:MM:SS (e.g., 1:30:00 for 1.5 hours)</p>
               </div>
               <div>
                 <label for="credits" class="block text-sm font-medium text-slate-700"
@@ -74,7 +73,7 @@
                   :disabled="isSubmitting"
                   class="flex-1 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {{ isSubmitting ? 'Saving...' : isEditing ? 'Update Credit' : 'Add Credit' }}
+                  {{ isSubmitting ? 'Saving...' : (isEditing ? 'Update Credit' : 'Add Credit') }}
                 </button>
                 <button
                   v-if="isEditing"
@@ -296,10 +295,10 @@ const fetchCpdActivities = async () => {
 
 const handleSubmit = async () => {
   if (isSubmitting.value) return
-
+  
   isSubmitting.value = true
   errorMessage.value = ''
-
+  
   try {
     if (isEditing.value) {
       await apiServices.updateEpcMastersCpdCredit(editingId.value, formData.value)

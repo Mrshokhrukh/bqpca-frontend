@@ -1,3 +1,4 @@
+
 <template>
   <div class="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
     <!-- Notification System -->
@@ -9,8 +10,8 @@
           notification.type === 'success'
             ? 'bg-green-50 border-l-4 border-green-500'
             : notification.type === 'error'
-              ? 'bg-red-50 border-l-4 border-red-500'
-              : 'bg-blue-50 border-l-4 border-blue-500',
+            ? 'bg-red-50 border-l-4 border-red-500'
+            : 'bg-blue-50 border-l-4 border-blue-500',
         ]"
       >
         <div
@@ -19,8 +20,8 @@
             notification.type === 'success'
               ? 'text-green-500'
               : notification.type === 'error'
-                ? 'text-red-500'
-                : 'text-blue-500',
+              ? 'text-red-500'
+              : 'text-blue-500',
           ]"
         >
           <svg
@@ -67,8 +68,8 @@
               notification.type === 'success'
                 ? 'text-green-800'
                 : notification.type === 'error'
-                  ? 'text-red-800'
-                  : 'text-blue-800',
+                ? 'text-red-800'
+                : 'text-blue-800',
             ]"
           >
             {{ notification.title }}
@@ -79,8 +80,8 @@
               notification.type === 'success'
                 ? 'text-green-700'
                 : notification.type === 'error'
-                  ? 'text-red-700'
-                  : 'text-blue-700',
+                ? 'text-red-700'
+                : 'text-blue-700',
             ]"
           >
             {{ notification.message }}
@@ -441,8 +442,8 @@
                   modalMode === 'add'
                     ? 'Add New Staff'
                     : modalMode === 'edit'
-                      ? 'Edit Staff'
-                      : 'Staff Details'
+                    ? 'Edit Staff'
+                    : 'Staff Details'
                 }}
               </h2>
               <p class="text-sm text-gray-500">
@@ -450,8 +451,8 @@
                   modalMode === 'add'
                     ? 'Create a new staff record'
                     : modalMode === 'edit'
-                      ? 'Update staff information'
-                      : 'View staff information'
+                    ? 'Update staff information'
+                    : 'View staff information'
                 }}
               </p>
             </div>
@@ -654,7 +655,7 @@ const fetchDepartments = async () => {
         'error',
         'No Departments',
         'No departments available. Please contact support.',
-        0,
+        0
       )
     }
   } catch (error) {
@@ -692,7 +693,7 @@ const hasPreviousPage = computed(() => !!previousPageUrl.value)
 
 const paginationStart = computed(() => (currentPage.value - 1) * pageSize.value)
 const paginationEnd = computed(() =>
-  Math.min(paginationStart.value + pageSize.value, totalStaff.value),
+  Math.min(paginationStart.value + pageSize.value, totalStaff.value)
 )
 
 // Methods
@@ -878,14 +879,14 @@ const saveStaff = async () => {
       showNotification(
         'success',
         'Staff Added',
-        `${payload.staff_name} has been added successfully.`,
+        `${payload.staff_name} has been added successfully.`
       )
     } else if (modalMode.value === 'edit') {
       await apiServices.updateEpcInstituteStaffMember(form.value.id, payload)
       showNotification(
         'success',
         'Staff Updated',
-        `${payload.staff_name}'s information has been updated.`,
+        `${payload.staff_name}'s information has been updated.`
       )
     }
     searchQuery.value = ''
@@ -897,7 +898,7 @@ const saveStaff = async () => {
     if (error.response?.data) {
       const errors = error.response.data
       const messages = Object.entries(errors).map(
-        ([field, msgs]) => `${field}: ${Array.isArray(msgs) ? msgs.join(', ') : msgs}`,
+        ([field, msgs]) => `${field}: ${Array.isArray(msgs) ? msgs.join(', ') : msgs}`
       )
       errorMessage = messages.length > 0 ? messages.join('; ') : errorMessage
     }
@@ -920,7 +921,7 @@ const deleteStaff = async () => {
     showNotification(
       'success',
       'Staff Deleted',
-      `${staffToDelete.value.staff_name} has been deleted.`,
+      `${staffToDelete.value.staff_name} has been deleted.`
     )
     const remainingOnPage = staffList.value.length - 1
     if (remainingOnPage === 0 && currentPage.value > 1) {
@@ -987,3 +988,4 @@ onMounted(() => {
   transform: scale(0.95);
 }
 </style>
+

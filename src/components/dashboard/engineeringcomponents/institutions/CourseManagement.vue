@@ -1,3 +1,4 @@
+
 <template>
   <div class="course-management p-6">
     <h1 class="text-2xl font-bold mb-4">EPC Course Management</h1>
@@ -375,7 +376,7 @@ const submitCourse = async () => {
     formData.append(
       'institute_attachments',
       formState.attachmentFile,
-      formState.attachmentFile.name,
+      formState.attachmentFile.name
     )
   }
 
@@ -494,3 +495,4 @@ textarea:focus {
   background: #718096;
 }
 </style>
+

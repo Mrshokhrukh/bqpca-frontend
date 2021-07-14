@@ -159,6 +159,7 @@ import { ref, onMounted, computed } from 'vue'
 import CapaDetailModal from './CapaModal.vue' // Import the child
 import apiServices from '@/services/services'
 import { useToast } from 'vue-toastification'
+import { useAuthStore } from '@/stores/authStore'
 import { Loader } from 'lucide-vue-next'
 import InstituteHeader from '@/components/common/MHPC/InstituteHeader.vue'
 
@@ -170,16 +171,18 @@ const isLoading = ref(true)
 const apiError = ref(false)
 const errorMessage = ref('')
 const toast = useToast()
+const authStore = useAuthStore()
 
 // Fetch data when the component is mounted
 const fetchCapas = async () => {
   isLoading.value = true
   apiError.value = false
   errorMessage.value = ''
+  const userCid = authStore.user?.cid || authStore.user?.id
 
   try {
     // The API service should call the endpoint that automatically filters for the logged-in user
-    const response = await apiServices.getMhpcCapas()
+    const response = await apiServices.getMhpcCapaByCid(userCid)
     // The response from the DRF viewset with pagination is nested under `results`
     if (response && response.data && Array.isArray(response.data.results)) {
       capas.value = response.data.results

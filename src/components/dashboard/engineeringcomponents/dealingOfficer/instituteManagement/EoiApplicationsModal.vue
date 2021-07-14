@@ -1,45 +1,29 @@
 <template>
   <TransitionRoot appear :show="isOpen" as="template">
     <Dialog as="div" @close="closeModalHandler" class="relative z-50">
-      <TransitionChild
-        as="div"
-        enter="duration-300 ease-out"
-        enter-from="opacity-0"
-        enter-to="opacity-100"
-        leave="duration-200 ease-in"
-        leave-from="opacity-100"
-        leave-to="opacity-0"
-      >
+      <TransitionChild as="div" enter="duration-300 ease-out" enter-from="opacity-0" enter-to="opacity-100"
+        leave="duration-200 ease-in" leave-from="opacity-100" leave-to="opacity-0">
         <div class="fixed inset-0 bg-black/80 backdrop-blur-sm" />
       </TransitionChild>
 
       <div class="fixed inset-0 overflow-y-auto">
         <div class="flex min-h-full items-center justify-center p-4">
-          <TransitionChild
-            as="div"
-            enter="duration-300 ease-out"
-            enter-from="opacity-0 scale-95"
-            enter-to="opacity-100 scale-100"
-            leave="duration-200 ease-in"
-            leave-from="opacity-100 scale-100"
-            leave-to="opacity-0 scale-95"
-          >
+          <TransitionChild as="div" enter="duration-300 ease-out" enter-from="opacity-0 scale-95"
+            enter-to="opacity-100 scale-100" leave="duration-200 ease-in" leave-from="opacity-100 scale-100"
+            leave-to="opacity-0 scale-95">
             <DialogPanel
-              class="w-full w-full transform overflow-hidden rounded-2xl bg-gray-50 shadow-2xl transition-all"
-              v-if="application"
-            >
+              class="w-full max-w-6xl transform overflow-hidden rounded-2xl bg-gray-50 shadow-2xl transition-all"
+              v-if="application">
               <div class="relative">
                 <!-- Enhanced Status Banner -->
-                <div
-                  :class="[
-                    'px-8 py-6 border-b relative overflow-hidden',
-                    {
-                      'bg-yellow-50 border-yellow-100': overallStatus === 'Pending',
-                      'bg-green-50 border-green-100': overallStatus === 'Approved',
-                      'bg-red-50 border-red-100': overallStatus === 'Regretted',
-                    },
-                  ]"
-                >
+                <div :class="[
+                  'px-8 py-6 border-b relative overflow-hidden',
+                  {
+                    'bg-yellow-50 border-yellow-100': overallStatus === 'Pending',
+                    'bg-green-50 border-green-100': overallStatus === 'Approved',
+                    'bg-red-50 border-red-100': overallStatus === 'Regretted',
+                  },
+                ]">
                   <div class="flex items-center justify-between relative z-10">
                     <div class="flex items-center space-x-4">
                       <div class="p-3 bg-white rounded-lg shadow-sm">
@@ -47,7 +31,7 @@
                       </div>
                       <div>
                         <DialogTitle as="h3" class="text-2xl font-semibold text-gray-900">
-                          EOI Application Details
+                          EOI Application for {{ application.name_of_institution }}
                         </DialogTitle>
                         <p class="text-sm text-gray-600 mt-1">
                           Review and manage EOI application information
@@ -55,46 +39,35 @@
                       </div>
                     </div>
                     <div class="flex items-center space-x-4">
-                      <span
-                        :class="[
-                          'px-5 py-2.5 rounded-full text-sm font-medium inline-flex items-center space-x-2 shadow-sm',
-                          {
-                            'bg-yellow-100 text-yellow-800': overallStatus === 'Pending',
-                            'bg-green-100 text-green-800': overallStatus === 'Approved',
-                            'bg-red-100 text-red-800': overallStatus === 'Regretted',
-                          },
-                        ]"
-                      >
-                        <Circle
-                          class="h-4 w-4"
-                          :class="{
-                            'text-yellow-500': overallStatus === 'Pending',
-                            'text-green-500': overallStatus === 'Approved',
-                            'text-red-500': overallStatus === 'Regretted',
-                          }"
-                        />
+                      <span :class="[
+                        'px-5 py-2.5 rounded-full text-sm font-medium inline-flex items-center space-x-2 shadow-sm',
+                        {
+                          'bg-yellow-100 text-yellow-800': overallStatus === 'Pending',
+                          'bg-green-100 text-green-800': overallStatus === 'Approved',
+                          'bg-red-100 text-red-800': overallStatus === 'Regretted',
+                        },
+                      ]">
+                        <Circle class="h-4 w-4" :class="{
+                          'text-yellow-500': overallStatus === 'Pending',
+                          'text-green-500': overallStatus === 'Approved',
+                          'text-red-500': overallStatus === 'Regretted',
+                        }" />
                         <span>{{ overallStatus }}</span>
                       </span>
-                      <!-- Edit Button in Top Right -->
-                      <button
-                        type="button"
-                        class="p-2 text-blue-600 hover:text-blue-700 transition-colors rounded-full hover:bg-blue-50"
-                        @click="editApplication"
-                        title="Edit Application"
-                      >
+                      <!-- MODIFICATION 1: Edit button is disabled if status is not 'Pending' -->
+                      <button type="button" class="p-2 rounded-full transition-colors"
+                        :class="overallStatus === 'Pending' ? 'text-blue-600 hover:text-blue-700 hover:bg-blue-50' : 'text-gray-400 bg-gray-200 cursor-not-allowed'"
+                        @click="editApplication" title="Edit Application" :disabled="overallStatus !== 'Pending'">
                         <Pencil class="h-5 w-5" />
                       </button>
-                      <button
-                        type="button"
+                      <button type="button"
                         class="p-2 text-gray-400 hover:text-gray-500 transition-colors rounded-full hover:bg-white"
-                        @click="closeModal"
-                      >
+                        @click="closeModal">
                         <span class="sr-only">Close</span>
                         <X class="h-6 w-6" />
                       </button>
                     </div>
                   </div>
-                  <!-- Decorative pattern -->
                   <div class="absolute right-0 top-0 -mt-6 -mr-6 opacity-10">
                     <div class="transform rotate-45">
                       <FileText class="h-32 w-32" />
@@ -107,67 +80,75 @@
                   <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <!-- Left Column -->
                     <div class="lg:col-span-1 space-y-6">
-                      <!-- Institute Information Card -->
-                      <div
-                        class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden"
-                      >
+                      <!-- Focal Person Card -->
+                      <div class="bg-white rounded-xl border border-gray-200 shadow-sm">
                         <div class="p-6">
-                          <h4
-                            class="text-lg font-medium text-gray-900 mb-6 flex items-center space-x-2"
-                          >
+                          <h4 class="text-lg font-medium text-gray-900 mb-6 flex items-center space-x-2">
                             <User class="h-5 w-5 text-gray-500" />
-                            <span>Institute Information</span>
+                            <span>Focal Person Details</span>
                           </h4>
-                          <div class="flex flex-col items-start space-y-4">
-                            <div>
-                              <h5 class="text-xl font-semibold text-gray-900">
-                                {{ application.name_of_institution }}
-                              </h5>
+                          <div class="space-y-4">
+                            <div class="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
+                              <UserCircle class="h-4 w-4 text-gray-400 mt-1 flex-shrink-0" />
+                              <div>
+                                <p class="text-xs font-medium text-gray-500">Full Name</p>
+                                <p class="text-sm text-gray-800">{{ application.full_name }}</p>
+                              </div>
                             </div>
-                            <div class="w-full grid grid-cols-1 gap-4 mt-4">
-                              <div class="flex items-center space-x-2 bg-gray-50 p-3 rounded-lg">
-                                <UserCircle class="h-4 w-4 text-gray-400" />
-                                <span class="text-sm text-gray-600">{{ application.address }}</span>
+                            <div class="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
+                              <Hash class="h-4 w-4 text-gray-400 mt-1 flex-shrink-0" />
+                              <div>
+                                <p class="text-xs font-medium text-gray-500">CID</p>
+                                <p class="text-sm text-gray-800">{{ application.CID }}</p>
+                              </div>
+                            </div>
+                            <div class="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
+                              <Users class="h-4 w-4 text-gray-400 mt-1 flex-shrink-0" />
+                              <div>
+                                <p class="text-xs font-medium text-gray-500">Gender</p>
+                                <p class="text-sm text-gray-800 capitalize">{{ application.gender }}</p>
                               </div>
                             </div>
                           </div>
                         </div>
                       </div>
 
-                      <!-- Contact Information Card -->
-                      <div
-                        class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden"
-                      >
+                      <!-- Head of Institution Card -->
+                      <div class="bg-white rounded-xl border border-gray-200 shadow-sm">
                         <div class="p-6">
-                          <h4
-                            class="text-lg font-medium text-gray-900 mb-6 flex items-center space-x-2"
-                          >
-                            <Contact class="h-5 w-5 text-gray-500" />
-                            <span>Contact Information</span>
+                          <h4 class="text-lg font-medium text-gray-900 mb-6 flex items-center space-x-2">
+                            <Briefcase class="h-5 w-5 text-gray-500" />
+                            <span>Head of Institution</span>
                           </h4>
                           <div class="space-y-4">
-                            <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                              <Mail class="h-4 w-4 text-gray-400" />
-                              <span class="text-sm text-gray-600">{{
-                                application.email_address
-                              }}</span>
+                            <div class="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
+                              <UserCircle class="h-4 w-4 text-gray-400 mt-1 flex-shrink-0" />
+                              <div>
+                                <p class="text-xs font-medium text-gray-500">Name</p>
+                                <p class="text-sm text-gray-800">{{ application.head_of_institution_name }}</p>
+                              </div>
                             </div>
-                            <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                              <Phone class="h-4 w-4 text-gray-400" />
-                              <span class="text-sm text-gray-600">{{
-                                application.contact_no
-                              }}</span>
+                            <div class="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
+                              <Mail class="h-4 w-4 text-gray-400 mt-1 flex-shrink-0" />
+                              <div>
+                                <p class="text-xs font-medium text-gray-500">Email</p>
+                                <p class="text-sm text-gray-800">{{ application.head_of_institution_email }}</p>
+                              </div>
                             </div>
-
-                            <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                              <MapPin class="h-4 w-4 text-gray-400" />
-                              <span class="text-sm text-gray-600">
-                                {{ application.village }}, {{ application.dzongkhag }}
-                              </span>
+                            <div class="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
+                              <Phone class="h-4 w-4 text-gray-400 mt-1 flex-shrink-0" />
+                              <div>
+                                <p class="text-xs font-medium text-gray-500">Phone</p>
+                                <p class="text-sm text-gray-800">{{ application.head_of_institution_phone_number }}</p>
+                              </div>
                             </div>
-                            <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                              <UserCircle class="h-4 w-4 text-gray-400" />
-                              <span class="text-sm text-gray-600">{{ application.website }}</span>
+                            <div class="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
+                              <Users class="h-4 w-4 text-gray-400 mt-1 flex-shrink-0" />
+                              <div>
+                                <p class="text-xs font-medium text-gray-500">Gender</p>
+                                <p class="text-sm text-gray-800 capitalize">{{ application.head_of_institution_gender }}
+                                </p>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -177,66 +158,78 @@
                     <!-- Right Column -->
                     <div class="lg:col-span-2 space-y-6">
                       <!-- Application Details Card -->
-                      <div
-                        class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden"
-                      >
+                      <div class="bg-white rounded-xl border border-gray-200 shadow-sm">
                         <div class="p-6">
-                          <h4
-                            class="text-lg font-medium text-gray-900 mb-6 flex items-center space-x-2"
-                          >
+                          <h4 class="text-lg font-medium text-gray-900 mb-6 flex items-center space-x-2">
                             <FileText class="h-5 w-5 text-gray-500" />
-                            <span>Application Details</span>
+                            <span>Application & Course Details</span>
                           </h4>
                           <div class="grid grid-cols-2 gap-6">
-                            <div class="p-4 bg-gray-50 rounded-lg">
+                            <div>
                               <p class="text-sm font-medium text-gray-500">Application ID</p>
-                              <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
-                                <FileCheck class="h-4 w-4 text-gray-400" />
-                                <span>{{ application.id }}</span>
-                              </p>
+                              <p class="text-base text-gray-900 mt-1">{{ application.id }}</p>
                             </div>
-                            <div class="p-4 bg-gray-50 rounded-lg">
+                            <div>
                               <p class="text-sm font-medium text-gray-500">Program Type</p>
-                              <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
-                                <Hash class="h-4 w-4 text-gray-400" />
-                                <span>{{ displayProgramType }}</span>
-                              </p>
+                              <p class="text-base text-gray-900 mt-1">{{ displayProgramType }}</p>
                             </div>
-                            <div class="p-4 bg-gray-50 rounded-lg">
+                            <div>
                               <p class="text-sm font-medium text-gray-500">Date Submitted</p>
-                              <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
-                                <Calendar class="h-4 w-4 text-gray-400" />
-                                <span>{{ formatDate(application.created_at) }}</span>
-                              </p>
+                              <p class="text-base text-gray-900 mt-1">{{ formatDate(application.created_at) }}</p>
                             </div>
-                            <div class="p-4 bg-gray-50 rounded-lg">
+                            <div>
                               <p class="text-sm font-medium text-gray-500">Proposed Date</p>
-                              <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
-                                <Clock class="h-4 w-4 text-gray-400" />
-                                <span>{{ formatDate(application.commencement_date) }}</span>
+                              <p class="text-base text-gray-900 mt-1">{{ formatDate(application.commencement_date) }}
                               </p>
                             </div>
-                            <div class="p-4 bg-gray-50 rounded-lg">
+                            <div class="col-span-2">
                               <p class="text-sm font-medium text-gray-500">Course Title</p>
-                              <p class="text-sm text-gray-900 mt-2">
-                                <span>{{ application.title_of_course }}</span>
-                              </p>
+                              <p class="text-base text-gray-900 mt-1">{{ application.title_of_course }}</p>
                             </div>
+                            <div>
+                              <p class="text-sm font-medium text-gray-500">Course Duration</p>
+                              <p class="text-base text-gray-900 mt-1">{{ application.course_duration }} Days</p>
+                            </div>
+                            <div>
+                              <p class="text-sm font-medium text-gray-500">Declaration</p>
+                              <p
+                                :class="['text-base mt-1', application.declaration ? 'text-green-700' : 'text-red-700']">
+                                {{ application.declaration ? 'Agreed' : 'Not Agreed' }}</p>
+                            </div>
+                            <!-- MODIFICATION 2: Show dealing officer remarks only if approved -->
+                            <div v-if="overallStatus === 'Approved'" class="col-span-2">
+                              <p class="text-sm font-medium text-gray-500">Applicant Remarks</p>
+                              <p class="text-base text-gray-900 mt-1">{{ application.remarks || 'N/A' }}</p>
+                            </div>
+                          </div>
 
-                            <div class="p-4 bg-gray-50 rounded-lg">
-                              <p class="text-sm font-medium text-gray-500">Duration</p>
-                              <p class="text-sm text-gray-900 mt-2">
-                                <span>{{ application.course_duration }}</span>
-                              </p>
-                            </div>
+                          <div class="p-4 bg-gray-50 rounded-lg mt-4">
+                            <h4 class="text-lg font-medium text-gray-900 mb-6 flex items-center space-x-2">
+                              <FileText class="h-5 w-5 text-gray-500" />
+                              <span>Application Address</span>
+                            </h4>
+                            <dl class="grid grid-cols-3 gap-x-4 gap-y-2 text-md">
+                              <dt class="col-span-1 font-semibold text-gray-600">Country</dt>
+                              <dd class="col-span-2 text-gray-800">{{ application.country }}</dd>
+                              <dt class="col-span-1 font-semibold text-gray-600">Dzongkhag</dt>
+                              <dd class="col-span-2 text-gray-800">{{ application.dzongkhag }}</dd>
+                              <dt class="col-span-1 font-semibold text-gray-600">Village</dt>
+                              <dd class="col-span-2 text-gray-800">{{ application.village }}</dd>
+                              <dt class="col-span-1 font-semibold text-gray-600">Gewog</dt>
+                              <dd class="col-span-2 text-gray-800">{{ application.gewog }}</dd>
+                              <dt class="col-span-1 font-semibold text-gray-600">Chiwog</dt>
+                              <dd class="col-span-2 text-gray-800">{{ application.chiwog }}</dd>
+                              <dt class="col-span-1 font-semibold text-gray-600">Street</dt>
+                              <dd class="col-span-2 text-gray-800">{{ application.address }}</dd>
+                            </dl>
+                          </div>
 
-                            <!-- New Fields from Original Modal -->
-                            <div class="p-4 bg-gray-50 rounded-lg">
-                              <p class="text-sm font-medium text-gray-500">Institute Address</p>
-                              <p class="text-sm text-gray-900 mt-2">
-                                <span>{{ application.address }}</span>
-                              </p>
-                            </div>
+                          <div class="mt-6">
+                            <a :href="application.supporting_documents" target="_blank" rel="noopener noreferrer"
+                              class="inline-flex items-center space-x-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition shadow-sm">
+                              <Paperclip class="h-4 w-4" />
+                              <span>View Supporting Documents</span>
+                            </a>
                           </div>
                         </div>
                       </div>
@@ -244,409 +237,264 @@
                   </div>
                 </div>
 
-                <!-- Enhanced Footer with Approve/Regret and Edit buttons -->
+                <!-- Footer -->
                 <div class="px-8 py-4 bg-gray-50 border-t border-gray-200">
                   <div class="flex justify-between items-center">
-                    <div
-                      v-if="errorMessage"
-                      class="text-sm text-red-600 flex items-center space-x-2"
-                    >
+                    <div v-if="errorMessage" class="text-sm text-red-600 flex items-center space-x-2">
                       <CircleAlert class="h-4 w-4" />
                       <span>{{ errorMessage }}</span>
                     </div>
-                    <!-- Placeholder for error message alignment -->
                     <div v-else></div>
-
+                    <!-- MODIFICATION 3: Action buttons are disabled if status is not 'Pending' -->
                     <div class="flex items-center space-x-4">
-                      <button
-                        type="button"
-                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 inline-flex items-center space-x-2"
-                        @click="closeModal"
-                      >
-                        <X class="h-4 w-4" />
-                        <span>Close</span>
+                      <button type="button"
+                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50"
+                        @click="closeModal">Close</button>
+                      <button type="button" @click="openRejectDialog" :disabled="overallStatus !== 'Pending'"
+                        :class="['px-4 py-2 text-sm font-medium text-white rounded-lg shadow-sm', overallStatus === 'Pending' ? 'bg-red-600 hover:bg-red-700' : 'bg-gray-400 cursor-not-allowed']">
+                        Regret
                       </button>
-
-                      <button
-                        type="button"
-                        class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 inline-flex items-center space-x-2"
-                        @click="openRejectDialog"
-                      >
-                        <ThumbsDown class="h-4 w-4" />
-                        <span>Regret Application</span>
-                      </button>
-
-                      <button
-                        type="button"
-                        class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 inline-flex items-center space-x-2"
-                        @click="openApproveDialog"
-                      >
-                        <CheckCircle class="h-4 w-4" />
-                        <span>Approve Application</span>
+                      <button type="button" @click="openApproveDialog" :disabled="overallStatus !== 'Pending'"
+                        :class="['px-4 py-2 text-sm font-medium text-white rounded-lg shadow-sm', overallStatus === 'Pending' ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-400 cursor-not-allowed']">
+                        Approve
                       </button>
                     </div>
                   </div>
                 </div>
 
-                <!-- Custom Approve Dialog -->
-                <TransitionRoot appear :show="isApproveDialogOpen" as="template">
-                  <Dialog as="div" @close="cancelApproval" class="relative z-50">
-                    <div class="fixed inset-0 bg-black/30 backdrop-blur-sm" aria-hidden="true" />
-
-                    <div class="fixed inset-0 overflow-y-auto">
-                      <div class="flex min-h-full items-center justify-center p-4">
-                        <DialogPanel
-                          class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 shadow-xl transition-all"
-                        >
-                          <div class="mb-5 text-center">
-                            <div
-                              class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100"
-                            >
-                              <CheckCircle class="h-6 w-6 text-green-600" />
-                            </div>
-                            <DialogTitle as="h3" class="text-lg font-medium text-gray-900 mt-4">
-                              Approve Application
-                            </DialogTitle>
-                          </div>
-
-                          <div class="mt-3">
-                            <label
-                              for="approval-notes"
-                              class="block text-sm font-medium text-gray-700 mb-2"
-                            >
-                              Approval Notes
-                            </label>
-                            <textarea
-                              id="approval-notes"
-                              v-model="approvalNotes"
-                              rows="4"
-                              class="w-full rounded-lg border border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-sm p-3"
-                              placeholder="Enter your approval notes here..."
-                            ></textarea>
-                          </div>
-
-                          <div class="mt-6 flex justify-end space-x-3">
-                            <button
-                              type="button"
-                              class="inline-flex justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-                              @click="cancelApproval"
-                            >
-                              Cancel
-                            </button>
-                            <button
-                              type="button"
-                              :disabled="!approvalNotes.trim()"
-                              :class="[
-                                'inline-flex justify-center px-4 py-2 text-sm font-medium text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2',
-                                approvalNotes.trim()
-                                  ? 'bg-green-600 hover:bg-green-700'
-                                  : 'bg-green-300 cursor-not-allowed',
-                              ]"
-                              @click="confirmApproval"
-                            >
-                              Approve
-                            </button>
-                          </div>
-                        </DialogPanel>
-                      </div>
-                    </div>
-                  </Dialog>
-                </TransitionRoot>
-
-                <!-- Custom Reject Dialog -->
-                <TransitionRoot appear :show="isRejectDialogOpen" as="template">
-                  <Dialog as="div" @close="cancelRejection" class="relative z-50">
-                    <div class="fixed inset-0 bg-black/30 backdrop-blur-sm" aria-hidden="true" />
-
-                    <div class="fixed inset-0 overflow-y-auto">
-                      <div class="flex min-h-full items-center justify-center p-4">
-                        <DialogPanel
-                          class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 shadow-xl transition-all"
-                        >
-                          <div class="mb-5 text-center">
-                            <div
-                              class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100"
-                            >
-                              <ThumbsDown class="h-6 w-6 text-red-600" />
-                            </div>
-                            <DialogTitle as="h3" class="text-lg font-medium text-gray-900 mt-4">
-                              Regret Application
-                            </DialogTitle>
-                          </div>
-
-                          <div class="mt-3">
-                            <label
-                              for="rejection-reason"
-                              class="block text-sm font-medium text-gray-700 mb-2"
-                            >
-                              Reason for Rejection
-                            </label>
-                            <textarea
-                              id="rejection-reason"
-                              v-model="rejectionReason"
-                              rows="4"
-                              class="w-full rounded-lg border border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 text-sm p-3"
-                              placeholder="Please provide a reason for rejecting this application..."
-                            ></textarea>
-                          </div>
-
-                          <div class="mt-6 flex justify-end space-x-3">
-                            <button
-                              type="button"
-                              class="inline-flex justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-                              @click="cancelRejection"
-                            >
-                              Cancel
-                            </button>
-                            <button
-                              type="button"
-                              :disabled="!rejectionReason.trim()"
-                              :class="[
-                                'inline-flex justify-center px-4 py-2 text-sm font-medium text-white rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2',
-                                rejectionReason.trim()
-                                  ? 'bg-red-600 hover:bg-red-700'
-                                  : 'bg-red-300 cursor-not-allowed',
-                              ]"
-                              @click="confirmRejection"
-                            >
-                              Reject
-                            </button>
-                          </div>
-                        </DialogPanel>
-                      </div>
-                    </div>
-                  </Dialog>
-                </TransitionRoot>
-
-                <!-- Success Notification -->
-                <Transition
-                  enter="transform transition ease-in-out duration-500"
-                  enter-from="translate-y-full opacity-0"
-                  enter-to="translate-y-0 opacity-100"
-                  leave="transform transition ease-in-out duration-500"
-                  leave-from="translate-y-0 opacity-100"
-                  leave-to="translate-y-full opacity-0"
-                >
-                  <div
-                    v-if="showSuccess"
-                    class="fixed bottom-6 right-6 flex items-center p-4 mb-4 shadow-lg rounded-lg"
-                    :class="[
-                      successType === 'approve'
-                        ? 'bg-green-100 text-green-800 border-l-4 border-green-500'
-                        : successType === 'reject'
-                          ? 'bg-red-100 text-red-800 border-l-4 border-red-500'
-                          : 'bg-blue-100 text-blue-800 border-l-4 border-blue-500',
-                    ]"
-                  >
-                    <div
-                      class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-lg mr-3"
-                      :class="[
-                        successType === 'approve'
-                          ? 'bg-green-200 text-green-600'
-                          : successType === 'reject'
-                            ? 'bg-red-200 text-red-600'
-                            : 'bg-blue-200 text-blue-600',
-                      ]"
-                    >
-                      <CheckCircle v-if="successType === 'approve'" class="w-5 h-5" />
-                      <ThumbsDown v-else-if="successType === 'reject'" class="w-5 h-5" />
-                      <Pencil v-else class="w-5 h-5" />
-                    </div>
-                    <div class="ml-3 text-sm font-medium mr-8">{{ successMessage }}</div>
-                    <button
-                      type="button"
-                      class="ml-auto -mx-1.5 -my-1.5 rounded-lg focus:ring-2 p-1.5 inline-flex h-8 w-8 items-center justify-center"
-                      :class="[
-                        successType === 'approve'
-                          ? 'bg-green-200 text-green-600 hover:bg-green-300 focus:ring-green-400'
-                          : successType === 'reject'
-                            ? 'bg-red-200 text-red-600 hover:bg-red-300 focus:ring-red-400'
-                            : 'bg-blue-200 text-blue-600 hover:bg-blue-300 focus:ring-blue-400',
-                      ]"
-                      @click="closeSuccessNotification"
-                    >
-                      <span class="sr-only">Close</span>
-                      <X class="w-4 h-4" />
-                    </button>
-                  </div>
-                </Transition>
-
-                <!-- Edit Modal (shows when editing) -->
-                <Dialog
-                  as="div"
-                  @close="closeEditModal"
-                  :open="isEditModalOpen"
-                  class="relative z-50"
-                >
+                <!-- Edit Modal -->
+                <!-- Edit Modal -->
+                <Dialog as="div" @close="closeEditModal" :open="isEditModalOpen" class="relative z-50">
                   <div class="fixed inset-0 bg-black/40 backdrop-blur-sm" aria-hidden="true" />
-
                   <div class="fixed inset-0 overflow-y-auto">
                     <div class="flex min-h-full items-center justify-center p-4">
                       <DialogPanel
-                        class="w-full max-w-3xl transform overflow-hidden rounded-xl bg-white p-6 shadow-xl transition-all"
-                      >
-                        <div class="flex items-center justify-between mb-4 pb-4 border-b">
-                          <DialogTitle as="h3" class="text-lg font-medium text-gray-900">
-                            Edit Application
-                          </DialogTitle>
-                          <button
-                            type="button"
-                            class="p-1 text-gray-400 hover:text-gray-500 rounded-full"
-                            @click="closeEditModal"
-                          >
-                            <X class="h-5 w-5" />
+                        class="w-full max-w-5xl transform overflow-hidden rounded-2xl bg-gray-50 shadow-2xl transition-all">
+
+                        <!-- Modal Header -->
+                        <div class="flex items-center justify-between p-6 border-b border-gray-200 bg-white">
+                          <div class="flex items-center space-x-4">
+                            <div class="p-3 bg-blue-100 rounded-lg">
+                              <Pencil class="h-6 w-6 text-blue-600" />
+                            </div>
+                            <div>
+                              <DialogTitle as="h3" class="text-xl font-semibold text-gray-900">
+                                Edit Application
+                              </DialogTitle>
+                              <p class="text-sm text-gray-500 mt-1">Update the details for this EOI application.</p>
+                            </div>
+                          </div>
+                          <button type="button"
+                            class="p-2 text-gray-500 hover:text-gray-700 transition-colors rounded-full hover:bg-gray-100"
+                            @click="closeEditModal">
+                            <X class="h-6 w-6" />
                           </button>
                         </div>
 
-                        <form @submit.prevent="saveApplicationChanges">
-                          <div class="space-y-4">
-                            <!-- Institute Name Field -->
-                            <div>
-                              <label
-                                for="edit_name_of_institution"
-                                class="block text-sm font-medium text-gray-700"
-                                >Institute Name</label
-                              >
-                              <input
-                                id="edit_name_of_institution"
-                                type="text"
-                                v-model="editedApplication.name_of_institution"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border"
-                                required
-                              />
+                        <!-- Form Content -->
+                        <form @submit.prevent="saveApplicationChanges" class="max-h-[75vh] overflow-y-auto">
+                          <div class="p-8 space-y-8">
+
+                            <!-- Section: Institute Details -->
+                            <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                              <div class="flex items-center gap-3 mb-6">
+                                <Building class="h-6 w-6 text-gray-500" />
+                                <h4 class="text-lg font-semibold text-gray-800">Institute Details</h4>
+                              </div>
+                              <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Institute Name</label>
+                                <input v-model="editedApplication.name_of_institution" type="text"
+                                  class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                  required />
+                              </div>
                             </div>
 
-                            <!-- Address Field -->
-                            <div>
-                              <label
-                                for="edit_address"
-                                class="block text-sm font-medium text-gray-700"
-                                >Address</label
-                              >
-                              <input
-                                id="edit_address"
-                                type="text"
-                                v-model="editedApplication.address"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border"
-                                required
-                              />
+                            <!-- Section: Focal Person Details -->
+                            <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                              <div class="flex items-center gap-3 mb-6">
+                                <User class="h-6 w-6 text-gray-500" />
+                                <h4 class="text-lg font-semibold text-gray-800">Focal Person Details</h4>
+                              </div>
+                              <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                                <div>
+                                  <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                                  <input v-model="editedApplication.full_name" type="text"
+                                    class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    required />
+                                </div>
+                                <div>
+                                  <label class="block text-sm font-medium text-gray-700 mb-1">CID</label>
+                                  <input v-model="editedApplication.CID" type="text"
+                                    class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    required />
+                                </div>
+                                <div>
+                                  <label class="block text-sm font-medium text-gray-700 mb-1">Gender</label>
+                                  <select v-model="editedApplication.gender"
+                                    class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                  </select>
+                                </div>
+                                <div>
+                                  <label class="block text-sm font-medium text-gray-700 mb-1">Contact Number</label>
+                                  <input v-model="editedApplication.contact_no" type="tel"
+                                    class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    required />
+                                </div>
+                                <div class="md:col-span-2">
+                                  <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                                  <input v-model="editedApplication.email_address" type="email"
+                                    class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    required />
+                                </div>
+                              </div>
                             </div>
 
-                            <!-- Email Field -->
-                            <div>
-                              <label
-                                for="edit_email_address"
-                                class="block text-sm font-medium text-gray-700"
-                                >Email Address</label
-                              >
-                              <input
-                                id="edit_email_address"
-                                type="email"
-                                v-model="editedApplication.email_address"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border"
-                                required
-                              />
+                            <!-- Section: Course Details -->
+                            <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                              <div class="flex items-center gap-3 mb-6">
+                                <BookOpen class="h-6 w-6 text-gray-500" />
+                                <h4 class="text-lg font-semibold text-gray-800">Course Details</h4>
+                              </div>
+                              <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                                <div class="md:col-span-2">
+                                  <label class="block text-sm font-medium text-gray-700 mb-1">Course Title</label>
+                                  <input v-model="editedApplication.title_of_course" type="text"
+                                    class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    required />
+                                </div>
+                                <div>
+                                  <label class="block text-sm font-medium text-gray-700 mb-1">Program Type</label>
+                                  <select v-model="editedApplication.type_of_programme"
+                                    class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    required>
+                                    <option value="D">Diploma</option>
+                                    <option value="B">Bachelor</option>
+                                    <option value="M">Master</option>
+                                    <option value="P">PhD</option>
+                                  </select>
+                                </div>
+                                <div>
+                                  <label class="block text-sm font-medium text-gray-700 mb-1">Course Duration
+                                    (Days)</label>
+                                  <input v-model="editedApplication.course_duration" type="number"
+                                    class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    required />
+                                </div>
+                                <div>
+                                  <label class="block text-sm font-medium text-gray-700 mb-1">Commencement Date</label>
+                                  <input v-model="editedApplication.commencement_date" type="date"
+                                    class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    required />
+                                </div>
+                              </div>
                             </div>
 
-                            <!-- Contact Number Field -->
-                            <div>
-                              <label
-                                for="edit_contact_no"
-                                class="block text-sm font-medium text-gray-700"
-                                >Contact Number</label
-                              >
-                              <input
-                                id="edit_contact_no"
-                                type="tel"
-                                v-model="editedApplication.contact_no"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border"
-                                required
-                              />
+                            <!-- Section: Address Details -->
+                            <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                              <div class="flex items-center gap-3 mb-6">
+                                <Map class="h-6 w-6 text-gray-500" />
+                                <h4 class="text-lg font-semibold text-gray-800">Address Details</h4>
+                              </div>
+                              <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                                <div>
+                                  <label class="block text-sm font-medium text-gray-700 mb-1">Street Address</label>
+                                  <input v-model="editedApplication.address" type="text"
+                                    class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    required />
+                                </div>
+                                <div>
+                                  <label class="block text-sm font-medium text-gray-700 mb-1">Village</label>
+                                  <input v-model="editedApplication.village" type="text"
+                                    class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    required />
+                                </div>
+                                <div>
+                                  <label class="block text-sm font-medium text-gray-700 mb-1">Chiwog</label>
+                                  <input v-model="editedApplication.chiwog" type="text"
+                                    class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    required />
+                                </div>
+                                <div>
+                                  <label class="block text-sm font-medium text-gray-700 mb-1">Gewog</label>
+                                  <input v-model="editedApplication.gewog" type="text"
+                                    class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    required />
+                                </div>
+                                <div>
+                                  <label class="block text-sm font-medium text-gray-700 mb-1">Dzongkhag</label>
+                                  <input v-model="editedApplication.dzongkhag" type="text"
+                                    class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    required />
+                                </div>
+                                <div>
+                                  <label class="block text-sm font-medium text-gray-700 mb-1">Country</label>
+                                  <input v-model="editedApplication.country" type="text"
+                                    class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    required />
+                                </div>
+                              </div>
                             </div>
 
-                            <!-- Course Title Field -->
-                            <div>
-                              <label
-                                for="edit_title_of_course"
-                                class="block text-sm font-medium text-gray-700"
-                                >Course Title</label
-                              >
-                              <input
-                                id="edit_title_of_course"
-                                type="text"
-                                v-model="editedApplication.title_of_course"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border"
-                                required
-                              />
+                            <!-- Section: Head of Institution -->
+                            <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                              <div class="flex items-center gap-3 mb-6">
+                                <Briefcase class="h-6 w-6 text-gray-500" />
+                                <h4 class="text-lg font-semibold text-gray-800">Head of Institution</h4>
+                              </div>
+                              <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                                <div>
+                                  <label class="block text-sm font-medium text-gray-700 mb-1">Head's Name</label>
+                                  <input v-model="editedApplication.head_of_institution_name" type="text"
+                                    class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    required />
+                                </div>
+                                <div>
+                                  <label class="block text-sm font-medium text-gray-700 mb-1">Head's Gender</label>
+                                  <select v-model="editedApplication.head_of_institution_gender"
+                                    class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                  </select>
+                                </div>
+                                <div>
+                                  <label class="block text-sm font-medium text-gray-700 mb-1">Head's Email</label>
+                                  <input v-model="editedApplication.head_of_institution_email" type="email"
+                                    class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    required />
+                                </div>
+                                <div>
+                                  <label class="block text-sm font-medium text-gray-700 mb-1">Head's Phone</label>
+                                  <input v-model="editedApplication.head_of_institution_phone_number" type="tel"
+                                    class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    required />
+                                </div>
+                              </div>
                             </div>
 
-                            <!-- Program Type Field -->
-                            <div>
-                              <label
-                                for="edit_type_of_programme"
-                                class="block text-sm font-medium text-gray-700"
-                                >Program Type</label
-                              >
-                              <select
-                                id="edit_type_of_programme"
-                                v-model="editedApplication.type_of_programme"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border"
-                                required
-                              >
-                                <!-- Values remain single characters -->
-                                <option value="">Select a program type</option>
-                                <option value="D">Diploma</option>
-                                <option value="B">Bachelor</option>
-                                <option value="M">Master</option>
-                                <option value="P">PhD</option>
-                              </select>
+                            <!-- Section: Administrative Remarks -->
+                            <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                              <div class="flex items-center gap-3 mb-6">
+                                <FileText class="h-6 w-6 text-gray-500" />
+                                <h4 class="text-lg font-semibold text-gray-800">Administrative Remarks</h4>
+                              </div>
+                              <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Remarks</label>
+                                <textarea v-model="editedApplication.remarks" rows="4"
+                                  class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+                              </div>
                             </div>
 
-                            <!-- Commencement Date Field -->
-                            <div>
-                              <label
-                                for="edit_commencement_date"
-                                class="block text-sm font-medium text-gray-700"
-                                >Commencement Date</label
-                              >
-                              <input
-                                id="edit_commencement_date"
-                                type="date"
-                                v-model="editedApplication.commencement_date"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border"
-                                required
-                              />
-                            </div>
-
-                            <!-- Course Duration Field -->
-                            <div>
-                              <label
-                                for="edit_course_duration"
-                                class="block text-sm font-medium text-gray-700"
-                                >Course Duration</label
-                              >
-                              <input
-                                id="edit_course_duration"
-                                type="text"
-                                v-model="editedApplication.course_duration"
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm py-2 px-3 border"
-                                required
-                              />
-                            </div>
                           </div>
 
-                          <div class="mt-6 flex justify-end space-x-3">
-                            <button
-                              type="button"
-                              class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                              @click="closeEditModal"
-                            >
-                              Cancel
-                            </button>
-                            <button
-                              type="submit"
-                              class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                            >
+                          <!-- Sticky Footer for Actions -->
+                          <div class="p-6 bg-white border-t border-gray-200 flex justify-end space-x-4 sticky bottom-0">
+                            <button type="button"
+                              class="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50"
+                              @click="closeEditModal">Cancel</button>
+                            <button type="submit"
+                              class="px-5 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                               Save Changes
                             </button>
                           </div>
@@ -655,6 +503,89 @@
                     </div>
                   </div>
                 </Dialog>
+
+                <!-- Approve/Reject/Success Modals -->
+                <TransitionRoot appear :show="isApproveDialogOpen" as="template">
+                  <Dialog as="div" @close="cancelApproval" class="relative z-50">
+                    <div class="fixed inset-0 bg-black/30 backdrop-blur-sm" aria-hidden="true" />
+                    <div class="fixed inset-0 overflow-y-auto">
+                      <div class="flex min-h-full items-center justify-center p-4">
+                        <DialogPanel
+                          class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 shadow-xl transition-all">
+                          <div class="mb-5 text-center">
+                            <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
+                              <CheckCircle class="h-6 w-6 text-green-600" />
+                            </div>
+                            <DialogTitle as="h3" class="text-lg font-medium text-gray-900 mt-4">Approve Application
+                            </DialogTitle>
+                          </div>
+                          <div class="mt-3"><label for="approval-notes"
+                              class="block text-sm font-medium text-gray-700 mb-2">Approval Notes</label><textarea
+                              id="approval-notes" v-model="approvalNotes" rows="4"
+                              class="w-full rounded-lg border border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-sm p-3"></textarea>
+                          </div>
+                          <div class="mt-6 flex justify-end space-x-3"><button type="button"
+                              class="inline-flex justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm"
+                              @click="cancelApproval">Cancel</button><button type="button"
+                              :disabled="!approvalNotes.trim()"
+                              :class="['inline-flex justify-center px-4 py-2 text-sm font-medium text-white rounded-md shadow-sm', approvalNotes.trim() ? 'bg-green-600 hover:bg-green-700' : 'bg-green-300 cursor-not-allowed']"
+                              @click="confirmApproval">Approve</button></div>
+                        </DialogPanel>
+                      </div>
+                    </div>
+                  </Dialog>
+                </TransitionRoot>
+                <TransitionRoot appear :show="isRejectDialogOpen" as="template">
+                  <Dialog as="div" @close="cancelRejection" class="relative z-50">
+                    <div class="fixed inset-0 bg-black/30 backdrop-blur-sm" aria-hidden="true" />
+                    <div class="fixed inset-0 overflow-y-auto">
+                      <div class="flex min-h-full items-center justify-center p-4">
+                        <DialogPanel
+                          class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 shadow-xl transition-all">
+                          <div class="mb-5 text-center">
+                            <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
+                              <ThumbsDown class="h-6 w-6 text-red-600" />
+                            </div>
+                            <DialogTitle as="h3" class="text-lg font-medium text-gray-900 mt-4">Regret Application
+                            </DialogTitle>
+                          </div>
+                          <div class="mt-3"><label for="rejection-reason"
+                              class="block text-sm font-medium text-gray-700 mb-2">Reason for Rejection</label><textarea
+                              id="rejection-reason" v-model="rejectionReason" rows="4"
+                              class="w-full rounded-lg border border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 text-sm p-3"></textarea>
+                          </div>
+                          <div class="mt-6 flex justify-end space-x-3"><button type="button"
+                              class="inline-flex justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm"
+                              @click="cancelRejection">Cancel</button><button type="button"
+                              :disabled="!rejectionReason.trim()"
+                              :class="['inline-flex justify-center px-4 py-2 text-sm font-medium text-white rounded-md shadow-sm', rejectionReason.trim() ? 'bg-red-600 hover:bg-red-700' : 'bg-red-300 cursor-not-allowed']"
+                              @click="confirmRejection">Reject</button></div>
+                        </DialogPanel>
+                      </div>
+                    </div>
+                  </Dialog>
+                </TransitionRoot>
+                <Transition enter="transform transition ease-in-out duration-500"
+                  enter-from="translate-y-full opacity-0" enter-to="translate-y-0 opacity-100"
+                  leave="transform transition ease-in-out duration-500" leave-from="translate-y-0 opacity-100"
+                  leave-to="translate-y-full opacity-0">
+                  <div v-if="showSuccess" class="fixed bottom-6 right-6 flex items-center p-4 mb-4 shadow-lg rounded-lg"
+                    :class="[successType === 'approve' ? 'bg-green-100 text-green-800 border-l-4 border-green-500' : successType === 'reject' ? 'bg-red-100 text-red-800 border-l-4 border-red-500' : 'bg-blue-100 text-blue-800 border-l-4 border-blue-500']">
+                    <div class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 rounded-lg mr-3"
+                      :class="[successType === 'approve' ? 'bg-green-200 text-green-600' : successType === 'reject' ? 'bg-red-200 text-red-600' : 'bg-blue-200 text-blue-600']">
+                      <CheckCircle v-if="successType === 'approve'" class="w-5 h-5" />
+                      <ThumbsDown v-else-if="successType === 'reject'" class="w-5 h-5" />
+                      <Pencil v-else class="w-5 h-5" />
+                    </div>
+                    <div class="ml-3 text-sm font-medium mr-8">{{ successMessage }}</div><button type="button"
+                      class="ml-auto -mx-1.5 -my-1.5 rounded-lg focus:ring-2 p-1.5 inline-flex h-8 w-8 items-center justify-center"
+                      :class="[successType === 'approve' ? 'bg-green-200 text-green-600 hover:bg-green-300 focus:ring-green-400' : successType === 'reject' ? 'bg-red-200 text-red-600 hover:bg-red-300 focus:ring-red-400' : 'bg-blue-200 text-blue-600 hover:bg-blue-300 focus:ring-blue-400']"
+                      @click="closeSuccessNotification"><span class="sr-only">Close</span>
+                      <X class="w-4 h-4" />
+                    </button>
+                  </div>
+                </Transition>
+
               </div>
             </DialogPanel>
           </TransitionChild>
@@ -684,6 +615,12 @@ import {
   Pencil,
   CheckCircle,
   ThumbsDown,
+  Briefcase,
+  Paperclip,
+  Users,
+  Building,
+  BookOpen,
+  Map,
 } from 'lucide-vue-next'
 import { computed, ref } from 'vue'
 import apiService from '@/services/services'
@@ -696,7 +633,7 @@ const props = defineProps({
   application: {
     type: Object,
     required: true,
-    default: () => ({}), // Add a default empty object to prevent errors if undefined
+    default: () => ({}),
   },
 })
 
@@ -706,160 +643,73 @@ const errorMessage = ref('')
 const isEditModalOpen = ref(false)
 const editedApplication = ref({})
 
-// New dialog states
 const isApproveDialogOpen = ref(false)
 const isRejectDialogOpen = ref(false)
 const approvalNotes = ref('')
 const rejectionReason = ref('')
 
-// Success notification state
 const showSuccess = ref(false)
 const successMessage = ref('')
 const successType = ref('')
 const successTimeoutId = ref(null)
 
-console.log('Modal received application:', props.application) // Debug
+const programTypeMap = { D: 'Diploma', B: 'Bachelor', M: 'Master', P: 'PhD' }
+const displayProgramType = computed(() => programTypeMap[props.application?.type_of_programme?.toUpperCase()] || 'N/A')
+const overallStatus = computed(() => props.application?.review_decision || 'Pending')
 
-// Mapping for program type codes to full names
-const programTypeMap = {
-  D: 'Diploma',
-  B: 'Bachelor',
-  M: 'Master',
-  P: 'PhD',
-  d: 'Diploma', // Handle potential lowercase codes from API
-  b: 'Bachelor',
-  m: 'Master',
-  p: 'PhD',
-}
-
-// Computed property to get the full program type name for display
-const displayProgramType = computed(() => {
-  const code = props.application?.type_of_programme // Use optional chaining
-  if (!code) return 'N/A'
-  return programTypeMap[code] || code // Return mapped name or the code itself as fallback
-})
-
-// Computed property for the overall status
-const overallStatus = computed(() => {
-  return props.application?.review_decision || 'Pending' // Use optional chaining
-})
-
-// Function to format dates safely
 const formatDate = (dateString) => {
   if (!dateString) return 'N/A'
   try {
-    // Check if the date needs formatting from YYYY-MM-DD (common from input type="date")
-    if (typeof dateString === 'string' && dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
-      const [year, month, day] = dateString.split('-')
-      // JavaScript Date month is 0-indexed
-      return new Date(year, month - 1, day).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      })
-    }
-    // Otherwise, assume it's a format Date constructor can handle (like ISO string)
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    })
+    return new Date(dateString).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
   } catch (error) {
-    console.error('Error formatting date:', dateString, error)
     return 'Invalid Date'
   }
 }
 
 const editApplication = () => {
-  if (!props.application) return // Guard against null application
-  // Deep clone the application object to avoid modifying the prop directly
+  if (overallStatus.value !== 'Pending') return;
+  if (!props.application) return
   editedApplication.value = JSON.parse(JSON.stringify(props.application))
 
-  // Ensure the date is in YYYY-MM-DD format for the date input
   if (editedApplication.value.commencement_date) {
     try {
-      const date = new Date(editedApplication.value.commencement_date)
-      // Format date to YYYY-MM-DD
-      editedApplication.value.commencement_date = date.toISOString().split('T')[0]
-    } catch (error) {
-      console.error(
-        'Error parsing commencement_date for editing:',
-        editedApplication.value.commencement_date,
-        error,
-      )
-      editedApplication.value.commencement_date = '' // Or set to a default/null value
+      editedApplication.value.commencement_date = new Date(editedApplication.value.commencement_date).toISOString().split('T')[0]
+    } catch {
+      editedApplication.value.commencement_date = ''
     }
   }
-
-  // Ensure type_of_programme is uppercase for matching <option> values if needed
-  if (editedApplication.value.type_of_programme) {
-    editedApplication.value.type_of_programme =
-      editedApplication.value.type_of_programme.toUpperCase()
-  }
-
   isEditModalOpen.value = true
 }
 
 const closeEditModal = () => {
   isEditModalOpen.value = false
-  editedApplication.value = {} // Clear the edit object
+  editedApplication.value = {}
 }
 
-// Helper function to show success notification
 const showSuccessNotification = (message, type) => {
   successMessage.value = message
   successType.value = type
   showSuccess.value = true
-
-  // Auto-hide the notification after 5 seconds
-  if (successTimeoutId.value) {
-    clearTimeout(successTimeoutId.value)
-  }
-  successTimeoutId.value = setTimeout(() => {
-    showSuccess.value = false
-  }, 5000)
+  if (successTimeoutId.value) clearTimeout(successTimeoutId.value)
+  successTimeoutId.value = setTimeout(() => { showSuccess.value = false }, 5000)
 }
 
-// Function to close success notification
 const closeSuccessNotification = () => {
   showSuccess.value = false
-  if (successTimeoutId.value) {
-    clearTimeout(successTimeoutId.value)
-  }
+  if (successTimeoutId.value) clearTimeout(successTimeoutId.value)
 }
 
 const saveApplicationChanges = async () => {
   if (!props.application?.id) {
-    errorMessage.value = 'Application ID is missing.'
     toast.error('Cannot save: Application ID is missing.')
     return
   }
-
-  if (!editedApplication.value.type_of_programme) {
-    errorMessage.value = 'Program type is required.'
-    toast.error('Please select a program type.')
-    return
-  }
-
-  const validProgramTypes = ['D', 'B', 'M', 'P']
-  if (!validProgramTypes.includes(editedApplication.value.type_of_programme)) {
-    errorMessage.value = 'Invalid program type selected.'
-    toast.error('Please select a valid program type.')
-    return
-  }
-
   try {
     const payloadToSend = { ...editedApplication.value }
-
-    // Remove fields that shouldn't be sent
-    delete payloadToSend.supporting_documents
-    delete payloadToSend.institute_eoi_supporting_documents
-    delete payloadToSend.do_dpr_report
+    delete payloadToSend.id
     delete payloadToSend.created_at
     delete payloadToSend.updated_at
-
-    console.log('Sending update for application ID:', props.application.id)
-    console.log('Update data:', JSON.stringify(payloadToSend, null, 2))
+    delete payloadToSend.supporting_documents
 
     const response = await apiService.patchEpcInstitute(props.application.id, payloadToSend)
 
@@ -868,130 +718,67 @@ const saveApplicationChanges = async () => {
       closeEditModal()
       showSuccessNotification('Application updated successfully!', 'edit')
     } else {
-      const errorMsg = response?.data?.message || 'Failed to update application.'
-      errorMessage.value = errorMsg
-      toast.error(errorMsg)
+      toast.error(response?.data?.message || 'Failed to update application.')
     }
   } catch (error) {
-    console.error('Error updating application:', error)
     const errorMsg = error.response?.data?.message || error.message || 'Unknown error'
-    errorMessage.value = `Failed to update application: ${errorMsg}`
     toast.error(`Failed to update: ${errorMsg}`)
   }
 }
 
-const closeModal = () => {
-  errorMessage.value = '' // Clear any previous error message
-  emit('close')
-}
+const closeModal = () => emit('close')
+const closeModalHandler = () => closeModal()
 
-const closeModalHandler = () => {
-  // This handler is called when clicking outside the dialog or pressing Esc
-  closeModal() // Reuse the main close logic
-}
+const openApproveDialog = () => { if (overallStatus.value === 'Pending') { approvalNotes.value = ''; isApproveDialogOpen.value = true } }
+const openRejectDialog = () => { if (overallStatus.value === 'Pending') { rejectionReason.value = ''; isRejectDialogOpen.value = true } }
+const cancelApproval = () => { isApproveDialogOpen.value = false }
+const cancelRejection = () => { isRejectDialogOpen.value = false }
 
-// New functions for custom approval/rejection dialogs
-const openApproveDialog = () => {
-  approvalNotes.value = ''
-  isApproveDialogOpen.value = true
-}
+const updateApplicationStatus = async (decision, notesOrReason) => {
+  if (!props.application?.id) {
+    toast.error('Application ID is missing.')
+    return false
+  }
+  const payload = { review_decision: decision }
+  if (decision === 'Approved') payload.approvalNotes = notesOrReason
+  else if (decision === 'Regretted') payload.reason_if_rejected = notesOrReason
 
-const openRejectDialog = () => {
-  rejectionReason.value = ''
-  isRejectDialogOpen.value = true
-}
-
-const cancelApproval = () => {
-  isApproveDialogOpen.value = false
-  approvalNotes.value = ''
-}
-
-const cancelRejection = () => {
-  isRejectDialogOpen.value = false
-  rejectionReason.value = ''
+  try {
+    const response = await apiService.patchEpcInstitute(props.application.id, payload)
+    if (response && response.status === 200 && response.data) {
+      emit('application-updated', response.data)
+      return true
+    } else {
+      toast.error(response?.data?.message || `Failed to ${decision.toLowerCase()} application.`)
+      return false
+    }
+  } catch (error) {
+    const errorMsg = error.response?.data?.message || error.message
+    toast.error(`Error: ${errorMsg}`)
+    return false
+  }
 }
 
 const confirmApproval = async () => {
-  if (!approvalNotes.value.trim()) {
-    return // Button should be disabled, but just in case
-  }
-
+  if (!approvalNotes.value.trim()) return
   const success = await updateApplicationStatus('Approved', approvalNotes.value)
   if (success) {
     isApproveDialogOpen.value = false
-    // Show custom success notification
-    showSuccessNotification(
-      `Application successfully approved. Notification sent to ${props.application.name_of_institution}.`,
-      'approve',
-    )
+    showSuccessNotification(`Application approved. Notification sent to ${props.application.name_of_institution}.`, 'approve')
   }
 }
 
 const confirmRejection = async () => {
-  if (!rejectionReason.value.trim()) {
-    return // Button should be disabled, but just in case
-  }
-
+  if (!rejectionReason.value.trim()) return
   const success = await updateApplicationStatus('Regretted', rejectionReason.value)
   if (success) {
     isRejectDialogOpen.value = false
-    // Show custom success notification
-    showSuccessNotification(
-      `Application has been regretted. Notification sent to ${props.application.name_of_institution}.`,
-      'reject',
-    )
-  }
-}
-
-// Updated function that no longer uses simple browser alerts
-const updateApplicationStatus = async (decision, notesOrReason) => {
-  if (!props.application?.id) {
-    errorMessage.value = 'Application ID is missing.'
-    toast.error(`Cannot ${decision.toLowerCase()}: Application ID is missing.`)
-    return false
-  }
-
-  if (!notesOrReason) {
-    errorMessage.value = `${decision === 'Approved' ? 'Approval notes' : 'Rejection reason'} are required.`
-    return false
-  }
-
-  errorMessage.value = '' // Clear previous errors
-
-  const payload = {
-    review_decision: decision,
-  }
-
-  if (decision === 'Approved') {
-    payload.approvalNotes = notesOrReason
-  } else if (decision === 'Regretted') {
-    payload.reason_if_rejected = notesOrReason
-  }
-
-  try {
-    const response = await apiService.patchEpcInstitute(props.application.id, payload)
-
-    if (response && response.status === 200 && response.data) {
-      emit('application-updated', response.data)
-      return true // Indicate success
-    } else {
-      const errorMsg = response?.data?.message || `Failed to ${decision.toLowerCase()} application.`
-      errorMessage.value = errorMsg
-      toast.error(errorMsg)
-      return false
-    }
-  } catch (error) {
-    console.error(`Error ${decision.toLowerCase()}ing application:`, error)
-    const errorMsg = error.response?.data?.message || error.message || 'Unknown error'
-    errorMessage.value = `Failed to ${decision.toLowerCase()} application: ${errorMsg}.`
-    toast.error(`Failed to ${decision.toLowerCase()}: ${errorMsg}`)
-    return false
+    showSuccessNotification(`Application regretted. Notification sent to ${props.application.name_of_institution}.`, 'reject')
   }
 }
 </script>
 
 <style scoped>
-/* Scoped styles */
 .overflow-y-auto {
   scrollbar-width: thin;
   scrollbar-color: #cbd5e1 transparent;
@@ -1010,60 +797,13 @@ const updateApplicationStatus = async (decision, notesOrReason) => {
   border-radius: 3px;
 }
 
-.transition-all {
-  transition-property: all;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 200ms;
-}
-
-.rounded-xl {
-  transition:
-    transform 0.2s ease-in-out,
-    box-shadow 0.2s ease-in-out;
-}
-
 .rounded-xl:hover {
   transform: translateY(-2px);
-  box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0.5;
-  }
-}
-
-.animate-pulse {
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-/* Animation for success notification */
-@keyframes slideIn {
-  from {
-    transform: translateY(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-@keyframes slideOut {
-  from {
-    transform: translateY(0);
-    opacity: 1;
-  }
-  to {
-    transform: translateY(100%);
-    opacity: 0;
-  }
+.capitalize {
+  text-transform: capitalize;
 }
 </style>

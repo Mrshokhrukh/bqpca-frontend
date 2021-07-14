@@ -31,9 +31,7 @@
                 />
               </div>
               <div>
-                <label
-                  for="cpd_activity_description"
-                  class="block text-sm font-medium text-slate-700"
+                <label for="cpd_activity_description" class="block text-sm font-medium text-slate-700"
                   >Description</label
                 >
                 <textarea
@@ -51,7 +49,7 @@
                   :disabled="isSubmitting"
                   class="flex-1 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {{ isSubmitting ? 'Saving...' : isEditing ? 'Update Activity' : 'Add Activity' }}
+                  {{ isSubmitting ? 'Saving...' : (isEditing ? 'Update Activity' : 'Add Activity') }}
                 </button>
                 <button
                   v-if="isEditing"
@@ -246,16 +244,16 @@ const fetchActivities = async (page = 1) => {
     if (response.data && Array.isArray(response.data.results)) {
       cpdActivities.value = response.data.results
     } else if (Array.isArray(response.data)) {
-      cpdActivities.value = response.data
+      cpdActivities.value = response.data;
     } else {
-      cpdActivities.value = []
-      console.warn('Unexpected API response structure for activities:', response.data)
+      cpdActivities.value = [];
+      console.warn("Unexpected API response structure for activities:", response.data);
     }
     currentPage.value = page
   } catch (error) {
     console.error('Error fetching CPD activities:', error)
     errorMessage.value = 'Failed to fetch CPD activities. Please try again.'
-    cpdActivities.value = []
+    cpdActivities.value = [];
   }
 }
 
@@ -268,9 +266,9 @@ const handleSubmit = async () => {
   const payload = {
     cpd_activity_name: formData.value.cpd_activity_name,
     description: formData.value.cpd_activity_description,
-  }
+  };
 
-  console.log('Submitting payload:', payload)
+  console.log('Submitting payload:', payload);
 
   try {
     if (isEditing.value) {
@@ -286,24 +284,24 @@ const handleSubmit = async () => {
     console.error('Error saving CPD activity:', error.response || error)
     if (error.response && error.response.data) {
       if (typeof error.response.data === 'object') {
-        const errorMessages = []
+        const errorMessages = [];
         for (const key in error.response.data) {
           if (Array.isArray(error.response.data[key])) {
-            errorMessages.push(`${key}: ${error.response.data[key].join(', ')}`)
+            errorMessages.push(`${key}: ${error.response.data[key].join(', ')}`);
           } else {
-            errorMessages.push(`${key}: ${error.response.data[key]}`)
+            errorMessages.push(`${key}: ${error.response.data[key]}`);
           }
         }
-        errorMessage.value = errorMessages.join('; ') || 'An unknown error occurred.'
+        errorMessage.value = errorMessages.join('; ') || 'An unknown error occurred.';
         if (error.response.data.description && Array.isArray(error.response.data.description)) {
-          errorMessage.value = `Description: ${error.response.data.description.join(', ')}`
+             errorMessage.value = `Description: ${error.response.data.description.join(', ')}`;
         }
+
       } else {
-        errorMessage.value = error.response.data
+        errorMessage.value = error.response.data;
       }
     } else {
-      errorMessage.value =
-        'Failed to save CPD activity. Please check your connection and try again.'
+      errorMessage.value = 'Failed to save CPD activity. Please check your connection and try again.'
     }
   } finally {
     isSubmitting.value = false
@@ -318,7 +316,7 @@ const editActivity = (activity) => {
   isEditing.value = true
   editingId.value = activity.id
   errorMessage.value = ''
-  window.scrollTo({ top: 0, behavior: 'smooth' })
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 const cancelEdit = () => {
@@ -350,10 +348,10 @@ const deleteActivity = async () => {
   try {
     // Using the plural endpoint for deleting activities
     await apiServices.deleteEpcMastersCpdActivities(activityToDelete.value.id)
-    await fetchActivities(currentPage.value)
+    await fetchActivities(currentPage.value);
 
     if (paginatedActivities.value.length === 0 && currentPage.value > 1) {
-      currentPage.value--
+        currentPage.value--;
     }
 
     cancelDelete()
@@ -364,12 +362,12 @@ const deleteActivity = async () => {
 }
 
 const totalPages = computed(() => {
-  if (!cpdActivities.value) return 0
+  if (!cpdActivities.value) return 0;
   return Math.ceil(cpdActivities.value.length / itemsPerPage)
 })
 
 const paginatedActivities = computed(() => {
-  if (!cpdActivities.value) return []
+  if (!cpdActivities.value) return [];
   const start = (currentPage.value - 1) * itemsPerPage
   const end = start + itemsPerPage
   return cpdActivities.value.slice(start, end)

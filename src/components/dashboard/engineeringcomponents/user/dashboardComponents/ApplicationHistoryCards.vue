@@ -17,15 +17,9 @@
 
     <!-- Data Display -->
     <div v-else class="space-y-3">
-      <div
-        v-for="(status, index) in statusTypes"
-        :key="index"
-        class="flex justify-between items-center"
-        :class="{
-          'cursor-pointer hover:bg-gray-50 p-2 rounded-md transition-colors': status === 'Rejected',
-        }"
-        @click="status === 'Rejected' && $emit('show-rejected')"
-      >
+      <div v-for="(status, index) in statusTypes" :key="index" class="flex justify-between items-center"
+        :class="{ 'cursor-pointer hover:bg-gray-50 p-2 rounded-md transition-colors': status === 'Rejected' }"
+        @click="status === 'Rejected' && $emit('show-rejected')">
         <span class="text-sm">{{ status }}</span>
         <span :class="['px-2 py-1 rounded-full text-xs font-medium', getStatusClass(status)]">
           {{ getStatusCount(status) }}
@@ -37,11 +31,7 @@
     <div v-if="!isLoading && showBreakdown" class="mt-4 pt-4 border-t border-gray-200">
       <h4 class="text-xs font-medium text-gray-500 mb-2">Breakdown by Type</h4>
       <div class="space-y-2">
-        <div
-          v-for="(counts, type) in applicationBreakdown"
-          :key="type"
-          class="flex justify-between text-xs"
-        >
+        <div v-for="(counts, type) in applicationBreakdown" :key="type" class="flex justify-between text-xs">
           <span class="text-gray-600">{{ formatApplicationType(type) }}</span>
           <div class="flex space-x-2">
             <span class="text-green-600">{{ counts.Approved || 0 }}</span>
@@ -99,7 +89,7 @@ const fetchAdditionalApplications = async () => {
           ? cpdResponse.value.data
           : []
 
-      cpdApplications.value = cpdData.filter((app) => app.cid_no === authStore.user.cid)
+      cpdApplications.value = cpdData.filter(app => app.cid_no === authStore.user.cid)
     } else {
       console.error('Failed to fetch CPD applications:', cpdResponse.reason)
     }
@@ -112,10 +102,11 @@ const fetchAdditionalApplications = async () => {
           ? cogsResponse.value.data
           : []
 
-      cogsApplications.value = cogsData.filter((app) => app.cid_no === authStore.user.cid)
+      cogsApplications.value = cogsData.filter(app => app.cid_no === authStore.user.cid)
     } else {
       console.error('Failed to fetch CoGS applications:', cogsResponse.reason)
     }
+
   } catch (error) {
     console.error('Error fetching additional applications:', error)
   } finally {
@@ -127,27 +118,20 @@ onMounted(fetchAdditionalApplications)
 
 // Process regular applications (certifications)
 const processedCertificationApplications = computed(() => {
-  return props.applications.map((app) => {
+  return props.applications.map(app => {
     let status = 'Pending'
 
     if (app.user_qualifications && app.user_qualifications.length > 0) {
-      const primaryQual =
-        app.user_qualifications.find((q) => q.is_primary_qualification) ||
-        app.user_qualifications[0]
+      const primaryQual = app.user_qualifications.find(q => q.is_primary_qualification) || app.user_qualifications[0]
 
       if (primaryQual) {
         if (primaryQual.endorsement_decision === 'Approved') {
           status = 'Approved'
-        } else if (
-          primaryQual.endorsement_decision === 'Regretted' ||
-          primaryQual.endorsement_decision === 'Rejected'
-        ) {
+        } else if (primaryQual.endorsement_decision === 'Regretted' || primaryQual.endorsement_decision === 'Rejected') {
           status = 'Rejected'
         } else if (primaryQual.endorsement_decision === 'Pending') {
-          if (
-            primaryQual.application_review_status === 'Regretted' ||
-            primaryQual.physical_review_status === 'Regretted'
-          ) {
+          if (primaryQual.application_review_status === 'Regretted' ||
+            primaryQual.physical_review_status === 'Regretted') {
             status = 'Rejected'
           } else {
             status = 'Pending'
@@ -159,14 +143,14 @@ const processedCertificationApplications = computed(() => {
     return {
       ...app,
       status: status,
-      type: 'Certification',
+      type: 'Certification'
     }
   })
 })
 
 // Process CPD applications
 const processedCpdApplications = computed(() => {
-  return cpdApplications.value.map((app) => {
+  return cpdApplications.value.map(app => {
     let status = 'Pending'
 
     if (app.review_status === 'Approved') {
@@ -180,23 +164,20 @@ const processedCpdApplications = computed(() => {
     return {
       ...app,
       status: status,
-      type: 'CPD',
+      type: 'CPD'
     }
   })
 })
 
 // Process CoGS applications
 const processedCogsApplications = computed(() => {
-  return cogsApplications.value.map((app) => {
+  return cogsApplications.value.map(app => {
     let status = 'Pending'
 
     // Check endorsement decision first
     if (app.endorsement_decision === 'Approved') {
       status = 'Approved'
-    } else if (
-      app.endorsement_decision === 'Regretted' ||
-      app.endorsement_decision === 'Rejected'
-    ) {
+    } else if (app.endorsement_decision === 'Regretted' || app.endorsement_decision === 'Rejected') {
       status = 'Rejected'
     } else if (app.review_status === 'Regretted' || app.review_status === 'Rejected') {
       status = 'Rejected'
@@ -207,7 +188,7 @@ const processedCogsApplications = computed(() => {
     return {
       ...app,
       status: status,
-      type: 'CoGS',
+      type: 'CoGS'
     }
   })
 })
@@ -223,7 +204,7 @@ const allApplications = computed(() => [
 const applicationBreakdown = computed(() => {
   const breakdown = {}
 
-  allApplications.value.forEach((app) => {
+  allApplications.value.forEach(app => {
     if (!breakdown[app.type]) {
       breakdown[app.type] = { Approved: 0, Pending: 0, Rejected: 0 }
     }

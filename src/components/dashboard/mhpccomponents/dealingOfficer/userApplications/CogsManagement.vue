@@ -409,12 +409,11 @@
       @cancel="cancelReviewAction"
     />
 
-    <CertificateModal
+    <CogsCertificate
       v-if="isCertificateModalOpen"
       :isOpen="isCertificateModalOpen"
       :application="selectedApplication"
       @close="closeCertificateModal"
-      @download="handleCertificateDownload"
     />
 
     <!-- Toast Notification -->
@@ -457,25 +456,25 @@ import {
 import apiServices from '@/services/services'
 import CogsReviewModal from '../modals/CogsReviewModal.vue'
 import CogsConfirmationModal from '../modals/CogsConfirmationModal.vue'
-import CertificateModal from '../modals/CertificateModal.vue'
+import CogsCertificate from '../modals/CogsCertificate.vue';
 import DOPageHeader from '@/components/common/MHPC/DOPageHeader.vue' // Import the new header component
 
 // --- State ---
-const applications = ref([])
-const isLoading = ref(false)
-const error = ref(null)
-const searchQuery = ref('')
-const statusFilter = ref('')
-const currentPage = ref(1)
-const itemsPerPage = ref(10)
-const selectedApplication = ref(null)
-const isModalOpen = ref(false)
-const isCertificateModalOpen = ref(false)
-const showConfirmation = ref(false)
-const confirmationMessage = ref('')
-const showSuccessToast = ref(false)
-const toastMessage = ref('')
-const confirmData = ref(null)
+const applications = ref([]);
+const isLoading = ref(false);
+const error = ref(null);
+const searchQuery = ref('');
+const statusFilter = ref('');
+const currentPage = ref(1);
+const itemsPerPage = ref(10);
+const selectedApplication = ref(null);
+const isModalOpen = ref(false);
+const isCertificateModalOpen = ref(false);
+const showConfirmation = ref(false);
+const confirmationMessage = ref('');
+const showSuccessToast = ref(false);
+const toastMessage = ref('');
+const confirmData = ref(null);
 
 // Define status options for the filter dropdown
 const statusOptions = ref([
@@ -608,9 +607,9 @@ const resetFilters = () => {
 }
 
 const reviewApplication = (application) => {
-  selectedApplication.value = application
-  isModalOpen.value = true
-}
+  selectedApplication.value = application;
+  isModalOpen.value = true;
+};
 
 const closeReviewModal = () => {
   selectedApplication.value = null
@@ -618,14 +617,15 @@ const closeReviewModal = () => {
 }
 
 const openCertificateModal = (application) => {
-  selectedApplication.value = application
-  isCertificateModalOpen.value = true
-}
+  selectedApplication.value = application;
+  isCertificateModalOpen.value = true;
+};
 
+// NEW: Function to close the certificate modal
 const closeCertificateModal = () => {
-  isCertificateModalOpen.value = false
-  selectedApplication.value = null
-}
+  isCertificateModalOpen.value = false;
+  selectedApplication.value = null;
+};
 
 const handleCertificateDownload = (id) => {
   downloadCertificate(id)

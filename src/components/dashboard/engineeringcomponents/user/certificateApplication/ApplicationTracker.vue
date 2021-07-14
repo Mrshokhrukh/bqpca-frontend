@@ -10,25 +10,12 @@
 
     <div v-if="isLoading" class="my-8 flex justify-center">
       <div class="flex flex-col items-center space-y-3">
-        <svg
-          class="animate-spin h-8 w-8 text-blue-600"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-        >
-          <circle
-            class="opacity-25"
-            cx="12"
-            cy="12"
-            r="10"
-            stroke="currentColor"
-            stroke-width="4"
-          ></circle>
-          <path
-            class="opacity-75"
-            fill="currentColor"
-            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-          ></path>
+        <svg class="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none"
+          viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+          </path>
         </svg>
         <p class="text-gray-600 font-medium">Loading your {{ loadingText }} data...</p>
       </div>
@@ -36,34 +23,22 @@
 
     <div v-if="!isLoading">
       <!-- New Applications Tab -->
-      <NewApplicationsTracker
-        v-if="currentTab === 'new' && newApplications.length > 0"
-        :applications="newApplications"
-        @open-certificate="openCertificateModal"
-        @initiate-payment="handleInitiatePaymentEvent"
-      />
+      <NewApplicationsTracker v-if="currentTab === 'new' && newApplications.length > 0" :applications="newApplications"
+        @open-certificate="openCertificateModal" @initiate-payment="handleInitiatePaymentEvent" />
 
       <!-- Renewal Applications Tab -->
-      <RenewalApplicationsTracker
-        v-if="currentTab === 'renewal' && renewalApplications.length > 0"
-        :applications="renewalApplications"
-        @open-certificate="openCertificateModal"
-        @initiate-payment="handleInitiatePaymentEvent"
-      />
+      <RenewalApplicationsTracker v-if="currentTab === 'renewal' && renewalApplications.length > 0"
+        :applications="renewalApplications" @open-certificate="openCertificateModal"
+        @initiate-payment="handleInitiatePaymentEvent" />
 
       <!-- Additional Qualifications Tab -->
-      <AdditionalQualificationsTracker
-        v-if="currentTab === 'additional' && additionalApplications.length > 0"
-        :applications="additionalApplications"
-        @open-certificate="openCertificateModal"
-        @initiate-payment="handleInitiatePaymentEvent"
-      />
+      <AdditionalQualificationsTracker v-if="currentTab === 'additional' && additionalApplications.length > 0"
+        :applications="additionalApplications" @open-certificate="openCertificateModal"
+        @initiate-payment="handleInitiatePaymentEvent" />
 
       <!-- No Results Message -->
-      <div
-        v-if="!apiError && currentDataIsEmpty"
-        class="text-center py-8 sm:py-12 bg-gray-50 rounded-xl border border-gray-200 shadow-md"
-      >
+      <div v-if="!apiError && currentDataIsEmpty"
+        class="text-center py-8 sm:py-12 bg-gray-50 rounded-xl border border-gray-200 shadow-md">
         <div class="flex flex-col items-center justify-center">
           <div class="p-3 bg-gray-100 rounded-full mb-3">
             <SearchX class="w-6 h-6 text-gray-400" />
@@ -78,10 +53,7 @@
       </div>
 
       <!-- API Error Message -->
-      <div
-        v-if="apiError"
-        class="text-center py-8 sm:py-12 bg-red-50 rounded-xl border border-red-200 shadow-md"
-      >
+      <div v-if="apiError" class="text-center py-8 sm:py-12 bg-red-50 rounded-xl border border-red-200 shadow-md">
         <div class="flex flex-col items-center justify-center">
           <div class="p-3 bg-red-100 rounded-full mb-3">
             <AlertTriangle class="w-6 h-6 text-red-500" />
@@ -96,19 +68,12 @@
     </div>
 
     <!-- Certificate Modal -->
-    <CertificateModal
-      :qualification="selectedCertificateData"
-      @close="closeCertificateModal"
-      :showModal="showCertificateModal"
-    />
+    <CertificateModal :qualification="selectedCertificateData" @close="closeCertificateModal"
+      :showModal="showCertificateModal" />
 
     <!-- Payment Modal -->
-    <PaymentModal
-      ref="paymentModalRef"
-      :amount="100"
-      @payment-completed="handlePaymentCompleted"
-      @close="closePaymentModal"
-    />
+    <PaymentModal ref="paymentModalRef" :amount="100" @payment-completed="handlePaymentCompleted"
+      @close="closePaymentModal" />
   </div>
 </template>
 
@@ -198,12 +163,12 @@ const fetchNewApplications = async () => {
     const response = await apiService.getEpcFullApplicationListByCid(userCid.value)
     if (response && response.data && response.data.results) {
       // Filter for applications that are NOT renewals AND have at least one PRIMARY qualification
-      newApplications.value = response.data.results.filter((app) => {
+      newApplications.value = response.data.results.filter(app => {
         const isNotRenewal = !app.is_renewal // Adjust if is_renewal flag is named differently
 
         const hasPrimaryQualifications =
           app.user_qualifications &&
-          app.user_qualifications.some((q) => q.is_primary_qualification === true)
+          app.user_qualifications.some(q => q.is_primary_qualification === true)
 
         return isNotRenewal && hasPrimaryQualifications
       })
@@ -249,12 +214,12 @@ const fetchAdditionalApplications = async () => {
     const response = await apiService.getEpcFullApplicationListByCid(userCid.value)
     if (response && response.data && response.data.results) {
       // Filter for applications that are NOT renewals AND have at least one NON-PRIMARY qualification
-      additionalApplications.value = response.data.results.filter((app) => {
+      additionalApplications.value = response.data.results.filter(app => {
         const isNotRenewal = !app.is_renewal
 
         const hasNonPrimaryQualifications =
           app.user_qualifications &&
-          app.user_qualifications.some((q) => q.is_primary_qualification === false)
+          app.user_qualifications.some(q => q.is_primary_qualification === false)
 
         return isNotRenewal && hasNonPrimaryQualifications
       })
@@ -321,8 +286,7 @@ const handlePaymentCompleted = async (paymentData) => {
   const itemForPayment = selectedQualificationForPayment.value
 
   // Detect if it's a renewal (check for renewal-specific field)
-  const isRenewal =
-    Object.hasOwn(itemForPayment, 'renewal_review_status') ||
+  const isRenewal = Object.hasOwn(itemForPayment, 'renewal_review_status') ||
     Object.hasOwn(itemForPayment, 'new_expiry_date')
 
   try {
@@ -336,7 +300,7 @@ const handlePaymentCompleted = async (paymentData) => {
     paymentInitiationFormData.append('totalPayableAmount', 100) // EPC amount
     paymentInitiationFormData.append(
       'description',
-      isRenewal ? 'EPC Renewal Fee' : 'EPC Qualification Registration Fee',
+      isRenewal ? 'EPC Renewal Fee' : 'EPC Qualification Registration Fee'
     )
     paymentInitiationFormData.append('mobileNo', user.contact_number)
     paymentInitiationFormData.append('payerEmail', user.email)
@@ -360,7 +324,7 @@ const handlePaymentCompleted = async (paymentData) => {
       await apiService.patchEpcRenewal(renewalId, updateFormData)
 
       // Update local state
-      const renewalIndex = renewalApplications.value.findIndex((r) => r.id === renewalId)
+      const renewalIndex = renewalApplications.value.findIndex(r => r.id === renewalId)
       if (renewalIndex > -1) {
         renewalApplications.value[renewalIndex].payment_status = 'processing_payment'
         renewalApplications.value[renewalIndex].payment_id = paymentId
@@ -372,11 +336,9 @@ const handlePaymentCompleted = async (paymentData) => {
 
       // Update local state for qualifications
       const updateLocalQualificationState = (appList) => {
-        const app = appList.value.find((a) =>
-          a.user_qualifications.some((q) => q.id === qualificationId),
-        )
+        const app = appList.value.find(a => a.user_qualifications.some(q => q.id === qualificationId))
         if (app) {
-          const qual = app.user_qualifications.find((q) => q.id === qualificationId)
+          const qual = app.user_qualifications.find(q => q.id === qualificationId)
           if (qual) {
             qual.payment_id = paymentId
             qual.payment_status = 'processing_payment'
@@ -391,12 +353,11 @@ const handlePaymentCompleted = async (paymentData) => {
     itemForPayment.payment_id = paymentId
     itemForPayment.payment_status = 'processing_payment'
 
-    toast.success(
-      `Payment initiated (Ref: ${paymentId.substring(0, 8)}...). Your application status will update shortly.`,
-    )
+    toast.success(`Payment initiated (Ref: ${paymentId.substring(0, 8)}...). Your application status will update shortly.`)
 
     // Refresh all data
     await fetchAllData()
+
   } catch (error) {
     console.error('Payment handling error:', error.response || error.request || error)
     let errorMsg = 'An error occurred while processing the payment confirmation.'

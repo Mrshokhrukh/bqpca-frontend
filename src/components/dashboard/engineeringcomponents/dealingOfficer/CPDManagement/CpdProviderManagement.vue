@@ -11,22 +11,13 @@
 
       <!-- Add Provider Button -->
       <div class="flex justify-end mb-6">
-        <button
-          @click="openAddProviderModal"
-          class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition ease-in-out duration-150"
-        >
-          <svg
-            class="-ml-1 mr-3 h-5 w-5"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            aria-hidden="true"
-          >
-            <path
-              fill-rule="evenodd"
+        <button @click="openAddProviderModal"
+          class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition ease-in-out duration-150">
+          <svg class="-ml-1 mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+            aria-hidden="true">
+            <path fill-rule="evenodd"
               d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-              clip-rule="evenodd"
-            />
+              clip-rule="evenodd" />
           </svg>
           Add Provider
         </button>
@@ -42,64 +33,37 @@
           <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
               <tr>
-                <th
-                  scope="col"
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Provider Name
                 </th>
-                <th
-                  scope="col"
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Email
                 </th>
-                <th
-                  scope="col"
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Contact Number
                 </th>
-                <th
-                  scope="col"
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Gender
                 </th>
-                <th
-                  scope="col"
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   CPD Activity Title
                 </th>
-                <th
-                  scope="col"
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Venue
                 </th>
-                <th
-                  scope="col"
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
               <tr v-if="providers.length === 0">
-                <td
-                  colspan="7"
-                  class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center"
-                >
+                <td colspan="7" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
                   No providers found.
                 </td>
               </tr>
-              <tr
-                v-for="(provider, index) in providers"
-                :key="provider.id || index"
-                class="hover:bg-gray-50 transition-colors duration-150 ease-in-out"
-              >
+              <tr v-for="(provider, index) in providers" :key="provider.id || index"
+                class="hover:bg-gray-50 transition-colors duration-150 ease-in-out">
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                   {{ `${provider.first_name || ''} ${provider.last_name || ''}`.trim() }}
                 </td>
@@ -120,16 +84,12 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <div class="flex space-x-3">
-                    <button
-                      @click="openEditProviderModal(index)"
-                      class="text-indigo-600 hover:text-indigo-900 transition-colors duration-150 ease-in-out"
-                    >
+                    <button @click="openEditProviderModal(index)"
+                      class="text-indigo-600 hover:text-indigo-900 transition-colors duration-150 ease-in-out">
                       Edit
                     </button>
-                    <button
-                      @click="deleteProvider(index)"
-                      class="text-red-600 hover:text-red-900 transition-colors duration-150 ease-in-out"
-                    >
+                    <button @click="deleteProvider(index)"
+                      class="text-red-600 hover:text-red-900 transition-colors duration-150 ease-in-out">
                       Delete
                     </button>
                   </div>
@@ -141,27 +101,16 @@
       </div>
 
       <!-- Add Provider Modal -->
-      <div
-        v-if="isAddProviderModalOpen"
-        class="fixed z-50 inset-0 overflow-y-auto"
-        aria-labelledby="modal-title"
-        role="dialog"
-        aria-modal="true"
-      >
-        <div
-          class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0"
-        >
+      <div v-if="isAddProviderModalOpen" class="fixed z-50 inset-0 overflow-y-auto" aria-labelledby="modal-title"
+        role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
           <!-- Background overlay -->
-          <div
-            class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
-            aria-hidden="true"
-          ></div>
+          <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
           <!-- Modal panel -->
           <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
           </span>
           <div
-            class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full"
-          >
+            class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
             <form @submit.prevent="submitProvider">
               <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                 <div class="sm:flex sm:items-start">
@@ -177,45 +126,22 @@
                         </legend>
                         <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-3">
                           <div>
-                            <label
-                              for="add-first-name"
-                              class="block text-sm font-medium text-gray-700"
-                              >First Name <span class="text-red-500">*</span></label
-                            >
-                            <input
-                              type="text"
-                              id="add-first-name"
-                              v-model="formData.first_name"
-                              required
-                              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                            />
+                            <label for="add-first-name" class="block text-sm font-medium text-gray-700">First Name <span
+                                class="text-red-500">*</span></label>
+                            <input type="text" id="add-first-name" v-model="formData.first_name" required
+                              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
                           </div>
                           <div>
-                            <label
-                              for="add-middle-name"
-                              class="block text-sm font-medium text-gray-700"
-                              >Middle Name</label
-                            >
-                            <input
-                              type="text"
-                              id="add-middle-name"
-                              v-model="formData.middle_name"
-                              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                            />
+                            <label for="add-middle-name" class="block text-sm font-medium text-gray-700">Middle
+                              Name</label>
+                            <input type="text" id="add-middle-name" v-model="formData.middle_name"
+                              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
                           </div>
                           <div>
-                            <label
-                              for="add-last-name"
-                              class="block text-sm font-medium text-gray-700"
-                              >Last Name <span class="text-red-500">*</span></label
-                            >
-                            <input
-                              type="text"
-                              id="add-last-name"
-                              v-model="formData.last_name"
-                              required
-                              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                            />
+                            <label for="add-last-name" class="block text-sm font-medium text-gray-700">Last Name <span
+                                class="text-red-500">*</span></label>
+                            <input type="text" id="add-last-name" v-model="formData.last_name" required
+                              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
                           </div>
                         </div>
                       </fieldset>
@@ -227,34 +153,18 @@
                         </legend>
                         <div class="flex items-center space-x-4">
                           <label class="inline-flex items-center">
-                            <input
-                              type="radio"
-                              v-model="formData.gender"
-                              value="male"
-                              required
-                              name="add-gender"
-                              class="form-radio h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                            />
+                            <input type="radio" v-model="formData.gender" value="male" required name="add-gender"
+                              class="form-radio h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300" />
                             <span class="ml-2 text-gray-700">Male</span>
                           </label>
                           <label class="inline-flex items-center">
-                            <input
-                              type="radio"
-                              v-model="formData.gender"
-                              value="female"
-                              name="add-gender"
-                              class="form-radio h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                            />
+                            <input type="radio" v-model="formData.gender" value="female" name="add-gender"
+                              class="form-radio h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300" />
                             <span class="ml-2 text-gray-700">Female</span>
                           </label>
                           <label class="inline-flex items-center">
-                            <input
-                              type="radio"
-                              v-model="formData.gender"
-                              value="other"
-                              name="add-gender"
-                              class="form-radio h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                            />
+                            <input type="radio" v-model="formData.gender" value="other" name="add-gender"
+                              class="form-radio h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300" />
                             <span class="ml-2 text-gray-700">Other</span>
                           </label>
                         </div>
@@ -267,29 +177,17 @@
                         </legend>
                         <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
                           <div>
-                            <label for="add-dob" class="block text-sm font-medium text-gray-700"
-                              >Date of Birth <span class="text-red-500">*</span></label
-                            >
-                            <input
-                              type="date"
-                              id="add-dob"
-                              v-model="formData.date_of_birth"
-                              required
-                              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                            />
+                            <label for="add-dob" class="block text-sm font-medium text-gray-700">Date of Birth <span
+                                class="text-red-500">*</span></label>
+                            <input type="date" id="add-dob" v-model="formData.date_of_birth" required
+                              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
                           </div>
                           <div>
-                            <label for="add-contact" class="block text-sm font-medium text-gray-700"
-                              >Contact Number <span class="text-red-500">*</span></label
-                            >
-                            <input
-                              type="tel"
-                              id="add-contact"
-                              v-model="formData.contact_number"
-                              required
+                            <label for="add-contact" class="block text-sm font-medium text-gray-700">Contact Number
+                              <span class="text-red-500">*</span></label>
+                            <input type="tel" id="add-contact" v-model="formData.contact_number" required
                               placeholder="e.g., 09171234567"
-                              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                            />
+                              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
                           </div>
                         </div>
                       </fieldset>
@@ -301,56 +199,30 @@
                         </legend>
                         <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
                           <div>
-                            <label for="add-email" class="block text-sm font-medium text-gray-700"
-                              >Email <span class="text-red-500">*</span></label
-                            >
-                            <input
-                              type="email"
-                              id="add-email"
-                              v-model="formData.email"
-                              required
-                              autocomplete="email"
-                              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                            />
+                            <label for="add-email" class="block text-sm font-medium text-gray-700">Email <span
+                                class="text-red-500">*</span></label>
+                            <input type="email" id="add-email" v-model="formData.email" required autocomplete="email"
+                              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
                           </div>
                           <div class="sm:col-span-2">
-                            <button
-                              type="button"
-                              @click="generatePassword"
-                              class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition ease-in-out duration-150 mb-4"
-                            >
+                            <button type="button" @click="generatePassword"
+                              class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition ease-in-out duration-150 mb-4">
                               Generate Password
                             </button>
                           </div>
                           <div>
-                            <label
-                              for="add-password"
-                              class="block text-sm font-medium text-gray-700"
-                              >Password <span class="text-red-500">*</span></label
-                            >
-                            <input
-                              type="text"
-                              id="add-password"
-                              v-model="formData.password"
-                              required
+                            <label for="add-password" class="block text-sm font-medium text-gray-700">Password <span
+                                class="text-red-500">*</span></label>
+                            <input type="text" id="add-password" v-model="formData.password" required
                               autocomplete="new-password"
-                              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                            />
+                              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
                           </div>
                           <div>
-                            <label
-                              for="add-confirm-password"
-                              class="block text-sm font-medium text-gray-700"
-                              >Confirm Password <span class="text-red-500">*</span></label
-                            >
-                            <input
-                              type="text"
-                              id="add-confirm-password"
-                              v-model="formData.confirm_password"
-                              required
+                            <label for="add-confirm-password" class="block text-sm font-medium text-gray-700">Confirm
+                              Password <span class="text-red-500">*</span></label>
+                            <input type="text" id="add-confirm-password" v-model="formData.confirm_password" required
                               autocomplete="new-password"
-                              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                            />
+                              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
                           </div>
                         </div>
                       </fieldset>
@@ -362,30 +234,16 @@
                         </legend>
                         <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
                           <div>
-                            <label
-                              for="add-cpd-title"
-                              class="block text-sm font-medium text-gray-700"
-                              >CPD Activity Title <span class="text-red-500">*</span></label
-                            >
-                            <input
-                              type="text"
-                              id="add-cpd-title"
-                              v-model="formData.cpdActivityTitle"
-                              required
-                              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                            />
+                            <label for="add-cpd-title" class="block text-sm font-medium text-gray-700">CPD Activity
+                              Title <span class="text-red-500">*</span></label>
+                            <input type="text" id="add-cpd-title" v-model="formData.cpdActivityTitle" required
+                              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
                           </div>
                           <div>
-                            <label for="add-venue" class="block text-sm font-medium text-gray-700"
-                              >Venue <span class="text-red-500">*</span></label
-                            >
-                            <input
-                              type="text"
-                              id="add-venue"
-                              v-model="formData.venue"
-                              required
-                              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                            />
+                            <label for="add-venue" class="block text-sm font-medium text-gray-700">Venue <span
+                                class="text-red-500">*</span></label>
+                            <input type="text" id="add-venue" v-model="formData.venue" required
+                              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
                           </div>
                         </div>
                       </fieldset>
@@ -394,17 +252,12 @@
                 </div>
               </div>
               <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                <button
-                  type="submit"
-                  class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm transition ease-in-out duration-150"
-                >
+                <button type="submit"
+                  class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm transition ease-in-out duration-150">
                   Add Provider
                 </button>
-                <button
-                  type="button"
-                  @click="closeAddProviderModal"
-                  class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition ease-in-out duration-150"
-                >
+                <button type="button" @click="closeAddProviderModal"
+                  class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition ease-in-out duration-150">
                   Cancel
                 </button>
               </div>
@@ -414,27 +267,16 @@
       </div>
 
       <!-- Edit Provider Modal -->
-      <div
-        v-if="isEditProviderModalOpen"
-        class="fixed z-50 inset-0 overflow-y-auto"
-        aria-labelledby="modal-title"
-        role="dialog"
-        aria-modal="true"
-      >
-        <div
-          class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0"
-        >
+      <div v-if="isEditProviderModalOpen" class="fixed z-50 inset-0 overflow-y-auto" aria-labelledby="modal-title"
+        role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
           <!-- Background overlay -->
-          <div
-            class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
-            aria-hidden="true"
-          ></div>
+          <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
           <!-- Modal panel -->
           <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
           </span>
           <div
-            class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full"
-          >
+            class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
             <form @submit.prevent="updateProvider">
               <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                 <div class="sm:flex sm:items-start">
@@ -450,45 +292,22 @@
                         </legend>
                         <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-3">
                           <div>
-                            <label
-                              for="edit-first-name"
-                              class="block text-sm font-medium text-gray-700"
-                              >First Name <span class="text-red-500">*</span></label
-                            >
-                            <input
-                              type="text"
-                              id="edit-first-name"
-                              v-model="editFormData.first_name"
-                              required
-                              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                            />
+                            <label for="edit-first-name" class="block text-sm font-medium text-gray-700">First Name
+                              <span class="text-red-500">*</span></label>
+                            <input type="text" id="edit-first-name" v-model="editFormData.first_name" required
+                              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
                           </div>
                           <div>
-                            <label
-                              for="edit-middle-name"
-                              class="block text-sm font-medium text-gray-700"
-                              >Middle Name</label
-                            >
-                            <input
-                              type="text"
-                              id="edit-middle-name"
-                              v-model="editFormData.middle_name"
-                              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                            />
+                            <label for="edit-middle-name" class="block text-sm font-medium text-gray-700">Middle
+                              Name</label>
+                            <input type="text" id="edit-middle-name" v-model="editFormData.middle_name"
+                              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
                           </div>
                           <div>
-                            <label
-                              for="edit-last-name"
-                              class="block text-sm font-medium text-gray-700"
-                              >Last Name <span class="text-red-500">*</span></label
-                            >
-                            <input
-                              type="text"
-                              id="edit-last-name"
-                              v-model="editFormData.last_name"
-                              required
-                              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                            />
+                            <label for="edit-last-name" class="block text-sm font-medium text-gray-700">Last Name <span
+                                class="text-red-500">*</span></label>
+                            <input type="text" id="edit-last-name" v-model="editFormData.last_name" required
+                              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
                           </div>
                         </div>
                       </fieldset>
@@ -500,34 +319,18 @@
                         </legend>
                         <div class="flex items-center space-x-4">
                           <label class="inline-flex items-center">
-                            <input
-                              type="radio"
-                              v-model="editFormData.gender"
-                              value="male"
-                              required
-                              name="edit-gender"
-                              class="form-radio h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                            />
+                            <input type="radio" v-model="editFormData.gender" value="male" required name="edit-gender"
+                              class="form-radio h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300" />
                             <span class="ml-2 text-gray-700">Male</span>
                           </label>
                           <label class="inline-flex items-center">
-                            <input
-                              type="radio"
-                              v-model="editFormData.gender"
-                              value="female"
-                              name="edit-gender"
-                              class="form-radio h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                            />
+                            <input type="radio" v-model="editFormData.gender" value="female" name="edit-gender"
+                              class="form-radio h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300" />
                             <span class="ml-2 text-gray-700">Female</span>
                           </label>
                           <label class="inline-flex items-center">
-                            <input
-                              type="radio"
-                              v-model="editFormData.gender"
-                              value="other"
-                              name="edit-gender"
-                              class="form-radio h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-                            />
+                            <input type="radio" v-model="editFormData.gender" value="other" name="edit-gender"
+                              class="form-radio h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300" />
                             <span class="ml-2 text-gray-700">Other</span>
                           </label>
                         </div>
@@ -540,31 +343,17 @@
                         </legend>
                         <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
                           <div>
-                            <label for="edit-dob" class="block text-sm font-medium text-gray-700"
-                              >Date of Birth <span class="text-red-500">*</span></label
-                            >
-                            <input
-                              type="date"
-                              id="edit-dob"
-                              v-model="editFormData.date_of_birth"
-                              required
-                              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                            />
+                            <label for="edit-dob" class="block text-sm font-medium text-gray-700">Date of Birth <span
+                                class="text-red-500">*</span></label>
+                            <input type="date" id="edit-dob" v-model="editFormData.date_of_birth" required
+                              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
                           </div>
                           <div>
-                            <label
-                              for="edit-contact"
-                              class="block text-sm font-medium text-gray-700"
-                              >Contact Number <span class="text-red-500">*</span></label
-                            >
-                            <input
-                              type="tel"
-                              id="edit-contact"
-                              v-model="editFormData.contact_number"
-                              required
+                            <label for="edit-contact" class="block text-sm font-medium text-gray-700">Contact Number
+                              <span class="text-red-500">*</span></label>
+                            <input type="tel" id="edit-contact" v-model="editFormData.contact_number" required
                               placeholder="e.g., 09171234567"
-                              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                            />
+                              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
                           </div>
                         </div>
                       </fieldset>
@@ -575,18 +364,11 @@
                           Account Email
                         </legend>
                         <div>
-                          <label for="edit-email" class="block text-sm font-medium text-gray-700"
-                            >Email <span class="text-red-500">*</span></label
-                          >
-                          <input
-                            type="email"
-                            id="edit-email"
-                            v-model="editFormData.email"
-                            required
-                            autocomplete="email"
+                          <label for="edit-email" class="block text-sm font-medium text-gray-700">Email <span
+                              class="text-red-500">*</span></label>
+                          <input type="email" id="edit-email" v-model="editFormData.email" required autocomplete="email"
                             class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-gray-100"
-                            readonly
-                          />
+                            readonly />
                           <p class="mt-1 text-xs text-gray-500">
                             Email cannot be changed directly. Contact support if needed.
                           </p>
@@ -600,30 +382,16 @@
                         </legend>
                         <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
                           <div>
-                            <label
-                              for="edit-cpd-title"
-                              class="block text-sm font-medium text-gray-700"
-                              >CPD Activity Title <span class="text-red-500">*</span></label
-                            >
-                            <input
-                              type="text"
-                              id="edit-cpd-title"
-                              v-model="editFormData.cpdActivityTitle"
-                              required
-                              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                            />
+                            <label for="edit-cpd-title" class="block text-sm font-medium text-gray-700">CPD Activity
+                              Title <span class="text-red-500">*</span></label>
+                            <input type="text" id="edit-cpd-title" v-model="editFormData.cpdActivityTitle" required
+                              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
                           </div>
                           <div>
-                            <label for="edit-venue" class="block text-sm font-medium text-gray-700"
-                              >Venue <span class="text-red-500">*</span></label
-                            >
-                            <input
-                              type="text"
-                              id="edit-venue"
-                              v-model="editFormData.venue"
-                              required
-                              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                            />
+                            <label for="edit-venue" class="block text-sm font-medium text-gray-700">Venue <span
+                                class="text-red-500">*</span></label>
+                            <input type="text" id="edit-venue" v-model="editFormData.venue" required
+                              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
                           </div>
                         </div>
                       </fieldset>
@@ -632,17 +400,12 @@
                 </div>
               </div>
               <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                <button
-                  type="submit"
-                  class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm transition ease-in-out duration-150"
-                >
+                <button type="submit"
+                  class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm transition ease-in-out duration-150">
                   Update Provider
                 </button>
-                <button
-                  type="button"
-                  @click="closeEditProviderModal"
-                  class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition ease-in-out duration-150"
-                >
+                <button type="button" @click="closeEditProviderModal"
+                  class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition ease-in-out duration-150">
                   Cancel
                 </button>
               </div>

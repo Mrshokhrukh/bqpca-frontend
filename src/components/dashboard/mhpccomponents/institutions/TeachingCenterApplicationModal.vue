@@ -538,9 +538,13 @@ import { useToast } from 'vue-toastification'
 
 const props = defineProps({
   isOpen: Boolean,
+  draftData: {
+    type: Object,
+    default: null
+  }
 })
 
-const emit = defineEmits(['close', 'form-submitted'])
+const emit = defineEmits(['close', 'form-submitted', 'draft-saved'])
 const toast = useToast()
 
 const isLoadingOptions = ref(true)
@@ -639,8 +643,12 @@ watch(
   (newVal) => {
     if (newVal) {
       document.body.style.overflow = 'hidden'
-      resetForm()
       isShowingSuccessMessage.value = false
+      if (props.draftData) {
+        formData.value = { ...initialFormData, ...props.draftData }
+      } else {
+        resetForm()
+      }
       if (instituteOptions.value.length === 0) {
         fetchInstituteOptions()
       }
@@ -773,11 +781,14 @@ const handleFormSubmit = async () => {
   try {
     const formPayloadForApp = createPayload(false)
     if (authStore.userId) {
-      // FIX: Changed 'user_id' to 'applicant_user_id' to match backend model field
       formPayloadForApp.append('applicant_user_id', authStore.userId)
     }
     console.log('Submitting teaching center application:', Object.fromEntries(formPayloadForApp))
     await apiServices.createMhpcTeachingCenter(formPayloadForApp)
+
+    // Clear draft from localStorage on successful submission
+    const draftKey = `draft-teachingCenter-${authStore.user.id}`
+    localStorage.removeItem(draftKey)
 
     isShowingSuccessMessage.value = true
     setTimeout(() => {
@@ -827,52 +838,23 @@ const handleCancel = () => {
   emit('close')
 }
 
-const handleSaveDraft = async () => {
-  if (isSubmittingDraft.value) {
-    console.warn('Draft save already in progress.')
-    return
-  }
+const handleSaveDraft = () => {
   if (!formData.value.institute_id || !formData.value.center_name.trim()) {
     toast.info('Please provide at least Teaching Hospital Name and Hospital Name to save a draft.')
     return
   }
-  isSubmittingDraft.value = true
-  const formPayload = createPayload(true)
-  if (authStore.userId) {
-    // FIX: Changed 'user_id' to 'applicant_user_id' to match backend model field
-    formPayload.append('applicant_user_id', authStore.userId)
+
+  const draftData = {
+    ...formData.value,
+    version: (props.draftData?.version || 0) + 1,
+    savedAt: new Date().toISOString(),
   }
-  console.log('Saving teaching center draft:', Object.fromEntries(formPayload))
-  try {
-    await apiServices.createMhpcTeachingCenter(formPayload)
-    toast.success('Draft saved successfully!')
-  } catch (error) {
-    console.error('Error saving draft:', error.response?.data || error.message || error)
-    let errorMessage = 'Error saving draft. '
-    if (error.response?.data) {
-      const errors = error.response.data
-      if (typeof errors === 'string') {
-        errorMessage += errors
-      } else if (typeof errors === 'object') {
-        const messages = Object.entries(errors)
-          .map(([key, value]) => {
-            const fieldName = key.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())
-            return `${fieldName}: ${Array.isArray(value) ? value.join(', ') : value}`
-          })
-          .join('\n')
-        if (messages) errorMessage += `Details:\n${messages}`
-        else if (errors.detail) errorMessage += errors.detail
-        else errorMessage += 'An unexpected error occurred.'
-      } else {
-        errorMessage += 'An unexpected error occurred.'
-      }
-    } else {
-      errorMessage += error.message || 'An unexpected network or server error occurred.'
-    }
-    toast.error(errorMessage)
-  } finally {
-    isSubmittingDraft.value = false
-  }
+
+  const draftKey = `draft-teachingCenter-${authStore.user.id}`
+  localStorage.setItem(draftKey, JSON.stringify(draftData))
+  toast.success('Draft saved successfully!')
+  emit('draft-saved')
+  emit('close')
 }
 </script>
 

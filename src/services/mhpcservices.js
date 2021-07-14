@@ -587,6 +587,9 @@ export default {
   getMhpcCapa(id) {
     return apiClient.get(`/mhpc/mhpc-capa/${id}/`)
   },
+  getMhpcCapaByCid(cid) {
+    return apiClient.get(`/mhpc/mhpc-capa/?cid=${cid}/`)
+  },
   updateMhpcCapa(id, data) {
     return apiClient.put(`/mhpc/mhpc-capa/${id}/`, data)
   },
@@ -1032,6 +1035,10 @@ export default {
   },
   deleteMhpcClinicalPreceptor(id) {
     return apiClient.delete(`/mhpc/mhpc-clinical-preceptors/${id}/`)
+  },
+
+  reviewClinicalPreceptor(id, data) {
+    return apiClient.patch(`/mhpc/mhpc-clinical-preceptors/${id}/review/`, data)
   },
   // --- MHPC Term Endpoints ---
   getMhpcTerms() {

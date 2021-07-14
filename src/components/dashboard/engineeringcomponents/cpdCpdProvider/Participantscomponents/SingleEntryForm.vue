@@ -28,7 +28,9 @@
               <option v-if="processedCpdTasks.length === 0 && cpdTasks.length > 0" disabled>
                 No approved tasks found for your provider.
               </option>
-              <option v-if="cpdTasks.length === 0" disabled>No CPD tasks available.</option>
+              <option v-if="cpdTasks.length === 0" disabled>
+                No CPD tasks available.
+              </option>
             </select>
             <MagnifyingGlassIcon
               class="absolute right-3 top-2.5 h-5 w-5 text-gray-400 pointer-events-none"
@@ -62,7 +64,7 @@
                   >
                     {{ getParticipantName(participant) }} - {{ getParticipantRegNo(participant) }}
                   </option>
-                  <option v-if="participants.length === 0" disabled>
+                   <option v-if="participants.length === 0" disabled>
                     No participants available to select.
                   </option>
                 </select>
@@ -124,32 +126,15 @@
             <table class="min-w-full divide-y divide-gray-200">
               <thead class="bg-gray-50">
                 <tr>
-                  <th
-                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    Name
-                  </th>
-                  <th
-                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    Reg No
-                  </th>
-                  <th
-                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    Action
-                  </th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reg No</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
                 </tr>
               </thead>
               <tbody class="bg-white divide-y divide-gray-200">
-                <tr
-                  v-for="participant in filteredParticipantsForModal"
-                  :key="participant.id || getParticipantRegNo(participant)"
-                >
+                <tr v-for="participant in filteredParticipantsForModal" :key="participant.id || getParticipantRegNo(participant)">
                   <td class="px-6 py-4 whitespace-nowrap">{{ getParticipantName(participant) }}</td>
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    {{ getParticipantRegNo(participant) }}
-                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">{{ getParticipantRegNo(participant) }}</td>
                   <td class="px-6 py-4 whitespace-nowrap">
                     <button
                       @click="selectParticipantFromModal(participant)"
@@ -162,8 +147,7 @@
                 </tr>
                 <tr v-if="filteredParticipantsForModal.length === 0">
                   <td colspan="3" class="px-6 py-4 text-center text-gray-500">
-                    No participants found. Try a different search term or ensure participants are
-                    loaded.
+                    No participants found. Try a different search term or ensure participants are loaded.
                   </td>
                 </tr>
               </tbody>
@@ -205,7 +189,7 @@ const props = defineProps({
   isSubmitting: {
     type: Boolean,
     default: false,
-  },
+  }
 })
 
 const emit = defineEmits(['submit', 'cancel'])
@@ -232,76 +216,76 @@ function getParticipantRegNo(participant) {
 // FIXED: Updated to use correct field names from your API data
 const processedCpdTasks = computed(() => {
   if (!props.cpdTasks || props.cpdTasks.length === 0) {
-    return []
+    return [];
   }
 
   return props.cpdTasks
-    .filter((taskApp) => {
+    .filter(taskApp => {
       // Condition 1: Application must be approved
-      const isApproved = taskApp.is_cpd_approved === true
-      if (!isApproved) return false
+      const isApproved = taskApp.is_cpd_approved === true;
+      if (!isApproved) return false;
 
       // Condition 2: Must belong to the current provider (if currentProviderCid is specified)
       if (props.currentProviderCid && taskApp.cid_no !== props.currentProviderCid) {
-        return false
+        return false;
       }
 
-      return true
+      return true;
     })
-    .map((taskApp) => ({
+    .map(taskApp => ({
       id: taskApp.id,
       // FIXED: Use 'title' instead of 'title_of_cpd' based on your API data
       title: taskApp.title || taskApp.title_of_cpd || 'Untitled Task',
       // FIXED: Use 'from_date' which exists in your data
-      activity_date: taskApp.from_date || taskApp.start_date || 'No date available',
-    }))
-})
+      activity_date: taskApp.from_date || taskApp.start_date || 'No date available'
+    }));
+});
 
 const isFormValid = computed(() => {
-  return !!(formData.cpdTask && formData.participantRegNo)
-})
+  return !!(formData.cpdTask && formData.participantRegNo);
+});
 
 function searchParticipantsInModal() {
   if (!participantSearch.value.trim()) {
-    filteredParticipantsForModal.value = props.participants
-    return
+    filteredParticipantsForModal.value = props.participants;
+    return;
   }
-  const search = participantSearch.value.toLowerCase()
+  const search = participantSearch.value.toLowerCase();
   filteredParticipantsForModal.value = props.participants.filter((p) => {
-    const name = getParticipantName(p).toLowerCase()
-    const regNo = getParticipantRegNo(p).toLowerCase()
-    return name.includes(search) || regNo.includes(search)
-  })
+    const name = getParticipantName(p).toLowerCase();
+    const regNo = getParticipantRegNo(p).toLowerCase();
+    return name.includes(search) || regNo.includes(search);
+  });
 }
 
 function selectParticipantFromModal(participant) {
-  formData.participantRegNo = getParticipantRegNo(participant)
-  searchParticipantModal.value = false
+  formData.participantRegNo = getParticipantRegNo(participant);
+  searchParticipantModal.value = false;
 }
 
 function submitForm() {
   if (!isFormValid.value) {
-    return
+    return;
   }
 
   const payload = {
     cpd_task: parseInt(formData.cpdTask), // Ensure it's a number
     participant_reg_no: formData.participantRegNo,
-  }
+  };
 
-  emit('submit', payload)
+  emit('submit', payload);
 }
 
 function resetForm(clearSelection = true) {
   if (clearSelection) {
-    formData.cpdTask = ''
-    formData.participantRegNo = ''
+    formData.cpdTask = '';
+    formData.participantRegNo = '';
   }
-  participantSearch.value = ''
+  participantSearch.value = '';
   if (props.participants) {
-    filteredParticipantsForModal.value = [...props.participants]
+    filteredParticipantsForModal.value = [...props.participants];
   } else {
-    filteredParticipantsForModal.value = []
+    filteredParticipantsForModal.value = [];
   }
 }
 
@@ -309,37 +293,27 @@ function resetForm(clearSelection = true) {
 watch(
   () => props.participants,
   (newVal) => {
-    filteredParticipantsForModal.value = newVal ? [...newVal] : []
+    filteredParticipantsForModal.value = newVal ? [...newVal] : [];
   },
-  { immediate: true, deep: true },
-)
+  { immediate: true, deep: true }
+);
 
 // Watch for changes in processedCpdTasks
-watch(
-  () => processedCpdTasks.value,
-  (newProcessedTasks) => {
-    if (formData.cpdTask && !newProcessedTasks.some((task) => task.id == formData.cpdTask)) {
-      formData.cpdTask = ''
-    }
-  },
-)
+watch(() => processedCpdTasks.value, (newProcessedTasks) => {
+  if (formData.cpdTask && !newProcessedTasks.some(task => task.id == formData.cpdTask)) {
+    formData.cpdTask = '';
+  }
+});
 
 // Watch for changes in participants
-watch(
-  () => props.participants,
-  (newParticipants) => {
-    if (
-      formData.participantRegNo &&
-      !newParticipants.some((p) => getParticipantRegNo(p) === formData.participantRegNo)
-    ) {
-      formData.participantRegNo = ''
-    }
-  },
-  { deep: true },
-)
+watch(() => props.participants, (newParticipants) => {
+  if (formData.participantRegNo && !newParticipants.some(p => getParticipantRegNo(p) === formData.participantRegNo)) {
+    formData.participantRegNo = '';
+  }
+}, { deep: true });
 
 // Expose resetForm method to parent component
 defineExpose({
-  resetForm,
-})
+  resetForm
+});
 </script>
