@@ -39,7 +39,9 @@ export const useEpcDashboardStore = defineStore('epcDashboard', {
         return null
       }
       const userApplications = this.applications.filter((app) => app.cid === authStore.user.cid)
-      return userApplications.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0] || null
+      return (
+        userApplications.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0] || null
+      )
     },
 
     hasApplication() {
@@ -68,7 +70,8 @@ export const useEpcDashboardStore = defineStore('epcDashboard', {
       if (!this.hasApprovedApp || !this.licenseExpiryDate) return false
       const expiryDate = new Date(this.licenseExpiryDate)
       const today = new Date()
-      const monthsSinceExpiry = (today.getTime() - expiryDate.getTime()) / (1000 * 60 * 60 * 24 * 30)
+      const monthsSinceExpiry =
+        (today.getTime() - expiryDate.getTime()) / (1000 * 60 * 60 * 24 * 30)
       return monthsSinceExpiry > 0 && monthsSinceExpiry <= 2
     },
   },
@@ -108,12 +111,10 @@ export const useEpcDashboardStore = defineStore('epcDashboard', {
     },
 
     /** Process applications data with null safety and empty case handling */
-    processApplicationsData(response) {      
+    processApplicationsData(response) {
       // Handle both direct array and paginated response structure
-      const results = Array.isArray(response?.data) 
-        ? response.data 
-        : response?.data?.results || []
-      
+      const results = Array.isArray(response?.data) ? response.data : response?.data?.results || []
+
       if (results.length > 0) {
         const latestApp = results[0]
         this.updateUserDetails(latestApp)
@@ -127,7 +128,7 @@ export const useEpcDashboardStore = defineStore('epcDashboard', {
     },
 
     /** Process CPD data with null safety */
-    processCpdData(response) {      
+    processCpdData(response) {
       const cpdDetails = response?.data?.details
       if (response?.data?.valid && cpdDetails) {
         this.cpdCredits = cpdDetails.cpd_credit || 0
@@ -138,10 +139,12 @@ export const useEpcDashboardStore = defineStore('epcDashboard', {
     },
 
     /** Update user details with null checks - FIXED to get registration_no from top level */
-    updateUserDetails(app) {      
+    updateUserDetails(app) {
       if (app) {
-        const primaryQualification = app.user_qualifications?.find(q => q.is_primary_qualification)
-        
+        const primaryQualification = app.user_qualifications?.find(
+          (q) => q.is_primary_qualification,
+        )
+
         // Registration number is at the top level of the application object
         this.userDetail.registration_no = app.registration_no || ''
         this.userDetail.username = app.full_name || ''
@@ -151,11 +154,11 @@ export const useEpcDashboardStore = defineStore('epcDashboard', {
         this.userDetail.phone = app.contact_no || ''
         this.userDetail.registrationType = app.registration_type_name || ''
         this.userDetail.photo = app.passport_photo || null
-        
+
         // Dates can come from app or primary qualification
         this.licenseExpiryDate = app.expiry_date || primaryQualification?.expiry_date || null
         this.licenseStatus = app.user_qualifications?.[0]?.endorsement_decision || 'Unknown'
-        
+
         // Extract primary qualification details if available
         if (primaryQualification) {
           this.userDetail.qualification = primaryQualification.qualification_name_display || 'N/A'
@@ -167,7 +170,7 @@ export const useEpcDashboardStore = defineStore('epcDashboard', {
     updateLicenseStatus(app) {
       if (app?.user_qualifications && Array.isArray(app.user_qualifications)) {
         this.showViewCertificateButton = app.user_qualifications.every(
-          (q) => q?.endorsement_decision === 'Approved'
+          (q) => q?.endorsement_decision === 'Approved',
         )
       } else {
         this.showViewCertificateButton = false
@@ -175,7 +178,7 @@ export const useEpcDashboardStore = defineStore('epcDashboard', {
     },
 
     /** Process applications list with null safety */
-    processApplicationsList(results) {      
+    processApplicationsList(results) {
       if (Array.isArray(results)) {
         this.applications = results.map((app) => ({
           ...app,
@@ -244,7 +247,8 @@ export const useEpcDashboardStore = defineStore('epcDashboard', {
           title: app.name || 'Untitled',
           date: app.date || '',
           status: app.status || 'Unknown',
-          description: app.remarks || `Your application has been ${app.status?.toLowerCase() || 'processed'}`,
+          description:
+            app.remarks || `Your application has been ${app.status?.toLowerCase() || 'processed'}`,
         }))
 
         this.upcomingDeadlines = [
@@ -290,7 +294,7 @@ export const useEpcDashboardStore = defineStore('epcDashboard', {
       if (show && Array.isArray(this.applications)) {
         // Find an approved application
         const approvedApp = this.applications.find((app) =>
-          app.user_qualifications?.some((q) => q.endorsement_decision === 'Approved')
+          app.user_qualifications?.some((q) => q.endorsement_decision === 'Approved'),
         )
 
         if (approvedApp) {
@@ -300,7 +304,7 @@ export const useEpcDashboardStore = defineStore('epcDashboard', {
 
             if (applicationData) {
               const primaryQualification = applicationData.user_qualifications?.find(
-                (q) => q.is_primary_qualification
+                (q) => q.is_primary_qualification,
               )
 
               this.selectedApplication = {

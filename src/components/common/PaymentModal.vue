@@ -1,4 +1,3 @@
-
 <template>
   <teleport to="body">
     <Transition name="modal-fade">
@@ -381,8 +380,8 @@ onUnmounted(() => {
 
 defineExpose({
   openModal,
-  closeModal
-});
+  closeModal,
+})
 </script>
 
 <style scoped>
@@ -396,7 +395,9 @@ defineExpose({
 }
 .modal-fade-enter-active .bg-white,
 .modal-fade-leave-active .bg-white {
-  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+  transition:
+    opacity 0.3s ease-in-out,
+    transform 0.3s ease-in-out;
 }
 .modal-fade-enter-from .bg-white,
 .modal-fade-leave-to .bg-white {

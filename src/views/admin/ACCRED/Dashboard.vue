@@ -83,9 +83,9 @@ import AccreUserProfile from '@/components/dashboard/accredcomponent/users/Accre
 import CoIConfirmation from '@/components/dashboard/accredcomponent/users/CoIConfirmation.vue'
 import SiteVisitConfirmation from '@/components/dashboard/accredcomponent/users/SiteVisitConfirmation.vue'
 import CreateInstituteProfile from '@/components/dashboard/accredcomponent/users/CreateInstituteProfile.vue'
-import SubmitIsarReport from '@/components/dashboard/accredcomponent/users/SubmitIsarReport.vue';
-import TrackIsarReports from '@/components/dashboard/accredcomponent/users/TrackIsarReports.vue';
-import TrackAccreditation from '@/components/dashboard/accredcomponent/users/TrackAccreditation.vue';
+import SubmitIsarReport from '@/components/dashboard/accredcomponent/users/SubmitIsarReport.vue'
+import TrackIsarReports from '@/components/dashboard/accredcomponent/users/TrackIsarReports.vue'
+import TrackAccreditation from '@/components/dashboard/accredcomponent/users/TrackAccreditation.vue'
 
 // Import Dealing Officer Components
 import AccreDealingdashboard from '@/components/dashboard/accredcomponent/dealingOfficer/AccreDealingdashboard.vue'

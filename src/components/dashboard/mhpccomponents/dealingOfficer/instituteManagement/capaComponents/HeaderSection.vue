@@ -1,47 +1,62 @@
 <template>
-  <div class="bg-white border-b p-8 rounde md:shadow-sm mb-6 space-y-4">
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between">
-      <h1 class="text-2xl md:text-3xl font-bold text-gray-800">BMHC Capa Management</h1>
-      <div class="mt-4 md:mt-0 flex flex-col md:flex-row gap-3">
-        <div class="relative">
-          <input
-            v-model.trim="localSearchQuery"
-            type="text"
-            placeholder="Search institutes..."
-            class="pl-10 pr-4 py-2.5 w-full md:w-64 text-sm rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
-          />
-          <span class="absolute left-3 top-2.5 text-gray-400">
-            <SearchIcon class="w-5 h-5" />
-          </span>
-        </div>
-        <select
-          v-model="localStatusFilter"
-          class="py-2.5 px-4 text-sm rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-        >
-          <option value="">All Status</option>
-          <option value="R">Resolved</option>
-          <option value="P">Pending</option>
-        </select>
-      </div>
-    </div>
+  <div class="overflow-x-auto bg-white rounded-lg shadow-md">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Institute</th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Teaching Center</th>
+          <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Updated</th>
+          <th scope="col" class="relative px-6 py-3"><span class="sr-only">Actions</span></th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <!-- Assuming the prop is named 'institutes' but contains CAPA objects -->
+        <tr v-for="capa in institutes" :key="capa.id" class="hover:bg-gray-50 transition-colors">
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm font-medium text-gray-900">{{ capa.institute.name_of_institution }}</div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="text-sm text-gray-700">{{ capa.teaching_center.center_name }}</div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-center">
+            <span :class="getStatusClass(capa.status)" class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full">
+              <!-- FIX: Directly display the status from the API. -->
+              {{ capa.status || 'Unknown' }}
+            </span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+            {{ formatDate(capa.updated_at) }}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+            <button @click="$emit('view-details', capa)" class="text-indigo-600 hover:text-indigo-900">
+              View / Edit
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
-import { SearchIcon } from 'lucide-vue-next'
+defineProps({
+  // Prop name kept for compatibility if needed
+  institutes: { type: Array, required: true },
+});
+defineEmits(['view-details']);
 
-defineProps({})
-const emit = defineEmits(['search', 'status-filter'])
+// FIX: Keys are changed to match the full words from the API response
+const getStatusClass = (status) => ({
+    'Pending': 'bg-yellow-100 text-yellow-800',
+    'Resolved': 'bg-green-100 text-green-800',
+    'Approved': 'bg-blue-100 text-blue-800',
+})[status] || 'bg-gray-100 text-gray-800';
 
-const localSearchQuery = ref('')
-const localStatusFilter = ref('')
-
-watch(localSearchQuery, (newValue) => {
-  emit('search', newValue)
-})
-
-watch(localStatusFilter, (newValue) => {
-  emit('status-filter', newValue)
-})
+const formatDate = (dateString) => {
+  if (!dateString) return 'N/A';
+  return new Date(dateString).toLocaleDateString('en-GB', {
+    year: 'numeric', month: 'long', day: 'numeric',
+  });
+};
 </script>

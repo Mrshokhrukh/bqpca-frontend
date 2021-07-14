@@ -440,7 +440,7 @@ watch(
       fetchError.value = ''
       formError.value = ''
     }
-  }
+  },
 )
 
 watch(application, (newApp) => {

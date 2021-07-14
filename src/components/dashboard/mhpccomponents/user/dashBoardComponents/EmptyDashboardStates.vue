@@ -285,7 +285,7 @@ const statusConfig = {
           [STATUS.PAYMENT_PENDING]: {
             title: 'Payment Required',
             message:
-              'Your application\'s physical verification is completed. You are required to proceed to your application tracker and complete the payment.',
+              "Your application's physical verification is completed. You are required to proceed to your application tracker and complete the payment.",
           },
           [STATUS.PAYMENT_PROCESSING]: {
             title: 'Payment Processing',

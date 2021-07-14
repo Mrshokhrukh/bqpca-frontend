@@ -228,13 +228,16 @@ export default {
   getEcpfOwnershipChange(id) {
     return apiClient.get(`/ecpf/ecpf-ownership-changes/${id}/`)
   },
-  updateEcpfOwnershipChange(id, data) { // Standard update for an existing ownership change record
+  updateEcpfOwnershipChange(id, data) {
+    // Standard update for an existing ownership change record
     return apiClient.put(`/ecpf/ecpf-ownership-changes/${id}/`, data)
   },
-  patchEcpfOwnershipChange(id, data) { // Standard partial update
+  patchEcpfOwnershipChange(id, data) {
+    // Standard partial update
     return apiClient.patch(`/ecpf/ecpf-ownership-changes/${id}/`, data)
   },
-  deleteEcpfOwnershipChange(id) { // Standard delete, e.g., for a draft or erroneous submission
+  deleteEcpfOwnershipChange(id) {
+    // Standard delete, e.g., for a draft or erroneous submission
     return apiClient.delete(`/ecpf/ecpf-ownership-changes/${id}/`)
   },
   // --- Methods specifically for the Ownership Change Form component ---
@@ -312,7 +315,7 @@ export default {
   },
 
   // Master Institute/College/University
-  
+
   getMasterInstitutesCollegesUniversities() {
     return apiClient.get('/ecpf/master-institute-college-university/')
   },

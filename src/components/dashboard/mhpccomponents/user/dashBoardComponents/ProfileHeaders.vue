@@ -21,7 +21,9 @@
         />
         <p class="text-sm font-semibold">
           {{ qualificationStatus.text }}
-          <span v-if="!isExpired && (isExpiringSoon || isExpiredPast)">Please renew your license.</span>
+          <span v-if="!isExpired && (isExpiringSoon || isExpiredPast)"
+            >Please renew your license.</span
+          >
         </p>
       </div>
 
@@ -60,7 +62,8 @@
             @click="$emit('view-certificate', props.qualification)"
             class="relative inline-flex items-center justify-center rounded-full px-6 py-2.5 text-sm font-semibold text-white transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2"
             :class="{
-              'bg-gradient-to-r from-blue-500 to-blue-600 hover:-translate-y-0.5 hover:shadow-lg focus:ring-blue-500': !isExpiringSoon,
+              'bg-gradient-to-r from-blue-500 to-blue-600 hover:-translate-y-0.5 hover:shadow-lg focus:ring-blue-500':
+                !isExpiringSoon,
               'bg-gradient-to-r from-blue-300 to-blue-400 cursor-not-allowed': isExpiringSoon,
             }"
           >
@@ -73,8 +76,8 @@
             @click="navigateToRenewal"
             class="relative inline-flex items-center justify-center rounded-full px-6 py-2.5 text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
             :class="{
-                'bg-gradient-to-r from-green-500 to-green-600': isExpiringSoon,
-                'bg-gradient-to-r from-red-500 to-red-600': isExpiredPast,
+              'bg-gradient-to-r from-green-500 to-green-600': isExpiringSoon,
+              'bg-gradient-to-r from-red-500 to-red-600': isExpiredPast,
             }"
           >
             <component :is="renewalButtonIcon" class="-ml-1 mr-2 h-5 w-5" />
@@ -87,10 +90,10 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
-import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
-import { useRouter } from 'vue-router'; // Import useRouter
+import { computed } from 'vue'
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
+import { useRouter } from 'vue-router' // Import useRouter
 
 import {
   UserIcon,
@@ -100,13 +103,13 @@ import {
   ExclamationCircleIcon,
   InformationCircleIcon,
   ArrowPathIcon, // Icon for renewal
-  ClipboardDocumentCheckIcon // Icon for re-registration
-} from '@heroicons/vue/24/solid';
+  ClipboardDocumentCheckIcon, // Icon for re-registration
+} from '@heroicons/vue/24/solid'
 
-dayjs.extend(relativeTime);
+dayjs.extend(relativeTime)
 
 // Initialize router
-const router = useRouter();
+const router = useRouter()
 
 // --- PROPS ---
 const props = defineProps({
@@ -118,38 +121,37 @@ const props = defineProps({
     type: Object,
     required: true,
   },
-});
+})
 
-defineEmits(['view-certificate']);
+defineEmits(['view-certificate'])
 
 // --- COMPUTED PROPERTIES ---
 
 const formattedExpiryDate = computed(() => {
   return props.qualification.expiry_date
     ? dayjs(props.qualification.expiry_date).format('MMM DD,YYYY')
-    : 'N/A';
-});
+    : 'N/A'
+})
 
-const now = dayjs();
+const now = dayjs()
 
 const expiry = computed(() => {
-  return props.qualification.expiry_date ? dayjs(props.qualification.expiry_date) : null;
-});
+  return props.qualification.expiry_date ? dayjs(props.qualification.expiry_date) : null
+})
 
 const daysUntilExpiry = computed(() => {
-  if (!expiry.value) return Infinity;
-  return expiry.value.diff(now, 'day');
-});
+  if (!expiry.value) return Infinity
+  return expiry.value.diff(now, 'day')
+})
 
 const isExpiredPast = computed(() => {
-  return expiry.value ? now.isAfter(expiry.value, 'day') : false;
-});
+  return expiry.value ? now.isAfter(expiry.value, 'day') : false
+})
 
 const isExpiringSoon = computed(() => {
   // Within the next 3 months (90 days) but not already expired
-  return !isExpiredPast.value && daysUntilExpiry.value <= 90 && daysUntilExpiry.value >= 0;
-});
-
+  return !isExpiredPast.value && daysUntilExpiry.value <= 90 && daysUntilExpiry.value >= 0
+})
 
 /**
  * Centralized Status Logic
@@ -163,7 +165,7 @@ const qualificationStatus = computed(() => {
       text: 'Expiry date not available.',
       icon: InformationCircleIcon,
       chipClasses: 'bg-gray-100 text-gray-700',
-    };
+    }
   }
 
   if (isExpiredPast.value) {
@@ -172,42 +174,44 @@ const qualificationStatus = computed(() => {
       text: `Your license has expired.`,
       icon: ExclamationCircleIcon,
       chipClasses: 'bg-red-100 text-red-800',
-    };
+    }
   }
-  if (daysUntilExpiry.value <= 30) { // 1 month or less
+  if (daysUntilExpiry.value <= 30) {
+    // 1 month or less
     return {
       theme: 'danger',
       text: `Your license expires in ${daysUntilExpiry.value + 1} days.`,
       icon: ExclamationCircleIcon,
       chipClasses: 'bg-red-100 text-red-800 animate-pulse',
-    };
+    }
   }
-  if (daysUntilExpiry.value <= 90) { // 3 months or less
+  if (daysUntilExpiry.value <= 90) {
+    // 3 months or less
     return {
       theme: 'warning',
       text: `Your license expires ${dayjs().to(expiry.value)}.`,
       icon: ExclamationTriangleIcon,
       chipClasses: 'bg-yellow-100 text-yellow-800',
-    };
+    }
   }
   return {
     theme: 'success',
     text: `Your license is valid.`,
     icon: CheckCircleIcon,
     chipClasses: 'bg-green-100 text-green-800',
-  };
-});
+  }
+})
 
 const renewalButtonText = computed(() => {
-  return isExpiredPast.value ? 'Re-Register Application' : 'Renew Now';
-});
+  return isExpiredPast.value ? 'Re-Register Application' : 'Renew Now'
+})
 
 const renewalButtonIcon = computed(() => {
-  return isExpiredPast.value ? ClipboardDocumentCheckIcon : ArrowPathIcon;
-});
+  return isExpiredPast.value ? ClipboardDocumentCheckIcon : ArrowPathIcon
+})
 
 // --- METHODS ---
 const navigateToRenewal = () => {
-  router.push('/admin/user/health_certification/renewal');
-};
+  router.push('/admin/user/health_certification/renewal')
+}
 </script>

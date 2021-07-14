@@ -169,7 +169,7 @@ const stats = computed(() => {
 // Calculate average processing time
 const avgProcessingTime = computed(() => {
   const processedApplications = filteredApplications.value.filter(
-    (app) => app.created_at && app.updated_at
+    (app) => app.created_at && app.updated_at,
   )
 
   if (processedApplications.length === 0) {
@@ -193,7 +193,7 @@ const avgProcessingTime = computed(() => {
 // Calculate success rate
 const successRate = computed(() => {
   const totalProcessed = filteredApplications.value.filter((app) =>
-    ['approved', 'regretted'].includes(app.status)
+    ['approved', 'regretted'].includes(app.status),
   ).length
 
   const approved = filteredApplications.value.filter((app) => app.status === 'approved').length
@@ -315,7 +315,7 @@ const loadApplications = async () => {
   try {
     const response = await apiService.getRecognitionOfQualification(user.cid)
     applications.value = response.data.sort(
-      (a, b) => new Date(b.created_at) - new Date(a.created_at)
+      (a, b) => new Date(b.created_at) - new Date(a.created_at),
     )
   } catch (err) {
     console.error('Error loading applications:', err)

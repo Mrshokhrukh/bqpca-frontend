@@ -1,6 +1,5 @@
 import apiClient from './apiClient'
 
-
 export default {
   getMhpcMastersCpdActivities() {
     return apiClient.get('/mhpc/masters-cme-activities/')
@@ -365,8 +364,8 @@ export default {
         endpoint = '/mhpc/masters-personnel-categories/'
         break
       case 'personnel-subcategories':
-        endpoint = '/mhpc/masters-sub-categories/';
-        break;
+        endpoint = '/mhpc/masters-sub-categories/'
+        break
       case 'sectors':
         endpoint = '/mhpc/masters-sector/'
         break
@@ -509,28 +508,34 @@ export default {
    * @returns {Promise}
    */
   uploadOfficerFileForApplication(applicationId, formData) {
-    return apiClient.post(`/mhpc/mhpc-new-application/${applicationId}/upload-officer-file/`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
+    return apiClient.post(
+      `/mhpc/mhpc-new-application/${applicationId}/upload-officer-file/`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       },
-    });
+    )
   },
-   // *** File Upload***
+  // *** File Upload***
   /**
    * @description
    * @param {number} qualificationId
    * @param {FormData} formData
    * @returns {Promise}
-  */
+   */
   addAttachmentToQualification(qualificationId, formData) {
-
-    return apiClient.post(`/mhpc/mhpc-new-qualification/${qualificationId}/attachments/`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
+    return apiClient.post(
+      `/mhpc/mhpc-new-qualification/${qualificationId}/attachments/`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       },
-    })
+    )
   },
-
 
   // MHPC Renewals Endpoints
   getMhpcRenewals() {
@@ -581,6 +586,9 @@ export default {
   },
   getMhpcCapa(id) {
     return apiClient.get(`/mhpc/mhpc-capa/${id}/`)
+  },
+  getMhpcCapaByCid(cid) {
+    return apiClient.get(`/mhpc/mhpc-capa/?cid=${cid}/`)
   },
   updateMhpcCapa(id, data) {
     return apiClient.put(`/mhpc/mhpc-capa/${id}/`, data)
@@ -639,25 +647,25 @@ export default {
 
   // MHPC Institutes
   getMhpcInstitutes() {
-    return apiClient.get('/mhpc/mhpc-institutes/');
+    return apiClient.get('/mhpc/mhpc-institutes/')
   },
   getMhpcInstitute(id) {
-    return apiClient.get(`/mhpc/mhpc-institutes/${id}/`);
+    return apiClient.get(`/mhpc/mhpc-institutes/${id}/`)
   },
   getMhpcInstituteByCid(cid) {
-    return apiClient.get(`/mhpc/mhpc-institutes/?CID=${cid}`);
+    return apiClient.get(`/mhpc/mhpc-institutes/?CID=${cid}`)
   },
   createMhpcInstitute(data) {
-    return apiClient.post('/mhpc/mhpc-institutes/', data);
+    return apiClient.post('/mhpc/mhpc-institutes/', data)
   },
   updateMhpcInstitute(id, data) {
-    return apiClient.put(`/mhpc/mhpc-institutes/${id}/`, data);
+    return apiClient.put(`/mhpc/mhpc-institutes/${id}/`, data)
   },
   patchMhpcInstitute(id, data) {
-    return apiClient.patch(`/mhpc/mhpc-institutes/${id}/`, data);
+    return apiClient.patch(`/mhpc/mhpc-institutes/${id}/`, data)
   },
   deleteMhpcInstitute(id) {
-    return apiClient.delete(`/mhpc/mhpc-institutes/${id}/`);
+    return apiClient.delete(`/mhpc/mhpc-institutes/${id}/`)
   },
   //MHPC COUrses api
   getMhpcCourseDetails() {
@@ -678,7 +686,7 @@ export default {
   deleteMhpcCourseDetail(id) {
     return apiClient.delete(`/mhpc/mhpc-course-details/${id}/`)
   },
-   // --- NEW: Masters Hospital/Center Types ---
+  // --- NEW: Masters Hospital/Center Types ---
   /**
 
    * @param {object} params - Optional query parameters (e.g., { is_active: true })
@@ -735,7 +743,6 @@ export default {
     return apiClient.delete(`/mhpc/masters-hospital-center-types/${id}/`)
   },
 
-
   // MHPC Teaching Center
   getMhpcTeachingCenters() {
     return apiClient.get('/mhpc/mhpc-teaching-centers/')
@@ -758,7 +765,6 @@ export default {
   deleteMhpcTeachingCenter(id) {
     return apiClient.delete(`/mhpc/mhpc-teaching-centers/${id}/`)
   },
-
 
   // MHPC CPD Records
   getMhpcCpdRecords() {
@@ -846,18 +852,15 @@ export default {
   deleteMhpcCpdTaskParticipant(id) {
     return apiClient.delete(`/mhpc/mhpc-cpd-task-participants/${id}/`)
   },
- // ***** NEW METHOD FOR BULK UPLOAD *****
+  // ***** NEW METHOD FOR BULK UPLOAD *****
   /**
    * Bulk creates CPD Task Participants from a CSV file.
    * @param {FormData} formData - The FormData object containing 'cpd_task' (ID) and 'file' (CSV file).
    * @returns {Promise} - The promise from the API call.
    */
   bulkCreateMhpcCpdTaskParticipants(formData) {
-
     return apiClient.post('/mhpc/mhpc-cpd-task-participants/bulk-upload/', formData, {
-      headers: {
-
-      }
+      headers: {},
     })
   },
   // --- Complaint Management Endpoints ---
@@ -897,6 +900,9 @@ export default {
   },
   getMhpcFacultyAssignment(id) {
     return apiClient.get(`/mhpc/mhpc-faculty-assignment/${id}/`)
+  },
+  getMhpcFacultyAssignmentByCid(cid) {
+    return apiClient.get(`/mhpc/mhpc-faculty-assignment/?cid=${cid}/`)
   },
   updateMhpcFacultyAssignment(id, data) {
     return apiClient.put(`/mhpc/mhpc-faculty-assignment/${id}/`, data)
@@ -948,16 +954,18 @@ export default {
     return apiClient.delete(`/mhpc/mhpc-program-master/${id}/`)
   },
 
-
   // --- MHPC Program Offered Endpoints ---
-  getMhpcProgramsOffered() {
-    return apiClient.get('/mhpc/mhpc-program-offered/')
+  getMhpcProgramsOffered(params = {}) {
+    return apiClient.get('/mhpc/mhpc-program-offered/', { params })
   },
   createMhpcProgramOffered(data) {
     return apiClient.post('/mhpc/mhpc-program-offered/', data)
   },
   getMhpcProgramOffered(id) {
     return apiClient.get(`/mhpc/mhpc-program-offered/${id}/`)
+  },
+  configureProgramForOffered(id, data) {
+    return apiClient.post(`/mhpc/mhpc-program-offered/${id}/configure-program/`, data)
   },
   updateMhpcProgramOffered(id, data) {
     return apiClient.put(`/mhpc/mhpc-program-offered/${id}/`, data)
@@ -968,7 +976,6 @@ export default {
   deleteMhpcProgramOffered(id) {
     return apiClient.delete(`/mhpc/mhpc-program-offered/${id}/`)
   },
-
 
   // --- MHPC Semester Endpoints ---
   getMhpcSemesters() {
@@ -1010,24 +1017,28 @@ export default {
     return apiClient.delete(`/mhpc/mhpc-teaching-faculty/${id}/`)
   },
   getMhpcClinicalPreceptors(params = {}) {
-    return apiClient.get('/mhpc/mhpc-clinical-preceptors/', { params });
+    return apiClient.get('/mhpc/mhpc-clinical-preceptors/', { params })
   },
   createMhpcClinicalPreceptor(data) {
     // Data should be an object like:
     // { teaching_center: ID, faculty: ID, designation: "String" }
-    return apiClient.post('/mhpc/mhpc-clinical-preceptors/', data);
+    return apiClient.post('/mhpc/mhpc-clinical-preceptors/', data)
   },
   getMhpcClinicalPreceptor(id) {
-    return apiClient.get(`/mhpc/mhpc-clinical-preceptors/${id}/`);
+    return apiClient.get(`/mhpc/mhpc-clinical-preceptors/${id}/`)
   },
   updateMhpcClinicalPreceptor(id, data) {
-    return apiClient.put(`/mhpc/mhpc-clinical-preceptors/${id}/`, data);
+    return apiClient.put(`/mhpc/mhpc-clinical-preceptors/${id}/`, data)
   },
   patchMhpcClinicalPreceptor(id, data) {
-    return apiClient.patch(`/mhpc/mhpc-clinical-preceptors/${id}/`, data);
+    return apiClient.patch(`/mhpc/mhpc-clinical-preceptors/${id}/`, data)
   },
   deleteMhpcClinicalPreceptor(id) {
-    return apiClient.delete(`/mhpc/mhpc-clinical-preceptors/${id}/`);
+    return apiClient.delete(`/mhpc/mhpc-clinical-preceptors/${id}/`)
+  },
+
+  reviewClinicalPreceptor(id, data) {
+    return apiClient.patch(`/mhpc/mhpc-clinical-preceptors/${id}/review/`, data)
   },
   // --- MHPC Term Endpoints ---
   getMhpcTerms() {
@@ -1055,15 +1066,12 @@ export default {
    * @returns {Promise}
    */
   getProfessionalsReport(params = {}) {
-
-    return apiClient.get('/mhpc/reports/professionals/', { params });
+    return apiClient.get('/mhpc/reports/professionals/', { params })
   },
   getInstituteReport(params = {}) {
-    return apiClient.get('/mhpc/reports/institutes/', { params });
-},
-getTeachingHospitalReport(params = {}) {
-  return apiClient.get('/mhpc/reports/teaching-hospitals/', { params });
-
-},
-
+    return apiClient.get('/mhpc/reports/institutes/', { params })
+  },
+  getTeachingHospitalReport(params = {}) {
+    return apiClient.get('/mhpc/reports/teaching-hospitals/', { params })
+  },
 }

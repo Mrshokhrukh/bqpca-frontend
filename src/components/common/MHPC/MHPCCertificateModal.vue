@@ -174,7 +174,8 @@ import html2pdf from 'html2pdf.js'
 import apiServices from '@/services/services'
 
 const props = defineProps({
-  application: { // This prop still receives the { results: [...] } object
+  application: {
+    // This prop still receives the { results: [...] } object
     type: Object,
     default: null,
   },
@@ -188,9 +189,9 @@ const directorSignature = ref(null)
 // ADDED: Computed property to safely unwrap the application data
 const certificateData = computed(() => {
   if (props.application && props.application.results && props.application.results.length > 0) {
-    return props.application.results[0];
+    return props.application.results[0]
   }
-  return null;
+  return null
 })
 
 onMounted(async () => {
@@ -234,7 +235,7 @@ const formatDate = (dateString) => {
 
 // CHANGED: Use the new 'certificateData' computed property
 const downloadCertificate = () => {
-  if (!certificateData.value) return; // Add a guard clause
+  if (!certificateData.value) return // Add a guard clause
   const element = document.getElementById('certificate-content')
   const opt = {
     margin: 0,

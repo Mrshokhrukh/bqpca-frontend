@@ -107,8 +107,8 @@
                         application.is_physical_verification
                           ? 'Completed'
                           : application.physical_verification_date
-                          ? 'Scheduled'
-                          : 'Pending'
+                            ? 'Scheduled'
+                            : 'Pending'
                       }}
                     </span>
                   </div>

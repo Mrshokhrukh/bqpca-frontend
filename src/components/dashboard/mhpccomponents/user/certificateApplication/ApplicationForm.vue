@@ -727,18 +727,18 @@
 </template>
 
 <script setup>
-import { ref, reactive, watch, computed, onMounted } from 'vue';
-import apiService from '@/services/services';
-import { useToast } from 'vue-toastification';
-import { useAuthStore } from '@/stores/authStore';
-import { useRouter } from 'vue-router';
-import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue';
-import PageHeader from '@/components/common/MHPC/PageHeader.vue';
-import { UserPlus } from 'lucide-vue-next';
+import { ref, reactive, watch, computed, onMounted } from 'vue'
+import apiService from '@/services/services'
+import { useToast } from 'vue-toastification'
+import { useAuthStore } from '@/stores/authStore'
+import { useRouter } from 'vue-router'
+import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
+import PageHeader from '@/components/common/MHPC/PageHeader.vue'
+import { UserPlus } from 'lucide-vue-next'
 
-const authStore = useAuthStore();
-const user = authStore.user;
-const router = useRouter();
+const authStore = useAuthStore()
+const user = authStore.user
+const router = useRouter()
 
 const props = defineProps({
   selectedType: {
@@ -749,72 +749,73 @@ const props = defineProps({
     type: Object,
     required: true,
   },
-});
+})
 
-const emit = defineEmits(['update:modelValue', 'submit', 'back']);
+const emit = defineEmits(['update:modelValue', 'submit', 'back'])
 
-const stage = ref(1);
-const applicationId = ref(null);
-const isLoadingMasters = ref(true);
+const stage = ref(1)
+const applicationId = ref(null)
+const isLoadingMasters = ref(true)
 
-const fetchedDocumentTypes = ref([]);
-const supportingDocuments = ref([{ type: '', files: [] }]);
+const fetchedDocumentTypes = ref([])
+const supportingDocuments = ref([{ type: '', files: [] }])
 
 const addDocument = () => {
-  supportingDocuments.value.push({ type: '', files: [] });
-};
+  supportingDocuments.value.push({ type: '', files: [] })
+}
 
 const removeDocument = (index) => {
-  supportingDocuments.value.splice(index, 1);
-  updateFormDocuments();
-};
+  supportingDocuments.value.splice(index, 1)
+  updateFormDocuments()
+}
 
 const filteredRegistrationTypes = computed(() => {
   if (allRegistrationTypesFromAPI.value && allRegistrationTypesFromAPI.value.length > 0) {
     return allRegistrationTypesFromAPI.value
-      .filter(rt => {
-        const nameLower = rt.name.toLowerCase();
-        return !nameLower.includes('renewal') && !nameLower.includes('additional');
+      .filter((rt) => {
+        const nameLower = rt.name.toLowerCase()
+        return !nameLower.includes('renewal') && !nameLower.includes('additional')
       })
-      .map(rt => ({ id: rt.id, name: rt.name }));
+      .map((rt) => ({ id: rt.id, name: rt.name }))
   }
-  return [];
-});
+  return []
+})
 
 const selectRegistrationType = (id) => {
-  localFormData.registration_type = id;
-};
+  localFormData.registration_type = id
+}
 
 const handleFileSelect = (event, index) => {
-  const files = Array.from(event.target.files);
-  const MAX_SIZE = 2 * 1024 * 1024;
-  const ALLOWED_EXTENSIONS = ['.pdf', '.doc', '.docx', '.jpg', '.jpeg', '.png'];
+  const files = Array.from(event.target.files)
+  const MAX_SIZE = 2 * 1024 * 1024
+  const ALLOWED_EXTENSIONS = ['.pdf', '.doc', '.docx', '.jpg', '.jpeg', '.png']
 
-  delete errors[`document_file_${index}`];
+  delete errors[`document_file_${index}`]
 
   for (const file of files) {
     if (file.size > MAX_SIZE) {
-      errors[`document_file_${index}`] = `File '${file.name}' exceeds 2MB. Max size is 2MB.`;
-      toast.error(errors[`document_file_${index}`]);
-      event.target.value = '';
-      supportingDocuments.value[index].files = [];
-      updateFormDocuments();
-      return;
+      errors[`document_file_${index}`] = `File '${file.name}' exceeds 2MB. Max size is 2MB.`
+      toast.error(errors[`document_file_${index}`])
+      event.target.value = ''
+      supportingDocuments.value[index].files = []
+      updateFormDocuments()
+      return
     }
-    const fileExtension = ('.' + file.name.split('.').pop()).toLowerCase();
+    const fileExtension = ('.' + file.name.split('.').pop()).toLowerCase()
     if (!ALLOWED_EXTENSIONS.includes(fileExtension)) {
-      errors[`document_file_${index}`] = `File '${file.name}' has an invalid type. Allowed: ${ALLOWED_EXTENSIONS.join(', ')}.`;
-      toast.error(errors[`document_file_${index}`]);
-      event.target.value = '';
-      supportingDocuments.value[index].files = [];
-      updateFormDocuments();
-      return;
+      errors[`document_file_${index}`] =
+        `File '${file.name}' has an invalid type. Allowed: ${ALLOWED_EXTENSIONS.join(', ')}.`
+      toast.error(errors[`document_file_${index}`])
+      event.target.value = ''
+      supportingDocuments.value[index].files = []
+      updateFormDocuments()
+      return
     }
   }
 
-  supportingDocuments.value[index].files = files;
-  updateFormDocuments();
-};
+  supportingDocuments.value[index].files = files
+  updateFormDocuments()
+}
 
 const updateFormDocuments = () => {
   localFormData.documents = supportingDocuments.value
@@ -822,47 +823,216 @@ const updateFormDocuments = () => {
     .map((doc) => ({
       type: doc.type,
       files: doc.files,
-    }));
-};
+    }))
+}
 
 const countries = [
-  'Afghanistan', 'Albania', 'Algeria', 'Andorra', 'Angola', 'Antigua and Barbuda', 'Argentina',
-  'Armenia', 'Australia', 'Austria', 'Azerbaijan', 'Bahamas', 'Bahrain', 'Bangladesh', 'Barbados',
-  'Belarus', 'Belgium', 'Belize', 'Benin', 'Bhutan', 'Bolivia', 'Bosnia and Herzegovina', 'Botswana',
-  'Brazil', 'Brunei', 'Bulgaria', 'Burkina Faso', 'Burundi', 'Cambodia', 'Cameroon', 'Canada',
-  'Cape Verde', 'Central African Republic', 'Chad', 'Chile', 'China', 'Colombia', 'Comoros', 'Congo',
-  'Costa Rica', 'Croatia', 'Cuba', 'Cyprus', 'Czech Republic', 'Denmark', 'Djibouti', 'Dominica',
-  'Dominican Republic', 'East Timor', 'Ecuador', 'Egypt', 'El Salvador', 'Equatorial Guinea', 'Eritrea',
-  'Estonia', 'Ethiopia', 'Fiji', 'Finland', 'France', 'Gabon', 'Gambia', 'Georgia', 'Germany', 'Ghana',
-  'Greece', 'Grenada', 'Guatemala', 'Guinea', 'Guinea-Bissau', 'Guyana', 'Haiti', 'Honduras', 'Hungary',
-  'Iceland', 'India', 'Indonesia', 'Iran', 'Iraq', 'Ireland', 'Israel', 'Italy', 'Ivory Coast', 'Jamaica',
-  'Japan', 'Jordan', 'Kazakhstan', 'Kenya', 'Kiribati', 'Korea, North', 'Korea, South', 'Kuwait',
-  'Kyrgyzstan', 'Laos', 'Latvia', 'Lebanon', 'Lesotho', 'Liberia', 'Libya', 'Liechtenstein', 'Lithuania',
-  'Luxembourg', 'Macedonia', 'Madagascar', 'Malawi', 'Malaysia', 'Maldives', 'Mali', 'Malta',
-  'Marshall Islands', 'Mauritania', 'Mauritius', 'Mexico', 'Micronesia', 'Moldova', 'Monaco', 'Mongolia',
-  'Montenegro', 'Morocco', 'Mozambique', 'Myanmar', 'Namibia', 'Nauru', 'Nepal', 'Netherlands',
-  'New Zealand', 'Nicaragua', 'Niger', 'Nigeria', 'Norway', 'Oman', 'Pakistan', 'Palau', 'Panama',
-  'Papua New Guinea', 'Paraguay', 'Peru', 'Philippines', 'Poland', 'Portugal', 'Qatar', 'Romania',
-  'Russia', 'Saint Kitts and Nevis', 'Saint Lucia', 'Saint Vincent', 'Samoa', 'San Marino',
-  'Sao Tome and Principe', 'Saudi Arabia', 'Senegal', 'Serbia', 'Seychelles', 'Sierra Leone', 'Singapore',
-  'Slovakia', 'Slovenia', 'Solomon Islands', 'Somalia', 'South Africa', 'South Sudan', 'Spain', 'Sri Lanka',
-  'Sudan', 'Suriname', 'Swaziland', 'Sweden', 'Switzerland', 'Syria', 'Taiwan', 'Tajikistan', 'Tanzania',
-  'Thailand', 'Togo', 'Tonga', 'Trinidad and Tobago', 'Tunisia', 'Turkey', 'Turkmenistan', 'Tuvalu',
-  'Uganda', 'Ukraine', 'United Arab Emirates', 'United Kingdom', 'United States', 'Uruguay', 'Uzbekistan',
-  'Vanuatu', 'Vatican City', 'Venezuela', 'Vietnam', 'Yemen', 'Zambia', 'Zimbabwe',
-];
+  'Afghanistan',
+  'Albania',
+  'Algeria',
+  'Andorra',
+  'Angola',
+  'Antigua and Barbuda',
+  'Argentina',
+  'Armenia',
+  'Australia',
+  'Austria',
+  'Azerbaijan',
+  'Bahamas',
+  'Bahrain',
+  'Bangladesh',
+  'Barbados',
+  'Belarus',
+  'Belgium',
+  'Belize',
+  'Benin',
+  'Bhutan',
+  'Bolivia',
+  'Bosnia and Herzegovina',
+  'Botswana',
+  'Brazil',
+  'Brunei',
+  'Bulgaria',
+  'Burkina Faso',
+  'Burundi',
+  'Cambodia',
+  'Cameroon',
+  'Canada',
+  'Cape Verde',
+  'Central African Republic',
+  'Chad',
+  'Chile',
+  'China',
+  'Colombia',
+  'Comoros',
+  'Congo',
+  'Costa Rica',
+  'Croatia',
+  'Cuba',
+  'Cyprus',
+  'Czech Republic',
+  'Denmark',
+  'Djibouti',
+  'Dominica',
+  'Dominican Republic',
+  'East Timor',
+  'Ecuador',
+  'Egypt',
+  'El Salvador',
+  'Equatorial Guinea',
+  'Eritrea',
+  'Estonia',
+  'Ethiopia',
+  'Fiji',
+  'Finland',
+  'France',
+  'Gabon',
+  'Gambia',
+  'Georgia',
+  'Germany',
+  'Ghana',
+  'Greece',
+  'Grenada',
+  'Guatemala',
+  'Guinea',
+  'Guinea-Bissau',
+  'Guyana',
+  'Haiti',
+  'Honduras',
+  'Hungary',
+  'Iceland',
+  'India',
+  'Indonesia',
+  'Iran',
+  'Iraq',
+  'Ireland',
+  'Israel',
+  'Italy',
+  'Ivory Coast',
+  'Jamaica',
+  'Japan',
+  'Jordan',
+  'Kazakhstan',
+  'Kenya',
+  'Kiribati',
+  'Korea, North',
+  'Korea, South',
+  'Kuwait',
+  'Kyrgyzstan',
+  'Laos',
+  'Latvia',
+  'Lebanon',
+  'Lesotho',
+  'Liberia',
+  'Libya',
+  'Liechtenstein',
+  'Lithuania',
+  'Luxembourg',
+  'Macedonia',
+  'Madagascar',
+  'Malawi',
+  'Malaysia',
+  'Maldives',
+  'Mali',
+  'Malta',
+  'Marshall Islands',
+  'Mauritania',
+  'Mauritius',
+  'Mexico',
+  'Micronesia',
+  'Moldova',
+  'Monaco',
+  'Mongolia',
+  'Montenegro',
+  'Morocco',
+  'Mozambique',
+  'Myanmar',
+  'Namibia',
+  'Nauru',
+  'Nepal',
+  'Netherlands',
+  'New Zealand',
+  'Nicaragua',
+  'Niger',
+  'Nigeria',
+  'Norway',
+  'Oman',
+  'Pakistan',
+  'Palau',
+  'Panama',
+  'Papua New Guinea',
+  'Paraguay',
+  'Peru',
+  'Philippines',
+  'Poland',
+  'Portugal',
+  'Qatar',
+  'Romania',
+  'Russia',
+  'Saint Kitts and Nevis',
+  'Saint Lucia',
+  'Saint Vincent',
+  'Samoa',
+  'San Marino',
+  'Sao Tome and Principe',
+  'Saudi Arabia',
+  'Senegal',
+  'Serbia',
+  'Seychelles',
+  'Sierra Leone',
+  'Singapore',
+  'Slovakia',
+  'Slovenia',
+  'Solomon Islands',
+  'Somalia',
+  'South Africa',
+  'South Sudan',
+  'Spain',
+  'Sri Lanka',
+  'Sudan',
+  'Suriname',
+  'Swaziland',
+  'Sweden',
+  'Switzerland',
+  'Syria',
+  'Taiwan',
+  'Tajikistan',
+  'Tanzania',
+  'Thailand',
+  'Togo',
+  'Tonga',
+  'Trinidad and Tobago',
+  'Tunisia',
+  'Turkey',
+  'Turkmenistan',
+  'Tuvalu',
+  'Uganda',
+  'Ukraine',
+  'United Arab Emirates',
+  'United Kingdom',
+  'United States',
+  'Uruguay',
+  'Uzbekistan',
+  'Vanuatu',
+  'Vatican City',
+  'Venezuela',
+  'Vietnam',
+  'Yemen',
+  'Zambia',
+  'Zimbabwe',
+]
 
-const qualificationTypes = ref([]);
-const qualifications = ref([]);
-const universities = ref([]);
-const allRegistrationTypesFromAPI = ref([]);
+const qualificationTypes = ref([])
+const qualifications = ref([])
+const universities = ref([])
+const allRegistrationTypesFromAPI = ref([])
 
 // Keywords for identifying registration types
 const REGISTRATION_TYPE_KEYWORDS = {
   full: ['full'],
   provisional: ['provisional'],
   temporary: ['temporary'],
-};
+}
 
 // Keywords for mandatory documents for provisional and temporary registration
 const MANDATORY_DOC_KEYWORDS = {
@@ -886,10 +1056,10 @@ const MANDATORY_DOC_KEYWORDS = {
     'visa copy',
     'permit copy',
   ],
-};
+}
 
 onMounted(async () => {
-  isLoadingMasters.value = true;
+  isLoadingMasters.value = true
   try {
     const responses = await Promise.all([
       apiService.getMhpcMastersQualificationTypes(),
@@ -897,28 +1067,32 @@ onMounted(async () => {
       apiService.getMhpcMastersUniversities(),
       apiService.getMhpcMastersRegistrationTypes(),
       apiService.getMhpcMastersDocumentTypes(),
-    ]);
+    ])
 
-    qualificationTypes.value = responses[0]?.data?.results || [];
-    qualifications.value = responses[1]?.data?.results || [];
-    universities.value = responses[2]?.data?.results || [];
-    allRegistrationTypesFromAPI.value = responses[3]?.data?.results || [];
-    fetchedDocumentTypes.value = responses[4]?.data?.results || [];
+    qualificationTypes.value = responses[0]?.data?.results || []
+    qualifications.value = responses[1]?.data?.results || []
+    universities.value = responses[2]?.data?.results || []
+    allRegistrationTypesFromAPI.value = responses[3]?.data?.results || []
+    fetchedDocumentTypes.value = responses[4]?.data?.results || []
 
     // Set default registration_type dynamically
-    const fullType = filteredRegistrationTypes.value.find(rt => rt.name.toLowerCase().includes('full'));
+    const fullType = filteredRegistrationTypes.value.find((rt) =>
+      rt.name.toLowerCase().includes('full'),
+    )
     if (fullType) {
-      localFormData.registration_type = fullType.id;
+      localFormData.registration_type = fullType.id
     } else if (filteredRegistrationTypes.value.length > 0) {
-      localFormData.registration_type = filteredRegistrationTypes.value[0].id;
+      localFormData.registration_type = filteredRegistrationTypes.value[0].id
     }
   } catch (error) {
-    console.error('Error fetching master data:', error);
-    toast.error('Failed to fetch master data. Some dropdowns or options may not populate correctly. Please try refreshing.');
+    console.error('Error fetching master data:', error)
+    toast.error(
+      'Failed to fetch master data. Some dropdowns or options may not populate correctly. Please try refreshing.',
+    )
   } finally {
-    isLoadingMasters.value = false;
+    isLoadingMasters.value = false
   }
-});
+})
 
 const localFormData = reactive({
   ...props.modelValue,
@@ -950,81 +1124,83 @@ const localFormData = reactive({
   is_active: 'False',
   application: null,
   registration_type: '',
-});
+})
 
-const errors = reactive({});
-const isConfirmationModalOpen = ref(false);
-const isSubmitting = ref(false);
-const toast = useToast();
-const isLoadingDCRC = ref(false);
+const errors = reactive({})
+const isConfirmationModalOpen = ref(false)
+const isSubmitting = ref(false)
+const toast = useToast()
+const isLoadingDCRC = ref(false)
 
 const getRegistrationTypeName = (typeId) => {
-  const type = allRegistrationTypesFromAPI.value.find((rt) => rt.id === typeId);
-  return type ? type.name : 'Selected Registration';
-};
+  const type = allRegistrationTypesFromAPI.value.find((rt) => rt.id === typeId)
+  return type ? type.name : 'Selected Registration'
+}
 
 // Helper function to get registration type category dynamically
 const getRegistrationTypeCategory = (typeId) => {
-  const type = allRegistrationTypesFromAPI.value.find(rt => rt.id === typeId);
-  if (!type) return null;
-  const nameLower = type.name.toLowerCase();
-  if (REGISTRATION_TYPE_KEYWORDS.full.some(keyword => nameLower.includes(keyword))) {
-    return 'full';
-  } else if (REGISTRATION_TYPE_KEYWORDS.provisional.some(keyword => nameLower.includes(keyword))) {
-    return 'provisional';
-  } else if (REGISTRATION_TYPE_KEYWORDS.temporary.some(keyword => nameLower.includes(keyword))) {
-    return 'temporary';
+  const type = allRegistrationTypesFromAPI.value.find((rt) => rt.id === typeId)
+  if (!type) return null
+  const nameLower = type.name.toLowerCase()
+  if (REGISTRATION_TYPE_KEYWORDS.full.some((keyword) => nameLower.includes(keyword))) {
+    return 'full'
+  } else if (
+    REGISTRATION_TYPE_KEYWORDS.provisional.some((keyword) => nameLower.includes(keyword))
+  ) {
+    return 'provisional'
+  } else if (REGISTRATION_TYPE_KEYWORDS.temporary.some((keyword) => nameLower.includes(keyword))) {
+    return 'temporary'
   }
-  return null;
-};
+  return null
+}
 
 // Computed property for current mandatory document IDs
 const currentMandatoryDocIds = computed(() => {
-  const category = getRegistrationTypeCategory(localFormData.registration_type);
+  const category = getRegistrationTypeCategory(localFormData.registration_type)
   if (category === 'full') {
-    return fetchedDocumentTypes.value.map(dt => dt.id);
+    return fetchedDocumentTypes.value.map((dt) => dt.id)
   } else if (category === 'provisional' || category === 'temporary') {
-    const keywords = MANDATORY_DOC_KEYWORDS[category];
+    const keywords = MANDATORY_DOC_KEYWORDS[category]
     return fetchedDocumentTypes.value
-      .filter(dt => {
-        const docNameLower = dt.document_name.toLowerCase();
-        return keywords.some(keyword => docNameLower.includes(keyword.toLowerCase()));
+      .filter((dt) => {
+        const docNameLower = dt.document_name.toLowerCase()
+        return keywords.some((keyword) => docNameLower.includes(keyword.toLowerCase()))
       })
-      .map(dt => dt.id);
+      .map((dt) => dt.id)
   }
-  return [];
-});
+  return []
+})
 
 // Computed property for current mandatory document names (for display)
 const currentRequiredDocNames = computed(() => {
-  const mandatoryIds = currentMandatoryDocIds.value;
+  const mandatoryIds = currentMandatoryDocIds.value
   return fetchedDocumentTypes.value
-    .filter(dt => mandatoryIds.includes(dt.id))
-    .map(dt => dt.document_name);
-});
+    .filter((dt) => mandatoryIds.includes(dt.id))
+    .map((dt) => dt.document_name)
+})
 
 const isCIDValid = computed(() => {
-  return /^\d{11}$/.test(localFormData.cid_no);
-});
+  return /^\d{11}$/.test(localFormData.cid_no)
+})
 
 watch(
   () => localFormData,
   (newData) => {
-    emit('update:modelValue', { ...newData });
+    emit('update:modelValue', { ...newData })
   },
-  { deep: true }
-);
+  { deep: true },
+)
 
 watch(
   () => localFormData.registration_type,
   () => {
-    delete errors.mandatory_documents;
+    delete errors.mandatory_documents
     supportingDocuments.value.forEach((_, index) => {
-      delete errors[`document_type_${index}`];
-      delete errors[`document_file_${index}`];
-    });
-  }
-);
+      delete errors[`document_type_${index}`]
+      delete errors[`document_file_${index}`]
+    })
+  },
+)
 
 const validateFormStageOne = () => {
   Object.keys(errors).forEach((key) => {
@@ -1040,197 +1216,205 @@ const validateFormStageOne = () => {
         'year_of_completion',
       ].includes(key)
     ) {
-      delete errors[key];
+      delete errors[key]
     }
-  });
-  let isValid = true;
+  })
+  let isValid = true
 
   if (!localFormData.full_name) {
-    errors.full_name = 'Full name is required.';
-    isValid = false;
+    errors.full_name = 'Full name is required.'
+    isValid = false
   }
   if (!localFormData.gender) {
-    errors.gender = 'Gender is required.';
-    isValid = false;
+    errors.gender = 'Gender is required.'
+    isValid = false
   }
   if (!localFormData.date_of_birth) {
-    errors.date_of_birth = 'Date of birth is required.';
-    isValid = false;
+    errors.date_of_birth = 'Date of birth is required.'
+    isValid = false
   }
   if (!localFormData.contact_no) {
-    errors.contact_no = 'Contact number is required.';
-    isValid = false;
+    errors.contact_no = 'Contact number is required.'
+    isValid = false
   } else if (!/^\d{7,15}$/.test(localFormData.contact_no)) {
-    errors.contact_no = 'Please enter a valid contact number (7-15 digits).';
-    isValid = false;
+    errors.contact_no = 'Please enter a valid contact number (7-15 digits).'
+    isValid = false
   }
   if (!localFormData.passport_photo) {
-    errors.passport_photo = 'Passport photo is required.';
-    isValid = false;
+    errors.passport_photo = 'Passport photo is required.'
+    isValid = false
   }
   if (!localFormData.registration_type) {
-    errors.registration_type = 'Registration type is required.';
-    isValid = false;
+    errors.registration_type = 'Registration type is required.'
+    isValid = false
   } else {
-    const availableTypes = filteredRegistrationTypes.value.map(rt => rt.id);
+    const availableTypes = filteredRegistrationTypes.value.map((rt) => rt.id)
     if (!availableTypes.includes(localFormData.registration_type)) {
-      errors.registration_type = 'Please select a valid registration type.';
-      isValid = false;
+      errors.registration_type = 'Please select a valid registration type.'
+      isValid = false
     }
   }
   if (props.selectedType === 'cid') {
     if (!localFormData.cid_no) {
-      errors.cid_no = 'CID is required.';
-      isValid = false;
+      errors.cid_no = 'CID is required.'
+      isValid = false
     } else if (!/^\d{11}$/.test(localFormData.cid_no)) {
-      errors.cid_no = 'CID must be exactly 11 digits.';
-      isValid = false;
+      errors.cid_no = 'CID must be exactly 11 digits.'
+      isValid = false
     }
     if (!localFormData.dzongkhag && isCIDValid.value)
-      errors.dzongkhag = 'Dzongkhag should auto-fill; try re-entering CID.';
+      errors.dzongkhag = 'Dzongkhag should auto-fill; try re-entering CID.'
     if (!localFormData.gewog && isCIDValid.value)
-      errors.gewog = 'Gewog should auto-fill; try re-entering CID.';
+      errors.gewog = 'Gewog should auto-fill; try re-entering CID.'
     if (!localFormData.village && isCIDValid.value)
-      errors.village = 'Village should auto-fill; try re-entering CID.';
+      errors.village = 'Village should auto-fill; try re-entering CID.'
     if (
       (!localFormData.dzongkhag || !localFormData.gewog || !localFormData.village) &&
       isCIDValid.value
     )
-      isValid = false;
+      isValid = false
   } else {
     if (!localFormData.nationality) {
-      errors.nationality = 'Nationality is required.';
-      isValid = false;
+      errors.nationality = 'Nationality is required.'
+      isValid = false
     }
     if (!localFormData.email_address) {
-      errors.email_address = 'Email is required.';
-      isValid = false;
+      errors.email_address = 'Email is required.'
+      isValid = false
     } else if (!/\S+@\S+\.\S+/.test(localFormData.email_address)) {
-      errors.email_address = 'Please enter a valid email address.';
-      isValid = false;
+      errors.email_address = 'Please enter a valid email address.'
+      isValid = false
     }
     if (!localFormData.workPermitNo) {
-      errors.workPermitNo = 'Identity / Work permit number is required.';
-      isValid = false;
+      errors.workPermitNo = 'Identity / Work permit number is required.'
+      isValid = false
     }
     if (!localFormData.country) {
-      errors.country = 'Country of residence is required.';
-      isValid = false;
+      errors.country = 'Country of residence is required.'
+      isValid = false
     }
     if (!localFormData.mobileNumber) {
-      errors.mobileNumber = 'Mobile number is required.';
-      isValid = false;
+      errors.mobileNumber = 'Mobile number is required.'
+      isValid = false
     } else {
-      const bhutaneseMobilePattern = /^[17]\d{7}$/;
-      const internationalMobilePattern = /^\+?\d{7,15}$/;
+      const bhutaneseMobilePattern = /^[17]\d{7}$/
+      const internationalMobilePattern = /^\+?\d{7,15}$/
       if (
         localFormData.nationality === 'Bhutanese' &&
         !bhutaneseMobilePattern.test(localFormData.mobileNumber)
       ) {
-        errors.mobileNumber = 'Bhutanese mobile numbers must be 8 digits and start with 1 or 7.';
-        isValid = false;
+        errors.mobileNumber = 'Bhutanese mobile numbers must be 8 digits and start with 1 or 7.'
+        isValid = false
       } else if (
         localFormData.nationality !== 'Bhutanese' &&
         !internationalMobilePattern.test(localFormData.mobileNumber)
       ) {
-        errors.mobileNumber = 'Please enter a valid mobile number (7-15 digits, can start with +).';
-        isValid = false;
+        errors.mobileNumber = 'Please enter a valid mobile number (7-15 digits, can start with +).'
+        isValid = false
       }
     }
   }
-  return isValid;
-};
+  return isValid
+}
 
 const validateForm = () => {
-  let isValid = true;
-  Object.keys(errors).forEach((key) => delete errors[key]);
+  let isValid = true
+  Object.keys(errors).forEach((key) => delete errors[key])
 
   if (!localFormData.qualification_type) {
-    errors.qualification_type = 'Qualification type is required.';
-    isValid = false;
+    errors.qualification_type = 'Qualification type is required.'
+    isValid = false
   }
   if (!localFormData.qualification_name) {
-    errors.qualification_name = 'Qualification name is required.';
-    isValid = false;
+    errors.qualification_name = 'Qualification name is required.'
+    isValid = false
   }
-  if (localFormData.qualification_name === 'OTHERS' && !localFormData.other_qualification_name_specify) {
-    errors.other_qualification_name_specify = 'Please specify the qualification name.';
-    isValid = false;
+  if (
+    localFormData.qualification_name === 'OTHERS' &&
+    !localFormData.other_qualification_name_specify
+  ) {
+    errors.other_qualification_name_specify = 'Please specify the qualification name.'
+    isValid = false
   }
   if (!localFormData.institute) {
-    errors.institute = 'Institute/University is required.';
-    isValid = false;
+    errors.institute = 'Institute/University is required.'
+    isValid = false
   }
   if (!localFormData.year_of_completion) {
-    errors.year_of_completion = 'Year of completion is required.';
-    isValid = false;
+    errors.year_of_completion = 'Year of completion is required.'
+    isValid = false
   }
-  const mandatoryDocIds = currentMandatoryDocIds.value;
+  const mandatoryDocIds = currentMandatoryDocIds.value
   for (const docId of mandatoryDocIds) {
     const isUploaded = localFormData.documents.some(
-      (uploadedDoc) => uploadedDoc.type === docId && uploadedDoc.files.length > 0
-    );
+      (uploadedDoc) => uploadedDoc.type === docId && uploadedDoc.files.length > 0,
+    )
     if (!isUploaded) {
-      const docName = fetchedDocumentTypes.value.find(dt => dt.id === docId)?.document_name || 'Unknown Document';
-      errors.mandatory_documents = `Missing mandatory document: "${docName}". Please upload all required documents.`;
-      isValid = false;
-      break;
+      const docName =
+        fetchedDocumentTypes.value.find((dt) => dt.id === docId)?.document_name ||
+        'Unknown Document'
+      errors.mandatory_documents = `Missing mandatory document: "${docName}". Please upload all required documents.`
+      isValid = false
+      break
     }
   }
   supportingDocuments.value.forEach((doc, index) => {
     if (doc.files.length > 0 && !doc.type) {
-      errors[`document_type_${index}`] = 'Please select a document type for the uploaded file(s).';
-      isValid = false;
+      errors[`document_type_${index}`] = 'Please select a document type for the uploaded file(s).'
+      isValid = false
     }
     if (doc.type && doc.files.length === 0) {
-      const isMandatory = currentMandatoryDocIds.value.includes(doc.type);
+      const isMandatory = currentMandatoryDocIds.value.includes(doc.type)
       if (isMandatory) {
-        const docName = fetchedDocumentTypes.value.find(dt => dt.id === doc.type)?.document_name || 'Selected Document';
-        errors[`document_file_${index}`] = `File missing for mandatory document type: ${docName}.`;
-        isValid = false;
+        const docName =
+          fetchedDocumentTypes.value.find((dt) => dt.id === doc.type)?.document_name ||
+          'Selected Document'
+        errors[`document_file_${index}`] = `File missing for mandatory document type: ${docName}.`
+        isValid = false
       } else {
-        errors[`document_file_${index}`] = 'Please upload file(s) for the selected document type or remove the row.';
-        isValid = false;
+        errors[`document_file_${index}`] =
+          'Please upload file(s) for the selected document type or remove the row.'
+        isValid = false
       }
     }
-  });
+  })
   if (!localFormData.declaration) {
-    errors.declaration = 'You must accept the declaration to proceed.';
-    isValid = false;
+    errors.declaration = 'You must accept the declaration to proceed.'
+    isValid = false
   }
-  return isValid;
-};
+  return isValid
+}
 
 const formatDateForInput = (dateString) => {
-  if (!dateString) return '';
-  const parts = dateString.split('/');
+  if (!dateString) return ''
+  const parts = dateString.split('/')
   if (parts.length === 3) {
-    return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+    return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`
   }
-  return dateString;
-};
+  return dateString
+}
 
 const fetchDCRCData = async () => {
   if (props.selectedType !== 'cid' || !isCIDValid.value) {
-    localFormData.full_name = '';
-    localFormData.date_of_birth = '';
-    localFormData.gender = '';
-    localFormData.dzongkhag = '';
-    localFormData.gewog = '';
-    localFormData.village = '';
-    return;
+    localFormData.full_name = ''
+    localFormData.date_of_birth = ''
+    localFormData.gender = ''
+    localFormData.dzongkhag = ''
+    localFormData.gewog = ''
+    localFormData.village = ''
+    return
   }
   if (!user?.id) {
-    toast.error('User ID is not available. Please ensure you are logged in.');
-    return;
+    toast.error('User ID is not available. Please ensure you are logged in.')
+    return
   }
-  isLoadingDCRC.value = true;
+  isLoadingDCRC.value = true
   try {
     const response = await apiService.fetchCitizenDetails(localFormData.cid_no, {
       params: { user_id: user.id },
-    });
-    const genderMap = { F: 'female', M: 'male', O: 'O' };
-    const data = response.data;
+    })
+    const genderMap = { F: 'female', M: 'male', O: 'O' }
+    const data = response.data
     Object.assign(localFormData, {
       full_name: data.applicants_name || '',
       date_of_birth: data.date_of_birth ? formatDateForInput(data.date_of_birth) : '',
@@ -1238,80 +1422,80 @@ const fetchDCRCData = async () => {
       dzongkhag: data.dzongkhag || '',
       gewog: data.gewog || '',
       village: data.village || '',
-    });
-    toast.success('Citizen details fetched successfully.');
+    })
+    toast.success('Citizen details fetched successfully.')
   } catch (error) {
-    console.error('Error fetching DCRC data:', error.response?.data || error.message);
+    console.error('Error fetching DCRC data:', error.response?.data || error.message)
     const errorMessage =
       error.response?.data?.error ||
-      'Failed to fetch citizen details. Please enter details manually.';
-    toast.error(errorMessage);
-    localFormData.full_name = '';
-    localFormData.date_of_birth = '';
-    localFormData.gender = '';
-    localFormData.dzongkhag = '';
-    localFormData.gewog = '';
-    localFormData.village = '';
+      'Failed to fetch citizen details. Please enter details manually.'
+    toast.error(errorMessage)
+    localFormData.full_name = ''
+    localFormData.date_of_birth = ''
+    localFormData.gender = ''
+    localFormData.dzongkhag = ''
+    localFormData.gewog = ''
+    localFormData.village = ''
   } finally {
-    isLoadingDCRC.value = false;
+    isLoadingDCRC.value = false
   }
-};
+}
 
 const handlePassportPhotoSelect = (event) => {
-  const file = event.target.files[0];
-  delete errors.passport_photo;
+  const file = event.target.files[0]
+  delete errors.passport_photo
   if (file) {
     if (file.size > 2 * 1024 * 1024) {
-      localFormData.passport_photo = null;
-      errors.passport_photo = 'File size exceeds 2MB. Please choose a smaller file.';
-      toast.error(errors.passport_photo);
-      event.target.value = '';
+      localFormData.passport_photo = null
+      errors.passport_photo = 'File size exceeds 2MB. Please choose a smaller file.'
+      toast.error(errors.passport_photo)
+      event.target.value = ''
     } else if (!['image/jpeg', 'image/png', 'image/jpg'].includes(file.type.toLowerCase())) {
-      localFormData.passport_photo = null;
-      errors.passport_photo = 'Invalid file type. Please upload a JPG, JPEG, or PNG image.';
-      toast.error(errors.passport_photo);
-      event.target.value = '';
+      localFormData.passport_photo = null
+      errors.passport_photo = 'Invalid file type. Please upload a JPG, JPEG, or PNG image.'
+      toast.error(errors.passport_photo)
+      event.target.value = ''
     } else {
-      localFormData.passport_photo = file;
+      localFormData.passport_photo = file
     }
   } else {
-    localFormData.passport_photo = null;
+    localFormData.passport_photo = null
   }
-};
+}
 
 const formatDateForAPI = (dateInput) => {
-  let dateObj;
+  let dateObj
   if (dateInput instanceof Date && !isNaN(dateInput)) {
-    dateObj = dateInput;
+    dateObj = dateInput
   } else if (typeof dateInput === 'string') {
-    dateObj = new Date(dateInput);
+    dateObj = new Date(dateInput)
     if (isNaN(dateObj)) {
-      console.error('Invalid date string provided to formatDateForAPI:', dateInput);
-      return null;
+      console.error('Invalid date string provided to formatDateForAPI:', dateInput)
+      return null
     }
   } else {
-    console.error('Invalid date input provided to formatDateForAPI:', dateInput);
-    return null;
+    console.error('Invalid date input provided to formatDateForAPI:', dateInput)
+    return null
   }
-  const year = dateObj.getFullYear();
-  const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-  const day = String(dateObj.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-};
+  const year = dateObj.getFullYear()
+  const month = String(dateObj.getMonth() + 1).padStart(2, '0')
+  const day = String(dateObj.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
 
 const handleNext = async () => {
   if (validateFormStageOne()) {
-    isSubmitting.value = true;
-    const formDataStageOne = { ...localFormData };
+    isSubmitting.value = true
+    const formDataStageOne = { ...localFormData }
     if (props.selectedType !== 'cid') {
-      formDataStageOne.cid_no = formDataStageOne.workPermitNo;
-      formDataStageOne.village = formDataStageOne.city;
-      formDataStageOne.gewog = formDataStageOne.state;
-      formDataStageOne.dzongkhag = formDataStageOne.country;
-      delete formDataStageOne.city;
-      delete formDataStageOne.state;
-      delete formDataStageOne.workPermitNo;
-      delete formDataStageOne.mobileNumber;
+      formDataStageOne.cid_no = formDataStageOne.workPermitNo
+      formDataStageOne.village = formDataStageOne.city
+      formDataStageOne.gewog = formDataStageOne.state
+      formDataStageOne.dzongkhag = formDataStageOne.country
+      delete formDataStageOne.city
+      delete formDataStageOne.state
+      delete formDataStageOne.workPermitNo
+      delete formDataStageOne.mobileNumber
     }
     const fieldsToRemove = [
       'documents',
@@ -1327,18 +1511,18 @@ const handleNext = async () => {
       'is_active',
       'application',
       'cid_holder',
-    ];
+    ]
     if (props.selectedType === 'cid') {
-      delete formDataStageOne.mobileNumber;
-      delete formDataStageOne.country;
+      delete formDataStageOne.mobileNumber
+      delete formDataStageOne.country
     }
-    fieldsToRemove.forEach((field) => delete formDataStageOne[field]);
-    const today = new Date();
-    const expiry = new Date(today);
-    expiry.setFullYear(today.getFullYear() + 5);
-    formDataStageOne.registration_date = formatDateForAPI(today);
-    formDataStageOne.expiry_date = formatDateForAPI(expiry);
-    const apiFormData = new FormData();
+    fieldsToRemove.forEach((field) => delete formDataStageOne[field])
+    const today = new Date()
+    const expiry = new Date(today)
+    expiry.setFullYear(today.getFullYear() + 5)
+    formDataStageOne.registration_date = formatDateForAPI(today)
+    formDataStageOne.expiry_date = formatDateForAPI(expiry)
+    const apiFormData = new FormData()
     for (const key in formDataStageOne) {
       if (
         Object.prototype.hasOwnProperty.call(formDataStageOne, key) &&
@@ -1347,105 +1531,105 @@ const handleNext = async () => {
         formDataStageOne[key] !== ''
       ) {
         if (key === 'passport_photo' && formDataStageOne[key] instanceof File) {
-          apiFormData.append('passport_photo', formDataStageOne[key], formDataStageOne[key].name);
+          apiFormData.append('passport_photo', formDataStageOne[key], formDataStageOne[key].name)
         } else {
-          apiFormData.append(key, formDataStageOne[key]);
+          apiFormData.append(key, formDataStageOne[key])
         }
       }
     }
-    apiFormData.append('applicant', user.id);
-    apiFormData.append('is_draft', 'False');
+    apiFormData.append('applicant', user.id)
+    apiFormData.append('is_draft', 'False')
     try {
-      const response = await apiService.createMhpcNewApplication(apiFormData);
-      applicationId.value = response.data.id;
-      localFormData.application = response.data.id;
-      toast.success('Personal information saved successfully!');
-      stage.value = 2;
+      const response = await apiService.createMhpcNewApplication(apiFormData)
+      applicationId.value = response.data.id
+      localFormData.application = response.data.id
+      toast.success('Personal information saved successfully!')
+      stage.value = 2
     } catch (error) {
-      console.error('Error submitting personal information:', error.response?.data || error.message);
+      console.error('Error submitting personal information:', error.response?.data || error.message)
       const errorMessages = Object.entries(
-        error.response?.data || { 'API Error': [error.message || 'Unknown error'] }
+        error.response?.data || { 'API Error': [error.message || 'Unknown error'] },
       )
         .map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(', ') : value}`)
-        .join('; ');
-      toast.error(`Failed to save personal information: ${errorMessages}`);
+        .join('; ')
+      toast.error(`Failed to save personal information: ${errorMessages}`)
     } finally {
-      isSubmitting.value = false;
+      isSubmitting.value = false
     }
   } else {
-    toast.error('Please correct the errors in Step 1 before proceeding.');
+    toast.error('Please correct the errors in Step 1 before proceeding.')
   }
-};
+}
 
 const openConfirmationModal = () => {
-  updateFormDocuments();
+  updateFormDocuments()
   if (validateForm()) {
-    isConfirmationModalOpen.value = true;
+    isConfirmationModalOpen.value = true
   } else {
-    toast.error('Please correct all errors and upload mandatory documents before submitting.');
+    toast.error('Please correct all errors and upload mandatory documents before submitting.')
   }
-};
+}
 
 const handleSubmitActual = async () => {
-  isConfirmationModalOpen.value = false;
-  updateFormDocuments();
+  isConfirmationModalOpen.value = false
+  updateFormDocuments()
   if (!validateForm()) {
-    toast.error('Submission cancelled due to validation errors. Please review the form.');
-    return;
+    toast.error('Submission cancelled due to validation errors. Please review the form.')
+    return
   }
   if (!localFormData.application) {
     toast.error(
-      'Application ID is missing. Cannot submit qualification details. Please go back to Step 1.'
-    );
-    isSubmitting.value = false;
-    return;
+      'Application ID is missing. Cannot submit qualification details. Please go back to Step 1.',
+    )
+    isSubmitting.value = false
+    return
   }
-  isSubmitting.value = true;
+  isSubmitting.value = true
   try {
-    const qualificationFormData = new FormData();
-    qualificationFormData.append('application', localFormData.application);
+    const qualificationFormData = new FormData()
+    qualificationFormData.append('application', localFormData.application)
     if (localFormData.qualification_name === 'OTHERS') {
       qualificationFormData.append(
         'qualification_name_text',
-        localFormData.other_qualification_name_specify
-      );
+        localFormData.other_qualification_name_specify,
+      )
     } else {
-      qualificationFormData.append('qualification_name', localFormData.qualification_name);
+      qualificationFormData.append('qualification_name', localFormData.qualification_name)
     }
-    qualificationFormData.append('qualification_type', localFormData.qualification_type);
-    qualificationFormData.append('institute_university', localFormData.institute);
+    qualificationFormData.append('qualification_type', localFormData.qualification_type)
+    qualificationFormData.append('institute_university', localFormData.institute)
     if (localFormData.year_of_completion && typeof localFormData.year_of_completion === 'string') {
-      const year = localFormData.year_of_completion.split('-')[0];
+      const year = localFormData.year_of_completion.split('-')[0]
       if (year && !isNaN(parseInt(year))) {
-        qualificationFormData.append('completion_year', year);
+        qualificationFormData.append('completion_year', year)
       }
     }
-    qualificationFormData.append('declaration', localFormData.declaration ? 'True' : 'False');
-    qualificationFormData.append('remarks', localFormData.remarks || '');
-    qualificationFormData.append('is_primary_qualification', 'True');
+    qualificationFormData.append('declaration', localFormData.declaration ? 'True' : 'False')
+    qualificationFormData.append('remarks', localFormData.remarks || '')
+    qualificationFormData.append('is_primary_qualification', 'True')
     localFormData.documents.forEach((doc) => {
       if (doc.files && doc.files.length > 0 && doc.type) {
         doc.files.forEach((fileObject) => {
           qualificationFormData.append(
             'user_qualification_attachment_files',
             fileObject,
-            fileObject.name
-          );
-          qualificationFormData.append('user_qualification_attachment_file_types', doc.type);
-        });
+            fileObject.name,
+          )
+          qualificationFormData.append('user_qualification_attachment_file_types', doc.type)
+        })
       }
-    });
-    await apiService.createMhpcNewQualification(qualificationFormData);
-    toast.success('Registration submitted successfully!');
-    emit('submit', { ...localFormData });
-    router.push('/admin/user/health_certification/dashboard');
+    })
+    await apiService.createMhpcNewQualification(qualificationFormData)
+    toast.success('Registration submitted successfully!')
+    emit('submit', { ...localFormData })
+    router.push('/admin/user/health_certification/dashboard')
   } catch (error) {
     console.error(
       'Error submitting qualification and documents:',
-      error.response?.data || error.message
-    );
+      error.response?.data || error.message,
+    )
     const errorMessages = Object.entries(
-      error.response?.data || { 'API Error': [error.message || 'Unknown error'] }
+      error.response?.data || { 'API Error': [error.message || 'Unknown error'] },
     )
       .map(([key, value]) => {
         if (typeof value === 'object' && value !== null) {
@@ -1454,18 +1638,18 @@ const handleSubmitActual = async () => {
               ([nestedKey, nestedValue]) =>
                 `${key}.${nestedKey}: ${
                   Array.isArray(nestedValue) ? nestedValue.join(', ') : nestedValue
-                }`
+                }`,
             )
-            .join('; ');
+            .join('; ')
         }
-        return `${key}: ${Array.isArray(value) ? value.join(', ') : value}`;
+        return `${key}: ${Array.isArray(value) ? value.join(', ') : value}`
       })
-      .join('; ');
-    toast.error(`Submission failed: ${errorMessages}`);
+      .join('; ')
+    toast.error(`Submission failed: ${errorMessages}`)
   } finally {
-    isSubmitting.value = false;
+    isSubmitting.value = false
   }
-};
+}
 </script>
 
 <style scoped>

@@ -403,7 +403,7 @@ const validateForm = () => {
     // This error won't show on a specific field, so a general toast might be better
     // or you could add a general error display area on your form.
     toast.error(
-      'Personnel Category is missing. Please ensure your registration details are fully loaded.'
+      'Personnel Category is missing. Please ensure your registration details are fully loaded.',
     )
     errors.general_category = 'Personnel Category could not be determined.' // For internal tracking
     isValid = false
@@ -411,7 +411,7 @@ const validateForm = () => {
   // If participant_sub_category is also strictly required by backend:
   if (!form.personnel_sub_category) {
     toast.error(
-      'Personnel Sub-Category is missing. Please ensure your registration details are fully loaded.'
+      'Personnel Sub-Category is missing. Please ensure your registration details are fully loaded.',
     )
     errors.general_subcategory = 'Personnel Sub-Category could not be determined.'
     isValid = false
@@ -455,7 +455,7 @@ const fetchRegistrationDetails = async (cid) => {
       } else {
         // If no qualifications, still return application ID and its registration_no
         console.warn(
-          `No qualifications found for application ID: ${mainApplication.id}, CID: ${cid}`
+          `No qualifications found for application ID: ${mainApplication.id}, CID: ${cid}`,
         )
         return {
           recordId: mainApplication.id,
@@ -469,7 +469,7 @@ const fetchRegistrationDetails = async (cid) => {
     }
     console.warn(
       `No suitable registration record found for CID: ${cid}. API Response:`,
-      response.data
+      response.data,
     )
     toast.warning('Could not fetch complete registration details.')
     return null

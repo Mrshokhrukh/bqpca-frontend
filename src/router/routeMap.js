@@ -299,7 +299,6 @@ export default {
       institute_reports: mhpcDashboard,
       teaching_hospital_reports: mhpcDashboard,
       cogs_reports: mhpcDashboard,
-
     },
   },
   chief: {
@@ -446,9 +445,8 @@ export default {
       department_management: mhpcDashboard,
       site_visit_schedule: mhpcDashboard,
       teaching_center_tracking: mhpcDashboard,
-      new_education_program_application : mhpcDashboard,
+      new_education_program_application: mhpcDashboard,
       institute_dashboard: mhpcDashboard,
-
 
       // ... other Health Certification routes for director
     },
@@ -488,6 +486,6 @@ export default {
     health_certification: {
       dashboard: mhpcDashboard,
       manage_complaints: mhpcDashboard,
-    }
+    },
   },
 }

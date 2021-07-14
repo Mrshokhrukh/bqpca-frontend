@@ -1,16 +1,13 @@
-
 <template>
   <div class="space-y-6">
-    <div class="relative">
-      <label for="medical-identifier" class="form-label"
-        >Search by Name / CID / Registration No.</label
-      >
-      <div class="mt-1 relative rounded-md shadow-sm">
+    <div>
+      <label for="medical-identifier" class="form-label">Search by CID</label>
+      <div class="mt-1 flex items-center space-x-2">
         <input
           type="text"
           id="medical-identifier"
           :value="form.identifier"
-          @input="handleIdentifierInput"
+          @input="updateForm('identifier', $event.target.value)"
           :disabled="identifierInputDisabled"
           required
           class="form-input"
@@ -18,49 +15,33 @@
             'border-red-300 focus:border-red-500 focus:ring-red-500': errors.identifier,
             'bg-gray-100': identifierInputDisabled,
           }"
-          placeholder="Type to search medical faculty..."
-          @blur="handleIdentifierBlur"
+          placeholder="Enter 11-digit CID number..."
         />
-      </div>
-      <!-- Medical Faculty Search Dropdown -->
-      <div
-        v-if="showMedicalSearchDropdown && medicalSearchResults.length > 0"
-        class="absolute z-20 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto"
-      >
-        <ul>
-          <li
-            v-for="person in medicalSearchResults"
-            :key="person.registration_no || person.id"
-            @mousedown="selectMedicalFaculty(person)"
-            class="px-3 py-2 hover:bg-indigo-100 cursor-pointer text-sm"
-          >
-            <strong>{{ person.full_name || person.applicants_name }}</strong> (CID:
-            {{ person.cid_no }})
-            <span class="block text-xs text-gray-500"
-              >Reg No: {{ person.registration_no }} - {{ person.registration_type_name }}</span
-            >
-          </li>
-        </ul>
+        <button
+          type="button"
+          @click="fetchFacultyByCid"
+          :disabled="isFetchingDetails || !form.identifier || identifierInputDisabled"
+          class="btn btn-primary whitespace-nowrap"
+        >
+          <span class="loader animate-spin h-5 w-5 mr-2 text-white" v-if="isFetchingDetails"></span>
+          <span>{{ isFetchingDetails ? 'Fetching...' : 'Fetch Details' }}</span>
+        </button>
       </div>
       <p v-if="errors.identifier" class="mt-1 text-sm text-red-500">{{ errors.identifier }}</p>
-      <p v-if="isFetchingDetails" class="mt-1 text-sm text-sky-600">Searching...</p>
     </div>
 
-    <!-- Fields populated from BMHC - These are for display and context -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div>
-        <label for="medical-registration_type" class="form-label"
-          >Registration Type </label
-        >
+        <label for="medical-registration_type" class="form-label">Registration Type </label>
         <input
           type="text"
           id="medical-registration_type"
-          :value="form.registration_type"
+          :value="form.registration_type_name"
           disabled
           class="form-input bg-gray-100"
         />
-        <p v-if="errors.registration_type" class="mt-1 text-sm text-red-500">
-          {{ errors.registration_type }}
+        <p v-if="errors.registration_type_name" class="mt-1 text-sm text-red-500">
+          {{ errors.registration_type_name }}
         </p>
       </div>
       <div>
@@ -193,9 +174,6 @@
         <p v-if="errors.expiry_date" class="mt-1 text-sm text-red-500">{{ errors.expiry_date }}</p>
       </div>
     </div>
-    <!-- End of BMHC-populated display fields -->
-
-    <!-- Fields specific to this institute enrollment (Editable) -->
     <div>
       <label for="medical-designation" class="form-label">Designation (at this Institute)</label>
       <input
@@ -232,7 +210,6 @@
       </p>
     </div>
 
-    <!-- Education Details Section  -->
     <div class="border-t pt-6">
       <div class="flex items-center justify-between mb-4">
         <label class="form-label text-lg">Education Details </label>
@@ -383,18 +360,17 @@
               {{
                 dataEffectivelyFetched
                   ? 'No education details found in BMHC records.'
-                  : 'Select a faculty to load education details.'
+                  : 'Fetch faculty details to load education information.'
               }}
             </p>
             <p class="mt-1 text-xs text-gray-500" v-if="!dataEffectivelyFetched">
-              Search using Name, CID, or Registration No. above.
+              Enter a CID and click "Fetch Details".
             </p>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- File Uploads -->
     <div>
       <label for="medical-cv" class="form-label">Upload CV</label>
       <UploadFile
@@ -438,11 +414,9 @@
 </template>
 
 <script setup>
-import { ref, watch, computed } from 'vue'
+import { ref, computed } from 'vue'
 import UploadFile from '@/components/common/FileUpload.vue'
 import apiServices from '@/services/services'
-import { useToast } from 'vue-toastification'
-import { debounce } from 'lodash-es'
 
 const props = defineProps({
   form: { type: Object, required: true },
@@ -452,14 +426,10 @@ const props = defineProps({
 
 const emit = defineEmits(['update:form', 'show-notification'])
 
-const toast = useToast()
 const isFetchingDetails = ref(false)
-const medicalSearchResults = ref([])
-const showMedicalSearchDropdown = ref(false)
-let medicalSearchDropdownTimeout = null
 
 const dataEffectivelyFetched = computed(() => {
-  return !!props.form.identifier && !!props.form.staff_name
+  return !!props.form.application_profile_identifier && !!props.form.staff_name
 })
 
 const identifierInputDisabled = computed(() => {
@@ -474,196 +444,67 @@ const updateForm = (key, value) => {
   emit('update:form', { ...props.form, [key]: value })
 }
 
-const resetBMHCDerivedFields = (preserveIdentifier = false) => {
-  const fieldsToReset = {
-    staff_name: '',
-    registration_type: '',
-    nationality: '',
-    date_of_birth: '',
-    village: '',
-    gewog: '',
-    dzongkhag: '',
-    contact_no: '',
-    email_address: '',
-    registration_date: '',
-    expiry_date: '',
-    education_details: [],
-    application_profile_identifier: null,
-  }
-  if (!preserveIdentifier) {
-    fieldsToReset.identifier = ''
-  }
-
-  const newFormState = { ...props.form }
-  let changed = false
-  for (const key in fieldsToReset) {
-    if (
-      newFormState[key] !== fieldsToReset[key] ||
-      (key === 'education_details' && newFormState[key]?.length > 0)
-    ) {
-      newFormState[key] = fieldsToReset[key]
-      changed = true
-    }
-  }
-
-  if (changed) {
-    emit('update:form', newFormState)
-  }
-}
-
-watch(
-  () => props.form.identifier,
-  (newVal, oldVal) => {
-    if (props.mode === 'view') return
-    if (
-      newVal === '' &&
-      oldVal !== '' &&
-      !isFetchingDetails.value &&
-      showMedicalSearchDropdown.value === false
-    ) {
-      resetBMHCDerivedFields(true)
-      medicalSearchResults.value = []
-      showMedicalSearchDropdown.value = false
-    }
-  },
-  { deep: false }
-)
-
-const searchMedicalFacultyDebounced = debounce(async () => {
-  if (!props.form.identifier || props.form.identifier.length < 3) {
-    medicalSearchResults.value = []
-    showMedicalSearchDropdown.value = false
+const fetchFacultyByCid = async () => {
+  if (!props.form.identifier) {
+    emit('show-notification', 'warning', 'Input Required', 'Please enter a CID to search.')
     return
   }
   isFetchingDetails.value = true
-  showMedicalSearchDropdown.value = false
   try {
     const response = await apiServices.getMhpcFullApplicationListByCid(props.form.identifier)
-    const candidates = response?.data?.results || []
+    const results = response?.data?.results || []
 
-    const approvedCandidates = candidates.filter((person) =>
-      (person.user_qualifications || []).some(
-        (q) =>
-          q.application_review_status === 'Approved' &&
-          q.physical_review_status === 'Approved' &&
-          q.endorsement_decision === 'Approved' &&
-          q.is_active === true
+    if (results.length > 0) {
+      populateFormWithFetchedData(results[0])
+      emit(
+        'show-notification',
+        'success',
+        'Faculty Found',
+        'Faculty details have been populated successfully.'
       )
-    )
-
-    if (approvedCandidates.length > 0) {
-      medicalSearchResults.value = approvedCandidates
-      showMedicalSearchDropdown.value = true
     } else {
-      medicalSearchResults.value = []
       emit(
         'show-notification',
         'info',
-        'No Suitable Faculty',
-        'No medical faculty with approved & active qualifications found for the search term.'
+        'No Results',
+        'No medical faculty found for the provided CID.'
       )
     }
   } catch (error) {
-    console.error('Error searching medical faculty:', error)
-    emit('show-notification', 'error', 'Search Error', 'Failed to search medical faculty.')
-    medicalSearchResults.value = []
+    console.error('Error searching medical faculty by CID:', error)
+    emit('show-notification', 'error', 'Search Error', 'Failed to fetch faculty details.')
   } finally {
     isFetchingDetails.value = false
   }
-}, 500)
-
-const handleIdentifierInput = (event) => {
-  const newIdentifier = event.target.value
-  updateForm('identifier', newIdentifier)
-
-  if (props.mode !== 'view') {
-    if (newIdentifier.length >= 3) {
-      searchMedicalFacultyDebounced()
-    } else {
-      searchMedicalFacultyDebounced.cancel()
-      medicalSearchResults.value = []
-      showMedicalSearchDropdown.value = false
-    }
-  }
 }
 
-const handleIdentifierBlur = () => {
-  medicalSearchDropdownTimeout = setTimeout(() => {
-    showMedicalSearchDropdown.value = false
-  }, 200)
-}
-
-const selectMedicalFaculty = (facultyData) => {
-  if (medicalSearchDropdownTimeout) clearTimeout(medicalSearchDropdownTimeout)
-  showMedicalSearchDropdown.value = false
-  medicalSearchResults.value = []
-
-  // This part mapping the qualifications is correct. No changes needed here.
-  const educationDetails = (facultyData.user_qualifications || [])
-    .filter(
-      (q) =>
-        q.application_review_status === 'Approved' &&
-        q.physical_review_status === 'Approved' &&
-        q.endorsement_decision === 'Approved' &&
-        q.is_active === true
-    )
-    .map((q) => ({
-      type: q.qualification_type_display || q.qualification_type || '',
-      qualification:
-        q.qualification_name_display ||
-        q.actual_qualification_name_display ||
-        q.qualification_name ||
-        '',
-      institute: q.institute_university_display || q.institute_university || '',
-      year_of_completion: q.completion_year || '',
-      additional_info: {
-        personnel_category: q.personnel_category_name || '',
-        personnel_sub_category: q.personnel_sub_category_name || '',
-        practice_address: q.practice_address || '',
-        select_sector: q.select_sector_name || '',
-        registration_no: q.registration_no || '',
-        registration_date: q.registration_date || '',
-        expiry_date: q.expiry_date || '',
-        is_primary: q.is_primary_qualification || false,
-        qualification_name_display:
-          q.qualification_name_display ||
-          q.actual_qualification_name_display ||
-          q.qualification_name ||
-          '',
-        qualification_type_display: q.qualification_type_display || q.qualification_type || '',
-      },
-    }))
-
+const populateFormWithFetchedData = (facultyData) => {
   const updatedFormData = {
     ...props.form,
-    identifier: facultyData.registration_no || '',
-    application_profile_identifier: facultyData.id || '',
-    staff_name: facultyData.full_name || facultyData.applicants_name || '',
-    registration_type:
-      facultyData.registration_type_name || String(facultyData.registration_type || ''),
-
-    nationality: facultyData.nationality || '',
+    identifier: facultyData.CID || props.form.identifier,
+    application_profile_identifier: facultyData.id || null,
+    staff_name: facultyData.full_name || '',
+    registration_type_name: '',
+    nationality: facultyData.country || '',
     date_of_birth: facultyData.date_of_birth || '',
     village: facultyData.village || '',
     gewog: facultyData.gewog || '',
     dzongkhag: facultyData.dzongkhag || '',
-
     contact_no: facultyData.contact_no || '',
     email_address: facultyData.email_address || '',
-    registration_date: facultyData.registration_date || '',
-    expiry_date: facultyData.expiry_date || '',
-    education_details: educationDetails,
-    cid: facultyData.cid_no || '',
+    registration_date: '',
+    expiry_date: '',
+    education_details: [],
+    cid: facultyData.CID || '',
     designation: props.form.designation || '',
     date_of_joining: props.form.date_of_joining || new Date().toISOString().split('T')[0],
   }
 
-  // The rest of your function logic remains the same.
   const isDifferentFacultyInEditMode =
     props.mode === 'edit' &&
     props.form.id &&
-    props.form.identifier &&
-    props.form.identifier !== facultyData.registration_no
+    props.form.application_profile_identifier &&
+    props.form.application_profile_identifier !== facultyData.id
 
   if (props.mode === 'add' || isDifferentFacultyInEditMode) {
     updatedFormData.cv = null
@@ -671,14 +512,8 @@ const selectMedicalFaculty = (facultyData) => {
     updatedFormData.passport_photo = null
     updatedFormData.passport_photo_name = ''
   }
-  updatedFormData.designation = props.form.designation || ''
-  updatedFormData.date_of_joining =
-    props.form.date_of_joining || new Date().toISOString().split('T')[0]
 
   emit('update:form', updatedFormData)
-  toast.success(
-    `${updatedFormData.staff_name} selected. ${educationDetails.length} education record(s) loaded.`
-  )
 }
 
 const handleFileUpload = (field, file) => {
@@ -708,5 +543,22 @@ const handleFileRemoval = (field) => {
 .form-select:disabled {
   @apply bg-gray-100 text-gray-500;
 }
+.btn {
+  @apply inline-flex items-center justify-center rounded-md border py-2 px-4 text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+}
+.btn-primary {
+  @apply border-transparent bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500;
+}
+.loader {
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 </style>
-

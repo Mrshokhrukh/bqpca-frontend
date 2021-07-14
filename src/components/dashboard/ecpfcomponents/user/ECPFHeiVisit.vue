@@ -13,8 +13,12 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label class="block text-sm font-medium text-gray-700">Promotional Event Type</label>
-              <input type="text" v-model="eventType" readonly
-                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
+              <input
+                type="text"
+                v-model="eventType"
+                readonly
+                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm"
+              />
             </div>
           </div>
         </section>
@@ -24,33 +28,57 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label class="block text-sm font-medium text-gray-700">ECPF Name</label>
-              <input type="text" :value="ecpfDetails.name" readonly
-                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
+              <input
+                type="text"
+                :value="ecpfDetails.name"
+                readonly
+                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm"
+              />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">Location</label>
-              <input type="text" :value="ecpfDetails.location" readonly
-                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
+              <input
+                type="text"
+                :value="ecpfDetails.location"
+                readonly
+                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm"
+              />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">Name of Proprietor</label>
-              <input type="text" :value="ecpfDetails.proprietor" readonly
-                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
+              <input
+                type="text"
+                :value="ecpfDetails.proprietor"
+                readonly
+                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm"
+              />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">CID</label>
-              <input type="text" :value="ecpfDetails.cid" readonly
-                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
+              <input
+                type="text"
+                :value="ecpfDetails.cid"
+                readonly
+                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm"
+              />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">Contact No.</label>
-              <input type="text" :value="ecpfDetails.contactNo" readonly
-                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
+              <input
+                type="text"
+                :value="ecpfDetails.contactNo"
+                readonly
+                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm"
+              />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">Email Address</label>
-              <input type="email" :value="ecpfDetails.email" readonly
-                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
+              <input
+                type="email"
+                :value="ecpfDetails.email"
+                readonly
+                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm"
+              />
             </div>
           </div>
         </section>
@@ -65,54 +93,86 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="md:col-span-2">
               <label class="block text-sm font-medium text-gray-700">Institute</label>
-              <select v-model="selectedInstitute"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm">
+              <select
+                v-model="selectedInstitute"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+              >
                 <option value="" disabled>Select an institute</option>
-                <option v-for="institute in availableInstitutes" :key="institute.id" :value="institute.id">
+                <option
+                  v-for="institute in availableInstitutes"
+                  :key="institute.id"
+                  :value="institute.id"
+                >
                   {{ institute.name }}
                 </option>
               </select>
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700">Programme Detail (visit detail)</label>
-              <input type="text" v-model="eventDetails.programDetail"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
+              <label class="block text-sm font-medium text-gray-700"
+                >Programme Detail (visit detail)</label
+              >
+              <input
+                type="text"
+                v-model="eventDetails.programDetail"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+              />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">Description</label>
-              <textarea v-model="eventDetails.description" rows="3"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"></textarea>
+              <textarea
+                v-model="eventDetails.description"
+                rows="3"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+              ></textarea>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">Purpose</label>
-              <input type="text" v-model="eventDetails.purpose"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
+              <input
+                type="text"
+                v-model="eventDetails.purpose"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+              />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">From Date</label>
-              <input type="date" v-model="eventDetails.fromDate"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
+              <input
+                type="date"
+                v-model="eventDetails.fromDate"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+              />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">To Date</label>
-              <input type="date" v-model="eventDetails.toDate"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
+              <input
+                type="date"
+                v-model="eventDetails.toDate"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+              />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">Others (specify)</label>
-              <input type="text" v-model="eventDetails.others"
-                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
+              <input
+                type="text"
+                v-model="eventDetails.others"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+              />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700">Authorization Letter</label>
               <div class="flex items-center space-x-2">
-                <input type="text" :value="eventDetails.supportingDocument
-                  ? eventDetails.supportingDocument
-                  : 'No file chosen'
-                  " readonly
-                  class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
+                <input
+                  type="text"
+                  :value="
+                    eventDetails.supportingDocument
+                      ? eventDetails.supportingDocument
+                      : 'No file chosen'
+                  "
+                  readonly
+                  class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm"
+                />
                 <label
-                  class="cursor-pointer px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
+                  class="cursor-pointer px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                >
                   <input type="file" @change="handleSupportingDocumentUpload" class="hidden" />
                   <span>Upload</span>
                 </label>
@@ -125,41 +185,69 @@
         <!-- Representatives List -->
         <div class="mb-8">
           <h2 class="text-lg font-medium mb-4 text-gray-700">Representatives</h2>
-          <div v-for="(rep, index) in representatives" :key="rep.id" class="mb-6 p-4 border rounded-lg bg-gray-50">
+          <div
+            v-for="(rep, index) in representatives"
+            :key="rep.id"
+            class="mb-6 p-4 border rounded-lg bg-gray-50"
+          >
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label class="block text-sm font-medium text-gray-700">Name</label>
-                <input type="text" v-model="rep.name"
-                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
+                <input
+                  type="text"
+                  v-model="rep.name"
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+                />
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">Passport No.</label>
-                <input type="text" v-model="rep.passport_no"
-                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
+                <input
+                  type="text"
+                  v-model="rep.passport_no"
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+                />
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">Nationality</label>
-                <input type="text" v-model="rep.nationality"
-                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
+                <input
+                  type="text"
+                  v-model="rep.nationality"
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+                />
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">Arrival Date</label>
-                <input type="date" v-model="rep.arrival_date"
-                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
+                <input
+                  type="date"
+                  v-model="rep.arrival_date"
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+                />
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">Departure Date</label>
-                <input type="date" v-model="rep.departure_date"
-                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm" />
+                <input
+                  type="date"
+                  v-model="rep.departure_date"
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+                />
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700">CV</label>
                 <div class="flex items-center space-x-2">
-                  <input type="text" :value="rep.cv_filename ? rep.cv_filename : 'No file chosen'" readonly
-                    class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
+                  <input
+                    type="text"
+                    :value="rep.cv_filename ? rep.cv_filename : 'No file chosen'"
+                    readonly
+                    class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm"
+                  />
                   <label
-                    class="cursor-pointer px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
-                    <input type="file" @change="event => handleCvUpload(event, index)" class="hidden" />
+                    class="cursor-pointer px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                  >
+                    <input
+                      type="file"
+                      @change="(event) => handleCvUpload(event, index)"
+                      class="hidden"
+                    />
                     <span>Upload</span>
                   </label>
                 </div>
@@ -167,11 +255,20 @@
               <div>
                 <label class="block text-sm font-medium text-gray-700">ID Document</label>
                 <div class="flex items-center space-x-2">
-                  <input type="text" :value="rep.id_doc_filename ? rep.id_doc_filename : 'No file chosen'" readonly
-                    class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
+                  <input
+                    type="text"
+                    :value="rep.id_doc_filename ? rep.id_doc_filename : 'No file chosen'"
+                    readonly
+                    class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm"
+                  />
                   <label
-                    class="cursor-pointer px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
-                    <input type="file" @change="event => handleIdDocUpload(event, index)" class="hidden" />
+                    class="cursor-pointer px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                  >
+                    <input
+                      type="file"
+                      @change="(event) => handleIdDocUpload(event, index)"
+                      class="hidden"
+                    />
                     <span>Upload</span>
                   </label>
                 </div>
@@ -179,41 +276,60 @@
               <div>
                 <label class="block text-sm font-medium text-gray-700">Authorization Letter</label>
                 <div class="flex items-center space-x-2">
-                  <input type="text" :value="rep.auth_letter_filename ? rep.auth_letter_filename : 'No file chosen'"
+                  <input
+                    type="text"
+                    :value="rep.auth_letter_filename ? rep.auth_letter_filename : 'No file chosen'"
                     readonly
-                    class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm" />
+                    class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm"
+                  />
                   <label
-                    class="cursor-pointer px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
-                    <input type="file" @change="event => handleAuthLetterUpload(event, index)" class="hidden" />
+                    class="cursor-pointer px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                  >
+                    <input
+                      type="file"
+                      @change="(event) => handleAuthLetterUpload(event, index)"
+                      class="hidden"
+                    />
                     <span>Upload</span>
                   </label>
                 </div>
               </div>
             </div>
             <div class="flex justify-end mt-4">
-              <button type="button" @click="removeRepresentative(index)"
+              <button
+                type="button"
+                @click="removeRepresentative(index)"
                 class="px-3 py-1 text-xs font-medium text-white bg-red-500 rounded hover:bg-red-600"
-                v-if="representatives.length > 1">
+                v-if="representatives.length > 1"
+              >
                 Remove
               </button>
             </div>
           </div>
-          <button type="button" @click="addRepresentative"
-            class="w-full px-6 py-3 text-base font-medium text-white bg-green-600 rounded-md hover:bg-green-700 border-2 border-dashed border-green-700 hover:border-green-800">
+          <button
+            type="button"
+            @click="addRepresentative"
+            class="w-full px-6 py-3 text-base font-medium text-white bg-green-600 rounded-md hover:bg-green-700 border-2 border-dashed border-green-700 hover:border-green-800"
+          >
             + Add Another Representative
           </button>
         </div>
         <!-- Remarks -->
         <section class="mb-8">
           <h2 class="text-lg font-medium mb-4 text-gray-700">Remarks</h2>
-          <textarea v-model="remarks" rows="4"
-            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"></textarea>
+          <textarea
+            v-model="remarks"
+            rows="4"
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+          ></textarea>
         </section>
 
         <!-- Submit Button -->
         <div class="mt-6 flex justify-end">
-          <button type="submit"
-            class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700">
+          <button
+            type="submit"
+            class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700"
+          >
             Register Event
           </button>
         </div>
@@ -352,10 +468,18 @@ const submitForm = async () => {
       formData.append(`representatives[${index}][cv]`, rep.cv_file, rep.cv_filename)
     }
     if (rep.id_doc_file) {
-      formData.append(`representatives[${index}][id_document]`, rep.id_doc_file, rep.id_doc_filename)
+      formData.append(
+        `representatives[${index}][id_document]`,
+        rep.id_doc_file,
+        rep.id_doc_filename,
+      )
     }
     if (rep.auth_letter_file) {
-      formData.append(`representatives[${index}][auth_letter]`, rep.auth_letter_file, rep.auth_letter_filename)
+      formData.append(
+        `representatives[${index}][auth_letter]`,
+        rep.auth_letter_file,
+        rep.auth_letter_filename,
+      )
     }
   })
 
@@ -369,10 +493,16 @@ const submitForm = async () => {
     // Reset form or redirect as needed
     // Reset form example:
     selectedInstitute.value = ''
-    Object.assign(eventDetails, { programDetail: '', description: '', purpose: '', fromDate: '', toDate: '', others: '' })
+    Object.assign(eventDetails, {
+      programDetail: '',
+      description: '',
+      purpose: '',
+      fromDate: '',
+      toDate: '',
+      others: '',
+    })
     representatives.splice(0, representatives.length, createNewRepresentative())
     remarks.value = ''
-
   } catch (error) {
     console.error('Error submitting form:', error)
     toast.error('Failed to register the HEI visit promotion.')
@@ -389,8 +519,8 @@ onMounted(async () => {
     const [institutesResponse, countriesResponse, ecpfResponse] = await Promise.all([
       apiService.getMasterInstitutesCollegesUniversities(),
       apiService.getCountries(),
-      apiService.getEcpfDetails()
-    ]);
+      apiService.getEcpfDetails(),
+    ])
 
     availableInstitutes.value = institutesResponse.data.results
     countryOptions.value = countriesResponse.data

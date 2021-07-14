@@ -1,9 +1,6 @@
 <template>
   <div class="w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
-    <PageHeader
-      :title="pageHeaderTitle"
-      :subtitle="pageHeaderSubtitle"
-    >
+    <PageHeader :title="pageHeaderTitle" :subtitle="pageHeaderSubtitle">
       <template #icon>
         <RefreshCw class="w-6 h-6 text-indigo-600" />
       </template>
@@ -275,8 +272,8 @@
                   hasExpired
                     ? 'bg-red-50 border-red-200'
                     : isExpiringWithin3Months
-                    ? 'bg-yellow-50 border-yellow-200'
-                    : 'bg-blue-50 border-blue-200',
+                      ? 'bg-yellow-50 border-yellow-200'
+                      : 'bg-blue-50 border-blue-200',
                 ]"
               >
                 <div class="flex items-center">
@@ -286,8 +283,8 @@
                       hasExpired
                         ? 'bg-red-100'
                         : isExpiringWithin3Months
-                        ? 'bg-yellow-100'
-                        : 'bg-blue-100',
+                          ? 'bg-yellow-100'
+                          : 'bg-blue-100',
                     ]"
                   >
                     <Clock
@@ -296,8 +293,8 @@
                         hasExpired
                           ? 'text-red-600'
                           : isExpiringWithin3Months
-                          ? 'text-yellow-600'
-                          : 'text-blue-600',
+                            ? 'text-yellow-600'
+                            : 'text-blue-600',
                       ]"
                     />
                   </div>
@@ -307,8 +304,8 @@
                       hasExpired
                         ? 'text-red-900'
                         : isExpiringWithin3Months
-                        ? 'text-yellow-900'
-                        : 'text-blue-900',
+                          ? 'text-yellow-900'
+                          : 'text-blue-900',
                     ]"
                     >Qualification Information</span
                   >
@@ -321,8 +318,8 @@
                         hasExpired
                           ? 'text-red-700'
                           : isExpiringWithin3Months
-                          ? 'text-yellow-700'
-                          : 'text-blue-700',
+                            ? 'text-yellow-700'
+                            : 'text-blue-700',
                       ]"
                     >
                       Registration Date
@@ -333,8 +330,8 @@
                         hasExpired
                           ? 'text-red-900'
                           : isExpiringWithin3Months
-                          ? 'text-yellow-900'
-                          : 'text-blue-900',
+                            ? 'text-yellow-900'
+                            : 'text-blue-900',
                       ]"
                     >
                       {{ formatDisplayDate(formData.registration_date) }}
@@ -347,8 +344,8 @@
                         hasExpired
                           ? 'text-red-700'
                           : isExpiringWithin3Months
-                          ? 'text-yellow-700'
-                          : 'text-blue-700',
+                            ? 'text-yellow-700'
+                            : 'text-blue-700',
                       ]"
                     >
                       Expiry Date担保
@@ -360,8 +357,8 @@
                           hasExpired
                             ? 'text-red-900'
                             : isExpiringWithin3Months
-                            ? 'text-yellow-900'
-                            : 'text-blue-900',
+                              ? 'text-yellow-900'
+                              : 'text-blue-900',
                         ]"
                       >
                         {{ formatDisplayDate(formData.expiry_date) }}
@@ -612,7 +609,13 @@
                     :class="{
                       'bg-red-50 border-red-200 text-red-800':
                         complaint.is_blocking_applications ||
-                        ['Submitted', 'Registered', 'Under Review', 'Investigation', 'Action Pending'].includes(complaint.status),
+                        [
+                          'Submitted',
+                          'Registered',
+                          'Under Review',
+                          'Investigation',
+                          'Action Pending',
+                        ].includes(complaint.status),
                       'bg-green-50 border-green-200 text-green-700':
                         !complaint.is_blocking_applications &&
                         ['Resolved', 'Closed', 'Dismissed'].includes(complaint.status),
@@ -627,7 +630,13 @@
                         :class="{
                           'bg-red-100 text-red-800':
                             complaint.is_blocking_applications ||
-                            ['Submitted', 'Registered', 'Under Review', 'Investigation', 'Action Pending'].includes(complaint.status),
+                            [
+                              'Submitted',
+                              'Registered',
+                              'Under Review',
+                              'Investigation',
+                              'Action Pending',
+                            ].includes(complaint.status),
                           'bg-green-100 text-green-800':
                             !complaint.is_blocking_applications &&
                             ['Resolved', 'Closed', 'Dismissed'].includes(complaint.status),
@@ -635,9 +644,20 @@
                       >
                         {{ complaint.status_display || complaint.status }}
                         <span
-                          v-if="complaint.is_blocking_applications || ['Submitted', 'Registered', 'Under Review', 'Investigation', 'Action Pending'].includes(complaint.status)"
+                          v-if="
+                            complaint.is_blocking_applications ||
+                            [
+                              'Submitted',
+                              'Registered',
+                              'Under Review',
+                              'Investigation',
+                              'Action Pending',
+                            ].includes(complaint.status)
+                          "
                           class="font-semibold"
-                        > (Blocking)</span>
+                        >
+                          (Blocking)</span
+                        >
                       </span>
                     </div>
                     <p class="text-xs mt-1">
@@ -660,9 +680,7 @@
                   v-else-if="!hasUnresolvedComplaints && complaints.length > 0"
                   class="p-3 bg-green-50 border-l-4 border-green-500 text-green-700 rounded-md"
                 >
-                  <p class="font-medium">
-                    All complaints are resolved, closed, or dismissed.
-                  </p>
+                  <p class="font-medium">All complaints are resolved, closed, or dismissed.</p>
                 </div>
               </div>
             </div>
@@ -780,8 +798,8 @@
             </div>
             <p class="mt-1 text-xs sm##text-sm text-gray-500 ml-7">
               Confirm your application details and submit for
-              {{ renewalType === 're-registration' ? 're-registration' : 'renewal' }}. Payment will be handled at a
-              later stage.
+              {{ renewalType === 're-registration' ? 're-registration' : 'renewal' }}. Payment will
+              be handled at a later stage.
             </p>
             <div class="mt-5 p-4 sm##p-5 rounded-lg bg-white border shadow-sm">
               <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -1048,11 +1066,11 @@ const remarks = ref('')
 
 const today = computed(() => dayjs())
 const expiryDate = computed(() =>
-  formData.value.expiry_date ? dayjs(formData.value.expiry_date) : null
+  formData.value.expiry_date ? dayjs(formData.value.expiry_date) : null,
 )
 const threeMonthsFromNow = computed(() => today.value.add(3, 'month'))
 const hasExpired = computed(() =>
-  expiryDate.value ? expiryDate.value.isBefore(today.value, 'day') : false
+  expiryDate.value ? expiryDate.value.isBefore(today.value, 'day') : false,
 )
 const isExpiringWithin3Months = computed(() => {
   if (!expiryDate.value || hasExpired.value) return false
@@ -1060,22 +1078,25 @@ const isExpiringWithin3Months = computed(() => {
 })
 
 const renewalType = computed(() => {
-  return hasExpired.value ? 're-registration' : 'renewal';
+  return hasExpired.value ? 're-registration' : 'renewal'
 })
 
 const pageHeaderTitle = computed(() => {
-  return renewalType.value === 're-registration' ? 'Re-registration Application' : 'Renewal Application';
+  return renewalType.value === 're-registration'
+    ? 'Re-registration Application'
+    : 'Renewal Application'
 })
 
 const pageHeaderSubtitle = computed(() => {
-  const baseSubtitle = 'Please review your personal details, CPD scores, and other requirements to ensure your eligibility for ';
-  return baseSubtitle + (renewalType.value === 're-registration' ? 're-registration.' : 'renewal.');
+  const baseSubtitle =
+    'Please review your personal details, CPD scores, and other requirements to ensure your eligibility for '
+  return baseSubtitle + (renewalType.value === 're-registration' ? 're-registration.' : 'renewal.')
 })
 
 const hasUnresolvedComplaints = computed(() => {
-  if (isComplaintsLoading.value) return true; // Block while loading
-  if (complaintsLoadError.value) return true; // Block if error
-  if (!complaints.value || complaints.value.length === 0) return false; // No complaints, allow renewal
+  if (isComplaintsLoading.value) return true // Block while loading
+  if (complaintsLoadError.value) return true // Block if error
+  if (!complaints.value || complaints.value.length === 0) return false // No complaints, allow renewal
 
   const blockingStatuses = [
     'Submitted',
@@ -1085,13 +1106,13 @@ const hasUnresolvedComplaints = computed(() => {
     'Action Pending',
   ]
 
-  return complaints.value.some(complaint => {
+  return complaints.value.some((complaint) => {
     // Prioritize explicit is_blocking_applications field if present
     if (typeof complaint.is_blocking_applications === 'boolean') {
-      return complaint.is_blocking_applications === true;
+      return complaint.is_blocking_applications === true
     }
     // Fallback: block if status is in blockingStatuses
-    return blockingStatuses.includes(complaint.status);
+    return blockingStatuses.includes(complaint.status)
   })
 })
 
@@ -1104,62 +1125,62 @@ const meetsSupervisionRequirements = computed(() => {
 })
 
 const isEligibleForRenewal = computed(() => {
-  if (isLoading.value || loadError.value) return false;
-  if (!formData.value.qualification_id_to_renew) return false;
-  if (!expiryDate.value || !expiryDate.value.isValid()) return false;
+  if (isLoading.value || loadError.value) return false
+  if (!formData.value.qualification_id_to_renew) return false
+  if (!expiryDate.value || !expiryDate.value.isValid()) return false
 
-  if (hasUnresolvedComplaints.value) return false;
-  if (authStore.user?.is_counselor && !meetsSupervisionRequirements.value) return false;
+  if (hasUnresolvedComplaints.value) return false
+  if (authStore.user?.is_counselor && !meetsSupervisionRequirements.value) return false
 
-  return isExpiringWithin3Months.value || hasExpired.value;
+  return isExpiringWithin3Months.value || hasExpired.value
 })
 
 const renewalEligibilityMessage = computed(() => {
-  if (isLoading.value) return 'Loading eligibility data...';
-  if (loadError.value) return `Error determining eligibility: ${loadError.value}`;
+  if (isLoading.value) return 'Loading eligibility data...'
+  if (loadError.value) return `Error determining eligibility: ${loadError.value}`
 
   if (!formData.value.qualification_id_to_renew)
-    return 'No valid qualification identified for renewal.';
+    return 'No valid qualification identified for renewal.'
   if (!expiryDate.value || !expiryDate.value.isValid())
-    return 'Cannot determine eligibility without a valid qualification expiry date.';
+    return 'Cannot determine eligibility without a valid qualification expiry date.'
 
   if (isComplaintsLoading.value && complaints.value.length === 0)
-    return 'Checking complaints status... Renewal blocked until check is complete.';
+    return 'Checking complaints status... Renewal blocked until check is complete.'
   if (complaintsLoadError.value)
-    return `Error loading complaints data: ${complaintsLoadError.value}. Renewal blocked.`;
+    return `Error loading complaints data: ${complaintsLoadError.value}. Renewal blocked.`
 
   if (hasUnresolvedComplaints.value && complaints.value.length > 0) {
     const explicitlyBlockingComplaint = complaints.value.find(
-      c => typeof c.is_blocking_applications === 'boolean' && c.is_blocking_applications === true
-    );
+      (c) => typeof c.is_blocking_applications === 'boolean' && c.is_blocking_applications === true,
+    )
     if (explicitlyBlockingComplaint) {
-      return 'Renewal is blocked: One or more complaints are marked as actively blocking applications. Please resolve these with the council.';
+      return 'Renewal is blocked: One or more complaints are marked as actively blocking applications. Please resolve these with the council.'
     }
-    return 'Renewal is blocked: You have one or more complaints in Submitted, Registered, Under Review, Investigation, or Action Pending status. Please resolve these before proceeding.';
+    return 'Renewal is blocked: You have one or more complaints in Submitted, Registered, Under Review, Investigation, or Action Pending status. Please resolve these before proceeding.'
   }
 
   if (authStore.user?.is_counselor) {
     if (isSupervisionLoading.value && supervisionApplications.value.length === 0)
-      return 'Checking supervision status... Renewal blocked until check is complete.';
+      return 'Checking supervision status... Renewal blocked until check is complete.'
     if (supervisionLoadError.value)
-      return `Error loading supervision data: ${supervisionLoadError.value}. Renewal blocked.`;
+      return `Error loading supervision data: ${supervisionLoadError.value}. Renewal blocked.`
     if (!meetsSupervisionRequirements.value) {
       if (
         supervisionApplications.value.length === 0 &&
         !isSupervisionLoading.value &&
         !supervisionLoadError.value
       ) {
-        return 'Renewal is blocked: No counseling supervision application found. Counselors require an approved supervision.';
+        return 'Renewal is blocked: No counseling supervision application found. Counselors require an approved supervision.'
       }
-      return 'Renewal is blocked: No approved counseling supervision application found. Counselors require an approved supervision.';
+      return 'Renewal is blocked: No approved counseling supervision application found. Counselors require an approved supervision.'
     }
   }
 
   if (!(isExpiringWithin3Months.value || hasExpired.value)) {
-    return 'Your qualification is currently not eligible for renewal based on its expiry date (must be expiring within 3 months or already expired).';
+    return 'Your qualification is currently not eligible for renewal based on its expiry date (must be expiring within 3 months or already expired).'
   }
 
-  return 'Your qualification is currently not eligible for renewal. Please review all requirements.';
+  return 'Your qualification is currently not eligible for renewal. Please review all requirements.'
 })
 
 const getNewExpiryDate = computed(() => {
@@ -1341,12 +1362,12 @@ const fetchApplicationData = async () => {
       detailedApplication.user_qualifications.length === 0
     ) {
       throw new Error(
-        'No qualifications found on the original application. Cannot determine renewal eligibility.'
+        'No qualifications found on the original application. Cannot determine renewal eligibility.',
       )
     }
 
     let primaryQualification = detailedApplication.user_qualifications.find(
-      (q) => q.is_primary_qualification
+      (q) => q.is_primary_qualification,
     )
     if (!primaryQualification && detailedApplication.user_qualifications.length > 0) {
       const sortedQualifications = [...detailedApplication.user_qualifications].sort((a, b) => {
@@ -1366,7 +1387,7 @@ const fetchApplicationData = async () => {
       !dayjs(primaryQualification.expiry_date).isValid()
     ) {
       throw new Error(
-        'Could not find a valid primary qualification with a valid expiry date for renewal.'
+        'Could not find a valid primary qualification with a valid expiry date for renewal.',
       )
     }
 
@@ -1526,17 +1547,17 @@ const confirmSubmit = async () => {
 
     if (renewalResponse && renewalResponse.data && renewalResponse.data.id) {
       toast.success(
-        `${renewalType.value === 're-registration' ? 'Re-registration' : 'Renewal'} application submitted successfully! Payment will be processed later. Check "My Applications" for status.`
+        `${renewalType.value === 're-registration' ? 'Re-registration' : 'Renewal'} application submitted successfully! Payment will be processed later. Check "My Applications" for status.`,
       )
       await healthStore.initialize()
       router.push('/admin/user/health_certification/my_applications')
     } else {
       console.warn(
         `${renewalType.value} created, but API response structure might be unexpected.`,
-        renewalResponse
+        renewalResponse,
       )
       toast.success(
-        `${renewalType.value === 're-registration' ? 'Re-registration' : 'Renewal'} application submitted successfully! Check "My Applications" for status. Payment will be handled later.`
+        `${renewalType.value === 're-registration' ? 'Re-registration' : 'Renewal'} application submitted successfully! Check "My Applications" for status. Payment will be handled later.`,
       )
       await healthStore.initialize()
       router.push('/admin/user/health_certification/my_applications')

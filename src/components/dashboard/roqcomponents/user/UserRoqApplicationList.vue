@@ -105,7 +105,7 @@ const filteredApplications = computed(() => {
     const matchesType = selectedType.value ? app.type_of_course?.name === selectedType.value : true
     const matchesSearch = searchQuery.value
       ? Object.values(app).some((value) =>
-          String(value).toLowerCase().includes(searchQuery.value.toLowerCase())
+          String(value).toLowerCase().includes(searchQuery.value.toLowerCase()),
         )
       : true
     const isNotSecondCopy = !app.is_second_copy

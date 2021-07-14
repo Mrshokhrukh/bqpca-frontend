@@ -359,7 +359,7 @@
                 </dd>
               </div>
             </dl>
-            '''
+
             <div
               v-if="
                 section.title === 'Resource Persons' &&
@@ -420,7 +420,6 @@
                 </tbody>
               </table>
             </div>
-            ''
           </div>
         </div>
 
@@ -816,7 +815,7 @@ const editApplication = (application) => {
   showViewModal.value = false
   toast.info('Navigating to edit application...')
   router.push(
-    `/admin/cme_cpd_provider/health_certification/cpd_application_details?id=${application.id}`
+    `/admin/cme_cpd_provider/health_certification/cpd_application_details?id=${application.id}`,
   )
 }
 

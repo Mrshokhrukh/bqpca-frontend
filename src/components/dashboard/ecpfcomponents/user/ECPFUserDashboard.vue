@@ -12,10 +12,7 @@
         <p class="text-gray-500">No applications available</p>
       </div>
 
-      <ImportantDatesAndEvents
-        :events="events"
-        v-if="events.length"
-      />
+      <ImportantDatesAndEvents :events="events" v-if="events.length" />
       <div v-else class="bg-white p-4 rounded-lg shadow">
         <p class="text-gray-500">No events available</p>
       </div>
@@ -108,7 +105,7 @@ onMounted(async () => {
   faqs.value = await fetchData('/api/faqs')
 
   // Fetch live chat availability
-  liveChatAvailable.value = await fetchData('/api/live-chat-status') || false
+  liveChatAvailable.value = (await fetchData('/api/live-chat-status')) || false
 })
 
 // Event handlers

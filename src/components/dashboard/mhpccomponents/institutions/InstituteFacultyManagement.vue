@@ -392,7 +392,6 @@
                   :currentYear="currentYear"
                   @show-notification="showNotification"
                 />
-                <!-- qualificationOptions and courseTypeOptions removed from props -->
               </div>
               <div v-else-if="form.faculty_type === 'medical'">
                 <MedicalFacultyForm
@@ -535,7 +534,7 @@ import {
   UserPlusIcon,
 } from '@heroicons/vue/24/outline'
 import { useAuthStore } from '@/stores/authStore'
-// Assuming InstituteHeader is a global component or correctly imported elsewhere if needed.
+import InstituteHeader from '@/components/common/MHPC/InstituteHeader.vue'
 
 const authStore = useAuthStore()
 const currentYear = new Date().getFullYear()
@@ -560,22 +559,20 @@ const currentPage = ref(1)
 const nextPageUrl = ref(null)
 const previousPageUrl = ref(null)
 const totalFaculty = ref(0)
-const pageSize = ref(10) // Or your desired page size
+const pageSize = ref(10)
 
-const institutePk = ref(null) // This needs to be set, e.g., from auth store or route params
+const institutePk = ref(null)
 
 const isModalVisible = ref(false)
-const modalMode = ref(null) // 'add', 'edit', 'view'
+const modalMode = ref(null)
 const showDeleteModal = ref(false)
 const facultyToDelete = ref(null)
-// Removed qualificationOptions and courseTypeOptions as child component fetches them
 
 const initialFormState = () => ({
   id: null,
-  faculty_type: '', // 'academic' or 'medical'
-  identifier: '', // Used for CID (academic) or Registration No (medical)
-  application_profile_identifier: null, // For medical from BHMC
-  // Shared fields (will be in form, but Academic/Medical might not use all)
+  faculty_type: '',
+  identifier: '',
+  application_profile_identifier: null,
   staff_name: '',
   nationality: '',
   date_of_birth: '',
@@ -585,23 +582,21 @@ const initialFormState = () => ({
   contact_no: '',
   email_address: '',
   passport_photo: null,
-  passport_photo_name: '', // To keep track of existing photo
-  designation: '', // Designation at *this* institute
-  date_of_joining: new Date().toISOString().split('T')[0], // Date of joining *this* institute
-  education_details: [], // Specific to academic
+  passport_photo_name: '',
+  designation: '',
+  date_of_joining: new Date().toISOString().split('T')[0],
+  education_details: [],
   cv: null,
-  cv_name: '', // To keep track of existing CV
-  // Medical specific (if not fetched directly into these fields by child component)
-  registration_type: '', // For medical
-  registration_date: '', // For medical
-  expiry_date: '', // For medical
-  // Other specific fields for medical or academic can be added if shared at this level
+  cv_name: '',
+  registration_type_name: '',
+  registration_date: '',
+  expiry_date: '',
 })
 
 const form = ref(initialFormState())
 
 const updateSharedForm = (newFormState) => {
-  form.value = { ...form.value, ...newFormState } // Merge to preserve faculty_type etc.
+  form.value = { ...form.value, ...newFormState }
 }
 
 const validation = reactive({
@@ -613,11 +608,8 @@ const validation = reactive({
       if (facultyType === 'academic' && value && !/^\d{11}$/.test(value)) {
         return 'Academic faculty requires a valid 11-digit CID.'
       }
-      // Add more specific validation for medical identifier if needed
       return null
     },
-    // Removed application_profile_identifier, registration_type, registration_date, expiry_date
-    // as they are handled within MedicalFacultyForm
     nationality: (value, facultyType, isDataFetched) =>
       facultyType && !isDataFetched && !value && modalMode.value !== 'view'
         ? 'Nationality is required.'
@@ -655,7 +647,6 @@ const validation = reactive({
         return 'CV is required for new faculty.'
       return null
     },
-    // These address fields are primarily for Academic, Medical might fetch them.
     village: (value, facultyType, isDataFetched) => {
       if (facultyType === 'academic' && !isDataFetched && !value && modalMode.value !== 'view')
         return 'Village is required.'
@@ -678,8 +669,7 @@ const validateForm = () => {
   validation.errors = {}
   let isValid = true
   const facultyType = form.value.faculty_type
-  // isDataFetched should ideally come from the child form's state if it manages fetching
-  const isPotentiallyDataFetchedByChild = form.value.isDataFetched // Assuming child emits this
+  const isPotentiallyDataFetchedByChild = form.value.isDataFetched
 
   for (const field in validation.rules) {
     let error
@@ -691,7 +681,6 @@ const validateForm = () => {
       )
     else if (field === 'cv')
       error = validation.rules[field](form.value[field], form.value.cv_name, facultyType)
-    // Fields common to both and not typically auto-fetched by child for basic entry
     else if (
       [
         'staff_name',
@@ -713,7 +702,7 @@ const validateForm = () => {
         isPotentiallyDataFetchedByChild
       )
     } else {
-      error = validation.rules[field](form.value[field], facultyType) // For faculty_type itself
+      error = validation.rules[field](form.value[field], facultyType)
     }
 
     if (error) {
@@ -722,7 +711,6 @@ const validateForm = () => {
     }
   }
 
-  // ** MODIFIED Education Details Validation **
   if (facultyType === 'academic' && modalMode.value !== 'view') {
     ;(form.value.education_details || []).forEach((edu, index) => {
       if (!edu.qualification_type_id) {
@@ -754,9 +742,6 @@ const validateForm = () => {
       }
     })
     if (!form.value.education_details || form.value.education_details.length === 0) {
-      // Optionally add a general error if at least one education detail is required
-      // validation.errors.education_general = "At least one education detail is required for academic faculty.";
-      // isValid = false;
     }
   }
   console.log('Validation Ran. Errors:', JSON.parse(JSON.stringify(validation.errors)))
@@ -771,7 +756,7 @@ const filteredFaculty = computed(() => {
   return facultyList.value.filter(
     (faculty) =>
       (faculty.staff_name && faculty.staff_name.toLowerCase().includes(query)) ||
-      (faculty.identifier && String(faculty.identifier).toLowerCase().includes(query)) || // Ensure identifier is string
+      (faculty.identifier && String(faculty.identifier).toLowerCase().includes(query)) ||
       (faculty.designation && faculty.designation.toLowerCase().includes(query)) ||
       (faculty.faculty_type && faculty.faculty_type.toLowerCase().includes(query))
   )
@@ -789,7 +774,7 @@ const paginationEnd = computed(() => {
 })
 
 const fetchInstitutePk = async () => {
-  if (institutePk.value) return // Already have it
+  if (institutePk.value) return
 
   const userCid = authStore.user?.cid
   if (!userCid) {
@@ -808,7 +793,6 @@ const fetchInstitutePk = async () => {
     const institutes = response.data.results || response.data
     if (institutes && institutes.length > 0) {
       institutePk.value = institutes[0].id
-      console.log(`Institute PK set to: ${institutePk.value}`)
     } else {
       console.error(`No institute found for CID: ${userCid}`)
       showNotification(
@@ -829,15 +813,11 @@ const fetchInstitutePk = async () => {
   }
 }
 
-// Removed fetchDropdownOptions as child components handle their specific dropdowns
-
 const fetchFaculty = async (page = 1) => {
   isLoading.value = true
   try {
-    // Ensure institutePk is available before fetching
     if (!institutePk.value) {
-      // Always check for institutePk
-      await fetchInstitutePk() // Attempt to fetch it if not already set
+      await fetchInstitutePk()
       if (!institutePk.value) {
         showNotification(
           'error',
@@ -852,7 +832,7 @@ const fetchFaculty = async (page = 1) => {
       page,
       search: searchQuery.value,
       limit: pageSize.value,
-      institute: institutePk.value, // Filter by institute
+      institute: institutePk.value,
     }
 
     const response = await apiServices.getMhpcTeachingFaculties(params)
@@ -910,13 +890,13 @@ const extractPageNumber = (url) => {
 const fetchNextPage = () => {
   const pageNum = extractPageNumber(nextPageUrl.value)
   if (pageNum) fetchFaculty(pageNum)
-  else if (hasNextPage.value) fetchFaculty(currentPage.value + 1) // Fallback if URL parsing fails but next is true
+  else if (hasNextPage.value) fetchFaculty(currentPage.value + 1)
 }
 
 const fetchPreviousPage = () => {
   const pageNum = extractPageNumber(previousPageUrl.value)
   if (pageNum) fetchFaculty(pageNum)
-  else if (hasPreviousPage.value && currentPage.value > 1) fetchFaculty(currentPage.value - 1) // Fallback
+  else if (hasPreviousPage.value && currentPage.value > 1) fetchFaculty(currentPage.value - 1)
 }
 
 const sortBy = (column) => {
@@ -926,7 +906,6 @@ const sortBy = (column) => {
     sortColumn.value = column
     sortDirection.value = 'asc'
   }
-  // Create a new sorted array to trigger reactivity properly
   facultyList.value = [...facultyList.value].sort((a, b) => {
     let valA = a[column]
     let valB = b[column]
@@ -936,7 +915,6 @@ const sortBy = (column) => {
     if (valB == null) return sortDirection.value === 'asc' ? -1 : 1
 
     if (column === 'date_of_joining') {
-      // Ensure valid dates before comparing
       const dateA = new Date(valA).getTime()
       const dateB = new Date(valB).getTime()
       if (isNaN(dateA) && isNaN(dateB)) return 0
@@ -946,9 +924,8 @@ const sortBy = (column) => {
       valB = dateB
     } else if (typeof valA === 'string') {
       valA = valA.toLowerCase()
-      valB = String(valB).toLowerCase() // Ensure valB is also string for comparison
+      valB = String(valB).toLowerCase()
     }
-    // Handle numeric comparison if applicable
     if (typeof valA === 'number' && typeof valB === 'number') {
       return sortDirection.value === 'asc' ? valA - valB : valB - valA
     }
@@ -984,12 +961,9 @@ const formatDate = (dateString) => {
   if (!dateString) return 'N/A'
   try {
     const date = new Date(dateString)
-    // Check if the date is valid. Invalid dates often result in NaN for getTime()
     if (isNaN(date.getTime())) {
-      // Attempt to re-parse if it's a simple YYYY-MM-DD from input that might be treated as UTC by new Date()
       const parts = dateString.split('-')
       if (parts.length === 3) {
-        // new Date(year, monthIndex, day) - monthIndex is 0-based
         const reParsedDate = new Date(
           parseInt(parts[0]),
           parseInt(parts[1]) - 1,
@@ -1003,12 +977,12 @@ const formatDate = (dateString) => {
           })
         }
       }
-      return 'Invalid Date' // Original string was not a parsable date
+      return 'Invalid Date'
     }
     return date.toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' })
   } catch (e) {
     console.error('Date format error for:', dateString, e)
-    return 'Invalid Date' // Fallback for any other parsing errors
+    return 'Invalid Date'
   }
 }
 
@@ -1024,15 +998,14 @@ const openAddFacultyModal = () => {
 }
 
 const parseEducationDetails = (details) => {
-  if (!details) return [] // Handle null or undefined
+  if (!details) return []
   if (typeof details === 'string') {
     try {
       const parsed = JSON.parse(details)
-      // ** Ensure parsed details have the correct structure for AcademicFacultyForm **
       return Array.isArray(parsed)
         ? parsed.map((edu) => ({
-            qualification_type_id: edu.qualification_type_id || edu.type || '', // Map from old 'type' if necessary
-            qualification_id: edu.qualification_id || edu.qualification || '', // Map from old 'qualification'
+            qualification_type_id: edu.qualification_type_id || edu.type || '',
+            qualification_id: edu.qualification_id || edu.qualification || '',
             institute: edu.institute || '',
             year_of_completion: edu.year_of_completion || '',
           }))
@@ -1042,7 +1015,6 @@ const parseEducationDetails = (details) => {
       return []
     }
   }
-  // If already an array, map to ensure correct structure
   return Array.isArray(details)
     ? details.map((edu) => ({
         qualification_type_id: edu.qualification_type_id || edu.type || '',
@@ -1063,11 +1035,9 @@ const populateFormForModal = (faculty) => {
     application_profile_identifier:
       faculty.application_profile_identifier || faculty.application_profile || null,
     staff_name: faculty.faculty_name || faculty.staff_name || '',
-    // Medical specific fields that might come from the main faculty list
-    registration_type: faculty.registration_type || '',
+    registration_type_name: faculty.registration_type_name || '',
     registration_date: faculty.registration_date || '',
     expiry_date: faculty.expiry_date || '',
-    // Shared fields
     nationality: faculty.nationality || '',
     date_of_birth: faculty.date_of_birth || '',
     village: faculty.village || '',
@@ -1075,16 +1045,16 @@ const populateFormForModal = (faculty) => {
     dzongkhag: faculty.dzongkhag || '',
     contact_no: faculty.contact_no || '',
     email_address: faculty.email_address || '',
-    designation: faculty.designation || '', // Designation at *this* institute
+    designation: faculty.designation || '',
     date_of_joining:
       faculty.date_of_joining ||
       (modalMode.value === 'add' ? new Date().toISOString().split('T')[0] : ''),
-    education_details: educationDetails, // Already parsed
-    cv: null, // File objects are reset
+    education_details: educationDetails,
+    cv: null,
     cv_name:
       faculty.cv_name ||
       (faculty.cv && typeof faculty.cv === 'string' ? faculty.cv.split('/').pop() : ''),
-    passport_photo: null, // File objects are reset
+    passport_photo: null,
     passport_photo_name:
       faculty.passport_photo_name ||
       (faculty.passport_photo && typeof faculty.passport_photo === 'string'
@@ -1108,7 +1078,6 @@ const openViewFacultyModal = (faculty) => {
 
 const closeModal = () => {
   isModalVisible.value = false
-  // Delay reset to allow modal fade-out animation
   setTimeout(() => {
     resetForm()
     modalMode.value = null
@@ -1116,7 +1085,6 @@ const closeModal = () => {
 }
 
 const handleFacultyTypeChange = () => {
-  // Preserve only very basic fields if needed, or reset more thoroughly
   const {
     designation,
     date_of_joining,
@@ -1124,17 +1092,15 @@ const handleFacultyTypeChange = () => {
     staff_name,
     identifier,
   } = form.value
-  resetForm() // Resets to initialFormState which is mostly empty
+  resetForm()
 
   form.value = {
-    ...initialFormState(), // Start fresh
-    // Restore a few potentially common fields if desired, or let user re-enter
+    ...initialFormState(),
     staff_name,
     identifier,
     designation,
     date_of_joining: date_of_joining || new Date().toISOString().split('T')[0],
     faculty_type: newFacultyType,
-    // ** MODIFIED: Initialize education_details with correct new fields **
     education_details:
       newFacultyType === 'academic'
         ? [
@@ -1147,7 +1113,7 @@ const handleFacultyTypeChange = () => {
           ]
         : [],
   }
-  validation.errors = {} // Clear errors as the form structure changes
+  validation.errors = {}
 }
 
 const saveFaculty = async () => {
@@ -1176,20 +1142,16 @@ const saveFaculty = async () => {
   isSavingFaculty.value = true
   const formDataPayload = new FormData()
 
-  formDataPayload.append('institute', institutePk.value) // Add institute PK
+  formDataPayload.append('institute', institutePk.value)
 
-  // Append fields carefully
   Object.keys(form.value).forEach((key) => {
     const value = form.value[key]
 
     if (key === 'cv' || key === 'passport_photo') {
       if (value instanceof File) {
-        // Only append if it's a new file
         formDataPayload.append(key, value, value.name)
       }
-      // If not a File, it means either no file or existing file (don't send for existing, API handles it)
     } else if (key === 'education_details') {
-      // Ensure education_details is an array and stringify it
       const eduDetailsToSend = (Array.isArray(value) ? value : []).map((edu) => ({
         qualification_type_id: edu.qualification_type_id,
         qualification_id: edu.qualification_id,
@@ -1198,26 +1160,21 @@ const saveFaculty = async () => {
       }))
       formDataPayload.append(key, JSON.stringify(eduDetailsToSend))
     } else if (key === 'identifier') {
-      // API expects 'faculty_id', and conditionally 'cid' or 'registration_no'
-      if (value) formDataPayload.append('faculty_id', value) // General identifier
+      if (value) formDataPayload.append('faculty_id', value)
       if (form.value.faculty_type === 'medical' && value) {
         formDataPayload.append('registration_no', value)
       } else if (form.value.faculty_type === 'academic' && value) {
         formDataPayload.append('cid', value)
       }
     } else if (key === 'staff_name') {
-      // API expects 'faculty_name'
       if (value) formDataPayload.append('faculty_name', value)
     } else if (
       key === 'application_profile_identifier' &&
       form.value.faculty_type === 'medical' &&
       value
     ) {
-      // API expects 'application_profile'
       formDataPayload.append('application_profile', value)
-    }
-    // Exclude id, file name placeholders, and null/undefined values unless specifically handled
-    else if (
+    } else if (
       !['id', 'cv_name', 'passport_photo_name', 'isDataFetched'].includes(key) &&
       value !== null &&
       value !== undefined &&
@@ -1227,12 +1184,10 @@ const saveFaculty = async () => {
     }
   })
 
-  // Ensure faculty_type is appended if it's set
   if (form.value.faculty_type && !formDataPayload.has('faculty_type')) {
     formDataPayload.append('faculty_type', form.value.faculty_type)
   }
 
-  // Log FormData contents (for debugging)
   console.log('FormData to be sent:')
   for (let [key, value] of formDataPayload.entries()) {
     console.log(key, value)
@@ -1254,7 +1209,7 @@ const saveFaculty = async () => {
         `${form.value.staff_name}'s information has been updated.`
       )
     }
-    fetchFaculty(modalMode.value === 'add' ? 1 : currentPage.value) // Refresh list
+    fetchFaculty(modalMode.value === 'add' ? 1 : currentPage.value)
     closeModal()
   } catch (error) {
     console.error('Error saving faculty:', error.response?.data || error.message || error)
@@ -1264,7 +1219,6 @@ const saveFaculty = async () => {
       const serverErrors = {}
       let messages = []
 
-      // Iterate over errorData to build messages and map to form fields
       Object.entries(errorData).forEach(([field, msgs]) => {
         const fieldNameReadable = field.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())
         const msgArray = Array.isArray(msgs) ? msgs : [msgs]
@@ -1278,7 +1232,6 @@ const saveFaculty = async () => {
         else if (field === 'application_profile')
           serverErrors['application_profile_identifier'] = joinedMessages
         else if (field === 'education_details' && Array.isArray(msgArray)) {
-          // Handle nested errors for education_details
           msgArray.forEach((eduError, index) => {
             if (typeof eduError === 'object' && eduError !== null) {
               Object.entries(eduError).forEach(([eduField, eduMsgs]) => {
@@ -1296,10 +1249,9 @@ const saveFaculty = async () => {
             }
           })
         } else {
-          serverErrors[field] = joinedMessages // Map other errors directly
+          serverErrors[field] = joinedMessages
         }
         if (field !== 'education_details') {
-          // Avoid duplicating education detail messages
           messages.push(`${fieldNameReadable}: ${joinedMessages}`)
         }
       })
@@ -1307,7 +1259,6 @@ const saveFaculty = async () => {
       userFriendlyMessage =
         messages.join(' \n') || 'Please check the highlighted fields for errors.'
       if (messages.length === 0 && errorData.detail) {
-        // Fallback for general detail error
         userFriendlyMessage = errorData.detail
       }
     } else if (error.message) {
@@ -1334,7 +1285,6 @@ const deleteFaculty = async () => {
       'Faculty Deleted',
       `${facultyToDelete.value.staff_name} has been successfully deleted.`
     )
-    // Optimistic UI update or fetch
     const newTotal = totalFaculty.value - 1
     const newTotalPages = Math.ceil(newTotal / pageSize.value)
 
@@ -1343,10 +1293,8 @@ const deleteFaculty = async () => {
       currentPage.value > 1 &&
       currentPage.value > newTotalPages
     ) {
-      // If last item on a page (and not the first page), go to previous page
       fetchFaculty(currentPage.value - 1)
     } else {
-      // Otherwise, refresh current page
       fetchFaculty(currentPage.value)
     }
     showDeleteModal.value = false
@@ -1367,15 +1315,11 @@ const showNotification = (type, title, message, duration = 5000) => {
   if (notification.value.timeoutId) clearTimeout(notification.value.timeoutId)
   notification.value = { show: true, type, title, message, timeoutId: null }
 
-  // Auto-close logic
   if (duration > 0 && type !== 'error') {
-    // Standard duration for non-errors
     notification.value.timeoutId = setTimeout(closeNotification, duration)
   } else if (duration > 0 && type === 'error') {
-    // Potentially longer for errors, ensure it's at least a good amount
-    notification.value.timeoutId = setTimeout(closeNotification, Math.max(duration, 10000)) // e.g. 10 seconds for errors
+    notification.value.timeoutId = setTimeout(closeNotification, Math.max(duration, 10000))
   }
-  // If duration is 0 or less, it won't auto-close (e.g., for critical system errors)
 }
 
 const closeNotification = () => {
@@ -1387,19 +1331,16 @@ const closeNotification = () => {
 }
 
 watch(searchQuery, () => {
-  currentPage.value = 1 // Reset to first page on new search
+  currentPage.value = 1
   fetchFaculty(1)
 })
 
 onMounted(async () => {
-  await fetchInstitutePk() // Ensure PK is available
-  // Dropdown options are fetched by child components now
+  await fetchInstitutePk()
   if (institutePk.value) {
-    // Only fetch faculty if institute is identified
     fetchFaculty()
   } else {
-    isLoading.value = false // Stop loading if institute cannot be identified
-    // Notification about missing institute PK is handled in fetchInstitutePk
+    isLoading.value = false
   }
 })
 </script>
@@ -1424,11 +1365,9 @@ onMounted(async () => {
 .btn-danger {
   @apply border-transparent bg-red-600 text-white hover:bg-red-700 focus:ring-red-500;
 }
-/* .btn-secondary { @apply border-transparent bg-sky-600 text-white hover:bg-sky-700 focus:ring-sky-500; } */
 .table-header-cell {
   @apply px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors duration-150 select-none;
 }
-
 .notification-slide-enter-active,
 .notification-slide-leave-active {
   @apply transition-all duration-500 ease-out;
@@ -1439,7 +1378,6 @@ onMounted(async () => {
 .notification-slide-leave-to {
   @apply opacity-0 translate-x-full translate-y-2 scale-95;
 }
-
 .modal-fade-enter-active,
 .modal-fade-leave-active {
   @apply transition-all duration-300 ease-in-out;
@@ -1452,7 +1390,6 @@ onMounted(async () => {
 .modal-fade-leave-to .relative[role='dialog'] {
   @apply scale-95 translate-y-5;
 }
-
 .modal-enter-active,
 .modal-leave-active {
   @apply transition-opacity duration-300 ease-out;
@@ -1469,16 +1406,13 @@ onMounted(async () => {
 .modal-leave-to .relative[role='dialog'] {
   @apply opacity-0 scale-95 translate-y-4;
 }
-
 .loader {
   border: 2px solid currentColor;
   border-right-color: transparent;
   border-radius: 50%;
   display: inline-block;
-  /* Removed width and height, should be controlled by parent or specific usage */
   animation: spin 1s linear infinite;
 }
-
 @keyframes spin {
   to {
     transform: rotate(360deg);

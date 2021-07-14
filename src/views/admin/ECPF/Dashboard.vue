@@ -24,8 +24,13 @@
     <!-- Default Section (fallback) -->
     <template v-else>
       <StatsGrid :stats="filteredStats" />
-      <ApplicationTable :applications="paginatedApplications" :current-page="currentPage" :total-results="filteredTotal"
-        :per-page="perPage" @page-change="handlePageChange" />
+      <ApplicationTable
+        :applications="paginatedApplications"
+        :current-page="currentPage"
+        :total-results="filteredTotal"
+        :per-page="perPage"
+        @page-change="handlePageChange"
+      />
     </template>
   </div>
 </template>

@@ -9,25 +9,34 @@
       <div class="modal-body">
         <div v-if="loadingInstituteData" class="loading-message">Loading form data...</div>
         <form @submit.prevent="handleSubmitDpr" v-if="!loadingInstituteData">
-
           <!-- Pre-filled/Reference Information -->
           <div class="form-section">
             <h4>Institution Information (from EOI)</h4>
             <div class="form-group">
               <label for="name_of_institution">Proposed Name of the College/institution *</label>
-              <input type="text" id="name_of_institution" v-model="formData.name_of_institution" disabled>
+              <input
+                type="text"
+                id="name_of_institution"
+                v-model="formData.name_of_institution"
+                disabled
+              />
             </div>
             <div class="form-group">
               <label for="cid">Promoter's CID *</label>
-              <input type="text" id="cid" v-model="formData.CID" disabled>
+              <input type="text" id="cid" v-model="formData.CID" disabled />
             </div>
-             <div class="form-group">
+            <div class="form-group">
               <label for="dzongkhag">Proposed Dzongkhag *</label>
-              <input type="text" id="dzongkhag" v-model="formData.dzongkhag" disabled>
+              <input type="text" id="dzongkhag" v-model="formData.dzongkhag" disabled />
             </div>
             <div class="form-group" v-if="formData.program_type_name">
               <label for="program_type_name">Program Type</label>
-              <input type="text" id="program_type_name" v-model="formData.program_type_name" disabled>
+              <input
+                type="text"
+                id="program_type_name"
+                v-model="formData.program_type_name"
+                disabled
+              />
             </div>
           </div>
 
@@ -36,7 +45,7 @@
             <h4>DPR Details</h4>
             <div class="form-group">
               <label for="dpr_name">DPR Name / Primary Course Title *</label>
-              <input type="text" id="dpr_name" v-model="formData.dpr_name" required>
+              <input type="text" id="dpr_name" v-model="formData.dpr_name" required />
               <span v-if="errors.dpr_name" class="error-text">{{ errors.dpr_name }}</span>
             </div>
           </div>
@@ -46,22 +55,43 @@
             <h4>Head of Institution</h4>
             <div class="form-group">
               <label for="head_of_institution_name">Head of Institution Name *</label>
-              <input type="text" id="head_of_institution_name" v-model="formData.head_of_institution_name" required>
+              <input
+                type="text"
+                id="head_of_institution_name"
+                v-model="formData.head_of_institution_name"
+                required
+              />
             </div>
             <div class="form-group">
               <label for="head_of_institution_gender">Head of Institution Gender *</label>
-              <select id="head_of_institution_gender" v-model="formData.head_of_institution_gender" required>
+              <select
+                id="head_of_institution_gender"
+                v-model="formData.head_of_institution_gender"
+                required
+              >
                 <option disabled value="">Please select one</option>
-                <option v-for="gender in genderOptions" :key="gender.value" :value="gender.value">{{ gender.text }}</option>
+                <option v-for="gender in genderOptions" :key="gender.value" :value="gender.value">
+                  {{ gender.text }}
+                </option>
               </select>
             </div>
             <div class="form-group">
               <label for="head_of_institution_email">Head of Institution Email *</label>
-              <input type="email" id="head_of_institution_email" v-model="formData.head_of_institution_email" required>
+              <input
+                type="email"
+                id="head_of_institution_email"
+                v-model="formData.head_of_institution_email"
+                required
+              />
             </div>
             <div class="form-group">
               <label for="head_of_institution_phone_number">Head of Institution Phone No *</label>
-              <input type="tel" id="head_of_institution_phone_number" v-model="formData.head_of_institution_phone_number" required>
+              <input
+                type="tel"
+                id="head_of_institution_phone_number"
+                v-model="formData.head_of_institution_phone_number"
+                required
+              />
             </div>
           </div>
 
@@ -70,19 +100,19 @@
             <h4>Institution Contact & Location</h4>
             <div class="form-group">
               <label for="contact_no">Institution Contact No *</label>
-              <input type="tel" id="contact_no" v-model="formData.contact_no" required>
+              <input type="tel" id="contact_no" v-model="formData.contact_no" required />
             </div>
             <div class="form-group">
               <label for="email_address">Institution Official Email Address *</label>
-              <input type="email" id="email_address" v-model="formData.email_address" required>
+              <input type="email" id="email_address" v-model="formData.email_address" required />
             </div>
             <div class="form-group">
               <label for="gewog">Proposed Gewog</label>
-              <input type="text" id="gewog" v-model="formData.gewog">
+              <input type="text" id="gewog" v-model="formData.gewog" />
             </div>
-             <div class="form-group">
+            <div class="form-group">
               <label for="village">Proposed Village</label>
-              <input type="text" id="village" v-model="formData.village">
+              <input type="text" id="village" v-model="formData.village" />
             </div>
             <div class="form-group">
               <label for="address">Full Address *</label>
@@ -91,19 +121,35 @@
           </div>
 
           <!-- Course & Summary -->
-           <div class="form-section">
+          <div class="form-section">
             <h4>Program and Summary</h4>
             <div class="form-group">
               <label for="commencement_date">Proposed Commencement Date *</label>
-              <input type="date" id="commencement_date" v-model="formData.commencement_date" required>
+              <input
+                type="date"
+                id="commencement_date"
+                v-model="formData.commencement_date"
+                required
+              />
             </div>
             <div class="form-group">
               <label for="course_duration">Course Duration (Months) *</label>
-              <input type="number" id="course_duration" v-model="formData.course_duration" min="1" required>
+              <input
+                type="number"
+                id="course_duration"
+                v-model="formData.course_duration"
+                min="1"
+                required
+              />
             </div>
             <div class="form-group">
               <label for="executive_summary">Executive Summary *</label>
-              <textarea id="executive_summary" rows="4" v-model="formData.executive_summary" required></textarea>
+              <textarea
+                id="executive_summary"
+                rows="4"
+                v-model="formData.executive_summary"
+                required
+              ></textarea>
             </div>
           </div>
 
@@ -112,7 +158,12 @@
             <h4>Detailed Project Proposal</h4>
             <div v-for="section in dprDetailSections" :key="section.key" class="form-group">
               <label :for="section.key">{{ section.label }}</label>
-              <textarea :id="section.key" :rows="section.rows" v-model="formData[section.key]" required></textarea>
+              <textarea
+                :id="section.key"
+                :rows="section.rows"
+                v-model="formData[section.key]"
+                required
+              ></textarea>
             </div>
           </div>
 
@@ -120,12 +171,14 @@
           <div class="form-section">
             <h4>Other Information</h4>
             <div class="form-group">
-                <label for="remarks">Overall Remarks (by Applicant)</label>
-                <textarea id="remarks" v-model="formData.remarks" rows="3"></textarea>
+              <label for="remarks">Overall Remarks (by Applicant)</label>
+              <textarea id="remarks" v-model="formData.remarks" rows="3"></textarea>
             </div>
             <div class="form-group checkbox-group">
-                <input type="checkbox" id="declaration" v-model="formData.declaration" required>
-                <label for="declaration" class="checkbox-label">I hereby declare that the information provided is true and correct. *</label>
+              <input type="checkbox" id="declaration" v-model="formData.declaration" required />
+              <label for="declaration" class="checkbox-label"
+                >I hereby declare that the information provided is true and correct. *</label
+              >
             </div>
           </div>
 
@@ -146,23 +199,40 @@
 </template>
 
 <script>
-import apiServices from '@/services/services'; // Adjust path as needed
+import apiServices from '@/services/services' // Adjust path as needed
+import { useToast } from 'vue-toastification'
 
 const GENDER_OPTIONS = Object.freeze([
   { value: 'MALE', text: 'Male' },
   { value: 'FEMALE', text: 'Female' },
   { value: 'OTHERS', text: 'Others' },
-]);
+])
 
 const DPR_DETAIL_SECTIONS = Object.freeze([
-  { key: 'vision_mission_strategies', label: 'Vision, Mission and Implementation Strategies *', rows: 5 },
-  { key: 'project_scheduling', label: 'Project Scheduling, Implementation and Management *', rows: 5 },
-  { key: 'gross_national_happiness', label: 'Contribution to Gross National Happiness & Values *', rows: 5 },
+  {
+    key: 'vision_mission_strategies',
+    label: 'Vision, Mission and Implementation Strategies *',
+    rows: 5,
+  },
+  {
+    key: 'project_scheduling',
+    label: 'Project Scheduling, Implementation and Management *',
+    rows: 5,
+  },
+  {
+    key: 'gross_national_happiness',
+    label: 'Contribution to Gross National Happiness & Values *',
+    rows: 5,
+  },
   { key: 'land_details', label: 'Land Details *', rows: 3 },
   { key: 'conceptual_master_plan', label: 'Conceptual Master Plan *', rows: 5 },
   { key: 'academic_plan', label: 'Academic Plan/Profile *', rows: 6 },
   { key: 'affiliation_details', label: 'Affiliation Details *', rows: 4 },
-  { key: 'teaching_hospital_details', label: 'Teaching Hospital Details (Mandatory for Medical/Health courses) *', rows: 4 },
+  {
+    key: 'teaching_hospital_details',
+    label: 'Teaching Hospital Details (Mandatory for Medical/Health courses) *',
+    rows: 4,
+  },
   { key: 'research_policy', label: 'Research Policy *', rows: 4 },
   { key: 'human_resource', label: 'Human Resource Plan *', rows: 5 },
   { key: 'quality_assurance', label: 'Quality Assurance System *', rows: 5 },
@@ -175,7 +245,7 @@ const DPR_DETAIL_SECTIONS = Object.freeze([
   { key: 'safety_security', label: 'Safety and Security Plan *', rows: 4 },
   { key: 'public_information_system', label: 'Public Information System Plan *', rows: 4 },
   { key: 'other_details_dpr', label: 'Others *', rows: 4 },
-]);
+])
 
 export default {
   name: 'DprSubmissionModal',
@@ -184,7 +254,8 @@ export default {
       type: [String, Number],
       required: true,
     },
-    instituteData: { // Contains existing data from the EOI stage
+    instituteData: {
+      // Contains existing data from the EOI stage
       type: Object,
       required: true,
     },
@@ -198,16 +269,20 @@ export default {
       loadingInstituteData: false, // Could be true if we fetch fresh data, but using prop for now
       genderOptions: GENDER_OPTIONS,
       dprDetailSections: DPR_DETAIL_SECTIONS,
-    };
+    }
+  },
+  setup() {
+    const toast = useToast()
+    return { toast }
   },
   watch: {
     instituteData: {
       handler() {
-        this.formData = this.initializeFormData();
+        this.formData = this.initializeFormData()
       },
       deep: true,
       immediate: true, // Initialize on component creation
-    }
+    },
   },
   methods: {
     initializeFormData() {
@@ -238,99 +313,114 @@ export default {
 
         remarks: this.instituteData.remarks || '',
         declaration: this.instituteData.declaration || false,
-      };
+      }
 
       // Initialize DPR detail sections
-      DPR_DETAIL_SECTIONS.forEach(section => {
-        initial[section.key] = this.instituteData[section.key] || '';
-      });
+      DPR_DETAIL_SECTIONS.forEach((section) => {
+        initial[section.key] = this.instituteData[section.key] || ''
+      })
 
-      return initial;
+      return initial
     },
     validateForm() {
-      this.errors = {};
-      let isValid = true;
+      this.errors = {}
+      let isValid = true
 
       if (!this.formData.dpr_name) {
-        this.errors.dpr_name = 'DPR Name is required.';
-        isValid = false;
+        this.errors.dpr_name = 'DPR Name is required.'
+        isValid = false
       }
       // Add more specific validations as needed for other required fields
       // For brevity, relying on `required` attribute on inputs for now.
       // A more robust validation would check each required field here.
       if (!this.formData.declaration) {
-          alert('You must agree to the declaration.');
-          isValid = false;
+        this.toast.error('You must agree to the declaration.')
+        isValid = false
       }
 
       // Check all required textareas
-      DPR_DETAIL_SECTIONS.forEach(section => {
+      DPR_DETAIL_SECTIONS.forEach((section) => {
         if (!this.formData[section.key]) {
-          this.errors[section.key] = `${section.label.replace(' *', '')} is required.`;
-          isValid = false;
+          this.errors[section.key] = `${section.label.replace(' *', '')} is required.`
+          isValid = false
         }
-      });
-       // Basic check for other required fields
+      })
+      // Basic check for other required fields
       const requiredFields = [
-        'head_of_institution_name', 'head_of_institution_gender', 'head_of_institution_email', 'head_of_institution_phone_number',
-        'contact_no', 'email_address', 'address', 'commencement_date', 'course_duration', 'executive_summary'
-      ];
-      requiredFields.forEach(field => {
+        'head_of_institution_name',
+        'head_of_institution_gender',
+        'head_of_institution_email',
+        'head_of_institution_phone_number',
+        'contact_no',
+        'email_address',
+        'address',
+        'commencement_date',
+        'course_duration',
+        'executive_summary',
+      ]
+      requiredFields.forEach((field) => {
         if (!this.formData[field]) {
-          this.errors[field] = `${field.replace(/_/g, ' ')} is required.`; // Simple message
-          isValid = false;
+          this.errors[field] = `${field.replace(/_/g, ' ')} is required.` // Simple message
+          isValid = false
         }
-      });
+      })
 
-
-      if (!isValid && !this.errors.dpr_name) { // If other errors exist but not dpr_name, show generic for now
-          alert('Please fill all required (*) fields.');
+      if (!isValid && !this.errors.dpr_name) {
+        // If other errors exist but not dpr_name, show generic for now
+        this.toast.error('Please fill all required (*) fields.')
       }
-      return isValid;
+      return isValid
     },
     async handleSubmitDpr() {
-      this.submissionError = null;
+      this.submissionError = null
       if (!this.validateForm()) {
-        return;
+        return
       }
 
-      this.isSubmitting = true;
+      this.isSubmitting = true
 
       // Construct payload - only send fields relevant for DPR update
       // Backend should ideally ignore fields it doesn't want updated (like CID, name_of_institution)
       const payload = {
         ...this.formData, // Send all form data
         application_status: 'DPR_SUBMITTED', // CRITICAL: Update status
-      };
+      }
 
       // Remove fields that should not be sent or are display-only
-      delete payload.program_type_name;
+      delete payload.program_type_name
 
       try {
-        await apiServices.patchMhpcInstitute(this.instituteId, payload);
-        this.$emit('dpr-submitted');
+        await apiServices.patchMhpcInstitute(this.instituteId, payload)
+        this.$emit('dpr-submitted')
       } catch (err) {
-        console.error('Error submitting DPR:', err);
-        this.submissionError = err.response?.data?.detail || err.message || 'Failed to submit DPR. Please try again.';
+        console.error('Error submitting DPR:', err)
+        this.submissionError =
+          err.response?.data?.detail || err.message || 'Failed to submit DPR. Please try again.'
         if (err.response?.data && typeof err.response.data === 'object') {
-            // Handle specific field errors from backend if provided
-            Object.keys(err.response.data).forEach(key => {
-                if (Object.prototype.hasOwnProperty.call(this.formData, key)) {
-                    this.$set(this.errors, key, err.response.data[key].join ? err.response.data[key].join(', ') : err.response.data[key]);
-                }
-            });
+          // Handle specific field errors from backend if provided
+          Object.keys(err.response.data).forEach((key) => {
+            if (Object.prototype.hasOwnProperty.call(this.formData, key)) {
+              this.$set(
+                this.errors,
+                key,
+                err.response.data[key].join
+                  ? err.response.data[key].join(', ')
+                  : err.response.data[key],
+              )
+            }
+          })
         }
       } finally {
-        this.isSubmitting = false;
+        this.isSubmitting = false
       }
     },
     closeModal() {
       if (!this.isSubmitting) {
-        this.$emit('close');
+        this.$emit('close')
       }
     },
   },
-};
+}
 </script>
 
 <style scoped>
@@ -355,7 +445,7 @@ export default {
   max-height: 90vh;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 .modal-header {
   padding: 15px 20px;
@@ -409,11 +499,11 @@ export default {
   font-size: 0.9em;
   color: #555;
 }
-.form-group input[type="text"],
-.form-group input[type="email"],
-.form-group input[type="tel"],
-.form-group input[type="date"],
-.form-group input[type="number"],
+.form-group input[type='text'],
+.form-group input[type='email'],
+.form-group input[type='tel'],
+.form-group input[type='date'],
+.form-group input[type='number'],
 .form-group select,
 .form-group textarea {
   width: 100%;
@@ -435,13 +525,13 @@ export default {
   display: flex;
   align-items: center;
 }
-.checkbox-group input[type="checkbox"] {
+.checkbox-group input[type='checkbox'] {
   width: auto;
   margin-right: 10px;
 }
 .checkbox-label {
   font-weight: normal !important; /* Override label style */
-   margin-bottom: 0 !important;
+  margin-bottom: 0 !important;
 }
 .error-text {
   color: red;
@@ -450,9 +540,9 @@ export default {
 .form-error-message {
   padding: 10px;
   margin-bottom: 15px;
-  background-color: #FFD2D2;
-  border: 1px solid #D8000C;
-  color: #D8000C;
+  background-color: #ffd2d2;
+  border: 1px solid #d8000c;
+  color: #d8000c;
   border-radius: 4px;
   text-align: center;
 }
@@ -464,7 +554,8 @@ export default {
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
 }
-.button-primary, .button-secondary {
+.button-primary,
+.button-secondary {
   padding: 10px 20px;
   border: none;
   border-radius: 4px;

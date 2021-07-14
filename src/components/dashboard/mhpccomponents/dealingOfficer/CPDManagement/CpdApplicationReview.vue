@@ -8,8 +8,8 @@
           notification.type === 'success'
             ? 'bg-green-50 border-l-4 border-green-500'
             : notification.type === 'error'
-            ? 'bg-red-50 border-l-4 border-red-500'
-            : 'bg-blue-50 border-l-4 border-blue-500',
+              ? 'bg-red-50 border-l-4 border-red-500'
+              : 'bg-blue-50 border-l-4 border-blue-500',
         ]"
       >
         <div
@@ -18,8 +18,8 @@
             notification.type === 'success'
               ? 'text-green-500'
               : notification.type === 'error'
-              ? 'text-red-500'
-              : 'text-blue-500',
+                ? 'text-red-500'
+                : 'text-blue-500',
           ]"
         >
           <svg
@@ -66,8 +66,8 @@
               notification.type === 'success'
                 ? 'text-green-800'
                 : notification.type === 'error'
-                ? 'text-red-800'
-                : 'text-blue-800',
+                  ? 'text-red-800'
+                  : 'text-blue-800',
             ]"
           >
             {{ notification.title }}
@@ -78,8 +78,8 @@
               notification.type === 'success'
                 ? 'text-green-700'
                 : notification.type === 'error'
-                ? 'text-red-700'
-                : 'text-blue-700',
+                  ? 'text-red-700'
+                  : 'text-blue-700',
             ]"
           >
             {{ notification.message }}
@@ -366,13 +366,13 @@ const initialAction = ref(null)
 
 // --- COMPUTED PROPERTIES ---
 const totalApplicationsCount = computed(
-  () => applications.value.filter((app) => app.status !== 'Draft').length
+  () => applications.value.filter((app) => app.status !== 'Draft').length,
 )
 const SUBMITTEDCount = computed(
-  () => applications.value.filter((app) => app.application_status === 'SUBMITTED').length
+  () => applications.value.filter((app) => app.application_status === 'SUBMITTED').length,
 )
 const headerDescription = computed(
-  () => `Total: ${totalApplicationsCount.value} | SUBMITTED: ${SUBMITTEDCount.value}`
+  () => `Total: ${totalApplicationsCount.value} | SUBMITTED: ${SUBMITTEDCount.value}`,
 )
 // --- UPDATED: Values now match API status strings for correct filtering ---
 const statusFilterOptions = ref([
@@ -396,21 +396,21 @@ const filteredApplications = computed(() => {
         app.full_name?.toLowerCase().includes(query) ||
         app.cid_no?.toString().includes(query) ||
         app.title_of_cpd?.toLowerCase().includes(query) ||
-        app.registration_no?.toString().toLowerCase().includes(query)
+        app.registration_no?.toString().toLowerCase().includes(query),
     )
   }
   return filtered
 })
 
 const totalPages = computed(
-  () => Math.ceil(filteredApplications.value.length / pageSize.value) || 1
+  () => Math.ceil(filteredApplications.value.length / pageSize.value) || 1,
 )
 const paginationStart = computed(() => (currentPage.value - 1) * pageSize.value)
 const paginationEnd = computed(() =>
-  Math.min(paginationStart.value + pageSize.value, filteredApplications.value.length)
+  Math.min(paginationStart.value + pageSize.value, filteredApplications.value.length),
 )
 const paginatedApplications = computed(() =>
-  filteredApplications.value.slice(paginationStart.value, paginationEnd.value)
+  filteredApplications.value.slice(paginationStart.value, paginationEnd.value),
 )
 
 // --- METHODS ---
@@ -451,7 +451,7 @@ const getStatusColor = (status) =>
     APPROVED: 'bg-green-100 text-green-800',
     REJECTED: 'bg-red-100 text-red-800',
     DRAFT: 'bg-gray-100 text-gray-800',
-  }[status] || 'bg-gray-100 text-gray-800')
+  })[status] || 'bg-gray-100 text-gray-800'
 
 // --- UPDATED: openViewModal now accepts an action ---
 const openViewModal = (app, action = null) => {
@@ -486,7 +486,7 @@ const saveApplication = async (payload) => {
     showNotification(
       'success',
       'Credits Updated',
-      'The CPD credits have been updated successfully.'
+      'The CPD credits have been updated successfully.',
     )
     await fetchApplications()
   } catch (err) {
@@ -519,7 +519,7 @@ const approveApplication = async (payload) => {
     showNotification(
       'error',
       'Approval Failed',
-      'An error occurred while approving the application.'
+      'An error occurred while approving the application.',
     )
   } finally {
     loading.value = false
@@ -543,7 +543,7 @@ const rejectApplication = async (payload) => {
     showNotification(
       'success',
       'Application Regretted',
-      'The CPD application has been marked as regretted.'
+      'The CPD application has been marked as regretted.',
     )
     await fetchApplications()
   } catch (err) {

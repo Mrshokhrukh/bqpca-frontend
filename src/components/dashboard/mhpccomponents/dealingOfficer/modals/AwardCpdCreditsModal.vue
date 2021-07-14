@@ -526,12 +526,7 @@ const props = defineProps({
   participant: { type: Object, default: null },
 })
 
-const emit = defineEmits([
-  'update:modelValue',
-  'approve',
-  'reject',
-  'awardCredits',
-])
+const emit = defineEmits(['update:modelValue', 'approve', 'reject', 'awardCredits'])
 
 // --- Local State ---
 const creditScore = ref(0)

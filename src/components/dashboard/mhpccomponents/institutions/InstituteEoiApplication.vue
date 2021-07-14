@@ -955,7 +955,7 @@ const sectionVisibility = reactive(
     .reduce((acc, curr) => {
       acc[curr.refKey] = curr.refKey === 'teachingHospitalDetails' ? false : true
       return acc
-    }, {})
+    }, {}),
 )
 
 const toggleSectionVisibility = (refKey) => {
@@ -1396,7 +1396,14 @@ onMounted(() => {
     if (savedDraft) {
       try {
         const parsedDraft = JSON.parse(savedDraft)
-        const basicInfoKeys = ['CID', 'full_name', 'gender', 'contact_no', 'email_address', 'village']
+        const basicInfoKeys = [
+          'CID',
+          'full_name',
+          'gender',
+          'contact_no',
+          'email_address',
+          'village',
+        ]
         basicInfoKeys.forEach((key) => {
           if (formData.value[key] && !parsedDraft[key]) {
             parsedDraft[key] = formData.value[key]

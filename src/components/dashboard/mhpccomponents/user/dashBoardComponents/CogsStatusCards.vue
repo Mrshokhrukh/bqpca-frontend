@@ -29,7 +29,7 @@
             :class="[
               getStatusInfo(step.value).bgClass,
               'flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center ring-4 ring-opacity-50',
-              getStatusInfo(step.value).ringClass
+              getStatusInfo(step.value).ringClass,
             ]"
           >
             <component

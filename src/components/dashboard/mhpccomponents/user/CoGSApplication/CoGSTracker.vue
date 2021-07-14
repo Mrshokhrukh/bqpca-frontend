@@ -221,11 +221,10 @@ const paymentModal = ref(null)
 const selectedApplication = ref(null)
 const isLoadingPayment = ref(false)
 
-const COGS_PAYMENT_AMOUNT = 1000;
-const COGS_SERVICE_CODE = "100247";
-const COGS_DESCRIPTION = "CoGS Application Fee";
-const COGS_APP_TYPE = "certificate_of_good_standing_fee";
-
+const COGS_PAYMENT_AMOUNT = 1000
+const COGS_SERVICE_CODE = '100247'
+const COGS_DESCRIPTION = 'CoGS Application Fee'
+const COGS_APP_TYPE = 'certificate_of_good_standing_fee'
 
 const filteredApplications = computed(() => {
   if (!authStore.user?.cid) {
@@ -237,7 +236,8 @@ const filteredApplications = computed(() => {
     .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
 })
 
-const fetchApplications = async () => { /* ... Sames as before ... */
+const fetchApplications = async () => {
+  /* ... Sames as before ... */
   isLoading.value = true
   apiError.value = false
   try {
@@ -258,8 +258,8 @@ const fetchApplications = async () => { /* ... Sames as before ... */
   }
 }
 
-const StatusBadge = defineComponent({ /* ... Sames as before ... */
-  props: { status: String },
+const StatusBadge = defineComponent({
+  /* ... Sames as before ... */ props: { status: String },
   render() {
     const statusClasses = {
       Pending: 'bg-yellow-100 text-yellow-800 border border-yellow-200',
@@ -280,10 +280,24 @@ const StatusBadge = defineComponent({ /* ... Sames as before ... */
   },
 })
 
-const DetailRow = defineComponent({ /* ... Sames as before ... */
-  props: { label: String, value: [String, Number], icon: { type: String, default: 'Info' }},
+const DetailRow = defineComponent({
+  /* ... Sames as before ... */
+  props: { label: String, value: [String, Number], icon: { type: String, default: 'Info' } },
   render() {
-    const icons = { User, IdCard, Phone, Mail, FileText, Target, BookOpen, CreditCard, Info, Contact, Building, Activity }
+    const icons = {
+      User,
+      IdCard,
+      Phone,
+      Mail,
+      FileText,
+      Target,
+      BookOpen,
+      CreditCard,
+      Info,
+      Contact,
+      Building,
+      Activity,
+    }
     const IconComponent = icons[this.icon] || icons['Info']
     return h('div', { class: 'flex items-start space-x-2.5' }, [
       h(IconComponent, { class: 'w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5' }),
@@ -295,14 +309,18 @@ const DetailRow = defineComponent({ /* ... Sames as before ... */
   },
 })
 
-const formatDate = (dateString) => { /* ... Sames as before ... */
+const formatDate = (dateString) => {
+  /* ... Sames as before ... */
   if (!dateString) return 'N/A'
   try {
     return new Intl.DateTimeFormat('en-GB', {
-      day: '2-digit', month: 'short', year: 'numeric',
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
     }).format(new Date(dateString))
   } catch (e) {
-    console.error('Error formatting date:', dateString, e); return 'Invalid Date'
+    console.error('Error formatting date:', dateString, e)
+    return 'Invalid Date'
   }
 }
 
@@ -320,118 +338,147 @@ const initiatePayment = (application) => {
 const closePaymentModal = () => {
   selectedApplication.value = null
   if (isLoadingPayment.value) {
-    isLoadingPayment.value = false;
+    isLoadingPayment.value = false
   }
 }
 
 const executeMakePayment = async (clientSidePaymentRef, user, application) => {
-  const paymentInitiationFormData = new FormData();
-  paymentInitiationFormData.append('refNo', clientSidePaymentRef);
-  paymentInitiationFormData.append('serviceCode', COGS_SERVICE_CODE);
-  paymentInitiationFormData.append('taxPayerName', user.cid);
-  paymentInitiationFormData.append('taxPayerNo', user.cid);
-  paymentInitiationFormData.append('taxPayerDocumentNo', user.cid);
-  paymentInitiationFormData.append('totalPayableAmount', COGS_PAYMENT_AMOUNT.toString());
-  paymentInitiationFormData.append('description', COGS_DESCRIPTION);
-  paymentInitiationFormData.append('mobileNo', user.contact_number);
-  paymentInitiationFormData.append('payerEmail', user.email);
-  paymentInitiationFormData.append('user', user.id.toString());
-  paymentInitiationFormData.append('payableAmount', COGS_PAYMENT_AMOUNT.toString());
-  paymentInitiationFormData.append('application_no', application.id.toString());
-  paymentInitiationFormData.append('app_type', COGS_APP_TYPE);
+  const paymentInitiationFormData = new FormData()
+  paymentInitiationFormData.append('refNo', clientSidePaymentRef)
+  paymentInitiationFormData.append('serviceCode', COGS_SERVICE_CODE)
+  paymentInitiationFormData.append('taxPayerName', user.cid)
+  paymentInitiationFormData.append('taxPayerNo', user.cid)
+  paymentInitiationFormData.append('taxPayerDocumentNo', user.cid)
+  paymentInitiationFormData.append('totalPayableAmount', COGS_PAYMENT_AMOUNT.toString())
+  paymentInitiationFormData.append('description', COGS_DESCRIPTION)
+  paymentInitiationFormData.append('mobileNo', user.contact_number)
+  paymentInitiationFormData.append('payerEmail', user.email)
+  paymentInitiationFormData.append('user', user.id.toString())
+  paymentInitiationFormData.append('payableAmount', COGS_PAYMENT_AMOUNT.toString())
+  paymentInitiationFormData.append('application_no', application.id.toString())
+  paymentInitiationFormData.append('app_type', COGS_APP_TYPE)
 
   try {
-    const makePaymentFullApiResponse = await apiService.makePayment(paymentInitiationFormData);
+    const makePaymentFullApiResponse = await apiService.makePayment(paymentInitiationFormData)
 
     // CHANGE HERE: Access the data payload correctly
-    const responseData = makePaymentFullApiResponse.data; // Assuming Axios response
+    const responseData = makePaymentFullApiResponse.data // Assuming Axios response
 
     if (!responseData || !responseData.content || !responseData.content.refNo) {
-      console.error('makePayment API response is missing expected content or refNo in responseData:', responseData, 'Full response:', makePaymentFullApiResponse);
-      toast.error('Failed to get a confirmed payment reference from the server during payment submission.');
-      return null;
+      console.error(
+        'makePayment API response is missing expected content or refNo in responseData:',
+        responseData,
+        'Full response:',
+        makePaymentFullApiResponse,
+      )
+      toast.error(
+        'Failed to get a confirmed payment reference from the server during payment submission.',
+      )
+      return null
     }
-    toast.info(`Payment details submitted to gateway (Client Ref: ${clientSidePaymentRef.substring(0, 8)}). Confirmed Server Ref: ${responseData.content.refNo.substring(0,8)}.`);
-    return responseData.content.refNo;
-
+    toast.info(
+      `Payment details submitted to gateway (Client Ref: ${clientSidePaymentRef.substring(0, 8)}). Confirmed Server Ref: ${responseData.content.refNo.substring(0, 8)}.`,
+    )
+    return responseData.content.refNo
   } catch (error) {
     // Log the full error object from Axios if available
-    console.error('Error calling makePayment API:', error.response || error.request || error);
-    let errorMsg = 'An error occurred while submitting payment details to the gateway.';
-    if (error.response?.data?.detail) errorMsg = `Gateway API Error: ${error.response.data.detail}`;
-    else if (typeof error.response?.data === 'string') errorMsg = `Gateway API Error: ${error.response.data}`;
-    else if (error.response?.data?.message) errorMsg = `Gateway API Error: ${error.response.data.message}`; // Check for message property too
-    toast.error(errorMsg);
-    return null;
+    console.error('Error calling makePayment API:', error.response || error.request || error)
+    let errorMsg = 'An error occurred while submitting payment details to the gateway.'
+    if (error.response?.data?.detail) errorMsg = `Gateway API Error: ${error.response.data.detail}`
+    else if (typeof error.response?.data === 'string')
+      errorMsg = `Gateway API Error: ${error.response.data}`
+    else if (error.response?.data?.message)
+      errorMsg = `Gateway API Error: ${error.response.data.message}` // Check for message property too
+    toast.error(errorMsg)
+    return null
   }
 }
 
 const updateCogsApplicationWithPayment = async (applicationId, confirmedPaymentServerRefNo) => {
-  const updateApplicationData = new FormData();
-  updateApplicationData.append('payment_id', confirmedPaymentServerRefNo);
-  updateApplicationData.append('is_payment_complete', 'true');
+  const updateApplicationData = new FormData()
+  updateApplicationData.append('payment_id', confirmedPaymentServerRefNo)
+  updateApplicationData.append('is_payment_complete', 'true')
 
   try {
-    await apiService.patchMhpcCogs(applicationId, updateApplicationData);
-    return true;
+    await apiService.patchMhpcCogs(applicationId, updateApplicationData)
+    return true
   } catch (error) {
-    console.error('Error calling patchMhpcCogs API:', error.response || error.request || error);
-    let errorMsg = 'An error occurred while updating the application status after payment.';
-    if (error.response?.data?.detail) errorMsg = `Update API Error: ${error.response.data.detail}`;
-    else if (typeof error.response?.data === 'string') errorMsg = `Update API Error: ${error.response.data}`;
-    else if (error.response?.data?.message) errorMsg = `Update API Error: ${error.response.data.message}`;
-    toast.error(errorMsg);
-    return false;
+    console.error('Error calling patchMhpcCogs API:', error.response || error.request || error)
+    let errorMsg = 'An error occurred while updating the application status after payment.'
+    if (error.response?.data?.detail) errorMsg = `Update API Error: ${error.response.data.detail}`
+    else if (typeof error.response?.data === 'string')
+      errorMsg = `Update API Error: ${error.response.data}`
+    else if (error.response?.data?.message)
+      errorMsg = `Update API Error: ${error.response.data.message}`
+    toast.error(errorMsg)
+    return false
   }
 }
 
 const handlePaymentCompleted = async (paymentData) => {
   // Store application details before it might be nulled
-  const currentApplicationForProcessing = selectedApplication.value;
-  const applicationRegNo = currentApplicationForProcessing?.registration_no; // Safely access
-  const applicationId = currentApplicationForProcessing?.id;
+  const currentApplicationForProcessing = selectedApplication.value
+  const applicationRegNo = currentApplicationForProcessing?.registration_no // Safely access
+  const applicationId = currentApplicationForProcessing?.id
 
   if (!currentApplicationForProcessing) {
-    toast.error('No application selected for payment update. Please try again.');
-    return;
+    toast.error('No application selected for payment update. Please try again.')
+    return
   }
 
   if (!paymentData || !paymentData.paymentHash) {
-    toast.error('Payment reference (paymentHash) not found from modal. Cannot update status.');
-    return;
+    toast.error('Payment reference (paymentHash) not found from modal. Cannot update status.')
+    return
   }
 
-  const user = authStore.user;
+  const user = authStore.user
   if (!user || !user.contact_number || !user.email || !user.cid || !user.id) {
-    toast.error('User information is incomplete. Please update your profile and try again.');
-    return;
+    toast.error('User information is incomplete. Please update your profile and try again.')
+    return
   }
 
-  isLoadingPayment.value = true;
-  const clientSidePaymentRef = paymentData.paymentHash;
+  isLoadingPayment.value = true
+  const clientSidePaymentRef = paymentData.paymentHash
 
   try {
-    const confirmedServerRefNo = await executeMakePayment(clientSidePaymentRef, user, currentApplicationForProcessing);
+    const confirmedServerRefNo = await executeMakePayment(
+      clientSidePaymentRef,
+      user,
+      currentApplicationForProcessing,
+    )
 
     if (confirmedServerRefNo) {
-      toast.info(`Attempting to update application #${applicationRegNo || 'N/A'} with payment ref ${confirmedServerRefNo.substring(0,8)}...`);
-      const updateSuccess = await updateCogsApplicationWithPayment(applicationId, confirmedServerRefNo);
+      toast.info(
+        `Attempting to update application #${applicationRegNo || 'N/A'} with payment ref ${confirmedServerRefNo.substring(0, 8)}...`,
+      )
+      const updateSuccess = await updateCogsApplicationWithPayment(
+        applicationId,
+        confirmedServerRefNo,
+      )
 
       if (updateSuccess) {
-        toast.success(`Payment for Application #${applicationRegNo || 'N/A'} (Ref: ${confirmedServerRefNo.substring(0,8)}) successful and status updated!`);
-        await fetchApplications();
+        toast.success(
+          `Payment for Application #${applicationRegNo || 'N/A'} (Ref: ${confirmedServerRefNo.substring(0, 8)}) successful and status updated!`,
+        )
+        await fetchApplications()
       } else {
-        toast.warning(`Application #${applicationRegNo || 'N/A'} status might not be updated. Please check or contact support with payment ref ${confirmedServerRefNo.substring(0,8)}.`);
+        toast.warning(
+          `Application #${applicationRegNo || 'N/A'} status might not be updated. Please check or contact support with payment ref ${confirmedServerRefNo.substring(0, 8)}.`,
+        )
       }
     } else {
-      toast.error(`Payment processing failed for Application #${applicationRegNo || 'N/A'}. Application status not updated. Initial Ref: ${clientSidePaymentRef.substring(0,8)}.`);
+      toast.error(
+        `Payment processing failed for Application #${applicationRegNo || 'N/A'}. Application status not updated. Initial Ref: ${clientSidePaymentRef.substring(0, 8)}.`,
+      )
     }
   } catch (error) {
-    console.error('Unexpected error in handlePaymentCompleted orchestration:', error);
-    toast.error(`An unexpected error occurred during the payment process for Application #${applicationRegNo || 'N/A'}. Please try again.`);
+    console.error('Unexpected error in handlePaymentCompleted orchestration:', error)
+    toast.error(
+      `An unexpected error occurred during the payment process for Application #${applicationRegNo || 'N/A'}. Please try again.`,
+    )
   } finally {
-    isLoadingPayment.value = false;
-    selectedApplication.value = null; // Clear selected application
+    isLoadingPayment.value = false
+    selectedApplication.value = null // Clear selected application
   }
 }
 
