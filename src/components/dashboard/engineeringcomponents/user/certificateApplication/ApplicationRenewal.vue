@@ -418,7 +418,7 @@
                           </p>
                           <span class="text-xs text-gray-500">{{
                             formatDisplayDate(record.registration_date)
-                          }}</span>
+                            }}</span>
                         </div>
                         <p class="text-xs text-gray-500 mt-0.5 truncate">
                           {{ record.type_of_cpd_activity_display || 'N/A' }}
@@ -684,17 +684,14 @@ const isExpiringWithin3Months = computed(() => {
   return expiryDate.value.isBetween(today.value, threeMonthsFromNow.value, 'day', '[]')
 })
 
-// New computed property to determine renewal type for display
 const renewalType = computed(() => {
   return hasExpired.value ? 're-registration' : 'renewal';
 });
 
-// Dynamic Page Header Title
 const pageHeaderTitle = computed(() => {
   return renewalType.value === 're-registration' ? 'Re-registration Application' : 'Renewal Application';
 });
 
-// Dynamic Page Header Subtitle
 const pageHeaderSubtitle = computed(() => {
   const baseSubtitle = 'Please review your personal details, CPD scores, and other requirements to ensure your eligibility for ';
   return baseSubtitle + (renewalType.value === 're-registration' ? 're-registration.' : 'renewal.');
@@ -735,12 +732,14 @@ const getTotalCpdPoints = computed(() => {
     .filter((record) => record.review_status === 'Approved')
     .reduce((total, record) => total + (Number(record.cpd_credit) || 0), 0)
 })
+
 const cpdStatus = computed(() => {
   const points = getTotalCpdPoints.value
   if (points >= 30) return 'met'
   if (points > 0) return 'below_minimum'
   return 'none'
 })
+
 const cpdMessage = computed(() => {
   const points = getTotalCpdPoints.value
   switch (cpdStatus.value) {
@@ -754,6 +753,7 @@ const cpdMessage = computed(() => {
       return 'Checking your CPD score status...'
   }
 })
+
 const cpdIcon = computed(() => {
   switch (cpdStatus.value) {
     case 'met':
@@ -765,6 +765,7 @@ const cpdIcon = computed(() => {
       return Info
   }
 })
+
 const cpdCardClass = computed(() => {
   switch (cpdStatus.value) {
     case 'met':
@@ -776,6 +777,7 @@ const cpdCardClass = computed(() => {
       return 'bg-gray-100'
   }
 })
+
 const cpdIconClass = computed(() => {
   switch (cpdStatus.value) {
     case 'met':
@@ -787,6 +789,7 @@ const cpdIconClass = computed(() => {
       return 'text-gray-600'
   }
 })
+
 const cpdProgressClass = computed(() => {
   switch (cpdStatus.value) {
     case 'met':
@@ -798,6 +801,7 @@ const cpdProgressClass = computed(() => {
       return 'bg-gray-500'
   }
 })
+
 const cpdTextClass = computed(() => {
   switch (cpdStatus.value) {
     case 'met':
@@ -809,6 +813,7 @@ const cpdTextClass = computed(() => {
       return 'bg-gray-200 text-gray-800'
   }
 })
+
 const cpdMessageBgClass = computed(() => {
   switch (cpdStatus.value) {
     case 'met':
@@ -820,6 +825,7 @@ const cpdMessageBgClass = computed(() => {
       return 'bg-gray-50 text-gray-800'
   }
 })
+
 const cpdMessageIconColor = computed(() => {
   switch (cpdStatus.value) {
     case 'met':
@@ -848,23 +854,37 @@ const fetchApplicationData = async () => {
     const userCid = authStore.user?.cid
     if (!userCid) throw new Error('User CID not found. Please log in.')
 
+
     const response = await apiService.getEpcNewApplications({ params: { cid: userCid } })
+
     let applications = []
-    if (Array.isArray(response.data)) applications = response.data
-    else if (response.data && Array.isArray(response.data.results))
+    if (Array.isArray(response.data)) {
+      applications = response.data
+    } else if (response.data && Array.isArray(response.data.results)) {
       applications = response.data.results
-    else throw new Error('Unexpected response format fetching applications.')
+    } else {
+      throw new Error('Unexpected response format fetching applications list.')
+    }
+
+    console.log('Filtered applications returned from API for this CID:', applications);
 
     if (applications.length === 0) {
       throw new Error('No existing application found for your CID. Cannot proceed with renewal.')
     }
 
-    applications.sort((a, b) => (dayjs(b.expiry_date).isAfter(dayjs(a.expiry_date)) ? 1 : -1))
-    const latestApplication = applications.find((app) => app.is_active) || applications[0]
+    const sortedActiveApplications = applications
+      .filter(app => app.is_active === true)
+      .sort((a, b) => dayjs(b.updated_at).isAfter(dayjs(a.updated_at)) ? 1 : -1);
+
+    console.log('Sorted ACTIVE applications:', sortedActiveApplications);
+
+    const latestApplication = sortedActiveApplications[0];
 
     if (!latestApplication || !latestApplication.id) {
-      throw new Error('Could not find a suitable previous application record for renewal.')
+      throw new Error('Could not find a suitable active application record for renewal.')
     }
+
+    console.log('Selected latest application record:', latestApplication);
 
     formData.value = {
       id: latestApplication.id,
@@ -884,6 +904,7 @@ const fetchApplicationData = async () => {
       qualification_id_to_renew: null,
     }
 
+    // Now, get the detailed view of the CORRECT latest application
     const applicationDetailsResponse = await apiService.getEpcNewApplication(latestApplication.id)
     const detailedApplication = applicationDetailsResponse.data
 
@@ -893,14 +914,15 @@ const fetchApplicationData = async () => {
       detailedApplication.user_qualifications.length === 0
     ) {
       throw new Error(
-        'No qualifications found on the original application. Cannot determine renewal eligibility.'
+        'No qualifications found on the application. Cannot determine renewal eligibility.'
       )
     }
 
     let primaryQualification = detailedApplication.user_qualifications.find(
-      (q) => q.is_primary_qualification
+      (q) => q.is_primary_qualification === true
     )
     if (!primaryQualification && detailedApplication.user_qualifications.length > 0) {
+      console.warn("No primary qualification found. Falling back to the one with the latest valid expiry date.");
       const sortedQualifications = [...detailedApplication.user_qualifications].sort((a, b) => {
         const dateA = dayjs(a.expiry_date)
         const dateB = dayjs(b.expiry_date)
@@ -921,6 +943,8 @@ const fetchApplicationData = async () => {
         'Could not find a valid primary qualification with a valid expiry date for renewal.'
       )
     }
+
+    console.log('%c SETTING EXPIRY DATE TO:', 'color: #00ff00; font-weight: bold;', primaryQualification.expiry_date);
 
     formData.value.expiry_date = primaryQualification.expiry_date
     formData.value.qualification_id_to_renew = primaryQualification.id
@@ -946,6 +970,7 @@ const fetchApplicationData = async () => {
     isLoading.value = false
   }
 }
+
 
 const fetchCpdRecords = async (cid) => {
   if (!cid) {
@@ -1015,7 +1040,6 @@ const confirmSubmit = async () => {
       renewal_remarks: remarks.value || '',
     }
 
-    // Set registration_type based on renewalType computed property
     formData.value.registration_type = renewalType.value;
     renewalPayload.registration_type = formData.value.registration_type;
 
@@ -1056,7 +1080,6 @@ const handleCancel = () => {
   router.push('/admin/user/engineering_certification/dashboard')
 }
 </script>
-
 <style scoped>
 @keyframes spin {
   to {
