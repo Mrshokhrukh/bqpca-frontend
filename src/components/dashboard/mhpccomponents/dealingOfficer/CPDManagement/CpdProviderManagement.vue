@@ -1131,10 +1131,9 @@ const deleteProviderConfirmed = async () => {
 const fetchProviders = async () => {
   isLoading.value = true
   try {
-    const response = await apiService.getAllUsers();
+    const response = await apiService.getAllUsers()
 
     if (response && response.data && Array.isArray(response.data.results)) {
-
       providers.value = response.data.results
         // 1. First, keep only users with the 'health_certification' service type.
         .filter((user) => user.service_type === 'health_certification')
@@ -1148,20 +1147,19 @@ const fetchProviders = async () => {
           full_name: `${user.first_name || ''} ${user.middle_name || ''} ${user.last_name || ''}`
             .replace(/\s+/g, ' ')
             .trim(),
-        }));
-
+        }))
     } else {
-      console.error('Unexpected API response structure:', response);
-      providers.value = [];
+      console.error('Unexpected API response structure:', response)
+      providers.value = []
     }
   } catch (error) {
-    console.error('Error fetching providers:', error);
-    toast.error('Failed to load providers. Please try again.');
-    providers.value = [];
+    console.error('Error fetching providers:', error)
+    toast.error('Failed to load providers. Please try again.')
+    providers.value = []
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
-};
+}
 
 const closeNotification = () => {
   notification.value.show = false

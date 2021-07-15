@@ -217,7 +217,7 @@
           <div class="flex flex-col">
             <dt class="text-sm font-medium text-gray-500">Work Address [Practice]</dt>
             <dd class="mt-1 text-gray-900 font-medium text-lg">
-              {{ getWorkAddressName(profileForm.workAddressId) || 'Not specified' }}
+              {{ authStore.user?.work_address || 'Not specified' }}
             </dd>
           </div>
         </dl>
@@ -372,7 +372,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import { useAuthStore } from '@/stores/authStore'
 import apiService from '@/services/services'
 import { useToast } from 'vue-toastification'
@@ -389,14 +389,12 @@ const profileForm = ref({
   workAddress: authStore.user?.work_address || '', // Use free text for work address
 })
 
-const workAddresses = ref([])
-
 const formatDate = (dateString) => {
   if (!dateString) return ''
   return new Date(dateString).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
-    day: 'numeric',
+    day: 'numeric'
   })
 }
 
@@ -407,12 +405,6 @@ const getInitials = (name) => {
     .map((part) => part.charAt(0))
     .join('')
     .toUpperCase()
-}
-
-const getWorkAddressName = (addressId) => {
-  if (!addressId) return ''
-  const address = workAddresses.value.find((addr) => addr.id === addressId)
-  return address ? address.name : ''
 }
 
 const handleFileUpload = (event) => {
@@ -449,8 +441,8 @@ const saveProfile = async () => {
     // Call the API to update the profile
     const response = await apiService.updateProfile(authStore.userId, formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+        'Content-Type': 'multipart/form-data'
+      }
     })
 
     // Update the authStore with the fresh data from the response
@@ -477,7 +469,7 @@ const cancelEdit = () => {
     contactNumber: authStore.user?.contact_number || '',
     emailAddress: authStore.user?.email || '',
     passportPhoto: null,
-    workAddress: authStore.user?.work_address || '', // Use free text
+    workAddress: authStore.user?.work_address || '' // Use free text
   }
 
   // Clear preview
@@ -494,39 +486,6 @@ const isValidEmail = (email) => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   return emailRegex.test(email)
 }
-
-onMounted(async () => {
-  // Load Work Addresses
-  try {
-    const response = await apiService.getMhpcNewApplications()
-    const userCid = authStore.user?.cid
-
-    if (response.data && Array.isArray(response.data.results)) {
-      const userApplications = response.data.results.filter((app) => app.cid_no === userCid)
-
-      if (userApplications.length > 0) {
-        const primaryQualifications = userApplications
-          .flatMap((app) => app.user_qualifications)
-          .filter((qual) => qual.is_primary_qualification && qual.practice_address)
-
-        workAddresses.value = primaryQualifications.map((qual) => ({
-          id: qual.id,
-          name: qual.practice_address,
-        }))
-
-        // Debug log to verify data
-        console.log('Work addresses loaded:', workAddresses.value)
-
-        // Set default work address if available
-        if (workAddresses.value.length > 0) {
-          profileForm.value.workAddress = workAddresses.value[0].id
-        }
-      }
-    }
-  } catch (error) {
-    console.error('Error loading work addresses:', error)
-  }
-})
 </script>
 
 <style scoped>

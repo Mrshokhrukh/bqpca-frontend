@@ -50,6 +50,7 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useToast } from 'vue-toastification'
 
 // Props
 defineProps({
@@ -61,6 +62,7 @@ defineProps({
 
 // Emits
 const emit = defineEmits(['approve', 'reject', 'close'])
+const toast = useToast()
 
 // Reactive state
 const showRejectReason = ref(false)
@@ -77,7 +79,7 @@ const reject = () => {
     emit('reject', rejectionReason.value)
     closeModal()
   } else {
-    alert('Please provide a rejection reason.')
+    toast.error('Please provide a rejection reason.')
   }
 }
 

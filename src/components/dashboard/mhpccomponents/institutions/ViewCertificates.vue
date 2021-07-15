@@ -86,6 +86,9 @@
 <script setup>
 import { ref } from 'vue'
 import { jsPDF } from 'jspdf' // Import jsPDF
+import { useToast } from 'vue-toastification'
+
+const toast = useToast()
 
 const certificateDetails = ref(null)
 const applicationNumber = ref('')
@@ -132,7 +135,7 @@ const simulateApiCall = async (applicationNumber) => {
 
 const downloadCertificate = () => {
   if (!certificateDetails.value) {
-    alert('No certificate to download!')
+    toast.error('No certificate to download!')
     return
   }
 

@@ -1,180 +1,67 @@
 <template>
   <Transition
-    enter-active-class="transition ease-out duration-200"
-    enter-from-class="opacity-0"
-    enter-to-class="opacity-100"
-    leave-active-class="transition ease-in duration-150"
-    leave-from-class="opacity-100"
-    leave-to-class="opacity-0"
+    enter-active-class="transition ease-out duration-300"
+    enter-from-class="opacity-0 scale-95"
+    enter-to-class="opacity-100 scale-100"
+    leave-active-class="transition ease-in duration-200"
+    leave-from-class="opacity-100 scale-100"
+    leave-to-class="opacity-0 scale-95"
   >
-    <div
-      v-if="show"
-      class="fixed inset-0 z-50 overflow-y-auto"
-      aria-labelledby="modal-title"
-      role="dialog"
-      aria-modal="true"
-    >
-      <div
-        class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0"
-      >
-        <!-- Background overlay -->
-        <div
-          class="fixed inset-0 bg-gray-500 bg-opacity-50 transition-opacity"
-          @click="$emit('close')"
-        ></div>
+    <div v-if="show" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm" @click.self="$emit('close')">
+      <div class="relative w-full max-w-2xl bg-white rounded-xl shadow-2xl overflow-hidden transform transition-all">
 
-        <!-- Modal panel -->
-        <div
-          class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full"
-        >
-          <!-- Header -->
-          <div class="px-6 py-5 border-b border-gray-200 flex justify-between items-center">
-            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
-              Add CAPA for {{ instituteName || `Institute #${instituteId}` }}
-            </h3>
-            <button
-              @click="$emit('close')"
-              class="rounded-md p-2 text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400"
-            >
-              <XIcon class="h-5 w-5" />
-            </button>
+        <div class="bg-indigo-600 px-6 py-4 text-white flex items-center justify-between">
+          <h3 class="text-lg font-semibold" id="modal-title">Add New CAPA Record</h3>
+          <button @click="$emit('close')" class="p-1 rounded-full hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-white">
+            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <form @submit.prevent="submitForm" class="p-6 space-y-6 max-h-[75vh] overflow-y-auto">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label for="institute" class="block text-sm font-medium text-gray-700 mb-1">Institute <span class="text-red-500">*</span></label>
+              <select id="institute" v-model="selectedInstituteId" class="form-select w-full" required>
+                <option disabled value="">Select an institute</option>
+                <option v-for="inst in institutes" :key="inst.id" :value="inst.id">{{ inst.name_of_institution }}</option>
+              </select>
+            </div>
+            <div>
+              <label for="teaching-center" class="block text-sm font-medium text-gray-700 mb-1">Teaching Center</label>
+              <select id="teaching-center" v-model="capaForm.teaching_center_id" class="form-select w-full" :disabled="!selectedInstituteId">
+                <option :value="null">None (For Institute Directly)</option>
+                <option v-for="tc in availableTeachingCenters" :key="tc.id" :value="tc.id">{{ tc.center_name }}</option>
+              </select>
+            </div>
           </div>
 
-          <!-- Form content -->
-          <div class="px-6 pt-6 pb-4 max-h-[70vh] overflow-y-auto">
-            <form @submit.prevent="submitForm" class="space-y-6">
-              <!-- Date range section -->
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="space-y-2">
-                  <label for="inspection_from_date" class="block text-sm font-medium text-gray-700">
-                    Inspection From Date <span class="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="date"
-                    id="inspection_from_date"
-                    v-model="capaForm.inspection_from_date"
-                    @change="updateImplementationTimeline"
-                    class="block w-full rounded-md border-gray-300 py-3 px-4 shadow-sm focus:border-gray-500 focus:ring-gray-500 sm:text-sm"
-                    required
-                  />
-                </div>
-                <div class="space-y-2">
-                  <label for="inspection_to_date" class="block text-sm font-medium text-gray-700">
-                    Inspection To Date <span class="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="date"
-                    id="inspection_to_date"
-                    v-model="capaForm.inspection_to_date"
-                    @change="updateImplementationTimeline"
-                    class="block w-full rounded-md border-gray-300 py-3 px-4 shadow-sm focus:border-gray-500 focus:ring-gray-500 sm:text-sm"
-                    required
-                  />
-                </div>
-              </div>
-
-              <!-- CAPA details section -->
-              <div class="space-y-6">
-                <div class="space-y-2">
-                  <label
-                    for="observation_description"
-                    class="block text-sm font-medium text-gray-700"
-                  >
-                    Observation Description <span class="text-red-500">*</span>
-                  </label>
-                  <textarea
-                    id="observation_description"
-                    v-model="capaForm.observation_description"
-                    rows="3"
-                    class="block w-full rounded-md border-gray-300 py-3 px-4 shadow-sm focus:border-gray-500 focus:ring-gray-500 sm:text-sm"
-                    required
-                  ></textarea>
-                </div>
-
-                <div class="space-y-2">
-                  <label for="root_cause" class="block text-sm font-medium text-gray-700">
-                    Root Cause <span class="text-red-500">*</span>
-                  </label>
-                  <textarea
-                    id="root_cause"
-                    v-model="capaForm.root_cause"
-                    rows="3"
-                    class="block w-full rounded-md border-gray-300 py-3 px-4 shadow-sm focus:border-gray-500 focus:ring-gray-500 sm:text-sm"
-                    required
-                  ></textarea>
-                </div>
-
-                <div class="space-y-2">
-                  <label for="capa" class="block text-sm font-medium text-gray-700">
-                    CAPA <span class="text-red-500">*</span>
-                  </label>
-                  <textarea
-                    id="capa"
-                    v-model="capaForm.capa"
-                    rows="3"
-                    class="block w-full rounded-md border-gray-300 py-3 px-4 shadow-sm focus:border-gray-500 focus:ring-gray-500 sm:text-sm"
-                    required
-                  ></textarea>
-                </div>
-              </div>
-
-              <!-- Implementation and status section -->
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="space-y-2">
-                  <label
-                    for="implementation_timeline"
-                    class="block text-sm font-medium text-gray-700"
-                  >
-                    Implementation Timeline <span class="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    id="implementation_timeline"
-                    v-model="capaForm.implementation_timeline"
-                    class="block w-full rounded-md border-gray-300 py-3 px-4 shadow-sm focus:border-gray-500 focus:ring-gray-500 sm:text-sm"
-                    required
-                    readonly
-                  />
-                </div>
-              </div>
-
-              <!-- Comments section -->
-              <div class="pt-2 border-t border-gray-200">
-                <h4 class="text-sm font-medium text-gray-700 mb-4">Additional Comments</h4>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div class="space-y-2">
-                    <label for="management_comment" class="block text-sm font-medium text-gray-600">
-                      Management Comment
-                    </label>
-                    <textarea
-                      id="management_comment"
-                      v-model="capaForm.management_comment"
-                      rows="2"
-                      class="block w-full rounded-md border-gray-300 py-3 px-4 shadow-sm focus:border-gray-500 focus:ring-gray-500 sm:text-sm"
-                    ></textarea>
-                  </div>
-                </div>
-              </div>
-            </form>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+             <div>
+                <label for="from-date" class="block text-sm font-medium text-gray-700 mb-1">Inspection From <span class="text-red-500">*</span></label>
+                <input type="date" id="from-date" v-model="capaForm.inspection_from_date" class="form-input w-full" required />
+             </div>
+             <div>
+                <label for="to-date" class="block text-sm font-medium text-gray-700 mb-1">Inspection To <span class="text-red-500">*</span></label>
+                <input type="date" id="to-date" v-model="capaForm.inspection_to_date" class="form-input w-full" required />
+             </div>
           </div>
 
-          <!-- Footer -->
-          <div class="bg-gray-50 px-6 py-4 border-t border-gray-200 sm:flex sm:flex-row-reverse">
-            <button
-              type="button"
-              @click="submitForm"
-              class="w-full inline-flex justify-center rounded-md border border-blue-500 shadow-sm px-5 py-2.5 bg-blue-500 text-base font-medium text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
-            >
-              Save CAPA
-            </button>
-            <button
-              type="button"
-              @click="$emit('close')"
-              class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-5 py-2.5 bg-white text-base font-medium text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-            >
-              Cancel
-            </button>
+          <div>
+              <label for="observation" class="block text-sm font-medium text-gray-700 mb-1">Observation Description <span class="text-red-500">*</span></label>
+              <textarea id="observation" v-model="capaForm.observation_description" rows="4" class="form-textarea w-full" required placeholder="Describe the observation..."></textarea>
           </div>
+
+          <div>
+              <label for="comment" class="block text-sm font-medium text-gray-700 mb-1">Management Comment</label>
+              <textarea id="comment" v-model="capaForm.management_comment" rows="3" class="form-textarea w-full" placeholder="Optional management comments..."></textarea>
+          </div>
+        </form>
+
+        <div class="bg-gray-50 px-6 py-4 border-t flex justify-end space-x-3">
+            <button type="button" @click="$emit('close')" class="px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium hover:bg-gray-50">Cancel</button>
+            <button type="button" @click="submitForm" class="px-4 py-2 bg-indigo-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-indigo-700">Save CAPA</button>
         </div>
       </div>
     </div>
@@ -182,77 +69,58 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from 'vue'
-import { XIcon } from 'lucide-vue-next'
+import { ref, computed, watch } from 'vue';
+import { useToast } from 'vue-toastification';
 
 const props = defineProps({
   show: Boolean,
-  instituteId: Number,
-  instituteName: String,
-})
+  institutes: { type: Array, default: () => [] },
+  teachingCenters: { type: Array, default: () => [] },
+});
+const emit = defineEmits(['close', 'save']);
+const toast = useToast();
 
-const emit = defineEmits(['close', 'save'])
-
-const capaForm = ref({
+const initialFormState = {
+  institute_id: null,
+  teaching_center_id: null,
   inspection_from_date: '',
   inspection_to_date: '',
   observation_description: '',
-  root_cause: '',
-  capa: '',
-  implementation_timeline: '',
   management_comment: '',
-  teaching_center: 1,
-})
+};
 
-const resetForm = () => {
-  capaForm.value = {
-    inspection_from_date: '',
-    inspection_to_date: '',
-    observation_description: '',
-    root_cause: '',
-    capa: '',
-    implementation_timeline: '',
-    management_comment: '',
+const capaForm = ref({ ...initialFormState });
+const selectedInstituteId = ref('');
 
-    teaching_center: 1,
+const availableTeachingCenters = computed(() => {
+  if (!selectedInstituteId.value) return [];
+  return props.teachingCenters.filter(tc => tc.institute === selectedInstituteId.value);
+});
+
+watch(selectedInstituteId, (newId) => {
+  capaForm.value.institute_id = newId;
+  capaForm.value.teaching_center_id = null;
+});
+
+watch(() => props.show, (newVal) => {
+  if (newVal) {
+    capaForm.value = { ...initialFormState };
+    selectedInstituteId.value = '';
   }
-}
-
-watch(
-  () => props.show,
-  (newValue) => {
-    if (newValue) {
-      resetForm()
-    }
-  },
-)
-
-onMounted(() => {
-  if (props.show) {
-    resetForm()
-  }
-})
-
-const updateImplementationTimeline = () => {
-  //check date are empty or not
-  if (capaForm.value.inspection_from_date && capaForm.value.inspection_to_date) {
-    const fromDate = new Date(capaForm.value.inspection_from_date)
-    const toDate = new Date(capaForm.value.inspection_to_date)
-
-    // Calculate the difference in milliseconds
-    const timeDiff = toDate.getTime() - fromDate.getTime()
-
-    // Convert milliseconds to days, adding 1 to include both start and end dates
-    const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1
-
-    capaForm.value.implementation_timeline = `${daysDiff} days`
-  } else {
-    capaForm.value.implementation_timeline = '' // Or some default value
-  }
-}
+});
 
 const submitForm = () => {
-  console.log('Submitting CAPA form:', capaForm.value) // Add this line for debugging
-  emit('save', capaForm.value)
-}
+  if (!capaForm.value.institute_id) {
+      toast.error("Please select an institute.");
+      return;
+  }
+  emit('save', { ...capaForm.value });
+};
+
 </script>
+
+<style scoped>
+.form-input, .form-select, .form-textarea {
+  @apply block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm;
+}
+</style>

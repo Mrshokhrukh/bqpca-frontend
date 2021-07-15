@@ -34,9 +34,7 @@
                 <option v-for="task in cpdTasks" :key="task.id" :value="task.id">
                   {{ task.title_of_cpd || task.title }}
                 </option>
-                 <option v-if="cpdTasks.length === 0" disabled>
-                  No CPD tasks are available.
-                </option>
+                <option v-if="cpdTasks.length === 0" disabled>No CPD tasks are available.</option>
               </select>
               <ChevronDownIcon
                 class="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none"
@@ -58,41 +56,48 @@
               @dragleave.prevent="handleDragLeave"
               @drop.prevent="handleDrop"
             >
-              <div v-if="photoPreview" class="absolute inset-0 h-full w-full overflow-hidden rounded-xl">
-                 <img :src="photoPreview" alt="Attendance preview" class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
-                 <div class="absolute inset-0 bg-black/20"></div>
+              <div
+                v-if="photoPreview"
+                class="absolute inset-0 h-full w-full overflow-hidden rounded-xl"
+              >
+                <img
+                  :src="photoPreview"
+                  alt="Attendance preview"
+                  class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+                <div class="absolute inset-0 bg-black/20"></div>
               </div>
 
               <div class="relative text-center z-10">
                 <div v-if="!photoPreview">
-                    <PhotoIcon class="mx-auto h-12 w-12 text-gray-400" />
-                    <div class="mt-4 flex text-sm justify-center">
-                        <label
-                            for="photo-upload-input"
-                            class="relative cursor-pointer rounded-md font-medium text-blue-600 hover:text-blue-700 focus-within:outline-none"
-                        >
-                            <span>Upload a photo</span>
-                        </label>
-                        <p class="pl-1 text-gray-600">or drag and drop</p>
-                    </div>
-                    <p class="text-xs text-gray-500 mt-1">PNG, JPG, GIF up to 10MB</p>
+                  <PhotoIcon class="mx-auto h-12 w-12 text-gray-400" />
+                  <div class="mt-4 flex text-sm justify-center">
+                    <label
+                      for="photo-upload-input"
+                      class="relative cursor-pointer rounded-md font-medium text-blue-600 hover:text-blue-700 focus-within:outline-none"
+                    >
+                      <span>Upload a photo</span>
+                    </label>
+                    <p class="pl-1 text-gray-600">or drag and drop</p>
+                  </div>
+                  <p class="text-xs text-gray-500 mt-1">PNG, JPG, GIF up to 10MB</p>
                 </div>
-                 <div v-else class="text-white">
-                    <DocumentCheckIcon class="mx-auto h-12 w-12" />
-                    <p class="mt-2 font-semibold text-lg">{{ photoFile?.name }}</p>
-                    <p class="text-sm opacity-90">Image selected successfully</p>
+                <div v-else class="text-white">
+                  <DocumentCheckIcon class="mx-auto h-12 w-12" />
+                  <p class="mt-2 font-semibold text-lg">{{ photoFile?.name }}</p>
+                  <p class="text-sm opacity-90">Image selected successfully</p>
                 </div>
               </div>
 
               <button
-                  v-if="photoPreview && !isSubmitting"
-                  @click.prevent="removePhoto"
-                  type="button"
-                  class="absolute top-3 right-3 z-20 p-1.5 bg-white/70 text-gray-800 rounded-full backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white hover:scale-110"
-                  aria-label="Remove photo"
-                >
-                  <XMarkIcon class="h-5 w-5" />
-                </button>
+                v-if="photoPreview && !isSubmitting"
+                @click.prevent="removePhoto"
+                type="button"
+                class="absolute top-3 right-3 z-20 p-1.5 bg-white/70 text-gray-800 rounded-full backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white hover:scale-110"
+                aria-label="Remove photo"
+              >
+                <XMarkIcon class="h-5 w-5" />
+              </button>
 
               <input
                 id="photo-upload-input"
@@ -105,9 +110,9 @@
                 ref="photoInputRef"
               />
             </div>
-             <div v-if="photoError" class="mt-2 text-sm font-medium text-red-600">
-                {{ photoError }}
-             </div>
+            <div v-if="photoError" class="mt-2 text-sm font-medium text-red-600">
+              {{ photoError }}
+            </div>
           </div>
 
           <div>
@@ -141,18 +146,18 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue';
+import { ref, reactive, computed } from 'vue'
 import {
   PhotoIcon,
   DocumentCheckIcon,
   XMarkIcon,
   InformationCircleIcon,
   ChevronDownIcon,
-} from '@heroicons/vue/24/outline';
-import FormActions from './FormActions.vue'; // Assuming this is your generic actions component
-import { useToast } from 'vue-toastification';
+} from '@heroicons/vue/24/outline'
+import FormActions from './FormActions.vue' // Assuming this is your generic actions component
+import { useToast } from 'vue-toastification'
 
-const toast = useToast();
+const toast = useToast()
 
 const props = defineProps({
   cpdTasks: {
@@ -163,107 +168,107 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-});
+})
 
-const emit = defineEmits(['submit', 'cancel']);
+const emit = defineEmits(['submit', 'cancel'])
 
 const formData = reactive({
   cpdTask: '',
   description: '',
-});
+})
 
-const photoFile = ref(null);
-const photoPreview = ref('');
-const photoInputRef = ref(null);
-const photoError = ref('');
-const isDragging = ref(false);
+const photoFile = ref(null)
+const photoPreview = ref('')
+const photoInputRef = ref(null)
+const photoError = ref('')
+const isDragging = ref(false)
 
 const isFormValid = computed(() => {
-  return formData.cpdTask && photoFile.value && !photoError.value;
-});
+  return formData.cpdTask && photoFile.value && !photoError.value
+})
 
 function processFile(file) {
-  if (!file) return;
+  if (!file) return
 
   // Validate file type
   if (!file.type.startsWith('image/')) {
-    photoError.value = 'Invalid file type. Please upload a valid image (PNG, JPG, GIF).';
-    toast.error(photoError.value);
-    return;
+    photoError.value = 'Invalid file type. Please upload a valid image (PNG, JPG, GIF).'
+    toast.error(photoError.value)
+    return
   }
 
   // Validate file size (e.g., 10MB)
   if (file.size > 10 * 1024 * 1024) {
-    photoError.value = 'File size exceeds 10MB limit.';
-    toast.error(photoError.value);
-    return;
+    photoError.value = 'File size exceeds 10MB limit.'
+    toast.error(photoError.value)
+    return
   }
 
-  photoError.value = '';
-  photoFile.value = file;
+  photoError.value = ''
+  photoFile.value = file
 
   // Create a preview
-  const reader = new FileReader();
+  const reader = new FileReader()
   reader.onload = (e) => {
-    photoPreview.value = e.target.result;
-  };
-  reader.readAsDataURL(file);
+    photoPreview.value = e.target.result
+  }
+  reader.readAsDataURL(file)
 }
 
 function handleFileSelect(event) {
-  const file = event.target.files?.[0];
-  processFile(file);
+  const file = event.target.files?.[0]
+  processFile(file)
 }
 
 function removePhoto() {
-  photoFile.value = null;
-  photoPreview.value = '';
-  photoError.value = '';
+  photoFile.value = null
+  photoPreview.value = ''
+  photoError.value = ''
   // Reset the file input
   if (photoInputRef.value) {
-    photoInputRef.value.value = '';
+    photoInputRef.value.value = ''
   }
 }
 
 function handleDragOver(event) {
-    if (props.isSubmitting) return;
-    event.preventDefault();
-    isDragging.value = true;
+  if (props.isSubmitting) return
+  event.preventDefault()
+  isDragging.value = true
 }
 
 function handleDragLeave(event) {
-    if (props.isSubmitting) return;
-    event.preventDefault();
-    isDragging.value = false;
+  if (props.isSubmitting) return
+  event.preventDefault()
+  isDragging.value = false
 }
 
 function handleDrop(event) {
-    if (props.isSubmitting) return;
-    event.preventDefault();
-    isDragging.value = false;
-    const file = event.dataTransfer.files?.[0];
-    processFile(file);
+  if (props.isSubmitting) return
+  event.preventDefault()
+  isDragging.value = false
+  const file = event.dataTransfer.files?.[0]
+  processFile(file)
 }
 
 function submitForm() {
   if (!isFormValid.value) {
-    toast.error('Please fill all required fields and correct any errors.');
-    return;
+    toast.error('Please fill all required fields and correct any errors.')
+    return
   }
 
   emit('submit', {
     cpdTask: formData.cpdTask,
     photo: photoFile.value,
     description: formData.description,
-  });
+  })
 }
 
 function resetForm() {
-  formData.cpdTask = '';
-  formData.description = '';
-  removePhoto();
+  formData.cpdTask = ''
+  formData.description = ''
+  removePhoto()
 }
 
 // Expose resetForm for parent component access
-defineExpose({ resetForm });
+defineExpose({ resetForm })
 </script>

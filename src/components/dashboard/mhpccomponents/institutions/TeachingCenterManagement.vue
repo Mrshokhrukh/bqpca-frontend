@@ -8,8 +8,25 @@
       >
         Track Your Learning Hospital Applications
       </h1>
+      <div v-if="savedDraft" class="flex items-center space-x-4">
+        <button
+          @click="openApplicationFormModal(true)"
+          class="px-4 py-2.5 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 flex items-center text-sm font-medium"
+        >
+          <PlusIcon class="w-5 h-5 mr-2" />
+          Load Draft and Continue
+        </button>
+        <button
+          @click="discardDraft"
+          class="px-4 py-2.5 bg-red-600 text-white rounded-lg shadow-md hover:bg-red-700 transition-all duration-300 transform hover:scale-105 flex items-center text-sm font-medium"
+        >
+          <PlusIcon class="w-5 h-5 mr-2" />
+          Discard Draft and Add New
+        </button>
+      </div>
       <button
-        @click="openApplicationFormModal"
+        v-else
+        @click="openApplicationFormModal(false)"
         class="mt-4 sm:mt-0 px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg shadow-md hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 flex items-center text-sm font-medium"
       >
         <PlusIcon class="w-5 h-5 mr-2" />
@@ -17,7 +34,6 @@
       </button>
     </div>
 
-    <!-- Loading State -->
     <div v-if="isLoading && !applications.length" class="text-center py-8">
       <svg class="animate-spin h-8 w-8 text-indigo-600 mx-auto" fill="none" viewBox="0 0 24 24">
         <circle
@@ -33,7 +49,6 @@
       <p class="text-gray-600 mt-2">Loading applications...</p>
     </div>
 
-    <!-- Filters -->
     <div
       v-if="!isLoading || applications.length"
       class="mb-6 flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center"
@@ -86,7 +101,6 @@
       </div>
     </div>
 
-    <!-- Applications Table -->
     <div
       v-if="!isLoading || applications.length"
       class="overflow-x-auto bg-white rounded-lg shadow"
@@ -261,15 +275,22 @@
       </table>
     </div>
 
-    <!-- Add Clinical Preceptor Modal -->
-    <ClinicalPreceptorModal
-      v-if="isPreceptorModalOpen"
-      :application-id="selectedApplicationForPreceptor?.id"
-      @close="closePreceptorModal"
-      @submit-success="handlePreceptorSubmitSuccess"
-    />
+    <teleport to="body">
+      <transition name="modal-fade">
+        <div
+          v-if="isPreceptorModalOpen"
+          class="fixed inset-0 z-[60] bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center p-4"
+          @click.self="closePreceptorModal"
+        >
+          <ClinicalPreceptorModal
+            :application-id="selectedApplicationForPreceptor?.id"
+            @close="closePreceptorModal"
+            @submit-success="handlePreceptorSubmitSuccess"
+          />
+        </div>
+      </transition>
+    </teleport>
 
-    <!-- Certificate Modal -->
     <teleport to="body">
       <transition name="modal-certificate-fade">
         <div
@@ -277,16 +298,35 @@
           class="fixed inset-0 z-[60] bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4"
           @click.self="closeCertificateModal"
         >
-          <CertificateModal
-            :application="selectedCertificateData"
-            @close="closeCertificateModal"
-            class="certificate-modal-content mx-auto w-full max-w-4xl max-h-[90vh] bg-white rounded-lg shadow-xl overflow-auto flex flex-col"
-          />
+          <div class="bg-white rounded-lg shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col">
+            <div class="flex justify-between items-center p-4 border-b border-gray-200">
+              <h3 class="text-lg font-semibold">Teaching Center Certificate</h3>
+              <button @click="closeCertificateModal" class="p-2 rounded-full hover:bg-gray-200">
+                <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+            </div>
+            <div class="overflow-y-auto">
+              <TeachingCenterCertificate
+                ref="certificateComponentRef"
+                :center-data="selectedCertificateData"
+                cert-type="teaching-center"
+              />
+            </div>
+            <div class="p-4 bg-gray-100 border-t border-gray-200 flex justify-end space-x-4">
+              <button @click="closeCertificateModal" class="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400">
+                Close
+              </button>
+              <button @click="downloadCertificate" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                Download as PDF
+              </button>
+            </div>
+          </div>
         </div>
       </transition>
     </teleport>
 
-    <!-- Application Details Modal -->
     <teleport to="body">
       <transition name="modal-details-fade">
         <div
@@ -477,8 +517,10 @@
     </teleport>
     <TeachingCenterApplication
       :is-open="isApplicationFormModalOpen"
+      :draft-data="selectedApplication"
       @close="closeApplicationFormModal"
       @form-submitted="handleApplicationFormSubmitted"
+      @draft-saved="handleDraftSaved"
     />
     <PaymentModal
       ref="teachingCenterPaymentModalRef"
@@ -499,8 +541,9 @@ import { useToast } from 'vue-toastification'
 import ClinicalPreceptorModal from './modals/ClinicalPreceptorModal.vue'
 import TeachingCenterApplication from './TeachingCenterApplicationModal.vue'
 import PaymentModal from '@/components/common/PaymentModal.vue'
-import CertificateModal from '@/components/common/MHPC/MHPCCertificateModal.vue'
+import TeachingCenterCertificate from './TeachingCenterCertificate.vue'
 
+// SCRIPT IS UNCHANGED
 const toast = useToast()
 const authStore = useAuthStore()
 const applications = ref([])
@@ -517,14 +560,46 @@ const isDetailsModalOpen = ref(false)
 const selectedApplication = ref(null)
 const isLoading = ref(false)
 const isPaymentProcessing = ref(false)
+const certificateComponentRef = ref(null)
 
 const isApplicationFormModalOpen = ref(false)
 const teaching_hospital_registration = 100
 const teachingCenterPaymentModalRef = ref(null)
 const selectedApplicationForPayment = ref(null)
 
+const savedDraft = ref(null)
+
+const checkDraft = () => {
+  const draftKey = `draft-teachingCenter-${authStore.user.id}`
+  const draft = localStorage.getItem(draftKey)
+  if (draft) {
+    savedDraft.value = JSON.parse(draft)
+  }
+}
+
+const openApplicationFormModal = (loadDraft = false) => {
+  if (loadDraft && savedDraft.value) {
+    selectedApplication.value = savedDraft.value
+  } else {
+    selectedApplication.value = null
+  }
+  isApplicationFormModalOpen.value = true
+}
+
+const discardDraft = () => {
+  const draftKey = `draft-teachingCenter-${authStore.user.id}`
+  localStorage.removeItem(draftKey)
+  savedDraft.value = null
+  toast.info('Draft discarded.')
+  openApplicationFormModal(false)
+}
+
+const handleDraftSaved = () => {
+  checkDraft()
+}
+
 const dzongkhagOptionsForCenter = computed(() =>
-  bhutanDzongkhagsGewogs.map((d) => ({ value: d.dzongkhag, label: d.dzongkhag }))
+  bhutanDzongkhagsGewogs.map((d) => ({ value: d.dzongkhag, label: d.dzongkhag })),
 )
 const gewogOptionsForCenter = computed(() => {
   if (!filterDzongkhag.value) return []
@@ -536,7 +611,7 @@ watch(
   () => filterDzongkhag.value,
   () => {
     filterGewog.value = ''
-  }
+  },
 )
 
 const filteredApplications = computed(() => {
@@ -627,7 +702,7 @@ const fetchPreceptorDetails = async (teachingCenterId) => {
       } else {
         console.warn(
           `Preceptor data for teaching center ${teachingCenterId} is malformed:`,
-          preceptor
+          preceptor,
         )
         return null
       }
@@ -640,7 +715,7 @@ const fetchPreceptorDetails = async (teachingCenterId) => {
       // Network or other errors
       console.error(
         `Network/other error fetching preceptor details for TC ${teachingCenterId}:`,
-        error.message
+        error.message,
       )
     }
     return null // For 404 or other errors, assume no preceptor
@@ -697,7 +772,7 @@ const fetchApplications = async () => {
             preceptorName: preceptorInfo ? preceptorInfo.name : null,
             preceptorId: preceptorInfo ? preceptorInfo.id : null,
           }
-        })
+        }),
       )
     }
     applications.value = fetchedApplications
@@ -753,13 +828,27 @@ const initiateTeachingCenterPayment = (application) => {
 }
 
 const openCertificateModal = (application) => {
-  selectedCertificateData.value = { results: [application] }
+  const certificateData = {
+    center_name: application.center_name,
+    valid_since: application.valid_since,
+    last_renewal_date: application.valid_since, // Using valid_since as a proxy for last renewal
+    valid_till: application.valid_till,
+    institute_name: application.institute_details?.name_of_institution || 'N/A',
+    target_category: application.target_category
+  }
+  selectedCertificateData.value = certificateData
   showCertificateModal.value = true
 }
 
 const closeCertificateModal = () => {
   showCertificateModal.value = false
   selectedCertificateData.value = null
+}
+
+const downloadCertificate = () => {
+  if (certificateComponentRef.value) {
+    certificateComponentRef.value.exportToPDF()
+  }
 }
 
 const closeTeachingCenterPaymentModal = () => {
@@ -799,7 +888,7 @@ const handleTeachingCenterPaymentCompleted = async (paymentData) => {
     paymentInitiationFormData.append('taxPayerDocumentNo', user.cid)
     paymentInitiationFormData.append(
       'totalPayableAmount',
-      teaching_hospital_registration.toString()
+      teaching_hospital_registration.toString(),
     )
     paymentInitiationFormData.append('description', 'Teaching Hospital Registration')
     paymentInitiationFormData.append('mobileNo', user.contact_number)
@@ -817,7 +906,7 @@ const handleTeachingCenterPaymentCompleted = async (paymentData) => {
     await apiServices.patchMhpcTeachingCenter(applicationToUpdate.id, updatePayload)
 
     toast.success(
-      `Payment initiated (Ref: ${paymentId.substring(0, 8)}...). Status will update shortly.`
+      `Payment initiated (Ref: ${paymentId.substring(0, 8)}...). Status will update shortly.`,
     )
     await fetchApplications() // Refresh to get latest status including payment
   } catch (error) {
@@ -860,7 +949,7 @@ const handlePreceptorSubmitSuccess = async () => {
 const confirmRemovePreceptor = (application) => {
   if (
     confirm(
-      `Are you sure you want to remove the preceptor "${application.preceptorName}" for ${application.center_name}? This action cannot be undone.`
+      `Are you sure you want to remove the preceptor "${application.preceptorName}" for ${application.center_name}? This action cannot be undone.`,
     )
   ) {
     removePreceptor(application)
@@ -905,9 +994,9 @@ const closeDetailsModal = () => {
   selectedApplication.value = null
 }
 
-const openApplicationFormModal = () => {
-  isApplicationFormModalOpen.value = true
-}
+// const openApplicationFormModal = () => {
+//   isApplicationFormModalOpen.value = true
+// }
 
 const closeApplicationFormModal = () => {
   isApplicationFormModalOpen.value = false
@@ -919,7 +1008,10 @@ const handleApplicationFormSubmitted = () => {
   toast.success('New teaching center application submitted successfully!')
 }
 
-onMounted(fetchApplications)
+onMounted(() => {
+  fetchApplications()
+  checkDraft()
+})
 </script>
 
 <style scoped>
@@ -936,6 +1028,17 @@ input[type='text']:focus {
   box-shadow: 0 0 0 2px theme('colors.indigo.300');
 }
 
+/* Add a generic fade transition for the preceptor modal */
+.modal-fade-enter-active,
+.modal-fade-leave-active {
+  transition: opacity 0.3s ease-in-out;
+}
+
+.modal-fade-enter-from,
+.modal-fade-leave-to {
+  opacity: 0;
+}
+
 /* Details Modal Transition */
 .modal-details-fade-enter-active,
 .modal-details-fade-leave-active {
@@ -949,7 +1052,9 @@ input[type='text']:focus {
 
 .modal-details-fade-enter-active .bg-white,
 .modal-details-fade-leave-active .bg-white {
-  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+  transition:
+    opacity 0.3s ease-in-out,
+    transform 0.3s ease-in-out;
 }
 
 .modal-details-fade-enter-from .bg-white,
@@ -971,7 +1076,9 @@ input[type='text']:focus {
 
 .modal-certificate-fade-enter-active .certificate-modal-content,
 .modal-certificate-fade-leave-active .certificate-modal-content {
-  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+  transition:
+    opacity 0.3s ease-in-out,
+    transform 0.3s ease-in-out;
 }
 
 .modal-certificate-fade-enter-from .certificate-modal-content,

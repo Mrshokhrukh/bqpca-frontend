@@ -1,4 +1,5 @@
 <template>
+  <div>
   <TransitionRoot appear :show="isOpen" as="template">
     <Dialog as="div" @close="closeModal" class="relative z-50">
       <TransitionChild as="template" enter="duration-300 ease-out" enter-from="opacity-0" enter-to="opacity-100"
@@ -281,11 +282,12 @@
       </div>
     </Dialog>
   </TransitionRoot>
+</div>
 </template>
 
 <script setup>
 import { Dialog, DialogPanel, TransitionRoot, TransitionChild } from '@headlessui/vue'
-import { ref, watch } from 'vue';
+import { ref, watch } from 'vue'
 import {
   DocumentTextIcon,
   DocumentDuplicateIcon,
@@ -294,107 +296,118 @@ import {
   CheckIcon,
   XMarkIcon,
   CheckCircleIcon,
-  ExclamationCircleIcon
+  ExclamationCircleIcon,
 } from '@heroicons/vue/24/outline'
 
 const props = defineProps({
   isOpen: Boolean,
   application: {
     type: Object,
-    default: () => ({})
-  }
-});
+    default: () => ({}),
+  },
+})
 
-const emit = defineEmits(['close', 'update-verification']);
+const emit = defineEmits(['close', 'update-verification'])
 
 const closeModal = () => {
-  emit('close');
-};
+  emit('close')
+}
 
 const verificationForm = ref({
   verificationDecision: '',
   regretReason: '',
   conditionText: '',
   remarksText: '',
-});
+})
 
 // Message box states
-const showApproveMessageBox = ref(false);
-const showRejectMessageBox = ref(false);
-const approveMessage = ref('');
-const rejectMessage = ref('');
+const showApproveMessageBox = ref(false)
+const showRejectMessageBox = ref(false)
+const approveMessage = ref('')
+const rejectMessage = ref('')
 
 // Open message boxes
 const openApproveMessageBox = () => {
-  approveMessage.value = verificationForm.value.conditionText || '';
-  showApproveMessageBox.value = true;
-};
+  approveMessage.value = verificationForm.value.conditionText || ''
+  showApproveMessageBox.value = true
+}
 
 const openRejectMessageBox = () => {
-  rejectMessage.value = verificationForm.value.regretReason || '';
-  showRejectMessageBox.value = true;
-};
+  rejectMessage.value = verificationForm.value.regretReason || ''
+  showRejectMessageBox.value = true
+}
 
 // Close message boxes
 const closeApproveMessageBox = () => {
-  showApproveMessageBox.value = false;
-};
+  showApproveMessageBox.value = false
+}
 
 const closeRejectMessageBox = () => {
-  showRejectMessageBox.value = false;
-};
+  showRejectMessageBox.value = false
+}
 
 // Confirm actions
 const confirmApprove = () => {
   // Update the form with the approval message
-  verificationForm.value.verificationDecision = 'accepted';
-  verificationForm.value.conditionText = approveMessage.value;
+  verificationForm.value.verificationDecision = 'accepted'
+  verificationForm.value.conditionText = approveMessage.value
 
   // Close the message box
-  closeApproveMessageBox();
+  closeApproveMessageBox()
 
   // Save the decision
-  saveVerificationDecision('Accepted');
-};
+  saveVerificationDecision('Accepted')
+}
 
 const confirmReject = () => {
   // Update the form with the rejection message
-  verificationForm.value.verificationDecision = 'regretted';
-  verificationForm.value.regretReason = rejectMessage.value;
+  verificationForm.value.verificationDecision = 'regretted'
+  verificationForm.value.regretReason = rejectMessage.value
 
   // Close the message box
-  closeRejectMessageBox();
+  closeRejectMessageBox()
 
   // Save the decision
-  saveVerificationDecision('Regretted');
-};
+  saveVerificationDecision('Regretted')
+}
 
 const saveVerificationDecision = (action) => {
-  console.log('Verification Decision:', verificationForm.value, 'Action:', action, 'for CID:', props.application.cid);
+  console.log(
+    'Verification Decision:',
+    verificationForm.value,
+    'Action:',
+    action,
+    'for CID:',
+    props.application.cid
+  )
   emit('update-verification', {
     applicationId: props.application.id, // Or use CID if ID is not available/suitable
-    verificationData: { ...verificationForm.value, verificationStatus: action }
-  });
-  closeModal();
-};
+    verificationData: { ...verificationForm.value, verificationStatus: action },
+  })
+  closeModal()
+}
 
 const submitVerification = () => {
   if (verificationForm.value.verificationDecision === 'accepted') {
-    openApproveMessageBox();
+    openApproveMessageBox()
   } else if (verificationForm.value.verificationDecision === 'regretted') {
-    openRejectMessageBox();
+    openRejectMessageBox()
   } else {
-    alert('Please select a verification decision first');
+    alert('Please select a verification decision first')
   }
-};
+}
 
-watch(() => props.application, (newApplication) => {
-  if (newApplication) {
-    // Initialize verification stage fields if needed, or fetch existing values if applicable
-    verificationForm.value.verificationDecision = '';
-    verificationForm.value.regretReason = '';
-    verificationForm.value.conditionText = '';
-    verificationForm.value.remarksText = '';
-  }
-}, { immediate: true });
+watch(
+  () => props.application,
+  (newApplication) => {
+    if (newApplication) {
+      // Initialize verification stage fields if needed, or fetch existing values if applicable
+      verificationForm.value.verificationDecision = ''
+      verificationForm.value.regretReason = ''
+      verificationForm.value.conditionText = ''
+      verificationForm.value.remarksText = ''
+    }
+  },
+  { immediate: true }
+)
 </script>

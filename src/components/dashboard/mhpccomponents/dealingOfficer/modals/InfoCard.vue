@@ -13,13 +13,13 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
-import * as LucideIcons from 'lucide-vue-next';
+import { computed } from 'vue'
+import * as LucideIcons from 'lucide-vue-next'
 
 const props = defineProps({
   title: String,
   icon: String, // Pass the icon name as a string e.g. "User"
-});
+})
 
-const iconComponent = computed(() => LucideIcons[props.icon] || LucideIcons.HelpCircle);
+const iconComponent = computed(() => LucideIcons[props.icon] || LucideIcons.HelpCircle)
 </script>

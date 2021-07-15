@@ -129,7 +129,7 @@ const dashboardState = computed(() => {
 
   const qualificationInfo = applications.value.reduce((acc, app) => {
     const primaryQual = app.user_qualifications?.find(
-      (q) => q.is_primary_qualification && q.endorsement_decision !== 'Approved'
+      (q) => q.is_primary_qualification && q.endorsement_decision !== 'Approved',
     )
     return acc || (primaryQual ? { application: app, qualification: primaryQual } : null)
   }, null)
@@ -168,32 +168,30 @@ const visitApplication = (app) => {
 const handleViewCertificate = (qualification) => {
   // 1. Check if we received a valid qualification with a parent application ID.
   if (!qualification || !qualification.application) {
-    console.error("View Certificate failed: Invalid qualification data received.", qualification);
-    return;
+    console.error('View Certificate failed: Invalid qualification data received.', qualification)
+    return
   }
 
   // 2. Find the full application object using the ID from the qualification.
   // The modal needs the full application object (which has user details etc.),
   // not just the qualification object.
-  const applicationForModal = applications.value.find(
-    (app) => app.id === qualification.application
-  );
+  const applicationForModal = applications.value.find((app) => app.id === qualification.application)
 
   if (!applicationForModal) {
-    console.error("Could not find the parent application for the selected qualification.");
-    return;
+    console.error('Could not find the parent application for the selected qualification.')
+    return
   }
 
   // 3. Set the state to show the modal, using the correct Pinia ref syntax.
   // Your reference component shows the modal expects the data in a `{ results: [...] }` wrapper.
-  selectedApplication.value = { results: [applicationForModal] };
-  showCertificateModal.value = true;
-};
+  selectedApplication.value = { results: [applicationForModal] }
+  showCertificateModal.value = true
+}
 
 const closeCertificateModal = () => {
-  showCertificateModal.value = false;
-  selectedApplication.value = null;
-};
+  showCertificateModal.value = false
+  selectedApplication.value = null
+}
 
 onMounted(fetchDashboardData)
 
@@ -201,11 +199,11 @@ watch(
   applications,
   (newApplications) => {
     const approvedEoi = newApplications.find(
-      (app) => app.type === 'EOI' && app.status === 'Approved'
+      (app) => app.type === 'EOI' && app.status === 'Approved',
     )
     isDprEnabled.value = !!approvedEoi
   },
-  { deep: true }
+  { deep: true },
 )
 
 watch(
@@ -213,6 +211,6 @@ watch(
   (newUserDetails) => {
     if (newUserDetails?.username) fetchDashboardData()
   },
-  { deep: true }
+  { deep: true },
 )
 </script>

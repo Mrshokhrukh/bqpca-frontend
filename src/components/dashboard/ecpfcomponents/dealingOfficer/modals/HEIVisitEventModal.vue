@@ -1,4 +1,5 @@
 <template>
+ <div>
   <TransitionRoot appear :show="isOpen" as="template">
     <Dialog as="div" @close="closeModal" class="relative z-50">
       <TransitionChild as="template" enter="duration-300 ease-out" enter-from="opacity-0" enter-to="opacity-100"
@@ -59,7 +60,8 @@
                         </div>
                         <h4 class="font-semibold text-gray-900 ml-2">Proposed Promotion Event - HEI Visit</h4>
                       </div>
-                      <p><strong>Institute(s):</strong>
+                      <p>
+                        <strong>Institute(s):</strong>
                         <ul v-if="application.institutes && application.institutes.length > 0" class="list-disc list-inside">
                           <li v-for="(institute, index) in application.institutes" :key="index">{{ institute }}</li>
                         </ul>
@@ -267,112 +269,124 @@
       </div>
     </Dialog>
   </TransitionRoot>
+ </div> 
 </template>
 
 <script setup>
 import { Dialog, DialogPanel, DialogTitle, TransitionRoot, TransitionChild } from '@headlessui/vue'
-import { ref, watch } from 'vue';
+import { ref, watch } from 'vue'
 import {
   DocumentTextIcon,
   DocumentDuplicateIcon,
   CheckBadgeIcon,
   ChatBubbleLeftRightIcon,
   CheckIcon,
-  XMarkIcon
+  XMarkIcon,
 } from '@heroicons/vue/24/outline'
 
 const props = defineProps({
   isOpen: Boolean,
   application: {
     type: Object,
-    default: () => ({})
-  }
-});
+    default: () => ({}),
+  },
+})
 
-const emit = defineEmits(['close', 'update-verification']);
+const emit = defineEmits(['close', 'update-verification'])
 
 const closeModal = () => {
-  emit('close');
-};
+  emit('close')
+}
 
 const verificationForm = ref({
   verificationDecision: '',
   regretReason: '',
   conditionText: '',
   remarksText: '',
-});
+})
 
 // Dialog states
-const isAcceptDialogOpen = ref(false);
-const isRejectDialogOpen = ref(false);
-const acceptDialogMessage = ref('');
-const rejectDialogMessage = ref('');
+const isAcceptDialogOpen = ref(false)
+const isRejectDialogOpen = ref(false)
+const acceptDialogMessage = ref('')
+const rejectDialogMessage = ref('')
 
 // Dialog functions
 const openAcceptDialog = () => {
-  acceptDialogMessage.value = verificationForm.value.conditionText || '';
-  isAcceptDialogOpen.value = true;
-};
+  acceptDialogMessage.value = verificationForm.value.conditionText || ''
+  isAcceptDialogOpen.value = true
+}
 
 const closeAcceptDialog = () => {
-  isAcceptDialogOpen.value = false;
-};
+  isAcceptDialogOpen.value = false
+}
 
 const openRejectDialog = () => {
-  rejectDialogMessage.value = verificationForm.value.regretReason || '';
-  isRejectDialogOpen.value = true;
-};
+  rejectDialogMessage.value = verificationForm.value.regretReason || ''
+  isRejectDialogOpen.value = true
+}
 
 const closeRejectDialog = () => {
-  isRejectDialogOpen.value = false;
-};
+  isRejectDialogOpen.value = false
+}
 
 const confirmAccept = () => {
   // Transfer the dialog message to the form
-  verificationForm.value.verificationDecision = 'accepted';
-  verificationForm.value.conditionText = acceptDialogMessage.value;
+  verificationForm.value.verificationDecision = 'accepted'
+  verificationForm.value.conditionText = acceptDialogMessage.value
 
   // Save the verification
-  saveVerificationDecision('Accepted');
-  closeAcceptDialog();
-};
+  saveVerificationDecision('Accepted')
+  closeAcceptDialog()
+}
 
 const confirmReject = () => {
   // Transfer the dialog message to the form
-  verificationForm.value.verificationDecision = 'regretted';
-  verificationForm.value.regretReason = rejectDialogMessage.value;
+  verificationForm.value.verificationDecision = 'regretted'
+  verificationForm.value.regretReason = rejectDialogMessage.value
 
   // Save the verification
-  saveVerificationDecision('Regretted');
-  closeRejectDialog();
-};
+  saveVerificationDecision('Regretted')
+  closeRejectDialog()
+}
 
 const saveVerificationDecision = (action) => {
-  console.log('Verification Decision:', verificationForm.value, 'Action:', action, 'for CID:', props.application.cid);
+  console.log(
+    'Verification Decision:',
+    verificationForm.value,
+    'Action:',
+    action,
+    'for CID:',
+    props.application.cid
+  )
   emit('update-verification', {
     applicationId: props.application.id, // Or use CID if ID is not available/suitable
-    verificationData: { ...verificationForm.value, verificationStatus: action }
-  });
-  closeModal();
-};
+    verificationData: { ...verificationForm.value, verificationStatus: action },
+  })
+  closeModal()
+}
 
 const submitVerification = () => {
   if (verificationForm.value.verificationDecision === 'accepted') {
-    openAcceptDialog();
+    openAcceptDialog()
   } else if (verificationForm.value.verificationDecision === 'regretted') {
-    openRejectDialog();
+    openRejectDialog()
   } else {
-    alert('Please select a verification decision before submitting.');
+    alert('Please select a verification decision before submitting.')
   }
-};
+}
 
-watch(() => props.application, (newApplication) => {
-  if (newApplication) {
-    // Initialize verification stage fields if needed, or fetch existing values if applicable
-    verificationForm.value.verificationDecision = '';
-    verificationForm.value.regretReason = '';
-    verificationForm.value.conditionText = '';
-    verificationForm.value.remarksText = '';
-  }
-}, { immediate: true });
+watch(
+  () => props.application,
+  (newApplication) => {
+    if (newApplication) {
+      // Initialize verification stage fields if needed, or fetch existing values if applicable
+      verificationForm.value.verificationDecision = ''
+      verificationForm.value.regretReason = ''
+      verificationForm.value.conditionText = ''
+      verificationForm.value.remarksText = ''
+    }
+  },
+  { immediate: true }
+)
 </script>

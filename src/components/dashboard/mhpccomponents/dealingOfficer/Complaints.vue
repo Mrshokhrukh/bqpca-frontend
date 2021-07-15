@@ -156,7 +156,9 @@
 import { ref, onMounted, computed } from 'vue'
 import ComplaintManageModal from './modals/ComplaintsModal.vue'
 import apiServices from '@/services/services'
+import { useToast } from 'vue-toastification'
 
+const toast = useToast()
 const allComplaints = ref([])
 const complaintStatuses = ref([])
 const loading = ref(true)
@@ -283,7 +285,7 @@ const closeModal = () => {
 const handleComplaintUpdated = async (updatedComplaintData) => {
   if (!updatedComplaintData || typeof updatedComplaintData.id === 'undefined') {
     console.error('Invalid data received for complaint update:', updatedComplaintData)
-    alert('Failed to update complaint: Invalid data.') // Or a more sophisticated notification
+    toast.error('Failed to update complaint: Invalid data.') // Or a more sophisticated notification
     return
   }
   try {
@@ -292,7 +294,7 @@ const handleComplaintUpdated = async (updatedComplaintData) => {
     closeModal()
   } catch (err) {
     console.error('Failed to update complaint:', err)
-    alert(`Failed to update complaint: ${err.message || 'Unknown error'}`)
+    toast.error(`Failed to update complaint: ${err.message || 'Unknown error'}`)
   }
 }
 

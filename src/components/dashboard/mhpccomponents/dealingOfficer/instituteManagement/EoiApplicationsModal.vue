@@ -27,7 +27,7 @@
             <DialogPanel
               class="w-full transform overflow-hidden rounded-2xl bg-gray-50 shadow-2xl transition-all"
               v-if="application"
-              style="max-width: 60rem;"
+              style="max-width: 60rem"
             >
               <!-- Enhanced Status Banner -->
               <div
@@ -58,10 +58,7 @@
                         modalStatusInfo.pillClass, // Use computed pill class
                       ]"
                     >
-                      <Circle
-                        class="h-4 w-4"
-                        :class="modalStatusInfo.iconClass"
-                      />
+                      <Circle class="h-4 w-4" :class="modalStatusInfo.iconClass" />
                       <span>{{ modalStatusInfo.displayText }}</span>
                     </span>
                     <button
@@ -87,9 +84,13 @@
                   <!-- Left Column -->
                   <div class="lg:col-span-1 space-y-6">
                     <!-- Institute Information Card -->
-                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div
+                      class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden"
+                    >
                       <div class="p-6">
-                        <h4 class="text-lg font-medium text-gray-900 mb-6 flex items-center space-x-2">
+                        <h4
+                          class="text-lg font-medium text-gray-900 mb-6 flex items-center space-x-2"
+                        >
                           <User class="h-5 w-5 text-gray-500" />
                           <span>Institute Information</span>
                         </h4>
@@ -109,7 +110,9 @@
                           <div class="w-full grid grid-cols-1 gap-4 mt-4">
                             <div class="flex items-center space-x-2 bg-gray-50 p-3 rounded-lg">
                               <MapPin class="h-4 w-4 text-gray-400 flex-shrink-0" />
-                              <span v-if="!isEditing" class="text-sm text-gray-600">{{ application.address }}</span>
+                              <span v-if="!isEditing" class="text-sm text-gray-600">{{
+                                application.address
+                              }}</span>
                               <input
                                 v-else
                                 type="text"
@@ -124,16 +127,22 @@
                     </div>
 
                     <!-- Contact Information Card -->
-                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div
+                      class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden"
+                    >
                       <div class="p-6">
-                        <h4 class="text-lg font-medium text-gray-900 mb-6 flex items-center space-x-2">
+                        <h4
+                          class="text-lg font-medium text-gray-900 mb-6 flex items-center space-x-2"
+                        >
                           <Contact class="h-5 w-5 text-gray-500" />
                           <span>Contact Information</span>
                         </h4>
                         <div class="space-y-4">
                           <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
                             <Mail class="h-4 w-4 text-gray-400 flex-shrink-0" />
-                            <span v-if="!isEditing" class="text-sm text-gray-600">{{ application.email_address }}</span>
+                            <span v-if="!isEditing" class="text-sm text-gray-600">{{
+                              application.email_address
+                            }}</span>
                             <input
                               v-else
                               type="email"
@@ -144,7 +153,9 @@
                           </div>
                           <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
                             <Phone class="h-4 w-4 text-gray-400 flex-shrink-0" />
-                            <span v-if="!isEditing" class="text-sm text-gray-600">{{ application.contact_no }}</span>
+                            <span v-if="!isEditing" class="text-sm text-gray-600">{{
+                              application.contact_no
+                            }}</span>
                             <input
                               v-else
                               type="tel"
@@ -178,8 +189,23 @@
                             </template>
                           </div>
                           <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>
-                            <span v-if="!isEditing" class="text-sm text-gray-600">{{ application.website || 'N/A' }}</span>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              class="h-4 w-4 text-gray-400 flex-shrink-0"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                              stroke-width="2"
+                            >
+                              <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
+                              />
+                            </svg>
+                            <span v-if="!isEditing" class="text-sm text-gray-600">{{
+                              application.website || 'N/A'
+                            }}</span>
                             <input
                               v-else
                               type="url"
@@ -195,9 +221,13 @@
 
                   <!-- Right Column -->
                   <div class="lg:col-span-2 space-y-6">
-                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div
+                      class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden"
+                    >
                       <div class="p-6">
-                        <h4 class="text-lg font-medium text-gray-900 mb-6 flex items-center space-x-2">
+                        <h4
+                          class="text-lg font-medium text-gray-900 mb-6 flex items-center space-x-2"
+                        >
                           <FileText class="h-5 w-5 text-gray-500" />
                           <span>Application Details</span>
                         </h4>
@@ -262,11 +292,20 @@
                                   Selected: {{ fileName }}
                                 </p>
                                 <p
-                                  v-else-if="application.institute_eoi_supporting_documents && editableApplication && !selectedFile"
+                                  v-else-if="
+                                    application.institute_eoi_supporting_documents &&
+                                    editableApplication &&
+                                    !selectedFile
+                                  "
                                   class="text-sm text-gray-600 mt-2"
                                 >
                                   Current:
-                                  <a :href="application.institute_eoi_supporting_documents" target="_blank" class="text-blue-600 hover:underline">Existing Document</a>
+                                  <a
+                                    :href="application.institute_eoi_supporting_documents"
+                                    target="_blank"
+                                    class="text-blue-600 hover:underline"
+                                    >Existing Document</a
+                                  >
                                 </p>
                               </div>
                             </template>
@@ -275,7 +314,10 @@
                       </div>
                     </div>
 
-                    <div v-if="application" class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div
+                      v-if="application"
+                      class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden"
+                    >
                       <div class="p-6">
                         <div class="flex items-center justify-between mb-6">
                           <h4 class="text-lg font-medium text-gray-900 flex items-center space-x-2">
@@ -283,7 +325,11 @@
                             <span>Physical Verification</span>
                           </h4>
                           <button
-                            v-if="modalStatusInfo.displayText === 'Pending Physical Verification' && !isEditingPhysicalVerification && !isEditing"
+                            v-if="
+                              modalStatusInfo.displayText === 'Pending Physical Verification' &&
+                              !isEditingPhysicalVerification &&
+                              !isEditing
+                            "
                             type="button"
                             class="px-3 py-1.5 text-xs font-medium text-white bg-blue-600 rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 inline-flex items-center space-x-1"
                             @click="startEditingPhysicalVerification"
@@ -298,7 +344,11 @@
                           <div>
                             <p class="text-sm font-medium text-gray-500">Verification Date</p>
                             <p class="text-sm text-gray-900 mt-1">
-                              {{ application.physical_verification_date ? formatDate(application.physical_verification_date) : 'Not Scheduled' }}
+                              {{
+                                application.physical_verification_date
+                                  ? formatDate(application.physical_verification_date)
+                                  : 'Not Scheduled'
+                              }}
                             </p>
                           </div>
                           <div>
@@ -307,7 +357,9 @@
                               <span
                                 :class="[
                                   'px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full',
-                                  application.is_physical_verification ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                                  application.is_physical_verification
+                                    ? 'bg-green-100 text-green-800'
+                                    : 'bg-yellow-100 text-yellow-800',
                                 ]"
                               >
                                 {{ application.is_physical_verification ? 'Completed' : 'Pending' }}
@@ -317,14 +369,22 @@
                           <div>
                             <p class="text-sm font-medium text-gray-500">Remarks</p>
                             <p class="text-sm text-gray-900 mt-1 whitespace-pre-wrap">
-                              {{ application.physical_verification_remarks || 'No remarks provided.' }}
+                              {{
+                                application.physical_verification_remarks || 'No remarks provided.'
+                              }}
                             </p>
                           </div>
                         </div>
 
-                        <form v-else @submit.prevent="savePhysicalVerificationDetails" class="space-y-4">
+                        <form
+                          v-else
+                          @submit.prevent="savePhysicalVerificationDetails"
+                          class="space-y-4"
+                        >
                           <div>
-                            <label for="pv_date" class="block text-sm font-medium text-gray-700">Verification Date</label>
+                            <label for="pv_date" class="block text-sm font-medium text-gray-700"
+                              >Verification Date</label
+                            >
                             <input
                               type="date"
                               id="pv_date"
@@ -333,7 +393,9 @@
                             />
                           </div>
                           <div>
-                            <label for="pv_remarks" class="block text-sm font-medium text-gray-700">Remarks</label>
+                            <label for="pv_remarks" class="block text-sm font-medium text-gray-700"
+                              >Remarks</label
+                            >
                             <textarea
                               id="pv_remarks"
                               rows="3"
@@ -353,7 +415,9 @@
                               Mark as Verified
                             </label>
                           </div>
-                          <p v-if="physicalVerificationSaveError" class="text-sm text-red-600 mt-2">{{ physicalVerificationSaveError }}</p>
+                          <p v-if="physicalVerificationSaveError" class="text-sm text-red-600 mt-2">
+                            {{ physicalVerificationSaveError }}
+                          </p>
                           <div class="flex justify-end space-x-3 mt-4">
                             <button
                               type="button"
@@ -381,7 +445,10 @@
               <!-- Main Modal Footer -->
               <div class="px-8 py-4 bg-gray-50 border-t border-gray-200">
                 <div class="flex justify-between items-center">
-                  <div v-if="errorMessage || saveError" class="text-sm text-red-600 flex items-center space-x-2">
+                  <div
+                    v-if="errorMessage || saveError"
+                    class="text-sm text-red-600 flex items-center space-x-2"
+                  >
                     <CircleAlert class="h-4 w-4" />
                     <span>{{ errorMessage || saveError }}</span>
                   </div>
@@ -396,47 +463,55 @@
                       <X class="h-4 w-4 mr-1.5" /> Close
                     </button>
 
-                    <template v-if="!isEditing && !isEditingPhysicalVerification && !isEoiWorkflowFinalized">
+                    <template
+                      v-if="!isEditing && !isEditingPhysicalVerification && !isEoiWorkflowFinalized"
+                    >
                       <!-- Edit Application button -->
                       <button
-                          type="button"
-                          class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg shadow-sm hover:bg-blue-700"
-                          @click="startEditing"
-                          :disabled="isSaving"
+                        type="button"
+                        class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg shadow-sm hover:bg-blue-700"
+                        @click="startEditing"
+                        :disabled="isSaving"
                       >
-                          <Pencil class="h-4 w-4 mr-1.5" /> Edit Application
+                        <Pencil class="h-4 w-4 mr-1.5" /> Edit Application
                       </button>
 
                       <!-- Regret EOI button -->
                       <button
-                          type="button"
-                          class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg shadow-sm hover:bg-red-700"
-                          @click="openPromptDialog('rejectEOI')"
-                          :disabled="isSaving"
+                        type="button"
+                        class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg shadow-sm hover:bg-red-700"
+                        @click="openPromptDialog('rejectEOI')"
+                        :disabled="isSaving"
                       >
-                          <Ban class="h-4 w-4 mr-1.5" /> Regret EOI
+                        <Ban class="h-4 w-4 mr-1.5" /> Regret EOI
                       </button>
 
                       <!-- Approve for Verification button -->
                       <button
-                          v-if="application.application_status === 'EOI Submitted' || application.application_status === 'EOI Pending Review'"
-                          type="button"
-                          class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg shadow-sm hover:bg-green-700"
-                          @click="openPromptDialog('approveToVerify')"
-                          :disabled="isSaving"
+                        v-if="
+                          application.application_status === 'EOI Submitted' ||
+                          application.application_status === 'EOI Pending Review'
+                        "
+                        type="button"
+                        class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg shadow-sm hover:bg-green-700"
+                        @click="openPromptDialog('approveToVerify')"
+                        :disabled="isSaving"
                       >
-                          <ClipboardCheck class="h-4 w-4 mr-1.5" /> Approve for Verification
+                        <ClipboardCheck class="h-4 w-4 mr-1.5" /> Approve for Verification
                       </button>
 
                       <!-- Finalize EOI Approval button -->
                       <button
-                          v-if="application.application_status === 'EOI Pending Physical Verification' && application.is_physical_verification"
-                          type="button"
-                          class="px-4 py-2 text-sm font-medium text-white bg-teal-600 rounded-lg shadow-sm hover:bg-teal-700"
-                          @click="openPromptDialog('finalEOIApprove')"
-                          :disabled="isSaving"
+                        v-if="
+                          application.application_status === 'EOI Pending Physical Verification' &&
+                          application.is_physical_verification
+                        "
+                        type="button"
+                        class="px-4 py-2 text-sm font-medium text-white bg-teal-600 rounded-lg shadow-sm hover:bg-teal-700"
+                        @click="openPromptDialog('finalEOIApprove')"
+                        :disabled="isSaving"
                       >
-                          <CheckCircle class="h-4 w-4 mr-1.5" /> Finalize EOI Approval
+                        <CheckCircle class="h-4 w-4 mr-1.5" /> Finalize EOI Approval
                       </button>
                     </template>
 
@@ -455,7 +530,8 @@
                         @click="saveChanges"
                         :disabled="isSaving"
                       >
-                        <Save class="h-4 w-4 mr-1.5" /> {{ isSaving ? 'Saving...' : 'Save Changes' }}
+                        <Save class="h-4 w-4 mr-1.5" />
+                        {{ isSaving ? 'Saving...' : 'Save Changes' }}
                       </button>
                     </template>
                   </div>
@@ -464,18 +540,37 @@
 
               <TransitionRoot appear :show="isPromptDialogOpen" as="template">
                 <Dialog as="div" @close="cancelPromptAction" class="relative z-[100]">
-                  <TransitionChild enter="duration-300 ease-out" enter-from="opacity-0" enter-to="opacity-100" leave="duration-200 ease-in" leave-from="opacity-100" leave-to="opacity-0">
+                  <TransitionChild
+                    enter="duration-300 ease-out"
+                    enter-from="opacity-0"
+                    enter-to="opacity-100"
+                    leave="duration-200 ease-in"
+                    leave-from="opacity-100"
+                    leave-to="opacity-0"
+                  >
                     <div class="fixed inset-0 bg-black/60 backdrop-blur-xs" />
                   </TransitionChild>
                   <div class="fixed inset-0 overflow-y-auto">
                     <div class="flex min-h-full items-center justify-center p-4 text-center">
-                      <TransitionChild enter="duration-300 ease-out" enter-from="opacity-0 scale-95" enter-to="opacity-100 scale-100" leave="duration-200 ease-in" leave-from="opacity-100 scale-100" leave-to="opacity-0 scale-95">
-                        <DialogPanel class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                           <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900">
+                      <TransitionChild
+                        enter="duration-300 ease-out"
+                        enter-from="opacity-0 scale-95"
+                        enter-to="opacity-100 scale-100"
+                        leave="duration-200 ease-in"
+                        leave-from="opacity-100 scale-100"
+                        leave-to="opacity-0 scale-95"
+                      >
+                        <DialogPanel
+                          class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
+                        >
+                          <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900">
                             {{ promptTitle }}
                           </DialogTitle>
                           <div class="mt-4">
-                            <label for="promptInput" class="block text-sm font-medium text-gray-700 mb-1">
+                            <label
+                              for="promptInput"
+                              class="block text-sm font-medium text-gray-700 mb-1"
+                            >
                               {{ promptLabel }}
                             </label>
                             <textarea
@@ -490,7 +585,12 @@
                             </p>
                           </div>
                           <div class="mt-6 flex justify-end space-x-3">
-                            <button type="button" class="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50" @click="cancelPromptAction" :disabled="isSaving">
+                            <button
+                              type="button"
+                              class="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+                              @click="cancelPromptAction"
+                              :disabled="isSaving"
+                            >
                               Cancel
                             </button>
                             <button
@@ -519,8 +619,24 @@
 <script setup>
 import { Dialog, DialogPanel, DialogTitle, TransitionRoot, TransitionChild } from '@headlessui/vue'
 import {
-  User, UserCircle, Calendar, Contact, Mail, Phone, MapPin, FileText, FileCheck, Hash,
-  CircleAlert, Circle, X, Pencil, Save, Ban, ClipboardCheck, CheckCircle
+  User,
+  UserCircle,
+  Calendar,
+  Contact,
+  Mail,
+  Phone,
+  MapPin,
+  FileText,
+  FileCheck,
+  Hash,
+  CircleAlert,
+  Circle,
+  X,
+  Pencil,
+  Save,
+  Ban,
+  ClipboardCheck,
+  CheckCircle,
 } from 'lucide-vue-next'
 import { computed, ref, watch } from 'vue'
 import apiService from '@/services/services' // Adjust path
@@ -564,280 +680,342 @@ const physicalVerificationSaveError = ref('')
 // --- Computed properties for Prompt Dialog (dynamic text and classes) ---
 const promptTitle = computed(() => {
   switch (promptActionType.value) {
-    case 'approveToVerify': return 'Confirm Approval for Physical Verification';
-    case 'rejectEOI': return 'Confirm EOI Rejection'; // Updated from 'reject'
-    case 'finalEOIApprove': return 'Confirm Final EOI Approval';
-    default: return 'Confirm Action';
+    case 'approveToVerify':
+      return 'Confirm Approval for Physical Verification'
+    case 'rejectEOI':
+      return 'Confirm EOI Rejection' // Updated from 'reject'
+    case 'finalEOIApprove':
+      return 'Confirm Final EOI Approval'
+    default:
+      return 'Confirm Action'
   }
-});
+})
 
 const promptLabel = computed(() => {
   switch (promptActionType.value) {
-    case 'approveToVerify': return 'Approval Notes (Optional):';
-    case 'rejectEOI': return 'Rejection Reason (Required):'; // Updated from 'reject'
-    case 'finalEOIApprove': return 'Final Approval Notes (Optional):';
-    default: return 'Notes:';
+    case 'approveToVerify':
+      return 'Approval Notes (Optional):'
+    case 'rejectEOI':
+      return 'Rejection Reason (Required):' // Updated from 'reject'
+    case 'finalEOIApprove':
+      return 'Final Approval Notes (Optional):'
+    default:
+      return 'Notes:'
   }
-});
+})
 
 const promptPlaceholder = computed(() => {
   switch (promptActionType.value) {
-    case 'approveToVerify': return 'Enter notes for moving to verification...';
-    case 'rejectEOI': return 'Enter reason for rejection...'; // Updated from 'reject'
-    case 'finalEOIApprove': return 'Enter notes for final EOI approval...';
-    default: return 'Enter details...';
+    case 'approveToVerify':
+      return 'Enter notes for moving to verification...'
+    case 'rejectEOI':
+      return 'Enter reason for rejection...' // Updated from 'reject'
+    case 'finalEOIApprove':
+      return 'Enter notes for final EOI approval...'
+    default:
+      return 'Enter details...'
   }
-});
+})
 
 const promptConfirmButtonText = computed(() => {
-  if (isSaving.value) return 'Processing...';
+  if (isSaving.value) return 'Processing...'
   switch (promptActionType.value) {
-    case 'approveToVerify': return 'Confirm for Verification';
-    case 'rejectEOI': return 'Confirm Rejection'; // Updated from 'reject'
-    case 'finalEOIApprove': return 'Confirm Final Approval';
-    default: return 'Confirm';
+    case 'approveToVerify':
+      return 'Confirm for Verification'
+    case 'rejectEOI':
+      return 'Confirm Rejection' // Updated from 'reject'
+    case 'finalEOIApprove':
+      return 'Confirm Final Approval'
+    default:
+      return 'Confirm'
   }
-});
+})
 
 const promptConfirmButtonClass = computed(() => {
-  let baseClass = 'inline-flex justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2';
+  let baseClass =
+    'inline-flex justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2'
   switch (promptActionType.value) {
-    case 'approveToVerify': return `${baseClass} bg-green-600 hover:bg-green-700 focus:ring-green-500`;
-    case 'rejectEOI': return `${baseClass} bg-red-600 hover:bg-red-700 focus:ring-red-500`; // Updated
-    case 'finalEOIApprove': return `${baseClass} bg-teal-600 hover:bg-teal-700 focus:ring-teal-500`;
-    default: return `${baseClass} bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500`;
+    case 'approveToVerify':
+      return `${baseClass} bg-green-600 hover:bg-green-700 focus:ring-green-500`
+    case 'rejectEOI':
+      return `${baseClass} bg-red-600 hover:bg-red-700 focus:ring-red-500` // Updated
+    case 'finalEOIApprove':
+      return `${baseClass} bg-teal-600 hover:bg-teal-700 focus:ring-teal-500`
+    default:
+      return `${baseClass} bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500`
   }
-});
+})
 
 const isEoiWorkflowFinalized = computed(() => {
-  if (!props.application?.application_status) return true;
-  const status = props.application.application_status;
+  if (!props.application?.application_status) return true
+  const status = props.application.application_status
   const finalizedStatuses = [
-    'EOI Approved', 'EOI Rejected', 'DPR Submitted', 'DPR Pending Review',
-    'DPR Approved', 'DPR Rejected', 'Payment Pending', 'Fully Approved', 'Final Rejected'
-  ];
-  return finalizedStatuses.includes(status);
-});
+    'EOI Approved',
+    'EOI Rejected',
+    'DPR Submitted',
+    'DPR Pending Review',
+    'DPR Approved',
+    'DPR Rejected',
+    'Payment Pending',
+    'Fully Approved',
+    'Final Rejected',
+  ]
+  return finalizedStatuses.includes(status)
+})
 // --- End Prompt Dialog Computed Properties ---
 
 const validateApplicationIdentifier = () => {
   if (!props.application?.CID) {
-    errorMessage.value = 'Invalid or missing application CID.';
-    toast.error(errorMessage.value);
-    return false;
+    errorMessage.value = 'Invalid or missing application CID.'
+    toast.error(errorMessage.value)
+    return false
   }
-  return true;
+  return true
 }
 
 const handleFileChange = (event) => {
-  const file = event.target.files[0];
+  const file = event.target.files[0]
   if (file) {
     if (file.type !== 'application/pdf') {
-      toast.error('Please upload a PDF file.');
-      selectedFile.value = null;
-      fileName.value = '';
-      if (fileInputRef.value) fileInputRef.value.value = '';
-      return;
+      toast.error('Please upload a PDF file.')
+      selectedFile.value = null
+      fileName.value = ''
+      if (fileInputRef.value) fileInputRef.value.value = ''
+      return
     }
-    selectedFile.value = file;
-    fileName.value = file.name;
+    selectedFile.value = file
+    fileName.value = file.name
   } else {
-    selectedFile.value = null;
-    fileName.value = '';
+    selectedFile.value = null
+    fileName.value = ''
   }
 }
 
 const closeModal = () => {
-  if (isPromptDialogOpen.value) cancelPromptAction();
-  if (isEditingPhysicalVerification.value) cancelEditingPhysicalVerification();
-  if (isEditing.value) cancelEditing();
-  emit('close');
+  if (isPromptDialogOpen.value) cancelPromptAction()
+  if (isEditingPhysicalVerification.value) cancelEditingPhysicalVerification()
+  if (isEditing.value) cancelEditing()
+  emit('close')
 }
 
 const closeModalHandler = () => {
-  closeModal();
+  closeModal()
 }
 
 const startEditing = () => {
-  if (!validateApplicationIdentifier()) return;
+  if (!validateApplicationIdentifier()) return
   if (isEditingPhysicalVerification.value) {
-    toast.warning('Please save or cancel physical verification edits first.');
-    return;
+    toast.warning('Please save or cancel physical verification edits first.')
+    return
   }
-  editableApplication.value = JSON.parse(JSON.stringify(props.application));
-  editableApplication.value.type_of_programme = props.application.program_type?.program_name || '';
-  delete editableApplication.value.program_type;
-  selectedFile.value = null;
-  fileName.value = '';
-  if (fileInputRef.value) fileInputRef.value.value = '';
-  isEditing.value = true;
-  saveError.value = '';
-  errorMessage.value = '';
+  editableApplication.value = JSON.parse(JSON.stringify(props.application))
+  editableApplication.value.type_of_programme = props.application.program_type?.program_name || ''
+  delete editableApplication.value.program_type
+  selectedFile.value = null
+  fileName.value = ''
+  if (fileInputRef.value) fileInputRef.value.value = ''
+  isEditing.value = true
+  saveError.value = ''
+  errorMessage.value = ''
 }
 
 const cancelEditing = () => {
-  editableApplication.value = null;
-  selectedFile.value = null;
-  fileName.value = '';
-  if (fileInputRef.value) fileInputRef.value.value = '';
-  isEditing.value = false;
-  saveError.value = '';
-  errorMessage.value = '';
+  editableApplication.value = null
+  selectedFile.value = null
+  fileName.value = ''
+  if (fileInputRef.value) fileInputRef.value.value = ''
+  isEditing.value = false
+  saveError.value = ''
+  errorMessage.value = ''
 }
 
 const saveChanges = async () => {
-  if (!editableApplication.value || !validateApplicationIdentifier()) return;
-  isSaving.value = true;
-  saveError.value = '';
+  if (!editableApplication.value || !validateApplicationIdentifier()) return
+  isSaving.value = true
+  saveError.value = ''
 
   try {
-    const formData = new FormData();
+    const formData = new FormData()
     const fieldsToUpdate = [
-      'name_of_institution', 'address', 'email_address', 'contact_no',
-      'village', 'dzongkhag', 'website', 'type_of_programme',
-      'head_of_institution_name', 'head_of_institution_gender',
-      'head_of_institution_phone_number', 'head_of_institution_email',
-      'dpr_name', 'executive_summary', 'remarks', // Removed 'declaration' if not typically edited here
-    ];
+      'name_of_institution',
+      'address',
+      'email_address',
+      'contact_no',
+      'village',
+      'dzongkhag',
+      'website',
+      'type_of_programme',
+      'head_of_institution_name',
+      'head_of_institution_gender',
+      'head_of_institution_phone_number',
+      'head_of_institution_email',
+      'dpr_name',
+      'executive_summary',
+      'remarks', // Removed 'declaration' if not typically edited here
+    ]
 
     fieldsToUpdate.forEach((field) => {
-      if (editableApplication.value[field] !== undefined && editableApplication.value[field] !== null) {
-        formData.append(field, editableApplication.value[field]);
+      if (
+        editableApplication.value[field] !== undefined &&
+        editableApplication.value[field] !== null
+      ) {
+        formData.append(field, editableApplication.value[field])
       }
-    });
-     if (typeof editableApplication.value.declaration === 'boolean') { // Handle boolean specifically
-        formData.append('declaration', editableApplication.value.declaration);
+    })
+    if (typeof editableApplication.value.declaration === 'boolean') {
+      // Handle boolean specifically
+      formData.append('declaration', editableApplication.value.declaration)
     }
-
 
     if (selectedFile.value) {
-      formData.append('institute_eoi_supporting_documents', selectedFile.value);
+      formData.append('institute_eoi_supporting_documents', selectedFile.value)
     }
 
-    const response = await apiService.patchMhpcInstitute(
-      props.application.CID,
-      formData,
-      { headers: { 'Content-Type': 'multipart/form-data' } }
-    );
+    const response = await apiService.patchMhpcInstitute(props.application.CID, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
 
     if (response && response.status === 200 && response.data) {
-      toast.success('Application Updated Successfully!');
-      emit('application-updated', response.data);
-      isEditing.value = false;
+      toast.success('Application Updated Successfully!')
+      emit('application-updated', response.data)
+      isEditing.value = false
     } else {
-      const serverError = response?.data?.detail || response?.data?.message || (response?.data ? JSON.stringify(response.data) : `Server responded with ${response?.status || 'unknown status'}`);
-      saveError.value = `Failed to save changes: ${serverError}`;
-      toast.error(saveError.value);
+      const serverError =
+        response?.data?.detail ||
+        response?.data?.message ||
+        (response?.data
+          ? JSON.stringify(response.data)
+          : `Server responded with ${response?.status || 'unknown status'}`)
+      saveError.value = `Failed to save changes: ${serverError}`
+      toast.error(saveError.value)
     }
   } catch (error) {
-    const errorMsg = error.response?.data?.detail || error.response?.data?.message || (error.response?.data ? JSON.stringify(error.response.data) : null) || error.message || 'Unknown error during save';
-    saveError.value = `Failed to save changes: ${errorMsg}`;
-    toast.error(saveError.value);
+    const errorMsg =
+      error.response?.data?.detail ||
+      error.response?.data?.message ||
+      (error.response?.data ? JSON.stringify(error.response.data) : null) ||
+      error.message ||
+      'Unknown error during save'
+    saveError.value = `Failed to save changes: ${errorMsg}`
+    toast.error(saveError.value)
   } finally {
-    isSaving.value = false;
+    isSaving.value = false
   }
 }
 
 const startEditingPhysicalVerification = () => {
   if (!props.application || isEditing.value) {
-    if(isEditing.value) toast.warning('Please save or cancel main application edits first.');
-    return;
+    if (isEditing.value) toast.warning('Please save or cancel main application edits first.')
+    return
   }
-  isEditingPhysicalVerification.value = true;
-  physicalVerificationSaveError.value = '';
-  let pvDate = props.application.physical_verification_date;
+  isEditingPhysicalVerification.value = true
+  physicalVerificationSaveError.value = ''
+  let pvDate = props.application.physical_verification_date
   if (pvDate) {
     try {
-      pvDate = new Date(pvDate).toISOString().split('T')[0];
+      pvDate = new Date(pvDate).toISOString().split('T')[0]
     } catch (e) {
-      console.error("Error parsing physical verification date:", props.application.physical_verification_date, e);
-      pvDate = null; // Fallback to null if parsing fails
+      console.error(
+        'Error parsing physical verification date:',
+        props.application.physical_verification_date,
+        e,
+      )
+      pvDate = null // Fallback to null if parsing fails
     }
   }
   editablePhysicalVerificationDetails.value = {
     date: pvDate,
     remarks: props.application.physical_verification_remarks || '',
     is_verified: props.application.is_physical_verification || false,
-  };
-};
+  }
+}
 
 const cancelEditingPhysicalVerification = () => {
-  isEditingPhysicalVerification.value = false;
-  physicalVerificationSaveError.value = '';
-};
+  isEditingPhysicalVerification.value = false
+  physicalVerificationSaveError.value = ''
+}
 
-const savePhysicalVerificationDetails = async () => { // Changed to be called by form submit
+const savePhysicalVerificationDetails = async () => {
+  // Changed to be called by form submit
   if (!props.application?.CID || !validateApplicationIdentifier()) {
-    physicalVerificationSaveError.value = 'Application CID is missing.';
-    toast.error(physicalVerificationSaveError.value);
-    return;
+    physicalVerificationSaveError.value = 'Application CID is missing.'
+    toast.error(physicalVerificationSaveError.value)
+    return
   }
-  isSaving.value = true;
-  physicalVerificationSaveError.value = '';
+  isSaving.value = true
+  physicalVerificationSaveError.value = ''
 
   const payload = {
     physical_verification_date: editablePhysicalVerificationDetails.value.date || null,
     physical_verification_remarks: editablePhysicalVerificationDetails.value.remarks.trim() || '', // Ensure remarks is a string
     is_physical_verification: editablePhysicalVerificationDetails.value.is_verified,
-  };
+  }
 
   try {
-    const response = await apiService.patchMhpcInstitute(
-      props.application.CID,
-      payload,
-      { headers: { 'Content-Type': 'application/json' } }
-    );
+    const response = await apiService.patchMhpcInstitute(props.application.CID, payload, {
+      headers: { 'Content-Type': 'application/json' },
+    })
 
     if (response && response.status === 200 && response.data) {
-      toast.success('Physical verification details updated successfully!');
-      emit('application-updated', response.data);
-      isEditingPhysicalVerification.value = false;
+      toast.success('Physical verification details updated successfully!')
+      emit('application-updated', response.data)
+      isEditingPhysicalVerification.value = false
     } else {
-      const serverError = response?.data?.detail || response?.data?.message || (response?.data ? JSON.stringify(response.data) : `Server responded with ${response?.status || 'unknown status'}`);
-      physicalVerificationSaveError.value = `Failed to save: ${serverError}`;
-      toast.error(physicalVerificationSaveError.value);
+      const serverError =
+        response?.data?.detail ||
+        response?.data?.message ||
+        (response?.data
+          ? JSON.stringify(response.data)
+          : `Server responded with ${response?.status || 'unknown status'}`)
+      physicalVerificationSaveError.value = `Failed to save: ${serverError}`
+      toast.error(physicalVerificationSaveError.value)
     }
   } catch (error) {
-    const errorMsg = error.response?.data?.detail || error.response?.data?.message || (error.response?.data ? JSON.stringify(error.response.data) : null) || error.message || 'Unknown error';
-    physicalVerificationSaveError.value = `Failed to save: ${errorMsg}`;
-    toast.error(physicalVerificationSaveError.value);
+    const errorMsg =
+      error.response?.data?.detail ||
+      error.response?.data?.message ||
+      (error.response?.data ? JSON.stringify(error.response.data) : null) ||
+      error.message ||
+      'Unknown error'
+    physicalVerificationSaveError.value = `Failed to save: ${errorMsg}`
+    toast.error(physicalVerificationSaveError.value)
   } finally {
-    isSaving.value = false;
+    isSaving.value = false
   }
-};
+}
 
 const openPromptDialog = (action) => {
   if (isEditing.value || isEditingPhysicalVerification.value) {
-    toast.warning('Please save or cancel current edits before proceeding.');
-    return;
+    toast.warning('Please save or cancel current edits before proceeding.')
+    return
   }
-  if (!validateApplicationIdentifier()) return;
-  promptActionType.value = action;
-  promptInputText.value = '';
-  promptErrorMessage.value = '';
-  isPromptDialogOpen.value = true;
+  if (!validateApplicationIdentifier()) return
+  promptActionType.value = action
+  promptInputText.value = ''
+  promptErrorMessage.value = ''
+  isPromptDialogOpen.value = true
 }
 
 const cancelPromptAction = () => {
-  isPromptDialogOpen.value = false;
-  promptInputText.value = '';
-  promptErrorMessage.value = '';
-  promptActionType.value = ''; // Reset action type
+  isPromptDialogOpen.value = false
+  promptInputText.value = ''
+  promptErrorMessage.value = ''
+  promptActionType.value = '' // Reset action type
 }
 
 const confirmPromptAction = async () => {
   if (!validateApplicationIdentifier()) {
-    toast.error("Cannot proceed: Application identifier is missing.");
-    isPromptDialogOpen.value = false;
-    return;
+    toast.error('Cannot proceed: Application identifier is missing.')
+    isPromptDialogOpen.value = false
+    return
   }
 
-  isSaving.value = true;
-  promptErrorMessage.value = '';
-  let payload = {};
-  let successMessage = '';
-  let failureMessagePrefix = '';
-  const notes = promptInputText.value.trim();
+  isSaving.value = true
+  promptErrorMessage.value = ''
+  let payload = {}
+  let successMessage = ''
+  let failureMessagePrefix = ''
+  const notes = promptInputText.value.trim()
 
   switch (promptActionType.value) {
     case 'approveToVerify':
@@ -848,200 +1026,235 @@ const confirmPromptAction = async () => {
         is_physical_verification: false,
         physical_verification_date: null,
         physical_verification_remarks: null,
-      };
-      if (notes && props.application.remarks) payload.remarks = `${props.application.remarks}\n\n[Verification Approval Notes]:\n${notes}`;
-      else if (notes) payload.remarks = `[Verification Approval Notes]:\n${notes}`;
-      successMessage = `Application ${props.application.CID} approved for physical verification!`;
-      failureMessagePrefix = 'Failed to approve for physical verification';
-      break;
+      }
+      if (notes && props.application.remarks)
+        payload.remarks = `${props.application.remarks}\n\n[Verification Approval Notes]:\n${notes}`
+      else if (notes) payload.remarks = `[Verification Approval Notes]:\n${notes}`
+      successMessage = `Application ${props.application.CID} approved for physical verification!`
+      failureMessagePrefix = 'Failed to approve for physical verification'
+      break
 
     case 'rejectEOI':
       if (!notes) {
-        promptErrorMessage.value = 'A reason is required to reject the EOI.';
-        isSaving.value = false;
-        return;
+        promptErrorMessage.value = 'A reason is required to reject the EOI.'
+        isSaving.value = false
+        return
       }
       payload = {
         application_status: 'EOI Rejected',
         do_eoi_review_decision: 'Rejected',
         review_decision: 'Rejected',
         reason_if_rejected: notes,
-      };
-      successMessage = `EOI for application ${props.application.CID} has been rejected.`;
-      failureMessagePrefix = 'Failed to reject EOI';
-      break;
+      }
+      successMessage = `EOI for application ${props.application.CID} has been rejected.`
+      failureMessagePrefix = 'Failed to reject EOI'
+      break
 
     case 'finalEOIApprove':
       payload = {
         application_status: 'EOI Approved',
         // review_decision: 'Approved', // Backend can handle based on status
         remarks: notes || props.application.remarks,
-      };
-      if (notes && props.application.remarks) payload.remarks = `${props.application.remarks}\n\n[Final EOI Approval Notes]:\n${notes}`;
-      else if (notes) payload.remarks = `[Final EOI Approval Notes]:\n${notes}`;
-      successMessage = `EOI for application ${props.application.CID} has been finalized and approved!`;
-      failureMessagePrefix = 'Failed to finalize EOI approval';
-      break;
+      }
+      if (notes && props.application.remarks)
+        payload.remarks = `${props.application.remarks}\n\n[Final EOI Approval Notes]:\n${notes}`
+      else if (notes) payload.remarks = `[Final EOI Approval Notes]:\n${notes}`
+      successMessage = `EOI for application ${props.application.CID} has been finalized and approved!`
+      failureMessagePrefix = 'Failed to finalize EOI approval'
+      break
 
     default:
-      toast.error("Invalid action type.");
-      isSaving.value = false;
-      return;
+      toast.error('Invalid action type.')
+      isSaving.value = false
+      return
   }
 
   try {
-    const response = await apiService.patchMhpcInstitute(
-      props.application.CID,
-      payload,
-      { headers: { 'Content-Type': 'application/json' } }
-    );
+    const response = await apiService.patchMhpcInstitute(props.application.CID, payload, {
+      headers: { 'Content-Type': 'application/json' },
+    })
 
     if (response && response.status === 200 && response.data) {
-      toast.success(successMessage);
-      emit('application-updated', response.data);
-      cancelPromptAction();
+      toast.success(successMessage)
+      emit('application-updated', response.data)
+      cancelPromptAction()
     } else {
-      const serverError = response?.data?.detail || response?.data?.message || (response?.data ? JSON.stringify(response.data) : `Server responded with ${response?.status || 'unknown status'}`);
-      promptErrorMessage.value = `${failureMessagePrefix}: ${serverError}`;
-      toast.error(promptErrorMessage.value);
+      const serverError =
+        response?.data?.detail ||
+        response?.data?.message ||
+        (response?.data
+          ? JSON.stringify(response.data)
+          : `Server responded with ${response?.status || 'unknown status'}`)
+      promptErrorMessage.value = `${failureMessagePrefix}: ${serverError}`
+      toast.error(promptErrorMessage.value)
     }
   } catch (error) {
-    const errorMsg = error.response?.data?.detail || error.response?.data?.message || (error.response?.data ? JSON.stringify(error.response.data) : null) || error.message || 'Unknown error';
-    promptErrorMessage.value = `${failureMessagePrefix}: ${errorMsg}`;
-    toast.error(promptErrorMessage.value);
+    const errorMsg =
+      error.response?.data?.detail ||
+      error.response?.data?.message ||
+      (error.response?.data ? JSON.stringify(error.response.data) : null) ||
+      error.message ||
+      'Unknown error'
+    promptErrorMessage.value = `${failureMessagePrefix}: ${errorMsg}`
+    toast.error(promptErrorMessage.value)
   } finally {
-    isSaving.value = false;
+    isSaving.value = false
   }
 }
 
 const formatDate = (dateString) => {
-  if (!dateString) return 'N/A';
+  if (!dateString) return 'N/A'
   try {
-    const date = new Date(dateString);
+    const date = new Date(dateString)
     if (isNaN(date.getTime())) {
-      const parts = dateString.split(/[-T]/);
+      const parts = dateString.split(/[-T]/)
       if (parts.length >= 3) {
-        const parsedDate = new Date(Date.UTC(parts[0], parseInt(parts[1],10) - 1, parts[2]));
+        const parsedDate = new Date(Date.UTC(parts[0], parseInt(parts[1], 10) - 1, parts[2]))
         if (!isNaN(parsedDate.getTime())) {
           return parsedDate.toLocaleDateString('en-US', {
-            year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC'
-          });
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            timeZone: 'UTC',
+          })
         }
       }
-      return 'Invalid Date';
+      return 'Invalid Date'
     }
     return date.toLocaleDateString('en-US', {
-      year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC'
-    });
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      timeZone: 'UTC',
+    })
   } catch (error) {
-    console.error('Error formatting date:', dateString, error);
-    return 'Invalid Date';
+    console.error('Error formatting date:', dateString, error)
+    return 'Invalid Date'
   }
 }
 
 // THIS IS THE KEY COMPUTED PROPERTY FOR MODAL STATUS DISPLAY
 const modalStatusInfo = computed(() => {
-  const app = props.application;
+  const app = props.application
   if (!app || !app.application_status) {
     // Default for when application data might not be fully loaded yet
     return {
       displayText: 'Loading...',
       bannerClass: 'bg-gray-50 border-gray-100',
       pillClass: 'bg-gray-100 text-gray-800',
-      iconClass: 'text-gray-500'
-    };
+      iconClass: 'text-gray-500',
+    }
   }
 
-  const appStatus = app.application_status;
-  const isPVComplete = app.is_physical_verification; // Relies on this boolean field
+  const appStatus = app.application_status
+  const isPVComplete = app.is_physical_verification // Relies on this boolean field
 
-  let displayText = appStatus; // Default to raw status
-  let bannerClass = 'bg-yellow-50 border-yellow-100'; // Default banner
-  let pillClass = 'bg-yellow-100 text-yellow-800';   // Default pill
-  let iconClass = 'text-yellow-500';                 // Default icon
+  let displayText = appStatus // Default to raw status
+  let bannerClass = 'bg-yellow-50 border-yellow-100' // Default banner
+  let pillClass = 'bg-yellow-100 text-yellow-800' // Default pill
+  let iconClass = 'text-yellow-500' // Default icon
 
   if (appStatus === 'EOI Pending Physical Verification') {
     if (isPVComplete) {
-      displayText = 'Physical Verification Completed';
-      bannerClass = 'bg-teal-50 border-teal-100';    // Teal for PV Completed banner
-      pillClass = 'bg-teal-100 text-teal-800';      // Teal for PV Completed pill
-      iconClass = 'text-teal-500';                  // Teal for PV Completed icon
+      displayText = 'Physical Verification Completed'
+      bannerClass = 'bg-teal-50 border-teal-100' // Teal for PV Completed banner
+      pillClass = 'bg-teal-100 text-teal-800' // Teal for PV Completed pill
+      iconClass = 'text-teal-500' // Teal for PV Completed icon
     } else {
-      displayText = 'Pending Physical Verification';
+      displayText = 'Pending Physical Verification'
       // Yellow is default, no change needed here for banner/pill/icon
     }
-  } else if (appStatus === 'EOI Approved' || appStatus === 'Fully Approved' || appStatus === 'DPR Approved') {
-    displayText = appStatus; // Can be more specific if needed, e.g., 'EOI Approved'
-    bannerClass = 'bg-green-50 border-green-100';
-    pillClass = 'bg-green-100 text-green-800';
-    iconClass = 'text-green-500';
-  } else if (appStatus === 'EOI Rejected' || appStatus === 'DPR Rejected' || appStatus === 'Final Rejected') {
-    displayText = appStatus; // Can be 'Regretted' if preferred
-    bannerClass = 'bg-red-50 border-red-100';
-    pillClass = 'bg-red-100 text-red-800';
-    iconClass = 'text-red-500';
-  } else if (appStatus === 'EOI Submitted' || appStatus === 'EOI Pending Review' || appStatus === 'DPR Submitted' || appStatus === 'DPR Pending Review' || appStatus === 'Payment Pending' ) {
-    displayText = appStatus;
+  } else if (
+    appStatus === 'EOI Approved' ||
+    appStatus === 'Fully Approved' ||
+    appStatus === 'DPR Approved'
+  ) {
+    displayText = appStatus // Can be more specific if needed, e.g., 'EOI Approved'
+    bannerClass = 'bg-green-50 border-green-100'
+    pillClass = 'bg-green-100 text-green-800'
+    iconClass = 'text-green-500'
+  } else if (
+    appStatus === 'EOI Rejected' ||
+    appStatus === 'DPR Rejected' ||
+    appStatus === 'Final Rejected'
+  ) {
+    displayText = appStatus // Can be 'Regretted' if preferred
+    bannerClass = 'bg-red-50 border-red-100'
+    pillClass = 'bg-red-100 text-red-800'
+    iconClass = 'text-red-500'
+  } else if (
+    appStatus === 'EOI Submitted' ||
+    appStatus === 'EOI Pending Review' ||
+    appStatus === 'DPR Submitted' ||
+    appStatus === 'DPR Pending Review' ||
+    appStatus === 'Payment Pending'
+  ) {
+    displayText = appStatus
     // Yellow is default
   }
   // Add more specific status mappings here if needed, e.g., 'Draft'
   else if (appStatus === 'Draft') {
-    displayText = 'Draft';
-    bannerClass = 'bg-gray-100 border-gray-200'; // Example for Draft
-    pillClass = 'bg-gray-200 text-gray-700';
-    iconClass = 'text-gray-400';
+    displayText = 'Draft'
+    bannerClass = 'bg-gray-100 border-gray-200' // Example for Draft
+    pillClass = 'bg-gray-200 text-gray-700'
+    iconClass = 'text-gray-400'
   }
 
-
-  return { displayText, bannerClass, pillClass, iconClass };
-});
-
+  return { displayText, bannerClass, pillClass, iconClass }
+})
 
 // Watchers
-watch(() => props.application, (newVal, oldVal) => {
-  if (newVal && newVal.CID !== oldVal?.CID) {
-    if (isEditing.value) cancelEditing();
-    if (isPromptDialogOpen.value) cancelPromptAction();
-    if (isEditingPhysicalVerification.value) cancelEditingPhysicalVerification();
-    errorMessage.value = '';
-    saveError.value = '';
-  }
-  if (newVal && !newVal.CID && props.isOpen) {
-    errorMessage.value = 'Application data is missing its CID.';
-  } else if (newVal?.CID) {
-    errorMessage.value = ''; // Clear error if CID becomes available
-  }
-}, { deep: true });
-
-watch(() => props.isOpen, (newIsOpen) => {
-  if (!newIsOpen) {
-    cancelEditing();
-    cancelPromptAction();
-    cancelEditingPhysicalVerification();
-    errorMessage.value = '';
-    saveError.value = '';
-    physicalVerificationSaveError.value = '';
-    promptErrorMessage.value = '';
-    promptInputText.value = ''; // Reset prompt text on close
-  } else {
-    // Reset non-persistent states when modal opens
-    if(!isEditing.value && !isPromptDialogOpen.value && !isEditingPhysicalVerification.value) {
-        editableApplication.value = null; // Prepare for new data
-        selectedFile.value = null;
-        fileName.value = '';
-        if (fileInputRef.value) fileInputRef.value.value = '';
-        // Reset PV details for a fresh edit session if needed, or rely on startEditingPV
-        editablePhysicalVerificationDetails.value = { date: null, remarks: '', is_verified: false };
+watch(
+  () => props.application,
+  (newVal, oldVal) => {
+    if (newVal && newVal.CID !== oldVal?.CID) {
+      if (isEditing.value) cancelEditing()
+      if (isPromptDialogOpen.value) cancelPromptAction()
+      if (isEditingPhysicalVerification.value) cancelEditingPhysicalVerification()
+      errorMessage.value = ''
+      saveError.value = ''
     }
+    if (newVal && !newVal.CID && props.isOpen) {
+      errorMessage.value = 'Application data is missing its CID.'
+    } else if (newVal?.CID) {
+      errorMessage.value = '' // Clear error if CID becomes available
+    }
+  },
+  { deep: true },
+)
 
-    if (props.application && !props.application.CID) {
-      errorMessage.value = 'Application data is missing its CID. Please close and retry.';
-      toast.error(errorMessage.value);
+watch(
+  () => props.isOpen,
+  (newIsOpen) => {
+    if (!newIsOpen) {
+      cancelEditing()
+      cancelPromptAction()
+      cancelEditingPhysicalVerification()
+      errorMessage.value = ''
+      saveError.value = ''
+      physicalVerificationSaveError.value = ''
+      promptErrorMessage.value = ''
+      promptInputText.value = '' // Reset prompt text on close
     } else {
-      errorMessage.value = '';
+      // Reset non-persistent states when modal opens
+      if (!isEditing.value && !isPromptDialogOpen.value && !isEditingPhysicalVerification.value) {
+        editableApplication.value = null // Prepare for new data
+        selectedFile.value = null
+        fileName.value = ''
+        if (fileInputRef.value) fileInputRef.value.value = ''
+        // Reset PV details for a fresh edit session if needed, or rely on startEditingPV
+        editablePhysicalVerificationDetails.value = { date: null, remarks: '', is_verified: false }
+      }
+
+      if (props.application && !props.application.CID) {
+        errorMessage.value = 'Application data is missing its CID. Please close and retry.'
+        toast.error(errorMessage.value)
+      } else {
+        errorMessage.value = ''
+      }
     }
-  }
-});
+  },
+)
 </script>
 
 <style scoped>
@@ -1055,7 +1268,8 @@ textarea {
          focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm
          bg-white disabled:bg-gray-100 disabled:cursor-not-allowed;
 }
-.bg-gray-50 input, .bg-gray-50 textarea {
+.bg-gray-50 input,
+.bg-gray-50 textarea {
   @apply px-2 py-1;
 }
 .flex-shrink-0 {

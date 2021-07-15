@@ -134,7 +134,9 @@
 
         <div class="grid grid-cols-1 gap-6">
           <div
-            v-for="qualification in application.user_qualifications.filter(q => q.is_primary_qualification === false)"
+            v-for="qualification in application.user_qualifications.filter(
+              (q) => q.is_primary_qualification === false,
+            )"
             :key="qualification.id"
             class="relative bg-white rounded-xl border border-gray-100 p-4 shadow-sm hover:shadow-md transition-all duration-300"
           >

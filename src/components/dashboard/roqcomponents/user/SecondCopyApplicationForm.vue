@@ -45,11 +45,18 @@
       <!-- Change Details Section -->
       <div v-if="selectedOriginalApplication" class="bg-white border p-6 rounded-lg shadow-sm">
         <h3 class="text-xl font-semibold mb-4 text-gray-900">Change Details</h3>
-        <div v-for="(change, index) in form.change_details_input" :key="index" class="mb-4 border-b pb-4">
+        <div
+          v-for="(change, index) in form.change_details_input"
+          :key="index"
+          class="mb-4 border-b pb-4"
+        >
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Changed Field -->
             <div>
-              <label :for="'changed_field_' + index" class="block text-sm font-medium text-gray-700 required">
+              <label
+                :for="'changed_field_' + index"
+                class="block text-sm font-medium text-gray-700 required"
+              >
                 Changed Field
               </label>
               <select
@@ -59,7 +66,11 @@
                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
               >
                 <option value="" disabled>Select Field</option>
-                <option v-for="field in changedFieldOptions" :key="field.value" :value="field.value">
+                <option
+                  v-for="field in changedFieldOptions"
+                  :key="field.value"
+                  :value="field.value"
+                >
                   {{ field.label }}
                 </option>
               </select>
@@ -67,7 +78,10 @@
 
             <!-- Old Value -->
             <div>
-              <label :for="'old_value_' + index" class="block text-sm font-medium text-gray-700 required">
+              <label
+                :for="'old_value_' + index"
+                class="block text-sm font-medium text-gray-700 required"
+              >
                 Old Value
               </label>
               <input
@@ -81,7 +95,10 @@
 
             <!-- New Value -->
             <div>
-              <label :for="'new_value_' + index" class="block text-sm font-medium text-gray-700 required">
+              <label
+                :for="'new_value_' + index"
+                class="block text-sm font-medium text-gray-700 required"
+              >
                 New Value
               </label>
               <input
@@ -95,7 +112,10 @@
 
             <!-- Other Description (if 'other' is selected) -->
             <div v-if="change.changed_field === 'other'">
-              <label :for="'other_description_' + index" class="block text-sm font-medium text-gray-700 required">
+              <label
+                :for="'other_description_' + index"
+                class="block text-sm font-medium text-gray-700 required"
+              >
                 Description of Change
               </label>
               <input
@@ -620,7 +640,7 @@ const addChangeDetail = () => {
     changed_field: '',
     old_value: '',
     new_value: '',
-    other_description: ''
+    other_description: '',
   })
 }
 
@@ -835,9 +855,9 @@ const handleSubmitActual = async () => {
     }
 
     // Log FormData for debugging
-    console.log('FormData contents:');
+    console.log('FormData contents:')
     for (const [key, value] of formData.entries()) {
-      console.log(`${key}: ${value} (type: ${typeof value})`);
+      console.log(`${key}: ${value} (type: ${typeof value})`)
     }
 
     try {

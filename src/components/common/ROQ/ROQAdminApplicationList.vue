@@ -490,9 +490,9 @@ const shouldShowRegretSendButton = (application) => {
 
 const showRoqStatusColumn = computed(() => {
   return (
-      props.userRole === 'dealing_officer' &&
-      sortedApplications.value.some((app) => shouldShowRoqSendButton(app) || app.roq_status_letter)
-    )
+    props.userRole === 'dealing_officer' &&
+    sortedApplications.value.some((app) => shouldShowRoqSendButton(app) || app.roq_status_letter)
+  )
 })
 
 const showRegretColumn = computed(() => {

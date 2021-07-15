@@ -2,20 +2,37 @@
 <template>
   <TransitionRoot appear :show="isOpen" as="template">
     <Dialog as="div" @close="closeModal" class="relative z-50">
-      <TransitionChild as="template" enter="duration-300 ease-out" enter-from="opacity-0" enter-to="opacity-100"
-        leave="duration-200 ease-in" leave-from="opacity-100" leave-to="opacity-0">
+      <TransitionChild
+        as="template"
+        enter="duration-300 ease-out"
+        enter-from="opacity-0"
+        enter-to="opacity-100"
+        leave="duration-200 ease-in"
+        leave-from="opacity-100"
+        leave-to="opacity-0"
+      >
         <div class="fixed inset-0 bg-black/80 backdrop-blur-sm" />
       </TransitionChild>
 
       <div class="fixed inset-0 overflow-y-auto">
         <div class="flex min-h-full items-start justify-center p-4 sm:pt-12">
-          <TransitionChild as="template" enter="duration-300 ease-out" enter-from="opacity-0 scale-95"
-            enter-to="opacity-100 scale-100" leave="duration-200 ease-in" leave-from="opacity-100 scale-100"
-            leave-to="opacity-0 scale-95">
+          <TransitionChild
+            as="template"
+            enter="duration-300 ease-out"
+            enter-from="opacity-0 scale-95"
+            enter-to="opacity-100 scale-100"
+            leave="duration-200 ease-in"
+            leave-from="opacity-100 scale-100"
+            leave-to="opacity-0 scale-95"
+          >
             <DialogPanel
-              class="w-full w-full transform overflow-hidden rounded-2xl bg-gray-50 shadow-2xl transition-all max-h-screen sm:max-h-[calc(100vh-80px)] overflow-y-auto">
+              class="w-full w-full transform overflow-hidden rounded-2xl bg-gray-50 shadow-2xl transition-all max-h-screen sm:max-h-[calc(100vh-80px)] overflow-y-auto"
+            >
               <!-- Application Header -->
-              <div v-if="application" class="px-8 py-6 bg-gradient-to-r from-indigo-500 to-blue-600 text-white">
+              <div
+                v-if="application"
+                class="px-8 py-6 bg-gradient-to-r from-indigo-500 to-blue-600 text-white"
+              >
                 <div class="flex justify-between items-center">
                   <div>
                     <!-- Use proposed_firm_name -->
@@ -43,7 +60,8 @@
                   <div class="lg:col-span-1 space-y-6">
                     <!-- Personal Information -->
                     <div
-                      class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all">
+                      class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all"
+                    >
                       <div class="p-6">
                         <div class="flex items-center mb-4">
                           <div class="bg-blue-100 p-2 rounded-md">
@@ -82,7 +100,8 @@
 
                     <!-- Contact Information -->
                     <div
-                      class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all">
+                      class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all"
+                    >
                       <div class="p-6">
                         <div class="flex items-center mb-4">
                           <div class="bg-indigo-100 p-2 rounded-md">
@@ -119,7 +138,8 @@
 
                     <!-- Timeline Card (Corrected based on available data) -->
                     <div
-                      class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all">
+                      class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all"
+                    >
                       <div class="p-6">
                         <div class="flex items-center mb-4">
                           <div class="bg-purple-100 p-2 rounded-md">
@@ -130,7 +150,9 @@
                         <div class="space-y-4">
                           <!-- Assuming mou_sign_date represents creation/submission -->
                           <div class="relative pl-6 pb-4 border-l-2 border-green-500">
-                            <div class="absolute -left-1.5 top-0 h-3 w-3 rounded-full bg-green-500"></div>
+                            <div
+                              class="absolute -left-1.5 top-0 h-3 w-3 rounded-full bg-green-500"
+                            ></div>
                             <p class="text-sm font-medium text-green-600">
                               Application Submitted/MoU Signed
                             </p>
@@ -148,7 +170,8 @@
                   <div class="lg:col-span-2 space-y-6">
                     <!-- Application Details Section -->
                     <div
-                      class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all">
+                      class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all"
+                    >
                       <div class="p-6">
                         <div class="flex items-center mb-4">
                           <div class="bg-green-100 p-2 rounded-md">
@@ -159,12 +182,17 @@
 
                         <div class="border-b border-gray-200 mb-6">
                           <nav class="-mb-px flex space-x-6 overflow-x-auto">
-                            <button v-for="(tab, index) in tabs" :key="index" @click="activeTab = tab.id"
-                              class="py-3 px-1 border-b-2 font-medium text-sm whitespace-nowrap" :class="[
+                            <button
+                              v-for="(tab, index) in tabs"
+                              :key="index"
+                              @click="activeTab = tab.id"
+                              class="py-3 px-1 border-b-2 font-medium text-sm whitespace-nowrap"
+                              :class="[
                                 activeTab === tab.id
                                   ? 'border-blue-500 text-blue-600'
                                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300',
-                              ]">
+                              ]"
+                            >
                               {{ tab.name }}
                             </button>
                           </nav>
@@ -298,7 +326,8 @@
                           <p><strong>Guarantor Details:</strong></p>
                           <!-- Corrected: Access directly from application, use snake_case -->
                           <div
-                            class="bg-gray-50 p-4 rounded-lg border border-gray-200 grid grid-cols-1 md:grid-cols-2 gap-4">
+                            class="bg-gray-50 p-4 rounded-lg border border-gray-200 grid grid-cols-1 md:grid-cols-2 gap-4"
+                          >
                             <p>
                               <span class="text-gray-600">Full Name:</span>
                               {{ application.guarantor_name }}
@@ -322,7 +351,8 @@
 
                     <!-- Decision Forms (Keep as is - they use local refs) -->
                     <div
-                      class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all">
+                      class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all"
+                    >
                       <!-- Verification Decision -->
                       <div class="p-6 border-b border-gray-200">
                         <div class="flex items-center mb-4">
@@ -332,10 +362,16 @@
                           <h4 class="font-semibold text-gray-900 ml-2">Verification Decision</h4>
                         </div>
                         <div class="mt-2">
-                          <label for="verificationDecision" class="block text-sm font-medium text-gray-700">Verification
-                            Decision:</label>
-                          <select id="verificationDecision" v-model="verificationForm.verificationDecision"
-                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                          <label
+                            for="verificationDecision"
+                            class="block text-sm font-medium text-gray-700"
+                            >Verification Decision:</label
+                          >
+                          <select
+                            id="verificationDecision"
+                            v-model="verificationForm.verificationDecision"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                          >
                             <option value="">Select Decision</option>
                             <option value="Pending Review">Pending Review</option>
                             <!-- Match parent component status -->
@@ -344,22 +380,31 @@
                           </select>
                         </div>
                         <div v-if="verificationForm.verificationDecision === 'Regret'" class="mt-2">
-                          <label for="regretReason" class="block text-sm font-medium text-gray-700">Regret
-                            Reason:</label>
-                          <textarea id="regretReason" v-model="verificationForm.regretReason" rows="2"
-                            class="shadow-sm focus:ring-blue-500 focus:border-blue-500 mt-1 block w-full sm:text-sm border-gray-300 rounded-md"></textarea>
+                          <label for="regretReason" class="block text-sm font-medium text-gray-700"
+                            >Regret Reason:</label
+                          >
+                          <textarea
+                            id="regretReason"
+                            v-model="verificationForm.regretReason"
+                            rows="2"
+                            class="shadow-sm focus:ring-blue-500 focus:border-blue-500 mt-1 block w-full sm:text-sm border-gray-300 rounded-md"
+                          ></textarea>
                         </div>
                         <div class="mt-4 flex justify-end space-x-2">
-                          <button type="button"
+                          <button
+                            type="button"
                             class="rounded-md px-4 py-2 font-semibold text-white bg-green-500 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transition-all"
-                            @click="saveVerificationDecision('Pending Review')">
+                            @click="saveVerificationDecision('Pending Review')"
+                          >
                             <!-- Emit the correct status -->
                             <CheckIcon class="h-4 w-4 inline-block mr-1" />
                             Accept for Review
                           </button>
-                          <button type="button"
+                          <button
+                            type="button"
                             class="rounded-md px-4 py-2 font-semibold text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition-all"
-                            @click="confirmRejectVerification">
+                            @click="confirmRejectVerification"
+                          >
                             <XMarkIcon class="h-4 w-4 inline-block mr-1" />
                             Reject
                           </button>
@@ -376,10 +421,16 @@
                           <!-- Renamed to match API field -->
                         </div>
                         <div class="mt-2">
-                          <label for="evaluationDecision" class="block text-sm font-medium text-gray-700">Presentation
-                            Decision:</label>
-                          <select id="evaluationDecision" v-model="evaluationForm.evaluationDecision"
-                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                          <label
+                            for="evaluationDecision"
+                            class="block text-sm font-medium text-gray-700"
+                            >Presentation Decision:</label
+                          >
+                          <select
+                            id="evaluationDecision"
+                            v-model="evaluationForm.evaluationDecision"
+                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                          >
                             <option value="">Select Decision</option>
                             <option value="Shortlisted">Shortlisted</option>
                             <!-- Match parent component status -->
@@ -387,22 +438,33 @@
                           </select>
                         </div>
                         <div v-if="evaluationForm.evaluationDecision === 'Regret'" class="mt-2">
-                          <label for="evaluationRegretReason" class="block text-sm font-medium text-gray-700">Regret
-                            Reason:</label>
-                          <textarea id="evaluationRegretReason" v-model="evaluationForm.regretReason" rows="2"
-                            class="shadow-sm focus:ring-blue-500 focus:border-blue-500 mt-1 block w-full sm:text-sm border-gray-300 rounded-md"></textarea>
+                          <label
+                            for="evaluationRegretReason"
+                            class="block text-sm font-medium text-gray-700"
+                            >Regret Reason:</label
+                          >
+                          <textarea
+                            id="evaluationRegretReason"
+                            v-model="evaluationForm.regretReason"
+                            rows="2"
+                            class="shadow-sm focus:ring-blue-500 focus:border-blue-500 mt-1 block w-full sm:text-sm border-gray-300 rounded-md"
+                          ></textarea>
                         </div>
                         <div class="mt-4 flex justify-end space-x-2">
-                          <button type="button"
+                          <button
+                            type="button"
                             class="rounded-md px-4 py-2 font-semibold text-white bg-green-500 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transition-all"
-                            @click="saveEvaluationDecision('Shortlisted')">
+                            @click="saveEvaluationDecision('Shortlisted')"
+                          >
                             <!-- Emit the correct status -->
                             <CheckIcon class="h-4 w-4 inline-block mr-1" />
                             Shortlist
                           </button>
-                          <button type="button"
+                          <button
+                            type="button"
                             class="rounded-md px-4 py-2 font-semibold text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition-all"
-                            @click="confirmRejectEvaluation">
+                            @click="confirmRejectEvaluation"
+                          >
                             <XMarkIcon class="h-4 w-4 inline-block mr-1" />
                             Reject
                           </button>
@@ -412,7 +474,8 @@
 
                     <!-- MoU & Undertaking Signing Form (Keep as is - uses local refs) -->
                     <div
-                      class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all">
+                      class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-all"
+                    >
                       <div class="p-6">
                         <div class="flex items-center mb-4">
                           <div class="bg-green-100 p-2 rounded-md">
@@ -425,40 +488,73 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
                           <!-- Form fields remain the same -->
                           <div>
-                            <label for="licenseName" class="block text-sm font-medium text-gray-700">License
-                              Name:</label>
-                            <input type="text" id="licenseName" v-model="mouForm.licenseName"
-                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
+                            <label for="licenseName" class="block text-sm font-medium text-gray-700"
+                              >License Name:</label
+                            >
+                            <input
+                              type="text"
+                              id="licenseName"
+                              v-model="mouForm.licenseName"
+                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                            />
                           </div>
                           <div>
-                            <label for="licenseNumber" class="block text-sm font-medium text-gray-700">License
-                              Number:</label>
-                            <input type="text" id="licenseNumber" v-model="mouForm.licenseNumber"
-                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
+                            <label
+                              for="licenseNumber"
+                              class="block text-sm font-medium text-gray-700"
+                              >License Number:</label
+                            >
+                            <input
+                              type="text"
+                              id="licenseNumber"
+                              v-model="mouForm.licenseNumber"
+                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                            />
                           </div>
                           <div>
-                            <label for="licenseValidity" class="block text-sm font-medium text-gray-700">License
-                              Validity (Years):</label>
-                            <input type="number" id="licenseValidity" v-model="mouForm.licenseValidity"
-                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
+                            <label
+                              for="licenseValidity"
+                              class="block text-sm font-medium text-gray-700"
+                              >License Validity (Years):</label
+                            >
+                            <input
+                              type="number"
+                              id="licenseValidity"
+                              v-model="mouForm.licenseValidity"
+                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                            />
                           </div>
                           <div>
-                            <label for="mouSignDate" class="block text-sm font-medium text-gray-700">MoU Sign
-                              Date:</label>
-                            <input type="date" id="mouSignDate" v-model="mouForm.mouSignDate"
-                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
+                            <label for="mouSignDate" class="block text-sm font-medium text-gray-700"
+                              >MoU Sign Date:</label
+                            >
+                            <input
+                              type="date"
+                              id="mouSignDate"
+                              v-model="mouForm.mouSignDate"
+                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                            />
                           </div>
                           <div>
-                            <label for="mouValidityDate" class="block text-sm font-medium text-gray-700">MoU Validity
-                              Date:</label>
-                            <input type="date" id="mouValidityDate" v-model="mouForm.mouValidityDate"
-                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
+                            <label
+                              for="mouValidityDate"
+                              class="block text-sm font-medium text-gray-700"
+                              >MoU Validity Date:</label
+                            >
+                            <input
+                              type="date"
+                              id="mouValidityDate"
+                              v-model="mouForm.mouValidityDate"
+                              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                            />
                           </div>
                         </div>
                         <div class="mt-6 flex justify-end space-x-2">
-                          <button type="button"
+                          <button
+                            type="button"
                             class="rounded-md px-6 py-2 font-semibold text-white bg-indigo-500 hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 transition-all"
-                            @click="completeRegistrationHandler">
+                            @click="completeRegistrationHandler"
+                          >
                             <DocumentArrowDownIcon class="h-4 w-4 inline-block mr-1" />
                             Complete Registration
                           </button>
@@ -471,9 +567,11 @@
 
               <!-- Footer buttons -->
               <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                <button type="button"
+                <button
+                  type="button"
                   class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition-all"
-                  @click="closeModal">
+                  @click="closeModal"
+                >
                   <XMarkIcon class="h-4 w-4 inline-block mr-1" />
                   Close
                 </button>
@@ -488,7 +586,7 @@
 
 <script setup>
 import { Dialog, DialogPanel, TransitionRoot, TransitionChild } from '@headlessui/vue'
-import { ref, computed, watch, } from 'vue' // Import watch
+import { ref, computed, watch } from 'vue' // Import watch
 import {
   UserIcon,
   MapPinIcon,
@@ -510,14 +608,14 @@ const props = defineProps({
   },
   firmTypes: {
     type: Array,
-    default: () => []
-  }
+    default: () => [],
+  },
 })
 
 const firmTypeName = computed(() => {
   if (!props.application || !props.application.type_of_firm) return 'Not specified'
 
-  const firmType = props.firmTypes.find(type => type.id === props.application.type_of_firm)
+  const firmType = props.firmTypes.find((type) => type.id === props.application.type_of_firm)
   return firmType ? firmType.type_of_firm : `Type ${props.application.type_of_firm}`
 })
 

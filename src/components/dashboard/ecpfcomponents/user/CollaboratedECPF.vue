@@ -11,11 +11,12 @@
     </div>
 
     <!-- Loading/Error/Success Messages -->
-    <div v-if="isLoading && !formMessage.text"
-      class="mb-4 p-4 bg-blue-100 border border-blue-400 text-blue-700 rounded">
+    <div
+      v-if="isLoading && !formMessage.text"
+      class="mb-4 p-4 bg-blue-100 border border-blue-400 text-blue-700 rounded"
+    >
       <p>Loading initial data...</p>
     </div>
-
 
     <!-- Form Section -->
     <div class="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
@@ -26,68 +27,120 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label for="cid_no" class="block text-sm font-medium text-gray-700">CID No:</label>
-              <input id="cid_no" type="text" v-model="formData.cid_no"
+              <input
+                id="cid_no"
+                type="text"
+                v-model="formData.cid_no"
                 class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-not-allowed"
-                readonly />
+                readonly
+              />
             </div>
             <div>
-              <label for="applicant_name" class="block text-sm font-medium text-gray-700">Applicant's Name:</label>
-              <input id="applicant_name" type="text" v-model="formData.applicant_name"
+              <label for="applicant_name" class="block text-sm font-medium text-gray-700"
+                >Applicant's Name:</label
+              >
+              <input
+                id="applicant_name"
+                type="text"
+                v-model="formData.applicant_name"
                 class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-not-allowed"
-                readonly />
+                readonly
+              />
             </div>
             <div>
               <label for="gender" class="block text-sm font-medium text-gray-700">Gender:</label>
-              <input id="gender" type="text" v-model="formData.gender"
+              <input
+                id="gender"
+                type="text"
+                v-model="formData.gender"
                 class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-not-allowed"
-                readonly />
+                readonly
+              />
             </div>
             <div>
-              <label for="date_of_birth" class="block text-sm font-medium text-gray-700">Date of Birth:</label>
-              <input id="date_of_birth" type="text" v-model="formData.date_of_birth"
+              <label for="date_of_birth" class="block text-sm font-medium text-gray-700"
+                >Date of Birth:</label
+              >
+              <input
+                id="date_of_birth"
+                type="text"
+                v-model="formData.date_of_birth"
                 class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-not-allowed"
-                readonly />
+                readonly
+              />
             </div>
             <div>
-              <label for="contact_no" class="block text-sm font-medium text-gray-700">Contact No:<span
-                  class="text-red-500">*</span></label>
-              <input id="contact_no" type="tel" v-model="formData.contact_no" required
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+              <label for="contact_no" class="block text-sm font-medium text-gray-700"
+                >Contact No:<span class="text-red-500">*</span></label
+              >
+              <input
+                id="contact_no"
+                type="tel"
+                v-model="formData.contact_no"
+                required
+                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
             </div>
             <div>
-              <label for="email_address" class="block text-sm font-medium text-gray-700">Email Address:<span
-                  class="text-red-500">*</span></label>
-              <input id="email_address" type="email" v-model="formData.email_address" required
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+              <label for="email_address" class="block text-sm font-medium text-gray-700"
+                >Email Address:<span class="text-red-500">*</span></label
+              >
+              <input
+                id="email_address"
+                type="email"
+                v-model="formData.email_address"
+                required
+                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
             </div>
           </div>
         </section>
-
 
         <!-- Residential/Present Address -->
         <section class="mb-8">
           <h2 class="text-2xl font-semibold text-gray-800 mb-4">Residential/Present Address</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label for="office_number" class="block text-sm font-medium text-gray-700">Office Number:</label>
-              <input id="office_number" type="text" v-model="formData.office_number"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+              <label for="office_number" class="block text-sm font-medium text-gray-700"
+                >Office Number:</label
+              >
+              <input
+                id="office_number"
+                type="text"
+                v-model="formData.office_number"
+                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
             </div>
             <div>
               <label for="flat_no" class="block text-sm font-medium text-gray-700">Flat No:</label>
-              <input id="flat_no" type="text" v-model="formData.flat_no"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+              <input
+                id="flat_no"
+                type="text"
+                v-model="formData.flat_no"
+                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
             </div>
             <div>
-              <label for="building_no" class="block text-sm font-medium text-gray-700">Building No:</label>
-              <input id="building_no" type="text" v-model="formData.building_no"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+              <label for="building_no" class="block text-sm font-medium text-gray-700"
+                >Building No:</label
+              >
+              <input
+                id="building_no"
+                type="text"
+                v-model="formData.building_no"
+                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
             </div>
             <div>
-              <label for="dzongkhag_thromde" class="block text-sm font-medium text-gray-700">Dzongkhag/Thromde:<span
-                  class="text-red-500">*</span></label>
-              <select id="dzongkhag_thromde" v-model="formData.dzongkhag_thromde" required
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              <label for="dzongkhag_thromde" class="block text-sm font-medium text-gray-700"
+                >Dzongkhag/Thromde:<span class="text-red-500">*</span></label
+              >
+              <select
+                id="dzongkhag_thromde"
+                v-model="formData.dzongkhag_thromde"
+                required
+                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
                 <option disabled :value="null">-- Select Dzongkhag/Thromde --</option>
                 <option v-for="dt in dzongkhagThromdes" :key="dt.id" :value="dt.id">
                   {{ dt.name }}
@@ -95,34 +148,54 @@
               </select>
             </div>
             <div>
-              <label for="gewog_throm" class="block text-sm font-medium text-gray-700">Gewog/Throm:<span
-                  class="text-red-500">*</span></label>
-              <select id="gewog_throm" v-model="formData.gewog_throm" :required="isGewogRequired()" :disabled="!formData.dzongkhag_thromde ||
-                (gewogThroms.length === 0 && dzongkhagHasGewogs(formData.dzongkhag_thromde))
+              <label for="gewog_throm" class="block text-sm font-medium text-gray-700"
+                >Gewog/Throm:<span class="text-red-500">*</span></label
+              >
+              <select
+                id="gewog_throm"
+                v-model="formData.gewog_throm"
+                :required="isGewogRequired()"
+                :disabled="
+                  !formData.dzongkhag_thromde ||
+                  (gewogThroms.length === 0 && dzongkhagHasGewogs(formData.dzongkhag_thromde))
                 "
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
                 <option disabled :value="null">-- Select Gewog/Throm --</option>
-                <option v-if="
-                  formData.dzongkhag_thromde &&
-                  gewogThroms.length === 0 &&
-                  dzongkhagHasGewogs(formData.dzongkhag_thromde)
-                " :value="null" disabled>
+                <option
+                  v-if="
+                    formData.dzongkhag_thromde &&
+                    gewogThroms.length === 0 &&
+                    dzongkhagHasGewogs(formData.dzongkhag_thromde)
+                  "
+                  :value="null"
+                  disabled
+                >
                   -- No Gewogs for selected Dzongkhag --
                 </option>
-                <option v-if="
-                  formData.dzongkhag_thromde && !dzongkhagHasGewogs(formData.dzongkhag_thromde)
-                " :value="NO_GEWOG_OPTION_VALUE">
+                <option
+                  v-if="
+                    formData.dzongkhag_thromde && !dzongkhagHasGewogs(formData.dzongkhag_thromde)
+                  "
+                  :value="NO_GEWOG_OPTION_VALUE"
+                >
                   N/A (e.g. Thromde)
                 </option>
                 <option v-for="gt in gewogThroms" :key="gt.id" :value="gt.id">{{ gt.name }}</option>
               </select>
             </div>
             <div>
-              <label for="location" class="block text-sm font-medium text-gray-700">Village/Specific Location:<span
-                  class="text-red-500">*</span></label>
-              <input id="location" type="text" v-model="formData.location" required
+              <label for="location" class="block text-sm font-medium text-gray-700"
+                >Village/Specific Location:<span class="text-red-500">*</span></label
+              >
+              <input
+                id="location"
+                type="text"
+                v-model="formData.location"
+                required
                 placeholder="Enter village or specific area"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
             </div>
           </div>
         </section>
@@ -132,22 +205,38 @@
           <h2 class="text-2xl font-semibold text-gray-800 mb-4">Education Details</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label for="qualification" class="block text-sm font-medium text-gray-700">Qualification:<span
-                  class="text-red-500">*</span></label>
-              <input id="qualification" type="text" v-model="formData.qualification" required
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+              <label for="qualification" class="block text-sm font-medium text-gray-700"
+                >Qualification:<span class="text-red-500">*</span></label
+              >
+              <input
+                id="qualification"
+                type="text"
+                v-model="formData.qualification"
+                required
+                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
             </div>
             <div>
-              <label for="education_institute_name" class="block text-sm font-medium text-gray-700">Name of
-                Institute:<span class="text-red-500">*</span></label>
-              <input id="education_institute_name" type="text" v-model="formData.institute_name"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+              <label for="education_institute_name" class="block text-sm font-medium text-gray-700"
+                >Name of Institute:<span class="text-red-500">*</span></label
+              >
+              <input
+                id="education_institute_name"
+                type="text"
+                v-model="formData.institute_name"
+                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
             </div>
             <div>
-              <label for="university_name" class="block text-sm font-medium text-gray-700">Name of University:<span
-                  class="text-red-500">*</span></label>
-              <input id="university_name" type="text" v-model="formData.university_name"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+              <label for="university_name" class="block text-sm font-medium text-gray-700"
+                >Name of University:<span class="text-red-500">*</span></label
+              >
+              <input
+                id="university_name"
+                type="text"
+                v-model="formData.university_name"
+                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
             </div>
           </div>
         </section>
@@ -159,31 +248,52 @@
           </h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label for="existing_ecpf_name" class="block text-sm font-medium text-gray-700">Existing ECPF Name
-                (Institute):</label>
-              <input id="existing_ecpf_name" type="text" v-model="formData.existing_ecpf_name"
-                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-not-allowed" />
+              <label for="existing_ecpf_name" class="block text-sm font-medium text-gray-700"
+                >Existing ECPF Name (Institute):</label
+              >
+              <input
+                id="existing_ecpf_name"
+                type="text"
+                v-model="formData.existing_ecpf_name"
+                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-not-allowed"
+              />
             </div>
             <div>
-              <label for="existing_license_number" class="block text-sm font-medium text-gray-700">Existing License
-                Number of ECPF:</label>
-              <input id="existing_license_number" type="text" v-model="formData.existing_license_number"
-                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-not-allowed" />
+              <label for="existing_license_number" class="block text-sm font-medium text-gray-700"
+                >Existing License Number of ECPF:</label
+              >
+              <input
+                id="existing_license_number"
+                type="text"
+                v-model="formData.existing_license_number"
+                class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-not-allowed"
+              />
             </div>
             <div>
-              <label for="proposed_ecpf_name" class="block text-sm font-medium text-gray-700">Proposed Name of ECPF
-                (for
-                Collaboration):<span class="text-red-500">*</span></label>
-              <input id="proposed_ecpf_name" type="text" v-model="formData.proposed_ecpf_name" required
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+              <label for="proposed_ecpf_name" class="block text-sm font-medium text-gray-700"
+                >Proposed Name of ECPF (for Collaboration):<span class="text-red-500"
+                  >*</span
+                ></label
+              >
+              <input
+                id="proposed_ecpf_name"
+                type="text"
+                v-model="formData.proposed_ecpf_name"
+                required
+                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
             </div>
             <div>
-
               <!-- TO Do get location from  new esp and make it editable -->
-              <label for="proposed_location" class="block text-sm font-medium text-gray-700">Proposed Location (for
-                Collaboration, if applicable):</label>
-              <input id="proposed_location" type="text" v-model="formData.proposed_location"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+              <label for="proposed_location" class="block text-sm font-medium text-gray-700"
+                >Proposed Location (for Collaboration, if applicable):</label
+              >
+              <input
+                id="proposed_location"
+                type="text"
+                v-model="formData.proposed_location"
+                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
             </div>
           </div>
         </section>
@@ -193,16 +303,27 @@
           <h2 class="text-2xl font-semibold text-gray-800 mb-4">Details of External Party</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label for="collaborating_firm_name" class="block text-sm font-medium text-gray-700">Name of the
-                Collaborating Firm:<span class="text-red-500">*</span></label>
-              <input id="collaborating_firm_name" type="text" v-model="formData.collaborating_firm_name" required
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+              <label for="collaborating_firm_name" class="block text-sm font-medium text-gray-700"
+                >Name of the Collaborating Firm:<span class="text-red-500">*</span></label
+              >
+              <input
+                id="collaborating_firm_name"
+                type="text"
+                v-model="formData.collaborating_firm_name"
+                required
+                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
             </div>
             <div>
-              <label for="external_party_country" class="block text-sm font-medium text-gray-700">External Party Based
-                in (country):<span class="text-red-500">*</span></label>
-              <select id="external_party_country" v-model="formData.external_party_country" required
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              <label for="external_party_country" class="block text-sm font-medium text-gray-700"
+                >External Party Based in (country):<span class="text-red-500">*</span></label
+              >
+              <select
+                id="external_party_country"
+                v-model="formData.external_party_country"
+                required
+                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
                 <option disabled :value="null">-- Select Country --</option>
                 <option v-for="country in countries" :key="country.code" :value="country.code">
                   {{ country.name }}
@@ -210,53 +331,98 @@
               </select>
             </div>
             <div>
-              <label for="external_party_state" class="block text-sm font-medium text-gray-700">External Party Based
-                in
-                (State):<span class="text-red-500">*</span></label>
-              <input id="external_party_state" type="text" v-model="formData.external_party_state" required
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+              <label for="external_party_state" class="block text-sm font-medium text-gray-700"
+                >External Party Based in (State):<span class="text-red-500">*</span></label
+              >
+              <input
+                id="external_party_state"
+                type="text"
+                v-model="formData.external_party_state"
+                required
+                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
             </div>
             <div>
-              <label for="firm_registration_number" class="block text-sm font-medium text-gray-700">Firm’s
-                Registration
-                Number:<span class="text-red-500">*</span></label>
-              <input id="firm_registration_number" type="text" v-model="formData.firm_registration_number" required
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+              <label for="firm_registration_number" class="block text-sm font-medium text-gray-700"
+                >Firm’s Registration Number:<span class="text-red-500">*</span></label
+              >
+              <input
+                id="firm_registration_number"
+                type="text"
+                v-model="formData.firm_registration_number"
+                required
+                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
             </div>
             <div>
-              <label for="proprietor_name" class="block text-sm font-medium text-gray-700">Name of the
-                Proprietor:<span class="text-red-500">*</span></label>
-              <input id="proprietor_name" type="text" v-model="formData.proprietor_name" required
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+              <label for="proprietor_name" class="block text-sm font-medium text-gray-700"
+                >Name of the Proprietor:<span class="text-red-500">*</span></label
+              >
+              <input
+                id="proprietor_name"
+                type="text"
+                v-model="formData.proprietor_name"
+                required
+                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
             </div>
             <div>
-              <label for="nationality" class="block text-sm font-medium text-gray-700">Nationality:<span
-                  class="text-red-500">*</span></label>
-              <input id="nationality" type="text" v-model="formData.nationality" required
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+              <label for="nationality" class="block text-sm font-medium text-gray-700"
+                >Nationality:<span class="text-red-500">*</span></label
+              >
+              <input
+                id="nationality"
+                type="text"
+                v-model="formData.nationality"
+                required
+                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
             </div>
             <div>
-              <label for="designation" class="block text-sm font-medium text-gray-700">Designation:<span
-                  class="text-red-500">*</span></label>
-              <input id="designation" type="text" v-model="formData.designation" required
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+              <label for="designation" class="block text-sm font-medium text-gray-700"
+                >Designation:<span class="text-red-500">*</span></label
+              >
+              <input
+                id="designation"
+                type="text"
+                v-model="formData.designation"
+                required
+                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
             </div>
             <div>
-              <label for="external_party_email" class="block text-sm font-medium text-gray-700">Email Address:<span
-                  class="text-red-500">*</span></label>
-              <input id="external_party_email" type="email" v-model="formData.external_party_email" required
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+              <label for="external_party_email" class="block text-sm font-medium text-gray-700"
+                >Email Address:<span class="text-red-500">*</span></label
+              >
+              <input
+                id="external_party_email"
+                type="email"
+                v-model="formData.external_party_email"
+                required
+                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
             </div>
             <div>
-              <label for="external_party_contact" class="block text-sm font-medium text-gray-700">Contact Number:<span
-                  class="text-red-500">*</span></label>
-              <input id="external_party_contact" type="tel" v-model="formData.external_party_contact" required
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+              <label for="external_party_contact" class="block text-sm font-medium text-gray-700"
+                >Contact Number:<span class="text-red-500">*</span></label
+              >
+              <input
+                id="external_party_contact"
+                type="tel"
+                v-model="formData.external_party_contact"
+                required
+                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
             </div>
             <div>
               <label for="website" class="block text-sm font-medium text-gray-700">Website:</label>
-              <input id="website" type="url" v-model="formData.website" placeholder="https://example.com"
-                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+              <input
+                id="website"
+                type="url"
+                v-model="formData.website"
+                placeholder="https://example.com"
+                class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
             </div>
           </div>
         </section>
@@ -266,11 +432,14 @@
           <h2 class="text-2xl font-semibold text-gray-800 mb-4">
             Collaboration Details<span class="text-red-500">*</span>
           </h2>
-          <textarea v-model="formData.collaboration_details" required
+          <textarea
+            v-model="formData.collaboration_details"
+            required
             class="mt-1 block w-full px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            rows="5" placeholder="Explain the type of collaboration & other related details"></textarea>
+            rows="5"
+            placeholder="Explain the type of collaboration & other related details"
+          ></textarea>
         </section>
-
 
         <!-- Supporting Documents -->
         <section class="mb-8">
@@ -280,41 +449,72 @@
           </p>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label for="concern_letter" class="block text-sm font-medium text-gray-700">Concern/Authorization
-                Letter:<span class="text-red-500">*</span></label>
-              <input id="concern_letter" type="file" @change="handleFileUpload($event, 'concern_letter')"
-                :required="!getFileName('concern_letter')" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
-                class="mt-1 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer" />
-              <span v-if="getFileName('concern_letter')" class="text-xs text-gray-600 mt-1 block">Selected: {{
-                getFileName('concern_letter') }}</span>
-            </div>
-            <div>
-              <label for="passport_cv" class="block text-sm font-medium text-gray-700">Passport & CV of Proprietor of
-                External Party:<span class="text-red-500">*</span></label>
-              <input id="passport_cv" type="file" @change="handleFileUpload($event, 'passport_cv')"
-                :required="!getFileName('passport_cv')" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
-                class="mt-1 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer" />
-              <span v-if="getFileName('passport_cv')" class="text-xs text-gray-600 mt-1 block">Selected: {{
-                getFileName('passport_cv') }}</span>
-            </div>
-            <div>
-              <label for="external_party_license" class="block text-sm font-medium text-gray-700">License/Registration
-                of External Party:<span class="text-red-500">*</span></label>
-              <input id="external_party_license" type="file"
-                @change="handleFileUpload($event, 'external_party_license')"
-                :required="!getFileName('external_party_license')" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
-                class="mt-1 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer" />
-              <span v-if="getFileName('external_party_license')" class="text-xs text-gray-600 mt-1 block">Selected: {{
-                getFileName('external_party_license') }}</span>
-            </div>
-            <div>
-              <label for="mou" class="block text-sm font-medium text-gray-700">Valid Signed MoU:<span
-                  class="text-red-500">*</span></label>
-              <input id="mou" type="file" @change="handleFileUpload($event, 'mou')" :required="!getFileName('mou')"
+              <label for="concern_letter" class="block text-sm font-medium text-gray-700"
+                >Concern/Authorization Letter:<span class="text-red-500">*</span></label
+              >
+              <input
+                id="concern_letter"
+                type="file"
+                @change="handleFileUpload($event, 'concern_letter')"
+                :required="!getFileName('concern_letter')"
                 accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
-                class="mt-1 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer" />
-              <span v-if="getFileName('mou')" class="text-xs text-gray-600 mt-1 block">Selected: {{ getFileName('mou')
-              }}</span>
+                class="mt-1 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
+              />
+              <span v-if="getFileName('concern_letter')" class="text-xs text-gray-600 mt-1 block"
+                >Selected: {{ getFileName('concern_letter') }}</span
+              >
+            </div>
+            <div>
+              <label for="passport_cv" class="block text-sm font-medium text-gray-700"
+                >Passport & CV of Proprietor of External Party:<span class="text-red-500"
+                  >*</span
+                ></label
+              >
+              <input
+                id="passport_cv"
+                type="file"
+                @change="handleFileUpload($event, 'passport_cv')"
+                :required="!getFileName('passport_cv')"
+                accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                class="mt-1 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
+              />
+              <span v-if="getFileName('passport_cv')" class="text-xs text-gray-600 mt-1 block"
+                >Selected: {{ getFileName('passport_cv') }}</span
+              >
+            </div>
+            <div>
+              <label for="external_party_license" class="block text-sm font-medium text-gray-700"
+                >License/Registration of External Party:<span class="text-red-500">*</span></label
+              >
+              <input
+                id="external_party_license"
+                type="file"
+                @change="handleFileUpload($event, 'external_party_license')"
+                :required="!getFileName('external_party_license')"
+                accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                class="mt-1 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
+              />
+              <span
+                v-if="getFileName('external_party_license')"
+                class="text-xs text-gray-600 mt-1 block"
+                >Selected: {{ getFileName('external_party_license') }}</span
+              >
+            </div>
+            <div>
+              <label for="mou" class="block text-sm font-medium text-gray-700"
+                >Valid Signed MoU:<span class="text-red-500">*</span></label
+              >
+              <input
+                id="mou"
+                type="file"
+                @change="handleFileUpload($event, 'mou')"
+                :required="!getFileName('mou')"
+                accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                class="mt-1 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
+              />
+              <span v-if="getFileName('mou')" class="text-xs text-gray-600 mt-1 block"
+                >Selected: {{ getFileName('mou') }}</span
+              >
             </div>
           </div>
         </section>
@@ -325,35 +525,55 @@
             Declaration<span class="text-red-500">*</span>
           </h2>
           <div class="flex items-start space-x-3">
-            <input type="checkbox" id="declaration_agree" v-model="declarationAgreed" required
-              class="mt-1 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" />
+            <input
+              type="checkbox"
+              id="declaration_agree"
+              v-model="declarationAgreed"
+              required
+              class="mt-1 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            />
             <label for="declaration_agree" class="text-sm text-gray-700">
               I hereby declare that the information provided is true and correct to the best of my
               knowledge and agree to the terms and conditions.
             </label>
           </div>
         </section>
-        <div v-if="formMessage.text" :class="[
-          'mb-4 p-4 border rounded break-words',
-          formMessage.type === 'error'
-            ? 'bg-red-100 border-red-400 text-red-700'
-            : 'bg-green-100 border-green-400 text-green-700',
-        ]">
+        <div
+          v-if="formMessage.text"
+          :class="[
+            'mb-4 p-4 border rounded break-words',
+            formMessage.type === 'error'
+              ? 'bg-red-100 border-red-400 text-red-700'
+              : 'bg-green-100 border-green-400 text-green-700',
+          ]"
+        >
           <p v-html="formMessage.text.replace(/\n/g, '<br />')"></p>
         </div>
 
         <!-- Action Buttons -->
         <div class="flex justify-end space-x-4 mt-10 pt-6 border-t border-gray-200">
-          <button type="button" @click="saveAsDraft" :disabled="isSubmitting"
-            class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg shadow-sm transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+          <button
+            type="button"
+            @click="saveAsDraft"
+            :disabled="isSubmitting"
+            class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg shadow-sm transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
             {{ isSubmitting ? 'Saving...' : 'Save as Draft' }}
           </button>
-          <button type="button" @click="editDraft" v-if="formData.isDraft && formData.draftId" :disabled="isSubmitting"
-            class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-6 rounded-lg shadow-sm transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+          <button
+            type="button"
+            @click="editDraft"
+            v-if="formData.isDraft && formData.draftId"
+            :disabled="isSubmitting"
+            class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-6 rounded-lg shadow-sm transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
             {{ isSubmitting ? 'Loading...' : 'Edit Draft' }}
           </button>
-          <button type="submit" :disabled="!declarationAgreed || isSubmitting || (formData.isDraft && formData.draftId)"
-            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg shadow-sm transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+          <button
+            type="submit"
+            :disabled="!declarationAgreed || isSubmitting || (formData.isDraft && formData.draftId)"
+            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg shadow-sm transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
             {{ isSubmitting ? 'Submitting...' : 'Submit' }}
           </button>
         </div>
@@ -446,7 +666,7 @@ const generateId = (prefix, name) => {
 const dzongkhagHasGewogs = (dzongkhagGeneratedId) => {
   if (!dzongkhagGeneratedId) return false
   const selectedDzongkhagObj = bhutanDzongkhagsGewogs.find(
-    (dz) => generateId('dz', dz.dzongkhag) === dzongkhagGeneratedId
+    (dz) => generateId('dz', dz.dzongkhag) === dzongkhagGeneratedId,
   )
   return (
     selectedDzongkhagObj && selectedDzongkhagObj.gewogs && selectedDzongkhagObj.gewogs.length > 0
@@ -466,7 +686,7 @@ watch(
     gewogThroms.value = []
     if (newDzongkhagGeneratedId) {
       const selectedDzongkhagObj = bhutanDzongkhagsGewogs.find(
-        (dz) => generateId('dz', dz.dzongkhag) === newDzongkhagGeneratedId
+        (dz) => generateId('dz', dz.dzongkhag) === newDzongkhagGeneratedId,
       )
       if (
         selectedDzongkhagObj &&
@@ -481,7 +701,7 @@ watch(
         gewogThroms.value = []
       }
     }
-  }
+  },
 )
 
 const setMessage = (text, type = 'error') => {
@@ -681,7 +901,7 @@ const fetchExistingEcpfDetails = async (cid) => {
   }
   if (typeof apiServices.getEcpfDetailsByCID !== 'function') {
     console.error(
-      '[fetchExistingEcpfDetails] CRITICAL: apiServices.getEcpfDetailsByCID method is not defined.'
+      '[fetchExistingEcpfDetails] CRITICAL: apiServices.getEcpfDetailsByCID method is not defined.',
     )
     formData.existing_ecpf_name = 'N/A (Service Error)'
     formData.existing_license_number = 'N/A (Service Error)'
@@ -852,7 +1072,7 @@ const loadDraft = async (id) => {
 
       if (formData.dzongkhag_thromde) {
         const selectedDzOriginal = bhutanDzongkhagsGewogs.find(
-          (dz) => generateId('dz', dz.dzongkhag) === formData.dzongkhag_thromde
+          (dz) => generateId('dz', dz.dzongkhag) === formData.dzongkhag_thromde,
         )
         if (selectedDzOriginal?.gewogs?.length > 0) {
           gewogThroms.value = selectedDzOriginal.gewogs.map((gewogName) => ({
@@ -904,15 +1124,15 @@ const resetForm = (fullReset = false) => {
   const initialUserDetails = fullReset
     ? {}
     : {
-      cid_no: formData.cid_no,
-      applicant_name: formData.applicant_name,
-      gender: formData.gender,
-      date_of_birth: formData.date_of_birth,
-      contact_no: formData.contact_no,
-      email_address: formData.email_address,
-      existing_ecpf_name: formData.existing_ecpf_name,
-      existing_license_number: formData.existing_license_number,
-    }
+        cid_no: formData.cid_no,
+        applicant_name: formData.applicant_name,
+        gender: formData.gender,
+        date_of_birth: formData.date_of_birth,
+        contact_no: formData.contact_no,
+        email_address: formData.email_address,
+        existing_ecpf_name: formData.existing_ecpf_name,
+        existing_license_number: formData.existing_license_number,
+      }
   Object.assign(formData, getInitialFormData(), initialUserDetails)
 
   declarationAgreed.value = false

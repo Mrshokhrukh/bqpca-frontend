@@ -769,8 +769,7 @@
         class="bg-red-50 border-l-4 border-red-400 p-4"
       >
         <div class="flex">
-          <div class="flex-shrink-0">
-          </div>
+          <div class="flex-shrink-0"></div>
           <div class="ml-3">
             <p class="text-sm text-red-700 font-medium">Please correct the following errors:</p>
             <ul class="mt-2 text-sm text-red-700 list-disc list-inside pl-2">
@@ -975,15 +974,28 @@ const validation = reactive({
       return null
     },
     degree_certificate: (value) => {
-      if (!form.from_in_country && !value && props.mode === 'create' && !props.initialData?.degree_certificate) return 'Degree certificate is required'
+      if (
+        !form.from_in_country &&
+        !value &&
+        props.mode === 'create' &&
+        !props.initialData?.degree_certificate
+      )
+        return 'Degree certificate is required'
       return null
     },
     academic_transcript: (value) => {
-      if (!form.from_in_country && !value && props.mode === 'create' && !props.initialData?.academic_transcript) return 'Academic transcript is required'
+      if (
+        !form.from_in_country &&
+        !value &&
+        props.mode === 'create' &&
+        !props.initialData?.academic_transcript
+      )
+        return 'Academic transcript is required'
       return null
     },
     passport_size_photo: (value) => {
-      if (!value && props.mode === 'create' && !props.initialData?.passport_size_photo) return 'Passport size photo is required'
+      if (!value && props.mode === 'create' && !props.initialData?.passport_size_photo)
+        return 'Passport size photo is required'
       return null
     },
     declaration: (value) => {
@@ -1010,11 +1022,11 @@ const validateForm = () => {
     if (
       (isCIDHolder.value &&
         ['gender_non_cid', 'dzongkhag_non_cid', 'gewog_non_cid', 'village_non_cid'].includes(
-          field
+          field,
         )) ||
       (form.from_in_country && ['degree_certificate', 'academic_transcript'].includes(field))
     ) {
-      delete validation.errors[field];
+      delete validation.errors[field]
       continue
     }
     validateField(field)
@@ -1053,57 +1065,63 @@ watch(
   () => form.from_in_country,
   (newValue, oldValue) => {
     if (newValue !== oldValue) {
-      isRUBDataFetched.value = false;
+      isRUBDataFetched.value = false
       const fieldsToReset = [
-        'course_title', 'qualification', 'type_of_course', 'duration_of_course',
-        'name_of_institute', 'name_of_university', 'year_of_completion',
-        'website', 'location'
-      ];
+        'course_title',
+        'qualification',
+        'type_of_course',
+        'duration_of_course',
+        'name_of_institute',
+        'name_of_university',
+        'year_of_completion',
+        'website',
+        'location',
+      ]
 
-      fieldsToReset.forEach(field => form[field] = '');
+      fieldsToReset.forEach((field) => (form[field] = ''))
 
       if (newValue === true) {
-        form.country = 'Bhutan';
-        form.degree_certificate = null;
-        form.academic_transcript = null;
+        form.country = 'Bhutan'
+        form.degree_certificate = null
+        form.academic_transcript = null
       } else if (newValue === false) {
-        form.country = '';
+        form.country = ''
       }
     }
-    validateForm();
-  }
+    validateForm()
+  },
 )
 
 watch(
   () => isCIDHolder.value,
   (newValue, oldValue) => {
     if (newValue !== oldValue) {
-      isDCRCDataFetched.value = false;
-      form.applicants_name = '';
-      form.date_of_birth = '';
-      form.gender = '';
-      form.dzongkhag = '';
-      form.gewog = '';
-      form.village = '';
+      isDCRCDataFetched.value = false
+      form.applicants_name = ''
+      form.date_of_birth = ''
+      form.gender = ''
+      form.dzongkhag = ''
+      form.gewog = ''
+      form.village = ''
 
       if (newValue === false) {
         if (authStore.user && authStore.user.cid) {
-          form.cid_no = authStore.user.cid;
+          form.cid_no = authStore.user.cid
         } else {
-          form.cid_no = '';
+          form.cid_no = ''
           toast.warn(
-            "Logged-in user's CID is not available in authStore. This may be an issue if the backend requires a CID for non-CID holder applications."
-          );
+            "Logged-in user's CID is not available in authStore. This may be an issue if the backend requires a CID for non-CID holder applications.",
+          )
         }
       } else if (newValue === true) {
-        form.cid_no = '';
+        form.cid_no = ''
       }
       nextTick(() => {
-        validateForm();
-      });
+        validateForm()
+      })
     }
-  }
-);
+  },
+)
 
 onMounted(async () => {
   try {
@@ -1166,7 +1184,7 @@ const fetchDCRCData = async () => {
     toast.success(
       response.data.changes_saved
         ? 'DCRC data fetched and user profile updated successfully'
-        : 'DCRC data fetched successfully'
+        : 'DCRC data fetched successfully',
     )
   } catch (error) {
     toast.error('Failed to fetch DCRC data')
@@ -1183,12 +1201,11 @@ const fetchRUBData = async () => {
     validation.errors.student_id_no = 'Student ID is required'
     return
   }
-   if (!form.cid_no && isCIDHolder.value) {
-    toast.error('CID number is required to fetch RUB data.');
-    validation.errors.cid_no = 'CID number is required for RUB fetch.';
-    return;
+  if (!form.cid_no && isCIDHolder.value) {
+    toast.error('CID number is required to fetch RUB data.')
+    validation.errors.cid_no = 'CID number is required for RUB fetch.'
+    return
   }
-
 
   isLoadingRUB.value = true
   try {
@@ -1205,7 +1222,7 @@ const fetchRUBData = async () => {
       let courseTypeId = null
       const newCourseTypeName = response.data.level
       const existingCourseType = courseTypeOptions.value.find(
-        (type) => type.label === newCourseTypeName
+        (type) => type.label === newCourseTypeName,
       )
 
       if (existingCourseType) {
@@ -1293,9 +1310,9 @@ const handleSubmitActual = async (isDraft = false) => {
   try {
     const formData = new FormData()
     const formKeysToBackendKeys = {
-        'type_of_course': 'type_of_course_id',
-        'qualification': 'qualification_id',
-    };
+      type_of_course: 'type_of_course_id',
+      qualification: 'qualification_id',
+    }
 
     for (const key in form) {
       if (Object.prototype.hasOwnProperty.call(form, key)) {
@@ -1347,7 +1364,7 @@ const handleSubmitActual = async (isDraft = false) => {
         console.error('Error making payment:', paymentError)
         toast.error(
           'Payment request failed: ' +
-            (paymentError.response?.data?.message || paymentError.message)
+            (paymentError.response?.data?.message || paymentError.message),
         )
         isSubmitting.value = false
         return
@@ -1367,16 +1384,15 @@ const handleSubmitActual = async (isDraft = false) => {
           toast.success('Application saved as draft')
         } else {
           toast.success(
-            'Application submitted successfully. Please check your email to complete the payment.'
+            'Application submitted successfully. Please check your email to complete the payment.',
           )
         }
       }
     }
     emit('submitted', response.data)
     if (response.status === 200 || response.status === 201) {
-        emit('close-modal');
+      emit('close-modal')
     }
-
   } catch (error) {
     console.error('Error submitting form:', error.response?.data || error)
     let errorMessage = 'Failed to save application.'
@@ -1414,7 +1430,6 @@ const handleCIDInput = (event) => {
     fetchDCRCData()
   }
 }
-
 </script>
 
 <style scoped>

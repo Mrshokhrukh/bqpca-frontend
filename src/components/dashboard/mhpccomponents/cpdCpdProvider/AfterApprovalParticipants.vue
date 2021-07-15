@@ -115,8 +115,9 @@
                 type="text"
                 :id="`name-${index}`"
                 v-model="participant.name"
-                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500 p-2.5 bg-gray-50"
-                readonly
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-green-500 focus:border-green-500 p-2.5"
+                :class="{ 'bg-gray-50': !participant.nameIsEditable }"
+                :readonly="!participant.nameIsEditable"
               />
             </div>
           </div>
@@ -223,7 +224,7 @@ const router = useRouter()
 const toast = useToast()
 
 // Local state
-const participants = ref([{ regNo: '', name: '' }])
+const participants = ref([{ regNo: '', name: '', nameIsEditable: false }])
 const attendanceSheet = ref(null)
 const attendanceSheetName = ref('')
 const loading = ref(false)
@@ -247,17 +248,14 @@ const fetchParticipantDetails = async (participant) => {
 
       if (match) {
         participant.name = match.full_name || 'Unknown'
+        participant.nameIsEditable = false
       } else {
         // If not found, allow manual entry
-        const manualName = prompt(
-          `Participant with registration number ${participant.regNo} not found. Please enter the name manually:`,
+        toast.warning(
+          `Participant with registration number ${participant.regNo} not found. Please enter the name manually.`,
         )
-        if (manualName) {
-          participant.name = manualName
-        } else {
-          participant.name = ''
-          toast.warning('No name provided for participant')
-        }
+        participant.name = ''
+        participant.nameIsEditable = true
       }
     }
   } catch (error) {
@@ -265,21 +263,18 @@ const fetchParticipantDetails = async (participant) => {
     toast.error('Failed to fetch participant details')
 
     // Allow manual entry
-    const manualName = prompt(
-      `Failed to fetch details for registration number ${participant.regNo}. Please enter the name manually:`,
+    toast.warning(
+      `Failed to fetch details for registration number ${participant.regNo}. Please enter the name manually.`,
     )
-    if (manualName) {
-      participant.name = manualName
-    } else {
-      participant.name = ''
-    }
+    participant.name = ''
+    participant.nameIsEditable = true
   } finally {
     loading.value = false
   }
 }
 
 const addParticipant = () => {
-  participants.value.push({ regNo: '', name: '' })
+  participants.value.push({ regNo: '', name: '', nameIsEditable: false })
 }
 
 const removeParticipant = (index) => {
@@ -358,7 +353,7 @@ const handleCsvImport = (event) => {
           const name = columns.length > 1 ? columns[1].trim() : ''
 
           if (regNo) {
-            importedParticipants.push({ regNo, name })
+            importedParticipants.push({ regNo, name, nameIsEditable: false })
           }
         }
       }
@@ -576,6 +571,7 @@ onMounted(async () => {
           participants.value = response.data.participants.map((p) => ({
             regNo: p.participant_reg_no,
             name: p.participant_name,
+            nameIsEditable: false,
           }))
         }
       }

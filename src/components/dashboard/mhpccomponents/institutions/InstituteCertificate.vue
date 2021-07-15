@@ -76,7 +76,6 @@
 </template>
 
 <script setup>
-
 defineProps({
   instituteName: {
     type: String,

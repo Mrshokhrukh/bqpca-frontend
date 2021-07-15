@@ -447,7 +447,7 @@ const filteredApplications = computed(() => {
     result = result.filter(
       (app) =>
         app.name_of_institution?.toLowerCase().includes(query) ||
-        app.dpr_name?.toLowerCase().includes(query)
+        app.dpr_name?.toLowerCase().includes(query),
     )
   }
   if (filterStatus.value) {
@@ -478,7 +478,7 @@ const fetchApplications = async () => {
     const response = await apiServices.getMhpcInstituteByCid(userCid)
     if (response.data?.results?.length > 0) {
       applications.value = response.data.results.sort(
-        (a, b) => new Date(b.updated_at) - new Date(a.updated_at)
+        (a, b) => new Date(b.updated_at) - new Date(a.updated_at),
       )
     } else {
       applications.value = []
@@ -583,7 +583,7 @@ const handlePaymentCompleted = async (paymentData) => {
     await apiServices.patchMhpcInstitute(appForPayment.id, backendUpdateFormData)
 
     toast.success(
-      `Payment initiated (Ref: ${paymentId.substring(0, 8)}...). Your application status will update shortly.`
+      `Payment initiated (Ref: ${paymentId.substring(0, 8)}...). Your application status will update shortly.`,
     )
   } catch (error) {
     console.error('Payment handling error:', error.response || error)
@@ -632,7 +632,7 @@ watch(
   searchQuery,
   debounce(() => {
     currentPage.value = 1
-  }, 300)
+  }, 300),
 )
 watch(filterStatus, () => {
   currentPage.value = 1

@@ -59,6 +59,7 @@
 
 <script setup>
 import { ref, watch } from 'vue'
+import { useToast } from 'vue-toastification'
 
 const props = defineProps({
   institute: {
@@ -68,6 +69,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['close', 'update-capa'])
+const toast = useToast()
 
 const newIssue = ref('')
 const capaIssues = ref(props.institute.capaIssues || [])
@@ -101,7 +103,7 @@ const resolveIssue = (index) => {
     capaIssues.value[index].resolvedTimestamp = new Date().toLocaleString()
     emit('update-capa', capaIssues.value) // Emit after resolving
   } else {
-    alert('Please provide remarks before resolving the issue.')
+    toast.error('Please provide remarks before resolving the issue.')
   }
 }
 

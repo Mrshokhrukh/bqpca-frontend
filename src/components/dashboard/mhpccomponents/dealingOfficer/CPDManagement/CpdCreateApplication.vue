@@ -209,6 +209,9 @@
 <script setup>
 import { ref } from 'vue'
 import { CheckCircle } from 'lucide-vue-next'
+import { useToast } from 'vue-toastification'
+
+const toast = useToast()
 
 const registrationNumber = ref('PMLT165')
 const cidNumber = ref('CID123456')
@@ -224,11 +227,11 @@ const credits = ref(0)
 const file = ref(null)
 
 const submitApplication = () => {
-  alert('Application submitted successfully!')
+  toast.success('Application submitted successfully!')
 }
 
 const saveDraft = () => {
-  alert('Application saved as draft.')
+  toast.info('Application saved as draft.')
 }
 
 const handleFileUpload = (event) => {
