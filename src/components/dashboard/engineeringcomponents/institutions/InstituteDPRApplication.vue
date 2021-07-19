@@ -39,7 +39,7 @@
         </div>
         <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label for="cid" class="block text-sm font-medium text-gray-700">LICENSE NO.:</label>
+            <label for="cid" class="block text-sm font-medium text-gray-700">CID:</label>
             <input type="text" id="cid" v-model="formData.cid"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
               disabled />

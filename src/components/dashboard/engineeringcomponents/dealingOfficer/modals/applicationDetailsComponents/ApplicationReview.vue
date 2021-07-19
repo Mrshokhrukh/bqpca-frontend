@@ -335,7 +335,7 @@ const saveChanges = async () => {
     emit('update')
   } catch (error) {
     console.error('Error saving changes:', error)
-    errorMessage.value = error.response?.data?.message || 'Failed to save changes.'
+    errorMessage.value = error.response?.data?.message || 'Failed to save changes try again.'
   } finally {
     localLoading.value = false
   }
