@@ -1,5 +1,16 @@
 <template>
+  <!-- Template remains unchanged -->
   <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative overflow-hidden">
+    <!-- Toast Notification -->
+    <div v-if="toastMessage"
+      class="fixed top-4 right-4 z-50 p-4 bg-green-600 text-white rounded-lg shadow-lg flex items-center max-w-sm transition-all duration-300"
+      :class="{ 'opacity-0': !showToast, 'opacity-100': showToast }">
+      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+      </svg>
+      {{ toastMessage }}
+    </div>
+
     <!-- Background decorative elements -->
     <div class="absolute inset-0 overflow-hidden pointer-events-none">
       <div
@@ -13,7 +24,7 @@
       </div>
     </div>
 
-    <div class="relative w-full mx-auto px-4 sm:px-6 lg:px-8 py-12 ">
+    <div class="relative w-full mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div class="text-center mb-12 relative">
         <div class="absolute inset-0 bg-white/30 backdrop-blur-xl rounded-3xl border border-white/20 shadow-sm"></div>
         <div class="relative p-8">
@@ -27,6 +38,13 @@
           </h1>
           <p class="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
             Complete the form below to apply for a new teaching center. All required fields are marked with an asterisk.
+          </p>
+          <p v-if="isEditingDraft" class="text-md text-indigo-600 mt-2 font-medium">
+            <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+            Editing Draft Application (ID: {{ formData.id || 'N/A' }})
           </p>
         </div>
       </div>
@@ -238,7 +256,6 @@
                   placeholder="Enter target category" />
               </div>
 
-
               <!-- Attachments -->
               <div class="lg:col-span-2">
                 <label for="tcAttachments" class="form-label required-label">Attachments</label>
@@ -252,9 +269,14 @@
                     </svg>
                     Attach relevant documents. Multiple files can be selected.
                   </p>
+                  <p v-if="selectedFileNames.length" class="mt-2 text-sm text-green-600 flex items-center">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Selected: {{ selectedFileNames.join(', ') }}
+                  </p>
                 </div>
               </div>
-
 
               <!-- Teaching Center Remarks -->
               <div class="lg:col-span-2 mb-6">
@@ -321,7 +343,7 @@
           </button>
 
           <button type="button" @click="handleSaveDraft" class="btn btn-draft w-full sm:w-auto"
-            :disabled="isSubmitting">
+            :disabled="isSubmitting || isSubmittingDraft">
             <Loader v-if="isSubmittingDraft" class="animate-spin w-5 h-5 mr-2" />
             <svg v-else class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -351,7 +373,6 @@
 <script setup>
 import { ref, watch, onMounted, computed } from 'vue'
 import apiServices from '@/services/services'
-
 import PaymentModal from '@/components/common/PaymentModal.vue'
 import { BuildingOffice2Icon, AcademicCapIcon } from '@heroicons/vue/24/outline'
 import { Loader } from 'lucide-vue-next'
@@ -361,14 +382,18 @@ import { useAuthStore } from '@/stores/authStore'
 const isLoadingOptions = ref(true)
 const isSubmitting = ref(false)
 const isSubmittingDraft = ref(false)
+const isEditingDraft = ref(false)
 const paymentModalRef = ref(null)
 const authStore = useAuthStore()
-
+const toastMessage = ref('')
+const showToast = ref(false)
 const EPC_TEACHING_CENTER_FEE = 100
-
-const isShowingSuccessMessage = ref(false);
+const isShowingSuccessMessage = ref(false)
+const selectedFileNames = ref([])
+const instituteOptions = ref([])
 
 const initialFormData = {
+  id: null,
   institute_id: '',
   country: 'Bhutan',
   dzongkhag: '',
@@ -389,10 +414,10 @@ const initialFormData = {
   tc_review_summary: '',
   valid_till: '',
   tc_declaration: false,
+  is_draft: false,
 }
 
 const formData = ref({ ...initialFormData })
-const instituteOptions = ref([])
 
 const dzongkhagOptionsForCenter = computed(() => {
   return bhutanDzongkhagsGewogs.map(d => ({
@@ -414,7 +439,7 @@ const gewogOptionsForCenter = computed(() => {
 })
 
 watch(() => formData.value.state_dzongkhag, (newDzongkhag) => {
-  if (newDzongkhag) {
+  if (newDzongkhag && formData.value.city_gewog) {
     formData.value.city_gewog = ''
   }
 })
@@ -427,6 +452,113 @@ const todayDate = computed(() => {
   return `${yyyy}-${mm}-${dd}`
 })
 
+const showToastNotification = (message) => {
+  toastMessage.value = message
+  showToast.value = true
+  setTimeout(() => {
+    showToast.value = false
+    toastMessage.value = ''
+  }, 3000)
+}
+
+const fetchDraftData = async () => {
+  if (!formData.value.institute_id) {
+    console.warn('No institute_id set, skipping draft fetch.')
+    return
+  }
+  try {
+    const filterParams = {
+      institute_id: formData.value.institute_id,
+      is_draft: true,
+    }
+    const response = await apiServices.getEpcTeachingCenters(filterParams)
+    const drafts = response.data?.results || response.data || []
+    console.log('API Response:', JSON.stringify(response.data, null, 2)) // Debug log
+    const latestDraft = drafts.find(draft => draft.is_draft === true)
+
+    if (latestDraft) {
+      console.log('Loading draft:', latestDraft)
+      formData.value = {
+        id: latestDraft.id || null,
+        institute_id: latestDraft.institute?.id || formData.value.institute_id,
+        country: latestDraft.institute?.country || formData.value.country,
+        dzongkhag: latestDraft.institute?.dzongkhag || formData.value.dzongkhag,
+        cityGewog: latestDraft.institute?.gewog || formData.value.cityGewog,
+        addressLocation: latestDraft.institute?.address || formData.value.addressLocation,
+        contactNo: latestDraft.institute?.contact_no || formData.value.contactNo,
+        emailAddress: latestDraft.institute?.email_address || formData.value.emailAddress,
+        center_name: latestDraft.center_name || '',
+        center_location: latestDraft.center_location || '',
+        city_gewog: latestDraft.city_gewog || '',
+        state_dzongkhag: latestDraft.state_dzongkhag || '',
+        target_category: latestDraft.target_category || '',
+        tc_attachments: null, // Reset; user must re-upload
+        tc_report: latestDraft.tc_report || null,
+        remarks: latestDraft.remarks || '',
+        tc_remarks: latestDraft.tc_remarks || '',
+        tc_renewal_review_name: latestDraft.tc_renewal_review_name || '',
+        tc_review_summary: latestDraft.tc_review_summary || '',
+        valid_till: latestDraft.valid_till || '',
+        tc_declaration: latestDraft.tc_declaration || false,
+        is_draft: true,
+      }
+      if (latestDraft.tc_attachments) {
+        selectedFileNames.value = [latestDraft.tc_attachments.split('/').pop()]
+      }
+      isEditingDraft.value = true
+      showToastNotification('Draft loaded successfully. You can now edit and save or submit.')
+    } else {
+      console.log('No valid drafts found for institute_id:', formData.value.institute_id)
+      isEditingDraft.value = false
+      // Only reset teaching center fields, preserve institute fields
+      formData.value = {
+        ...formData.value,
+        id: null,
+        center_name: '',
+        center_location: '',
+        city_gewog: '',
+        state_dzongkhag: '',
+        target_category: '',
+        tc_attachments: null,
+        tc_report: null,
+        remarks: '',
+        tc_remarks: '',
+        tc_renewal_review_name: '',
+        tc_review_summary: '',
+        valid_till: '',
+        tc_declaration: false,
+        is_draft: false,
+      }
+      selectedFileNames.value = []
+      showToastNotification('No draft found for this institute. Start a new application.')
+    }
+  } catch (error) {
+    console.error('Error fetching draft data:', error)
+    showToastNotification('Failed to load draft data. Please try again.')
+    isEditingDraft.value = false
+    // Only reset teaching center fields, preserve institute fields
+    formData.value = {
+      ...formData.value,
+      id: null,
+      center_name: '',
+      center_location: '',
+      city_gewog: '',
+      state_dzongkhag: '',
+      target_category: '',
+      tc_attachments: null,
+      tc_report: null,
+      remarks: '',
+      tc_remarks: '',
+      tc_renewal_review_name: '',
+      tc_review_summary: '',
+      valid_till: '',
+      tc_declaration: false,
+      is_draft: false,
+    }
+    selectedFileNames.value = []
+  }
+}
+
 onMounted(async () => {
   isLoadingOptions.value = true
   try {
@@ -434,20 +566,36 @@ onMounted(async () => {
     const institutesArray = institutesResponse.data?.results || institutesResponse.data || []
 
     if (!Array.isArray(institutesArray)) {
-      console.error('Error fetching institute options: Expected an array but received:', institutesArray);
-      instituteOptions.value = [];
-      alert('Failed to load institute options: Unexpected data format. Please check console.');
+      console.error('Error fetching institute options: Expected an array but received:', institutesArray)
+      instituteOptions.value = []
+      showToastNotification('Failed to load institute options: Unexpected data format.')
     } else {
       instituteOptions.value = institutesArray.map((institute) => ({
         value: institute.id,
         label: institute.name_of_institution,
         data: institute,
-      }));
+      }))
+      const userInstitute = institutesArray.find(
+        (institute) => institute.CID === authStore.user?.cid
+      )
+      if (userInstitute) {
+        formData.value.institute_id = userInstitute.id
+        formData.value.country = userInstitute.country || 'Bhutan'
+        formData.value.dzongkhag = userInstitute.dzongkhag || ''
+        formData.value.cityGewog = userInstitute.gewog || ''
+        formData.value.addressLocation = userInstitute.address || userInstitute.location || ''
+        formData.value.contactNo = userInstitute.contact_no || ''
+        formData.value.emailAddress = userInstitute.email_address || ''
+        console.log('Set institute_id:', formData.value.institute_id)
+        await fetchDraftData()
+      } else {
+        console.warn('No institute found for user CID:', authStore.user?.cid)
+      }
     }
   } catch (error) {
-    console.error('Error fetching institute options:', error.response || error.message || error);
-    instituteOptions.value = [];
-    alert('Failed to load institute options. Please check the console for details and try refreshing the page.')
+    console.error('Error fetching institute options:', error.response || error.message || error)
+    instituteOptions.value = []
+    showToastNotification('Failed to load institute options. Please try refreshing the page.')
   } finally {
     isLoadingOptions.value = false
   }
@@ -455,208 +603,272 @@ onMounted(async () => {
 
 watch(
   () => formData.value.institute_id,
-  (newValue) => {
+  async (newValue, oldValue) => {
+    if (newValue === oldValue) return
     const selectedInstituteFull = instituteOptions.value.find((inst) => inst.value === newValue)
     if (selectedInstituteFull && selectedInstituteFull.data) {
       const instData = selectedInstituteFull.data
-      formData.value.country = instData.country || 'Bhutan'
-      formData.value.dzongkhag = instData.dzongkhag || ''
-      formData.value.cityGewog = instData.gewog || ''
-      formData.value.addressLocation = instData.address || instData.location || ''
-      formData.value.contactNo = instData.contact_no || ''
-      formData.value.emailAddress = instData.email_address || ''
+      formData.value = {
+        ...formData.value,
+        institute_id: newValue,
+        country: instData.country || 'Bhutan',
+        dzongkhag: instData.dzongkhag || '',
+        cityGewog: instData.gewog || '',
+        addressLocation: instData.address || instData.location || '',
+        contactNo: instData.contact_no || '',
+        emailAddress: instData.email_address || '',
+      }
+      console.log('Updated formData due to institute_id change:', formData.value)
+      await fetchDraftData()
     } else {
-      formData.value.country = 'Bhutan'
-      formData.value.dzongkhag = ''
-      formData.value.cityGewog = ''
-      formData.value.addressLocation = ''
-      formData.value.contactNo = ''
-      formData.value.emailAddress = ''
+      formData.value = {
+        ...initialFormData,
+        institute_id: '',
+      }
+      isEditingDraft.value = false
+      selectedFileNames.value = []
     }
   }
 )
 
 const handleAttachmentChange = (event) => {
   formData.value.tc_attachments = event.target.files
+  selectedFileNames.value = Array.from(event.target.files).map(file => file.name)
 }
 
-
-
 const resetForm = () => {
-  formData.value = { ...initialFormData }
+  // Preserve institute-related fields
+  const preservedData = {
+    institute_id: formData.value.institute_id,
+    country: formData.value.country,
+    dzongkhag: formData.value.dzongkhag,
+    cityGewog: formData.value.cityGewog,
+    addressLocation: formData.value.addressLocation,
+    contactNo: formData.value.contactNo,
+    emailAddress: formData.value.emailAddress,
+  }
+  formData.value = {
+    ...initialFormData,
+    ...preservedData,
+  }
   const fileInputs = document.querySelectorAll('input[type="file"]')
   fileInputs.forEach((input) => {
     const inputElement = input
     if (inputElement) inputElement.value = ''
   })
-  formData.value.tc_declaration = false;
+  selectedFileNames.value = []
+  isEditingDraft.value = false
 }
 
 const createPayload = (isDraft = false) => {
-  const formPayload = new FormData();
-  const dataToSubmit = { ...formData.value };
+  const formPayload = new FormData()
+  const dataToSubmit = { ...formData.value }
 
   if (isDraft) {
-    dataToSubmit.is_draft = true;
+    dataToSubmit.is_draft = true
   } else {
     if (Object.hasOwn(dataToSubmit, 'is_draft')) {
-      delete dataToSubmit.is_draft;
+      delete dataToSubmit.is_draft
     }
   }
 
   Object.keys(dataToSubmit).forEach((key) => {
-    const value = dataToSubmit[key];
-
-
+    const value = dataToSubmit[key]
     if (key === 'tc_attachments' && value) {
       if (value.length > 0) {
         for (let i = 0; i < value.length; i++) {
-          formPayload.append('tc_attachments', value[i]);
+          formPayload.append('tc_attachments', value[i])
         }
       }
-    }
-
-    else if (value !== null && value !== undefined && value !== '') {
-
-      let backendKey = key;
+    } else if (value !== null && value !== undefined && value !== '') {
+      let backendKey = key
       if (key === 'institute_id') {
-        backendKey = 'institute_id';
+        backendKey = 'institute_id'
       }
-
       if (typeof value === 'boolean') {
-        formPayload.append(backendKey, value.toString());
+        formPayload.append(backendKey, value.toString())
       } else {
-        formPayload.append(backendKey, value);
+        formPayload.append(backendKey, value)
       }
     }
-  });
-
+  })
 
   if (!formPayload.has('payment_id')) {
-    formPayload.append('payment_id', '');
+    formPayload.append('payment_id', '')
   }
 
-  return formPayload;
+  return formPayload
 }
 
-
-const validateForm = () => {
-  if (!formData.value.institute_id) { alert('Please select Training Institute Name.'); return false; }
-  if (!formData.value.center_name.trim()) { alert('Please enter Center Name.'); return false; }
-  if (!formData.value.center_location.trim()) { alert('Please enter Center Location.'); return false; }
-  if (!formData.value.state_dzongkhag) { alert('Please select State/Dzongkhag for the center.'); return false; }
-  if (!formData.value.city_gewog) { alert('Please select City/Gewog for the center.'); return false; }
-  if (!formData.value.target_category.trim()) { alert('Please enter Target Category.'); return false; }
-  if (!formData.value.tc_attachments || formData.value.tc_attachments.length === 0) { alert('Please attach required documents.'); return false; }
-  if (!formData.value.tc_remarks.trim()) { alert('Please enter Teaching Center Remarks.'); return false; }
-  if (!formData.value.tc_declaration) { alert('Please accept the tc_declaration.'); return false; }
-  return true;
+const validateForm = (isDraft = false) => {
+  if (!formData.value.institute_id) { showToastNotification('Please select Training Institute Name.'); return false }
+  if (!formData.value.center_name.trim()) { showToastNotification('Please enter Center Name.'); return false }
+  if (!isDraft) {
+    if (!formData.value.center_location.trim()) { showToastNotification('Please enter Center Location.'); return false }
+    if (!formData.value.state_dzongkhag) { showToastNotification('Please select State/Dzongkhag for the center.'); return false }
+    if (!formData.value.city_gewog) { showToastNotification('Please select City/Gewog for the center.'); return false }
+    if (!formData.value.target_category.trim()) { showToastNotification('Please enter Target Category.'); return false }
+    if (!formData.value.tc_attachments || formData.value.tc_attachments.length === 0) { showToastNotification('Please attach required documents.'); return false }
+    if (!formData.value.tc_remarks.trim()) { showToastNotification('Please enter Teaching Center Remarks.'); return false }
+    if (!formData.value.tc_declaration) { showToastNotification('Please accept the declaration.'); return false }
+  }
+  return true
 }
 
 const handleFormSubmit = async () => {
-  // Force tc_declaration to true before validation and submission
-  formData.value.tc_declaration = true;
-
   if (!validateForm()) {
-    return;
+    return
   }
-  isSubmitting.value = true;
-  isShowingSuccessMessage.value = false;
+  isSubmitting.value = true
+  isShowingSuccessMessage.value = false
 
   try {
-    const formPayloadForApp = createPayload(false);
-
+    const formPayloadForApp = createPayload(false)
     if (authStore.userId) {
-      formPayloadForApp.append('user_id', authStore.userId);
+      formPayloadForApp.append('user_id', authStore.userId)
     }
-    await apiServices.createEpcTeachingCenter(formPayloadForApp);
-
-    isShowingSuccessMessage.value = true;
-    resetForm();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-
+    if (formData.value.id) {
+      await apiServices.updateEpcTeachingCenter(formData.value.id, formPayloadForApp)
+      showToastNotification('Teaching center application updated and submitted successfully!')
+    } else {
+      await apiServices.createEpcTeachingCenter(formPayloadForApp)
+      showToastNotification('Teaching center application submitted successfully!')
+    }
+    isShowingSuccessMessage.value = true
+    resetForm()
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   } catch (error) {
-    console.error('Error during submission process:', error.response?.data || error.message || error);
-    let errorMessage = 'Error submitting application. ';
+    console.error('Error during submission process:', error.response?.data || error.message || error)
+    let errorMessage = 'Error submitting application. '
     if (error.response?.data) {
-      const errors = error.response.data;
+      const errors = error.response.data
       if (typeof errors === 'string') {
-        errorMessage += errors;
+        errorMessage += errors
       } else if (typeof errors === 'object') {
         const messages = Object.entries(errors).map(([key, value]) => {
-          const fieldName = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-          return `${fieldName}: ${Array.isArray(value) ? value.join(', ') : value}`;
-        }).join('\n');
-        if (messages) errorMessage += `Details:\n${messages}`;
-        else if (errors.detail) errorMessage += errors.detail;
+          const fieldName = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+          return `${fieldName}: ${Array.isArray(value) ? value.join(', ') : value}`
+        }).join('\n')
+        if (messages) errorMessage += `Details:\n${messages}`
+        else if (errors.detail) errorMessage += errors.detail
         else errorMessage += 'An unexpected error occurred. Please check the console for more details.'
       } else {
         errorMessage += 'An unexpected error occurred. Please check the console for more details.'
       }
     } else {
-      errorMessage += error.message || 'An unexpected network or server error occurred. Please check the console for details.';
+      errorMessage += error.message || 'An unexpected network or server error occurred. Please check the console for details.'
     }
-    alert(errorMessage);
+    showToastNotification(errorMessage)
   } finally {
-    isSubmitting.value = false;
+    isSubmitting.value = false
   }
 }
-const onPaymentModalClose = () => {
 
-  console.log('Payment modal closed.');
+const onPaymentModalClose = () => {
+  console.log('Payment modal closed.')
 }
 
 const onPaymentCompleted = async ({ paymentHash }) => {
-  console.log('Payment completed with hash:', paymentHash);
+  console.log('Payment completed with hash:', paymentHash)
 }
-
 
 const handleCancel = () => {
   if (confirm('Are you sure you want to cancel and reset the form? All unsaved changes will be lost.')) {
-    resetForm();
-    isShowingSuccessMessage.value = false;
+    resetForm()
+    isShowingSuccessMessage.value = false
   }
 }
 
 const handleSaveDraft = async () => {
   if (!formData.value.institute_id || !formData.value.center_name.trim()) {
-    alert('Please provide at least Training Institute Name and Center Name to save a draft.');
-    return;
+    showToastNotification('Please provide at least Training Institute Name and Center Name to save a draft.')
+    return
   }
-  isSubmittingDraft.value = true;
-  const formPayload = createPayload(true);
+  isSubmittingDraft.value = true
+  const formPayload = createPayload(true)
   if (authStore.userId) {
-    formPayload.append('user_id', authStore.userId);
+    formPayload.append('user_id', authStore.userId)
   }
   try {
-
-    await apiServices.createEpcTeachingCenter(formPayload)
-    alert('Draft saved successfully!')
+    if (formData.value.id) {
+      await apiServices.updateEpcTeachingCenter(formData.value.id, formPayload)
+      showToastNotification('Draft updated successfully!')
+    } else {
+      await apiServices.createEpcTeachingCenter(formPayload)
+      showToastNotification('Draft saved successfully!')
+    }
+    resetForm()
+    await fetchDraftData()
   } catch (error) {
     console.error('Error saving draft:', error.response?.data || error.message || error)
-    let errorMessage = 'Error saving draft. ';
-
+    let errorMessage = 'Error saving draft. '
     if (error.response?.data) {
-      const errors = error.response.data;
+      const errors = error.response.data
       if (typeof errors === 'string') {
-        errorMessage += errors;
+        errorMessage += errors
       } else if (typeof errors === 'object') {
         const messages = Object.entries(errors).map(([key, value]) => {
-          const fieldName = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-          return `${fieldName}: ${Array.isArray(value) ? value.join(', ') : value}`;
-        }).join('\n');
-        if (messages) errorMessage += `Details:\n${messages}`;
-        else if (errors.detail) errorMessage += errors.detail;
+          const fieldName = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+          return `${fieldName}: ${Array.isArray(value) ? value.join(', ') : value}`
+        }).join('\n')
+        if (messages) errorMessage += `Details:\n${messages}`
+        else if (errors.detail) errorMessage += errors.detail
         else errorMessage += 'An unexpected error occurred. Please check the console for more details.'
       } else {
         errorMessage += 'An unexpected error occurred. Please check the console for more details.'
       }
     } else {
-      errorMessage += error.message || 'An unexpected network or server error occurred. Please check the console for details.';
+      errorMessage += error.message || 'An unexpected network or server error occurred. Please check the console for details.'
     }
-    alert(errorMessage);
+    showToastNotification(errorMessage)
   } finally {
     isSubmittingDraft.value = false
   }
 }
 </script>
+
+<style scoped>
+.form-label {
+  @apply block text-sm font-medium text-slate-700 mb-2;
+}
+
+.form-label.required-label::after {
+  @apply content-['*'] text-red-500 ml-1;
+}
+
+.form-input {
+  @apply w-full px-4 py-3 border border-slate-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition bg-white/80 placeholder-slate-400;
+}
+
+.form-select {
+  @apply w-full px-4 py-3 border border-slate-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition bg-white/80 appearance-none;
+}
+
+.form-textarea {
+  @apply w-full px-4 py-3 border border-slate-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition bg-white/80 placeholder-slate-400;
+}
+
+.form-file-input {
+  @apply w-full px-4 py-3 border border-slate-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 transition bg-white/80 text-slate-700;
+}
+
+.disabled-input {
+  @apply bg-slate-100/80 text-slate-500 cursor-not-allowed;
+}
+
+.btn {
+  @apply inline-flex items-center justify-center px-6 py-3 rounded-lg font-semibold text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200;
+}
+
+.btn-outline {
+  @apply border border-slate-300 text-slate-700 bg-white/80 hover:bg-slate-50 focus:ring-indigo-500;
+}
+
+.btn-draft {
+  @apply border border-yellow-300 text-yellow-700 bg-yellow-50/80 hover:bg-yellow-100 focus:ring-yellow-500;
+}
+
+.btn-primary {
+  @apply border border-transparent text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed;
+}
+</style>

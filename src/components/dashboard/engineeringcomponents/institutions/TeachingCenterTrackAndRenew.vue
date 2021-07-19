@@ -383,7 +383,8 @@ const filteredTeachingCenters = computed(() => {
   }
   return teachingCenters.value.filter((center) => {
     const centerCid = center.institute?.CID
-    return centerCid === authStore.user.cid
+    // Filter by the user's CID and ensure the center is not a draft
+    return centerCid === authStore.user.cid && !center.is_draft
   })
 })
 

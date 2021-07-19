@@ -6,7 +6,6 @@
       <div class="flex items-center text-gray-600">
         <span class="flex items-center">
           <span class="w-3 h-3 rounded-full bg-blue-500 mr-2"></span>
-          <!-- MODIFIED: Display count of published centers -->
           Total: {{ publishedCenters.length }}
         </span>
       </div>
@@ -54,10 +53,10 @@
       <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
     </div>
 
-    <!-- MODIFIED: Check published centers length and update text -->
+    <!-- No Centers Found -->
     <div v-else-if="!loading && publishedCenters.length === 0"
       class="bg-white p-8 text-center text-gray-500 rounded-xl shadow-sm border border-gray-100">
-      <p>No published teaching Institutes found</p>
+      <p>No published teaching institutes found</p>
     </div>
 
     <!-- Teaching Centers Table -->
@@ -84,7 +83,6 @@
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
-            <!-- MODIFIED: Iterate over published centers -->
             <tr v-for="center in publishedCenters" :key="center.id" class="hover:bg-gray-50 transition-colors">
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="text-sm font-medium text-gray-900">{{ center.center_name }}</div>
@@ -125,7 +123,7 @@
       <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
         <div class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity" aria-hidden="true" @click="closeModal">
         </div>
-        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">​</span>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true"></span>
         <div
           class="inline-block align-bottom bg-gray-50 rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-5xl sm:w-full">
           <div class="bg-white px-4 pt-5 pb-4 sm:p-6">
@@ -154,7 +152,6 @@
           <!-- Scrollable Content Area with Two-Column Layout -->
           <div class="max-h-[70vh] overflow-y-auto px-6 py-4 bg-gray-50">
             <div class="lg:grid lg:grid-cols-5 lg:gap-8">
-
               <!-- Left Column: Details -->
               <div class="lg:col-span-2">
                 <!-- Proponent Details Section -->
@@ -278,10 +275,18 @@
                           class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
                       </div>
 
+                      <!-- Valid From Field (Read-only) -->
+                      <div class="sm:col-span-3">
+                        <label for="valid-from" class="block text-sm font-medium text-gray-700">Valid From</label>
+                        <input type="text" id="valid-from" :value="validFromDisplay" disabled
+                          class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-gray-100 text-gray-500 sm:text-sm" />
+                      </div>
+
+                      <!-- Valid Till Field (Read-only, computed based on decision) -->
                       <div class="sm:col-span-3">
                         <label for="valid-till" class="block text-sm font-medium text-gray-700">Valid Till</label>
-                        <input type="date" id="valid-till" v-model="reviewForm.valid_till"
-                          class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                        <input type="text" id="valid-till" :value="validTillDisplay" disabled
+                          class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-gray-100 text-gray-500 sm:text-sm" />
                       </div>
 
                       <div class="sm:col-span-3">
@@ -311,7 +316,6 @@
                   </fieldset>
                 </div>
               </div>
-
             </div>
           </div>
 
@@ -344,15 +348,13 @@
       </div>
     </div>
 
-    <!-- Approve and Reject Dialogs -->
-
     <!-- Approve Confirmation Dialog -->
     <div v-if="approveDialog.show" class="fixed z-20 inset-0 overflow-y-auto" aria-labelledby="approve-dialog-title"
       role="dialog" aria-modal="true">
       <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
         <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"
           @click="closeApproveDialog"></div>
-        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">​</span>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true"></span>
         <div
           class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
           <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
@@ -369,9 +371,8 @@
                 </h3>
                 <div class="mt-2">
                   <p class="text-sm text-gray-500">
-                    Are you sure you want to approve "{{
-                      selectedCenter?.center_name || 'this center'
-                    }}"? Please provide an approval message.
+                    Are you sure you want to approve "{{ selectedCenter?.center_name || 'this center' }}"?
+                    Please provide an approval message.
                   </p>
                   <textarea v-model="approveDialog.message" rows="4"
                     class="mt-3 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
@@ -401,7 +402,7 @@
       <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
         <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"
           @click="closeRejectDialog"></div>
-        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">​</span>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true"></span>
         <div
           class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
           <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
@@ -418,9 +419,8 @@
                 </h3>
                 <div class="mt-2">
                   <p class="text-sm text-gray-500">
-                    Are you sure you want to reject "{{
-                      selectedCenter?.center_name || 'this center'
-                    }}"? Please provide a rejection reason.
+                    Are you sure you want to reject "{{ selectedCenter?.center_name || 'this center' }}"?
+                    Please provide a rejection reason.
                   </p>
                   <textarea v-model="rejectDialog.message" rows="4"
                     class="mt-3 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
@@ -462,7 +462,8 @@ const reviewForm = ref({
   tc_review_decision: 'Pending',
   tc_reason_if_rejected: '',
   tc_remarks: '',
-  valid_till: '',
+  valid_from: '', // New field for valid_from
+  valid_till: '', // Controlled programmatically
 })
 
 const alert = ref({
@@ -481,16 +482,44 @@ const rejectDialog = ref({
   message: '',
 })
 
-// ADDED: computed property to filter for non-drafts
 const publishedCenters = computed(() => {
-  return teachingCenters.value.filter(center => center && center.is_draft === false);
-});
+  return teachingCenters.value.filter(center => center && center.is_draft === false)
+})
 
 const isReviewFinalized = computed(() => {
   return (
     selectedCenter.value?.tc_review_decision === 'Approved' ||
     selectedCenter.value?.tc_review_decision === 'Regretted'
   )
+})
+
+// Compute Valid From (based on updated_at)
+const validFromDisplay = computed(() => {
+  if (!selectedCenter.value?.updated_at) {
+    return 'N/A'
+  }
+  try {
+    const date = new Date(selectedCenter.value.updated_at)
+    return date.toISOString().split('T')[0] // Format as YYYY-MM-DD
+  } catch (error) {
+    console.error('Error parsing updated_at:', error)
+    return new Date().toISOString().split('T')[0] // Fallback to current date
+  }
+})
+
+// Compute Valid Till (based on review decision and updated_at)
+const validTillDisplay = computed(() => {
+  if (reviewForm.value.tc_review_decision === 'Approved' && selectedCenter.value?.updated_at) {
+    try {
+      const updatedAt = new Date(selectedCenter.value.updated_at)
+      updatedAt.setFullYear(updatedAt.getFullYear() + 1)
+      return updatedAt.toISOString().split('T')[0] // One year from updated_at
+    } catch (error) {
+      console.error('Error computing valid_till:', error)
+      return ''
+    }
+  }
+  return '' // Empty for Regretted or Pending
 })
 
 onMounted(async () => {
@@ -506,12 +535,11 @@ const fetchTeachingCenters = async () => {
       response?.results ||
       (Array.isArray(response) ? response : Array.isArray(response?.data) ? response.data : [])
 
-    // Ensure is_payment_complete and is_draft are available, defaulting as needed
     teachingCenters.value = results.filter((center) => center != null).map(center => ({
       ...center,
-      is_payment_complete: center.is_payment_complete === true, // Ensure it's a strict boolean
-      is_draft: center.is_draft === true // Default is_draft to false if not provided
-    }));
+      is_payment_complete: center.is_payment_complete === true,
+      is_draft: center.is_draft === true
+    }))
 
     if (!Array.isArray(results)) {
       console.error('Unexpected API response structure:', response)
@@ -535,7 +563,14 @@ const openModal = (center) => {
     tc_review_decision: center?.tc_review_decision || 'Pending',
     tc_reason_if_rejected: center?.tc_reason_if_rejected || '',
     tc_remarks: center?.tc_remarks || '',
-    valid_till: center?.valid_till ? new Date(center.valid_till).toISOString().split('T')[0] : '',
+    valid_from: center?.updated_at ? new Date(center.updated_at).toISOString().split('T')[0] : '',
+    valid_till: center?.tc_review_decision === 'Approved' && center?.updated_at
+      ? (() => {
+        const date = new Date(center.updated_at)
+        date.setFullYear(date.getFullYear() + 1)
+        return date.toISOString().split('T')[0]
+      })()
+      : '',
   }
   isModalOpen.value = true
 }
@@ -583,8 +618,12 @@ const confirmApprove = async () => {
     formData.append('tc_review_decision', 'Approved')
     formData.append('tc_remarks', approveDialog.value.message)
     formData.append('tc_review_summary', reviewForm.value.tc_review_summary || '')
-    if (reviewForm.value.valid_till) {
-      formData.append('valid_till', reviewForm.value.valid_till)
+    if (selectedCenter.value.updated_at) {
+      const validFrom = new Date(selectedCenter.value.updated_at).toISOString().split('T')[0]
+      const validTill = new Date(selectedCenter.value.updated_at)
+      validTill.setFullYear(validTill.getFullYear() + 1)
+      formData.append('valid_from', validFrom)
+      formData.append('valid_till', validTill.toISOString().split('T')[0])
     }
     if (reviewForm.value.reportFile) {
       formData.append('tc_report', reviewForm.value.reportFile, reviewForm.value.reportFile.name)
@@ -596,6 +635,12 @@ const confirmApprove = async () => {
       ...selectedCenter.value,
       tc_review_decision: 'Approved',
       tc_remarks: approveDialog.value.message,
+      valid_from: selectedCenter.value.updated_at ? new Date(selectedCenter.value.updated_at).toISOString().split('T')[0] : '',
+      valid_till: selectedCenter.value.updated_at ? (() => {
+        const date = new Date(selectedCenter.value.updated_at)
+        date.setFullYear(date.getFullYear() + 1)
+        return date.toISOString().split('T')[0]
+      })() : '',
       is_active: true,
     }
 
@@ -634,9 +679,10 @@ const confirmReject = async () => {
     formData.append('tc_reason_if_rejected', rejectDialog.value.message)
     formData.append('tc_remarks', reviewForm.value.tc_remarks || '')
     formData.append('tc_review_summary', reviewForm.value.tc_review_summary || '')
-    if (reviewForm.value.valid_till) {
-      formData.append('valid_till', reviewForm.value.valid_till)
+    if (selectedCenter.value.updated_at) {
+      formData.append('valid_from', new Date(selectedCenter.value.updated_at).toISOString().split('T')[0])
     }
+    formData.append('valid_till', '') // Explicitly set to empty for Regretted
     if (reviewForm.value.reportFile) {
       formData.append('tc_report', reviewForm.value.reportFile, reviewForm.value.reportFile.name)
     }
@@ -647,6 +693,8 @@ const confirmReject = async () => {
       ...selectedCenter.value,
       tc_review_decision: 'Regretted',
       tc_reason_if_rejected: rejectDialog.value.message,
+      valid_from: selectedCenter.value.updated_at ? new Date(selectedCenter.value.updated_at).toISOString().split('T')[0] : '',
+      valid_till: '',
     }
 
     const index = teachingCenters.value.findIndex((center) => center.id === selectedCenter.value.id)
@@ -692,8 +740,13 @@ const saveReview = async () => {
     formData.append('tc_review_decision', reviewForm.value.tc_review_decision)
     formData.append('tc_reason_if_rejected', reviewForm.value.tc_reason_if_rejected || '')
     formData.append('tc_remarks', reviewForm.value.tc_remarks || '')
-    if (reviewForm.value.valid_till) {
-      formData.append('valid_till', reviewForm.value.valid_till)
+    if (selectedCenter.value.updated_at) {
+      formData.append('valid_from', new Date(selectedCenter.value.updated_at).toISOString().split('T')[0])
+    }
+    if (reviewForm.value.tc_review_decision === 'Approved' && selectedCenter.value.updated_at) {
+      const validTill = new Date(selectedCenter.value.updated_at)
+      validTill.setFullYear(validTill.getFullYear() + 1)
+      formData.append('valid_till', validTill.toISOString().split('T')[0])
     } else {
       formData.append('valid_till', '')
     }
@@ -706,6 +759,14 @@ const saveReview = async () => {
     const updatedCenterData = response?.data || {
       ...selectedCenter.value,
       ...reviewForm.value,
+      valid_from: selectedCenter.value.updated_at ? new Date(selectedCenter.value.updated_at).toISOString().split('T')[0] : '',
+      valid_till: reviewForm.value.tc_review_decision === 'Approved' && selectedCenter.value.updated_at
+        ? (() => {
+          const date = new Date(selectedCenter.value.updated_at)
+          date.setFullYear(date.getFullYear() + 1)
+          return date.toISOString().split('T')[0]
+        })()
+        : '',
       tc_report: response?.data?.tc_report || selectedCenter.value.tc_report,
     }
 
