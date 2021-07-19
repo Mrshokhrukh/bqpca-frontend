@@ -1,4 +1,3 @@
-
 <template>
   <div class="p-8 min-h-screen bg-gray-50">
     <!-- Page Header -->
@@ -30,25 +29,12 @@
     <!-- Search Input -->
     <div class="grid grid-cols-1 md:grid-cols-1 gap-4 mb-8">
       <div class="relative">
-        <input
-          v-model="searchQuery"
-          type="text"
-          placeholder="Search by App ID or Institution Name..."
-          class="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        />
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-5 w-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-          />
+        <input v-model="searchQuery" type="text" placeholder="Search by App ID or Institution Name..."
+          class="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2"
+          fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
         </svg>
       </div>
     </div>
@@ -60,48 +46,33 @@
     </div>
 
     <!-- Application Table -->
-    <div
-      v-if="!loading && !error && applications.length > 0"
-      class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
-    >
+    <div v-if="!loading && !error && applications.length > 0"
+      class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
             <tr>
-              <th
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 App ID
               </th>
-              <th
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Institution Name
               </th>
-              <th
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Commencement Date
               </th>
-              <th
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 DPR Status
               </th>
-              <th
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Actions
               </th>
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
             <template v-if="filteredApplications.length > 0">
-              <tr
-                v-for="application in filteredApplications"
-                :key="application.id"
-                class="hover:bg-gray-50 transition-colors"
-              >
+              <tr v-for="application in filteredApplications" :key="application.id"
+                class="hover:bg-gray-50 transition-colors">
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                   #{{ application.id }}
                 </td>
@@ -118,10 +89,8 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <div class="flex space-x-3">
-                    <button
-                      @click="openApplication(application)"
-                      class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200"
-                    >
+                    <button @click="openApplication(application)"
+                      class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">
                       View Details
                     </button>
                   </div>
@@ -139,30 +108,20 @@
         </table>
       </div>
     </div>
-    <div
-      v-if="!loading && !error && applications.length === 0"
-      class="text-center py-10 text-gray-500"
-    >
+    <div v-if="!loading && !error && applications.length === 0" class="text-center py-10 text-gray-500">
       No applications found.
     </div>
 
     <!-- Modal -->
-    <DprModal
-      v-if="isModalOpen"
-      :isOpen="isModalOpen"
-      :application="selectedApplication"
-      @close="closeApplication"
-      @save="handleSave"
-      @approve="onApplicationApproved"
-      @Regretted="onApplicationRejected"
-      :key="selectedApplication ? `modal-${selectedApplication.id}` : 'modal-no-app'"
-    />
+    <DprModal v-if="isModalOpen" :isOpen="isModalOpen" :application="selectedApplication" @close="closeApplication"
+      @save="handleSave" @approve="onApplicationApproved" @Regretted="onApplicationRejected"
+      :key="selectedApplication ? `modal-${selectedApplication.id}` : 'modal-no-app'" />
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import DprModal from '../instituteManagement/DprModal.vue' // Adjust path if necessary
+import DprModal from '../instituteManagement/DprModal.vue'
 import apiService from '@/services/services'
 
 const applications = ref([])
@@ -250,7 +209,9 @@ const filteredApplications = computed(() => {
     return []
   }
   return applications.value.filter((application) => {
-    // Only include applications with Approved EOI
+    // Exclude applications with empty or missing dpr_name
+    if (!application.dpr_name || application.dpr_name.trim() === '') return false
+
     const isApprovedEoi = application.review_decision === 'Approved'
     const query = searchQuery.value ? searchQuery.value.toLowerCase().trim() : ''
     const idMatch = String(application?.id || '').includes(query)
@@ -267,13 +228,11 @@ const pendingApplicationsCount = computed(() => {
 })
 
 const approvedApplicationsCount = computed(() => {
-  return filteredApplications.value.filter((app) => app.do_dpr_review_decision === 'Approved')
-    .length
+  return filteredApplications.value.filter((app) => app.do_dpr_review_decision === 'Approved').length
 })
 
 const regrettedApplicationsCount = computed(() => {
-  return filteredApplications.value.filter((app) => app.do_dpr_review_decision === 'Regretted')
-    .length
+  return filteredApplications.value.filter((app) => app.do_dpr_review_decision === 'Regretted').length
 })
 
 const getStatusClasses = (application) => {
@@ -288,4 +247,3 @@ const getStatusClasses = (application) => {
   ]
 }
 </script>
-
