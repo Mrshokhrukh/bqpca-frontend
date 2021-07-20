@@ -922,28 +922,27 @@ watch(
       editingResource.value = null
       resourceCredits.value = {}
 
-      // Fetch participants data when application changes
       fetchParticipantsData()
     }
   },
   { immediate: true }
 )
 
-
-
 const getApplicationStatus = () => {
-  const status = props.application?.status || 'pending'
-  // Convert status to proper case
-  switch (status.toLowerCase()) {
-    case 'approved':
-      return 'Approved'
-    case 'regretted':
-      return 'Regretted'
-    case 'pending':
-    default:
-      return 'Pending'
+  const app = props.application;
+  if (!app) return 'Pending';
+
+  if (app.is_draft) {
+    return 'Draft';
   }
-}
+  if (app.is_cpd_approved === true) {
+    return 'Approved';
+  }
+  if (app.is_cpd_approved === false) {
+    return 'Regretted';
+  }
+  return 'Pending';
+};
 
 const formatDate = (dateString) => {
   if (!dateString) return 'Not provided'
@@ -1006,21 +1005,57 @@ const saveParticipant = (participant) => {
   participantCredits.value = {}
 }
 
-const approveApplication = () => {
-  if (approvalCredits.value < 0) {
-    approvalCredits.value = 0
+const approveApplication = async (applicationDataFromModal) => {
+  if (!applicationDataFromModal || !applicationDataFromModal.id) {
+    showNotification('error', 'Approval Failed', 'Invalid application data for approval.');
+    return;
   }
 
-  emit('approve', {
-    id: props.application.id,
-    credit: approvalCredits.value,
-    status: 'approved', // Changed to use status field
-    is_draft: false,
-    remarks: approvalMessage.value || 'Application approved',
-  })
-  showApprovalForm.value = false
-  approvalMessage.value = ''
-}
+  // --- Optimistic UI Update ---
+  // 1. Find the application in the local array.
+  const appIndex = applications.value.findIndex(app => app.id === applicationDataFromModal.id);
+
+  // 2. Immediately update the status in the UI before the API call.
+  if (appIndex !== -1) {
+    applications.value[appIndex].status = 'approved';
+    applications.value[appIndex].displayStatus = 'Approved'; // This is the key change for the UI
+  }
+
+  // 3. Close the modal and show a success notification instantly.
+  closeViewModal();
+  showNotification('success', 'Application Approved', 'The CPD application has been approved.');
+  // --- End of Optimistic Update ---
+
+  try {
+    // 4. Perform the API call in the background.
+    const patchData = {
+      is_cpd_approved: true,
+      status: 'approved',
+      is_draft: false,
+      review_remarks: applicationDataFromModal.remarks || 'Application approved',
+      credit: applicationDataFromModal.credit,
+    };
+    await apiServices.patchEpcCpdTask(applicationDataFromModal.id, patchData);
+
+    // 5. Refetch from the server to ensure long-term data consistency.
+    // This will silently correct the data if the optimistic update was wrong.
+    await fetchApplications();
+
+  } catch (err) {
+    console.error('Failed to approve application:', err.response ? err.response.data : err);
+    showNotification(
+      'error',
+      'Approval Failed',
+      `Error approving application: ${err.response?.data?.detail || err.message || 'Please try again.'}`
+    );
+
+    // 6. If the API call fails, revert the change in the UI.
+    if (appIndex !== -1) {
+      applications.value[appIndex].status = 'pending';
+      applications.value[appIndex].displayStatus = 'Pending';
+    }
+  }
+};
 
 const rejectApplication = () => {
   if (!rejectionMessage.value.trim()) {
