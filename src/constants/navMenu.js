@@ -816,14 +816,15 @@ const serviceSpecificMenuItems = {
             name: 'PersonnelSubCategory',
             route: (serviceType) => `/admin/admin/${serviceType}/MastersPersonnelSubCategory`,
           },
+           {
+            name: 'Qualification Types',
+            route: (serviceType) => `/admin/admin/${serviceType}/qualification_types`,
+          },
           {
             name: 'Qualifications',
             route: (serviceType) => `/admin/admin/${serviceType}/qualifications`,
           },
-          {
-            name: 'Qualification Types',
-            route: (serviceType) => `/admin/admin/${serviceType}/qualification_types`,
-          },
+
         ],
       },
       {
@@ -1418,13 +1419,14 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/admin/${serviceType}/sub_categories`,
           },
           {
-            name: 'Qualifications',
-            route: (serviceType) => `/admin/admin/${serviceType}/qualifications`,
-          },
-          {
             name: 'Qualification Types',
             route: (serviceType) => `/admin/admin/${serviceType}/qualification_types`,
           },
+          {
+            name: 'Qualifications',
+            route: (serviceType) => `/admin/admin/${serviceType}/qualifications`,
+          },
+
         ],
       },
       {
@@ -1598,21 +1600,21 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/institutions/${serviceType}/my_capa`,
           },
           // Flattened children of former "Maintenance"
-          {
-            name: 'Faculty Management',
-            icon: getIconComponent('Users'),
-            route: (serviceType) => `/admin/institutions/${serviceType}/staff_management`,
-          },
-          {
-            name: 'Module Management',
-            icon: getIconComponent('GraduationCap'),
-            route: (serviceType) => `/admin/institutions/${serviceType}/course_management`,
-          },
-          {
-            name: 'Department Management',
-            icon: getIconComponent('Layers'),
-            route: (serviceType) => `/admin/institutions/${serviceType}/department_management`,
-          },
+          // {
+          //   name: 'Faculty Management',
+          //   icon: getIconComponent('Users'),
+          //   route: (serviceType) => `/admin/institutions/${serviceType}/staff_management`,
+          // },
+          // {
+          //   name: 'Module Management',
+          //   icon: getIconComponent('GraduationCap'),
+          //   route: (serviceType) => `/admin/institutions/${serviceType}/course_management`,
+          // },
+          // {
+          //   name: 'Department Management',
+          //   icon: getIconComponent('Layers'),
+          //   route: (serviceType) => `/admin/institutions/${serviceType}/department_management`,
+          // },
         ],
       },
     ],

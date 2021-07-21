@@ -39,7 +39,7 @@
         </div>
         <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label for="cid" class="block text-sm font-medium text-gray-700">LICENSE NO.:</label>
+            <label for="cid" class="block text-sm font-medium text-gray-700">CID:</label>
             <input type="text" id="cid" v-model="formData.cid"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
               disabled />
@@ -191,7 +191,6 @@
               accept="application/pdf"
               class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
           </div>
-
         </div>
 
         <!-- Additional Details Section -->
@@ -321,12 +320,13 @@
         <!-- Action Buttons -->
         <div class="mt-12 flex justify-end space-x-4 p-8">
           <button type="button" @click="handleSaveDraft"
-            class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+            class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+            :disabled="isSubmitting">
             Save as Draft
           </button>
           <button type="button" @click="handleSubmit"
             class="px-6 py-3 rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors"
-            :disabled="!formData.declaration">
+            :disabled="!formData.declaration || isSubmitting">
             Submit Application
           </button>
         </div>
@@ -395,86 +395,6 @@ const formData = ref({
   other_details: '',
 })
 
-onMounted(async () => {
-  const userString = localStorage.getItem('user')
-  if (!userString) {
-    console.error('No user data found in localStorage.')
-    isLoading.value = false
-    return
-  }
-
-  let userObject
-  try {
-    userObject = JSON.parse(userString)
-  } catch (error) {
-    console.error('Error parsing user data from localStorage:', error)
-    isLoading.value = false
-    return
-  }
-
-  if (!userObject || !userObject.cid) {
-    console.error('User object is invalid or cid is missing:', userObject)
-    isLoading.value = false
-    return
-  }
-  const userCID = userObject.cid
-
-  try {
-    const response = await apiService.getEpcInstitutes()
-    const institutes = response.data.results
-    const matchedInstitute = institutes.find((institute) => institute.CID === userCID)
-
-    if (!matchedInstitute) {
-      console.error("No institute found matching the user's CID.")
-      isLoading.value = false
-      return
-    }
-
-    instituteId.value = matchedInstitute.id
-    reviewDecision.value = matchedInstitute.review_decision
-
-    if (reviewDecision.value === 'Approved') {
-      await fetchInstituteData()
-    }
-  } catch (error) {
-    console.error('Error fetching institute data:', error)
-    toast.error('Error fetching institute data. Please try again.', { timeout: 3000 })
-  } finally {
-    isLoading.value = false
-  }
-})
-
-const fetchInstituteData = async () => {
-  try {
-    const response = await apiService.getEpcInstitute(instituteId.value)
-    if (response.data) {
-      formData.value.cid = response.data.CID || ''
-      formData.value.full_name = response.data.full_name || ''
-      formData.value.gender = response.data.gender || ''
-      formData.value.contact_no = response.data.contact_no || ''
-      formData.value.email_address = response.data.email_address || ''
-      formData.value.institution_name = response.data.name_of_institution || ''
-      formData.value.country = response.data.country || ''
-      formData.value.gewog = response.data.gewog || ''
-      formData.value.chiwog = response.data.chiwog || ''
-      formData.value.teaching_institute = response.data.teaching_institute || ''
-      formData.value.title_of_course = response.data.title_of_course || ''
-      formData.value.course_duration = response.data.course_duration || ''
-      formData.value.commencement_date = response.data.commencement_date || ''
-      formData.value.type_of_programme = response.data.type_of_programme || ''
-      formData.value.head_of_institution_name = response.data.head_of_institution_name || ''
-      formData.value.head_of_institution_gender = response.data.head_of_institution_gender || ''
-      formData.value.head_of_institution_phone_number = response.data.head_of_institution_phone_number || ''
-      formData.value.head_of_institution_email = response.data.head_of_institution_email || ''
-      formData.value.dpr_name = response.data.dpr_name || ''
-      formData.value.executive_summary = response.data.executive_summary || ''
-    }
-  } catch (error) {
-    console.error('Error fetching institute data:', error)
-    toast.error('Error fetching institute data. Please try again.', { timeout: 3000 })
-  }
-}
-
 const handleFileUpload = (fieldName) => (event) => {
   const file = event.target.files[0]
   if (file && file.type === 'application/pdf') {
@@ -483,6 +403,30 @@ const handleFileUpload = (fieldName) => (event) => {
     toast.error('Please upload a PDF file.', { timeout: 3000 })
     event.target.value = ''
   }
+}
+
+const saveDraft = () => {
+  const draftData = { ...formData.value }
+  if (draftData.supporting_documents instanceof File) {
+    draftData.supporting_documents = { name: draftData.supporting_documents.name, type: draftData.supporting_documents.type }
+  } else {
+    draftData.supporting_documents = null
+  }
+  localStorage.setItem('dprFormDraft', JSON.stringify(draftData))
+  toast.success('Draft saved successfully!')
+}
+
+const clearDraft = () => {
+  localStorage.removeItem('dprFormDraft')
+}
+
+const handleSaveDraft = async () => {
+  if (!instituteId.value) {
+    toast.error('Institute ID is missing. Please refresh the page.', { timeout: 3000 })
+    return
+  }
+
+  saveDraft()
 }
 
 const handleSubmit = async () => {
@@ -553,6 +497,7 @@ const handleSubmit = async () => {
     const response = await apiService.patchEpcInstitute(instituteId.value, submitData)
     if (response.status === 200 || response.status === 204) {
       toast.success('DPR submitted successfully!')
+      clearDraft()
       setTimeout(() => {
         router.push('/admin/institutions/engineering_certification/dashboard')
       }, 1500)
@@ -567,73 +512,125 @@ const handleSubmit = async () => {
   }
 }
 
-const handleSaveDraft = async () => {
-  if (!instituteId.value) {
-    toast.error('Institute ID is missing. Please refresh the page.', { timeout: 3000 })
+const fetchInstituteData = async () => {
+  try {
+    const response = await apiService.getEpcInstitute(instituteId.value)
+    if (response.data) {
+      formData.value.cid = response.data.CID || ''
+      formData.value.full_name = response.data.full_name || ''
+      formData.value.gender = response.data.gender || ''
+      formData.value.contact_no = response.data.contact_no || ''
+      formData.value.email_address = response.data.email_address || ''
+      formData.value.institution_name = response.data.name_of_institution || ''
+      formData.value.country = response.data.country || ''
+      formData.value.gewog = response.data.gewog || ''
+      formData.value.chiwog = response.data.chiwog || ''
+      formData.value.teaching_institute = response.data.teaching_institute || ''
+      formData.value.title_of_course = response.data.title_of_course || ''
+      formData.value.course_duration = response.data.course_duration || ''
+      formData.value.commencement_date = response.data.commencement_date || ''
+      formData.value.type_of_programme = response.data.type_of_programme || ''
+      formData.value.head_of_institution_name = response.data.head_of_institution_name || ''
+      formData.value.head_of_institution_gender = response.data.head_of_institution_gender || ''
+      formData.value.head_of_institution_phone_number = response.data.head_of_institution_phone_number || ''
+      formData.value.head_of_institution_email = response.data.head_of_institution_email || ''
+      formData.value.dpr_name = response.data.dpr_name || ''
+      formData.value.executive_summary = response.data.executive_summary || ''
+      formData.value.vision_mission_strategies = response.data.vision_mission_strategies || ''
+      formData.value.project_scheduling = response.data.project_scheduling || ''
+      formData.value.gross_national_happiness = response.data.gross_national_happiness || ''
+      formData.value.land_details = response.data.land_details || ''
+      formData.value.conceptual_master_plan = response.data.conceptual_master_plan || ''
+      formData.value.academic_plan = response.data.academic_plan || ''
+      formData.value.affiliation_details = response.data.affiliation_details || ''
+      formData.value.teaching_hospital = response.data.teaching_hospital || ''
+      formData.value.research_policy = response.data.research_policy || ''
+      formData.value.human_resource = response.data.human_resource || ''
+      formData.value.quality_assurance = response.data.quality_assurance || ''
+      formData.value.governance_structure = response.data.governance_structure || ''
+      formData.value.business_plan = response.data.business_plan || ''
+      formData.value.project_cost_analysis = response.data.project_cost_analysis || ''
+      formData.value.facilities_student_services = response.data.facilities_student_services || ''
+      formData.value.admission_policy = response.data.admission_policy || ''
+      formData.value.service_conditions = response.data.service_conditions || ''
+      formData.value.safety_security = response.data.safety_security || ''
+      formData.value.public_information_system = response.data.public_information_system || ''
+      formData.value.other_details = response.data.other_details || ''
+    }
+  } catch (error) {
+    console.error('Error fetching institute data:', error)
+    toast.error('Error fetching institute data. Please try again.', { timeout: 3000 })
+  }
+}
+
+onMounted(async () => {
+  const userString = localStorage.getItem('user')
+  if (!userString) {
+    console.error('No user data found in localStorage.')
+    isLoading.value = false
     return
   }
 
-  const draftData = new FormData()
-  draftData.append('cid', formData.value.cid)
-  draftData.append('full_name', formData.value.full_name)
-  draftData.append('gender', formData.value.gender)
-  draftData.append('contact_no', formData.value.contact_no)
-  draftData.append('email_address', formData.value.email_address)
-  draftData.append('name_of_institution', formData.value.institution_name)
-  draftData.append('country', formData.value.country)
-  draftData.append('gewog', formData.value.gewog)
-  draftData.append('chiwog', formData.value.chiwog)
-  draftData.append('teaching_institute', formData.value.teaching_institute)
-  draftData.append('title_of_course', formData.value.title_of_course)
-  draftData.append('course_duration', formData.value.course_duration)
-  draftData.append('commencement_date', formData.value.commencement_date)
-  draftData.append('type_of_programme', formData.value.type_of_programme)
-  draftData.append('head_of_institution_name', formData.value.head_of_institution_name)
-  draftData.append('head_of_institution_gender', formData.value.head_of_institution_gender)
-  draftData.append('head_of_institution_phone_number', formData.value.head_of_institution_phone_number)
-  draftData.append('head_of_institution_email', formData.value.head_of_institution_email)
-  draftData.append('dpr_name', formData.value.dpr_name)
-  draftData.append('executive_summary', formData.value.executive_summary)
-  if (formData.value.supporting_documents) {
-    draftData.append('supporting_documents', formData.value.supporting_documents)
+  let userObject
+  try {
+    userObject = JSON.parse(userString)
+  } catch (error) {
+    console.error('Error parsing user data from localStorage:', error)
+    isLoading.value = false
+    return
   }
 
-  draftData.append('vision_mission_strategies', formData.value.vision_mission_strategies)
-  draftData.append('project_scheduling', formData.value.project_scheduling)
-  draftData.append('gross_national_happiness', formData.value.gross_national_happiness)
-  draftData.append('land_details', formData.value.land_details)
-  draftData.append('conceptual_master_plan', formData.value.conceptual_master_plan)
-  draftData.append('academic_plan', formData.value.academic_plan)
-  draftData.append('affiliation_details', formData.value.affiliation_details)
-  draftData.append('teaching_hospital', formData.value.teaching_hospital)
-  draftData.append('research_policy', formData.value.research_policy)
-  draftData.append('human_resource', formData.value.human_resource)
-  draftData.append('quality_assurance', formData.value.quality_assurance)
-  draftData.append('governance_structure', formData.value.governance_structure)
-  draftData.append('business_plan', formData.value.business_plan)
-  draftData.append('project_cost_analysis', formData.value.project_cost_analysis)
-  draftData.append('facilities_student_services', formData.value.facilities_student_services)
-  draftData.append('admission_policy', formData.value.admission_policy)
-  draftData.append('service_conditions', formData.value.service_conditions)
-  draftData.append('safety_security', formData.value.safety_security)
-  draftData.append('public_information_system', formData.value.public_information_system)
-  draftData.append('other_details', formData.value.other_details)
+  if (!userObject || !userObject.cid) {
+    console.error('User object is invalid or cid is missing:', userObject)
+    isLoading.value = false
+    return
+  }
+  const userCID = userObject.cid
 
   try {
-    isSubmitting.value = true
-    const response = await apiService.patchEpcInstitute(instituteId.value, draftData)
-    if (response.status >= 200 && response.status < 300) {
-      toast.success('Draft saved successfully!')
-    } else {
-      toast.error(`Failed to save draft. Status: ${response.status}`, { timeout: 5000 })
+    const response = await apiService.getEpcInstitutes()
+    const institutes = response.data.results
+    const matchedInstitute = institutes.find((institute) => institute.CID === userCID)
+
+    if (!matchedInstitute) {
+      console.error("No institute found matching the user's CID.")
+      isLoading.value = false
+      return
+    }
+
+    instituteId.value = matchedInstitute.id
+    reviewDecision.value = matchedInstitute.review_decision
+
+    if (reviewDecision.value === 'Approved') {
+      await fetchInstituteData()
+
+      const savedDraft = localStorage.getItem('dprFormDraft')
+      if (savedDraft) {
+        try {
+          const parsedDraft = JSON.parse(savedDraft)
+          Object.keys(parsedDraft).forEach((key) => {
+            if (Object.prototype.hasOwnProperty.call(formData.value, key)) {
+              if (key !== 'supporting_documents') {
+                formData.value[key] = parsedDraft[key]
+              } else {
+                formData.value[key] = null
+              }
+            }
+          })
+          toast.info('Draft loaded. Please re-select any required files.')
+        } catch (error) {
+          console.error('Error loading draft:', error)
+          clearDraft()
+        }
+      }
     }
   } catch (error) {
-    console.error('Error saving draft:', error)
-    toast.error('Error saving draft. Please try again.', { timeout: 5000 })
+    console.error('Error fetching institute data:', error)
+    toast.error('Error fetching institute data. Please try again.', { timeout: 3000 })
   } finally {
-    isSubmitting.value = false
+    isLoading.value = false
   }
-}
+})
 </script>
 
 <style scoped>

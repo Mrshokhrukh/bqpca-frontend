@@ -298,8 +298,6 @@ function removeFile() {
 function submitForm() {
   if (!isFormValid.value || props.isSubmitting) return
 
-  // The key has been changed back to 'photo' to align with the parent component's handler.
-  // The name is legacy, but it ensures the data structure is what the parent expects.
   emit('submit', {
     cpdTask: parseInt(formData.cpdTask),
     photo: pdfFile.value,

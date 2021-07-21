@@ -74,21 +74,21 @@
                   class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2" />
               </div>
               <div>
-                <label for="gewog" class="block text-sm font-medium text-gray-700 mb-1">
+                <label for="gewog" class="block text-sm font-medium text-gray-700 mb-1 required-label">
                   Gewog
                 </label>
                 <input type="text" id="gewog" v-model.trim="formData.gewog"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2" />
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2 " />
               </div>
               <div>
-                <label for="village" class="block text-sm font-medium text-gray-700 mb-1">
+                <label for="village" class="block text-sm font-medium text-gray-700 mb-1 required-label">
                   Village
                 </label>
                 <input type="text" id="village" v-model.trim="formData.village"
                   class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2" />
               </div>
               <div>
-                <label for="chiwog" class="block text-sm font-medium text-gray-700 mb-1">
+                <label for="chiwog" class="block text-sm font-medium text-gray-700 mb-1 required-label">
                   Chiwog
                 </label>
                 <input type="text" id="chiwog" v-model.trim="formData.chiwog"
@@ -169,7 +169,7 @@
                 </div>
               </div>
               <div class="col-span-2">
-                <label for="supporting_documents" class="block text-sm font-medium text-gray-700 mb-1">
+                <label for="supporting_documents" class="block text-sm font-medium text-gray-700 mb-1 required-label">
                   Supporting Documents (e.g., Curriculum Outline, if available)
                 </label>
                 <input type="file" id="supporting_documents"
@@ -236,7 +236,7 @@
           <!-- Declaration -->
           <div class="space-y-6 pb-6 border-b border-gray-100">
             <div class="bg-gray-50 rounded-lg p-4">
-              <h2 class="text-xl font-semibold text-gray-900 mb-3">Declaration</h2>
+              <h2 class="text-xl font-semibold text-gray-900 mb-3 required-label">Declaration</h2>
               <div class="space-y-4">
                 <p class="text-sm text-gray-700">
                   I/We certify that the information provided in this application is true, complete,

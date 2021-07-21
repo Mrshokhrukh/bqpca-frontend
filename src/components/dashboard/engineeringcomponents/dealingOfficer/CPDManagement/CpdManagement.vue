@@ -67,7 +67,7 @@
         <div class="flex mt-4 space-x-6">
           <div class="flex items-center">
             <div class="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
-            <span class="text-gray-600">Total (Non-Draft): {{ applications.filter(app => !app.is_draft).length }}</span>
+            <span class="text-gray-600">Total (Non-Draft): {{applications.filter(app => !app.is_draft).length}}</span>
           </div>
           <div class="flex items-center">
             <div class="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
@@ -253,15 +253,19 @@ const notification = ref({
   timeout: null,
 })
 
-// ✅ CHANGED: This function is now the single source of truth for determining display status.
+
 const getTaskStatus = (item) => {
   if (item.is_draft) {
     return 'Draft';
   }
-  // Directly use the 'status' field from the API and format it for display.
-  // Example: 'pending' -> 'Pending', 'approved' -> 'Approved', 'regretted' -> 'Regretted'
-  const status = item.status || 'pending'; // Fallback to 'pending' if status is null/undefined
-  return status.charAt(0).toUpperCase() + status.slice(1);
+  if (item.is_cpd_approved === true) {
+    return 'Approved';
+  }
+
+  if (item.is_cpd_approved === false) {
+    return 'Regretted';
+  }
+  return 'Pending';
 };
 
 const pendingCount = computed(() => {

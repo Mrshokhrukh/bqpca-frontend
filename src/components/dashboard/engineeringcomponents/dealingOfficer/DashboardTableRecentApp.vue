@@ -74,39 +74,51 @@ const recentApplications = ref([])
 const viewAll = ref(false)
 const currentPage = ref(1)
 const itemsPerPage = 15
-const allApplications = ref([]) // Store all applications
+const allApplications = ref([])
+
+const getQualificationTypeName = (typeId) => {
+  switch (typeId) {
+    case 2:
+      return 'Additional Qualification'
+    case 3:
+      return 'New registration'
+    case 4:
+      return 'Re-registration'
+    case 5:
+      return 'Renewal'
+    default:
+      return 'Registration'
+  }
+}
 
 onMounted(async () => {
   try {
-
     const applicationsResponse = await apiService.getEpcNewApplications()
     const applicationsData = applicationsResponse.data.results || []
 
-
     const processedApplications = []
     applicationsData.forEach((app) => {
-
       if (app.user_qualifications && app.user_qualifications.length > 0) {
         app.user_qualifications.forEach((qual) => {
           processedApplications.push({
-            id: `${app.id}-${qual.id}`, // Create a unique key
+            id: `${app.id}-${qual.id}`,
             name: app?.application?.full_name,
-            type: qual.registration_type_name || 'Unknown Qualification',
+            type: getQualificationTypeName(qual.registration_type),
             status: qual.endorsement_decision || 'Pending',
-            date: qual.updated_at || qual.created_at,
+            date: qual.updated_at || qual.created_at
           })
         })
       } else {
-
         processedApplications.push({
           id: app.id,
           name: app?.application?.full_name,
           type: app.registration_type_name || 'Registration',
           status: 'Pending',
-          date: app.updated_at || app.created_at,
+          date: app.updated_at || app.created_at
         })
       }
     })
+
 
     const cpdRecordsResponse = await apiService.getEpcCogs()
     const cpdData = cpdRecordsResponse.data.results || []
@@ -115,7 +127,7 @@ onMounted(async () => {
       name: cpd.full_name,
       type: 'CPD',
       status: cpd.review_status,
-      date: cpd.updated_at,
+      date: cpd.updated_at
     }))
 
     const cogsRecordsResponse = await apiService.getEpcCogs()
@@ -125,7 +137,7 @@ onMounted(async () => {
       name: cogs.full_name,
       type: 'CoGS',
       status: cogs.endorsement_decision,
-      date: cogs.updated_at,
+      date: cogs.updated_at
     }))
 
     const capaRecordsResponse = await apiService.getEpcCapas()
@@ -135,16 +147,11 @@ onMounted(async () => {
       name: capa?.teaching_center?.institute?.name_of_institution,
       type: 'CAPA',
       status: capa.status,
-      date: capa.updated_at,
+      date: capa.updated_at
     }))
 
-
     allApplications.value = [...processedApplications, ...mappedCpd, ...mappedCogs, ...mappedcapa]
-
-
     allApplications.value.sort((a, b) => new Date(b.date) - new Date(a.date))
-
-
     recentApplications.value = allApplications.value.slice(0, 5)
 
   } catch (error) {
@@ -154,7 +161,7 @@ onMounted(async () => {
 
 const toggleViewAll = () => {
   viewAll.value = !viewAll.value
-  currentPage.value = 1 // Reset to page 1 when toggling
+  currentPage.value = 1
   if (!viewAll.value) {
     recentApplications.value = allApplications.value.slice(0, 5)
   }
@@ -197,7 +204,7 @@ const getStatusClass = (status) => {
     Approved: 'bg-green-100 text-green-800',
     Rejected: 'bg-red-100 text-red-800',
     Regret: 'bg-red-100 text-red-800',
-    R: 'bg-green-100 text-green-800', // Resolved
+    R: 'bg-green-100 text-green-800',
     Resolved: 'bg-green-100 text-green-800',
   }
   return classes[status] || 'bg-gray-100 text-gray-800'

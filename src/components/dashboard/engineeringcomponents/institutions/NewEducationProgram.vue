@@ -1,7 +1,7 @@
 <template>
   <div class="p-8 rounded-xl bg-gradient-to-b from-gray-50 to-white min-h-screen">
     <h2 class="text-3xl font-bold text-gray-800 mb-8 border-b pb-3 flex items-center">
-      <DocumentIcon class="w-8 h-8 mr-3 text-indigo-600" />
+      <FileText class="w-8 h-8 mr-3 text-indigo-600" />
       EPC New Educational Programme Application
     </h2>
 
@@ -160,12 +160,13 @@
 
             <div>
               <label for="duration" class="block text-sm font-medium text-gray-700">
-                Duration (in months) <span class="text-red-500">*</span>
+                Duration (in months) <span v-if="!formData.is_draft" class="text-red-500">*</span>
               </label>
-              <input type="number" id="duration" v-model.number="formData.duration_months" required min="1" :class="[
-                'mt-2 block w-full px-4 py-2 bg-white border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
-                validationErrors.duration_months ? 'border-red-500' : 'border-gray-300',
-              ]" placeholder="Enter duration" />
+              <input type="number" id="duration" v-model.number="formData.duration_months"
+                :required="!formData.is_draft" min="1" :class="[
+                  'mt-2 block w-full px-4 py-2 bg-white border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
+                  validationErrors.duration_months ? 'border-red-500' : 'border-gray-300',
+                ]" placeholder="Enter duration" />
               <p v-if="validationErrors.duration_months" class="mt-1 text-sm text-red-600 flex items-center">
                 <AlertCircle class="w-4 h-4 mr-1" />
                 {{ validationErrors.duration_months[0] }}
@@ -174,10 +175,10 @@
 
             <div>
               <label for="commencementDate" class="block text-sm font-medium text-gray-700">
-                Commencement Date <span class="text-red-500">*</span>
+                Commencement Date <span v-if="!formData.is_draft" class="text-red-500">*</span>
               </label>
-              <input type="date" id="commencementDate" v-model="formData.commencement_date" required :min="todayDate"
-                :class="[
+              <input type="date" id="commencementDate" v-model="formData.commencement_date"
+                :required="!formData.is_draft" :min="todayDate" :class="[
                   'mt-2 block w-full px-4 py-2 bg-white border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm',
                   validationErrors.commencement_date ? 'border-red-500' : 'border-gray-300',
                 ]" />
@@ -236,12 +237,12 @@
         <div class="flex items-start p-6 bg-white rounded-xl shadow border-l-4 border-indigo-400">
           <div class="flex items-center h-5 mt-1">
             <input id="declaration" aria-describedby="declaration-description" type="checkbox"
-              v-model="formData.ins_declaration" required
+              v-model="formData.ins_declaration" :required="!formData.is_draft"
               class="focus:ring-indigo-500 h-5 w-5 text-indigo-600 border-gray-300 rounded" />
           </div>
           <div class="ml-3 text-sm">
             <label for="declaration" class="font-medium text-gray-700 text-base">Declaration <span
-                class="text-red-500">*</span></label>
+                v-if="!formData.is_draft" class="text-red-500">*</span></label>
             <p id="declaration-description" class="text-gray-500 mt-1">
               I hereby declare that the information provided above is true and correct to the best
               of my knowledge and belief.
@@ -270,7 +271,7 @@
           </button>
 
           <button type="submit" :disabled="isSubmitting || !formData.ins_declaration"
-            class="inline-flex justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="inline-flex justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
             :class="{ 'opacity-50 cursor-not-allowed': isSubmitting || !formData.ins_declaration }">
             <SendIcon class="w-4 h-4 mr-2" />
             <Loader v-if="isSubmitting && !draftSaveInProgress" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" />
@@ -293,7 +294,7 @@
       <section class="mt-16 p-6 bg-white rounded-xl shadow-md" id="statusTableSection">
         <h3 class="text-xl font-semibold text-gray-700 mb-6 border-b pb-3 flex items-center">
           <ListIcon class="w-5 h-5 mr-2 text-indigo-500" />
-          Submitted Application Status
+          Application Status
         </h3>
 
         <!-- Search Input -->
@@ -345,19 +346,25 @@
                   Approval Status
                 </th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Validate till </th>
+                  Valid Till
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
               <tr v-if="filteredApplications.length === 0">
-                <td colspan="5" class="px-6 py-8 text-center text-sm text-gray-500">
+                <td colspan="7" class="px-6 py-8 text-center text-sm text-gray-500">
                   <FolderIcon class="w-8 h-8 mx-auto mb-2 text-gray-400" />
                   <div v-if="searchQuery">No applications match your search criteria.</div>
-                  <div v-else>No educational programme applications submitted yet.</div>
+                  <div v-else>No educational programme applications found.</div>
                 </td>
               </tr>
               <tr v-for="application in filteredApplications" :key="application.id"
-                class="hover:bg-gray-50 transition-colors duration-150">
+                class="hover:bg-gray-50 transition-colors duration-150"
+                :class="{ 'cursor-pointer': application.is_draft }"
+                @click="application.is_draft ? loadApplication(application.id, true) : null">
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-indigo-600">
                   {{ application.id }}
                 </td>
@@ -365,40 +372,211 @@
                   {{ application.proposal_title || 'N/A' }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {{
-                    application.created_at
-                      ? new Date(application.created_at).toLocaleDateString()
-                      : 'N/A'
-                  }}
+                  {{ application.created_at ? new Date(application.created_at).toLocaleDateString() : 'N/A' }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {{ application.is_draft || 'N/A' }}
+                  {{ application.is_draft ? 'Draft' : 'Submitted' }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm">
-                  <span :class="getStatusClass(application.review_decision)"
+                  <span :class="getStatusClass(application.is_draft ? 'Draft' : application.review_decision)"
                     class="px-2 py-1 rounded-full text-xs font-medium flex items-center w-fit">
                     <span class="w-2 h-2 rounded-full mr-1" :class="{
                       'bg-green-500': application.review_decision === 'Approved',
                       'bg-red-500': application.review_decision === 'Rejected',
-                      'bg-yellow-500': application.review_decision === 'Pending',
+                      'bg-yellow-500': application.is_draft || application.review_decision === 'Pending',
                       'bg-blue-500': application.review_decision === 'Under Review',
-                      'bg-gray-500': !application.review_decision,
+                      'bg-gray-500': !application.review_decision && !application.is_draft,
                     }"></span>
-                    {{ application.review_decision || 'Unknown' }}
+                    {{ application.is_draft ? 'Draft' : (application.review_decision || 'Unknown') }}
                   </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {{
-                    application.created_at
-                      ? new Date(application.training_institute_details.valid_till).toLocaleDateString()
-                      : 'N/A'
-                  }}
+                  {{ application.training_institute_details?.valid_till
+                    ? new Date(application.training_institute_details.valid_till).toLocaleDateString()
+                    : 'N/A' }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm flex space-x-2">
+                  <button class="text-indigo-600 hover:text-indigo-800 font-medium flex items-center"
+                    @click.stop="loadApplication(application.id, false)">
+                    <EyeIcon class="w-4 h-4 mr-1" />
+                    View
+                  </button>
+                  <button v-if="application.is_draft"
+                    class="text-indigo-600 hover:text-indigo-800 font-medium flex items-center"
+                    @click.stop="loadApplication(application.id, true)">
+                    <EditIcon class="w-4 h-4 mr-1" />
+                    Edit
+                  </button>
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
       </section>
+
+      <!-- View Modal -->
+      <div v-if="showModal && selectedApplication"
+        class="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 transition-opacity duration-300"
+        @click.self="closeModal">
+        <div class="bg-white rounded-xl shadow-2xl max-w-4xl w-full m-4">
+          <!-- Modal Header -->
+          <div class="flex justify-between items-center border-b p-6">
+            <div>
+              <h3 class="text-2xl font-bold text-gray-800 flex items-center">
+                <FileText class="w-7 h-7 mr-3 text-indigo-600" />
+                Application Details
+              </h3>
+              <p class="text-sm text-gray-500 mt-1">
+                Viewing Application ID:
+                <span class="font-semibold text-indigo-600">{{ selectedApplication.id }}</span>
+              </p>
+            </div>
+            <button @click="closeModal" class="p-2 rounded-full hover:bg-gray-200 transition-colors">
+              <XIcon class="w-6 h-6 text-gray-600" />
+            </button>
+          </div>
+
+          <!-- Modal Content -->
+          <div class="p-8 max-h-[70vh] overflow-y-auto space-y-8">
+            <!-- Section: Application Summary -->
+            <section>
+              <h4 class="text-lg font-semibold text-gray-700 mb-4 pb-2 border-b flex items-center">
+                <ClipboardIcon class="w-5 h-5 mr-2" />
+                Application Summary
+              </h4>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5 text-sm">
+                <div>
+                  <label class="block font-medium text-gray-500">Institute Name</label>
+                  <p class="mt-1 text-gray-900 font-semibold">
+                    {{ selectedApplication?.training_institute_details?.name_of_institution || 'N/A' }}
+                  </p>
+                </div>
+                <div>
+                  <label class="block font-medium text-gray-500">Submitted On</label>
+                  <p class="mt-1 text-gray-900">
+                    {{ selectedApplication.created_at ? new Date(selectedApplication.created_at).toLocaleDateString() :
+                      'N/A' }}
+                  </p>
+                </div>
+                <div>
+                  <label class="block font-medium text-gray-500">Approval Status</label>
+                  <div class="mt-1">
+                    <span :class="getStatusClass(selectedApplication.review_decision)"
+                      class="px-3 py-1 text-xs font-bold leading-5 rounded-full">
+                      {{ selectedApplication.review_decision_display || 'N/A' }}
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  <label class="block font-medium text-gray-500">Program Validity</label>
+                  <p class="mt-1 text-gray-900">
+                    {{ selectedApplication.valid_till ? new Date(selectedApplication.valid_till).toLocaleDateString() :
+                      'Not yet applicable' }}
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            <!-- Section: Applicant's Submission -->
+            <section>
+              <h4 class="text-lg font-semibold text-gray-700 mb-4 pb-2 border-b flex items-center">
+                <UserIcon class="w-5 h-5 mr-2" />
+                Your Submission Details
+              </h4>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5 text-sm">
+                <div class="md:col-span-2">
+                  <label class="block font-medium text-gray-500">Proposal Title</label>
+                  <p class="mt-1 text-gray-900 font-semibold">
+                    {{ selectedApplication.proposal_title || 'N/A' }}
+                  </p>
+                </div>
+                <div>
+                  <label class="block font-medium text-gray-500">Duration (Months)</label>
+                  <p class="mt-1 text-gray-900">{{ selectedApplication.duration_months || 'N/A' }}</p>
+                </div>
+                <div>
+                  <label class="block font-medium text-gray-500">Proposed Commencement</label>
+                  <p class="mt-1 text-gray-900">
+                    {{ selectedApplication.commencement_date ? new
+                      Date(selectedApplication.commencement_date).toLocaleDateString() : 'N/A' }}
+                  </p>
+                </div>
+                <div class="md:col-span-2">
+                  <label class="block font-medium text-gray-500">Your Remarks</label>
+                  <p class="mt-1 text-gray-900 bg-gray-50 p-3 rounded-md border min-h-[60px]">
+                    {{ selectedApplication.remarks || 'No remarks provided.' }}
+                  </p>
+                </div>
+                <div>
+                  <label class="block font-medium text-gray-500">Your Proposal Attachment</label>
+                  <div class="mt-1">
+                    <a v-if="selectedApplication.proposal_attachment" :href="selectedApplication.proposal_attachment"
+                      target="_blank" rel="noopener noreferrer"
+                      class="inline-flex items-center text-indigo-600 hover:text-indigo-800 font-semibold">
+                      <PaperclipIcon class="w-4 h-4 mr-1" />
+                      View Attachment
+                    </a>
+                    <span v-else class="text-gray-500">No attachment</span>
+                  </div>
+                </div>
+                <div>
+                  <label class="block font-medium text-gray-500">Declaration</label>
+                  <p class="mt-1 font-semibold"
+                    :class="selectedApplication.ins_declaration ? 'text-green-600' : 'text-red-600'">
+                    {{ selectedApplication.ins_declaration ? 'Agreed' : 'Not Agreed' }}
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            <!-- Section: Official Review -->
+            <section class="bg-gray-50/70 p-6 rounded-lg border">
+              <h4 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b flex items-center">
+                <UserCheckIcon class="w-5 h-5 mr-2 text-gray-600" />
+                Official Review
+              </h4>
+              <div class="space-y-5 text-sm">
+                <div>
+                  <label class="block font-medium text-gray-500">Review Summary</label>
+                  <p class="mt-1 text-gray-900">
+                    {{ selectedApplication.ins_review_summary || 'No summary available yet.' }}
+                  </p>
+                </div>
+
+                <!-- Conditional: Show only if Regretted/Rejected -->
+                <div
+                  v-if="selectedApplication.review_decision === 'Regretted' || selectedApplication.review_decision === 'Rejected'">
+                  <label class="block font-medium text-red-600">Reason for Rejection</label>
+                  <p class="mt-1 p-3 bg-red-50 text-red-800 rounded-md border border-red-200">
+                    {{ selectedApplication.reason_if_rejected || 'No reason specified.' }}
+                  </p>
+                </div>
+
+                <div>
+                  <label class="block font-medium text-gray-500">Dealing Officer Report</label>
+                  <div class="mt-1">
+                    <a v-if="selectedApplication.review_report_upload" :href="selectedApplication.review_report_upload"
+                      target="_blank" rel="noopener noreferrer"
+                      class="inline-flex items-center text-indigo-600 hover:text-indigo-800 font-semibold">
+                      <PaperclipIcon class="w-4 h-4 mr-1" />
+                      View Report
+                    </a>
+                    <span v-else class="text-gray-500">No report uploaded yet</span>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <!-- Modal Footer -->
+          <div class="flex justify-end p-6 border-t bg-gray-50/50">
+            <button @click="closeModal"
+              class="px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -409,7 +587,7 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
 import { useToast } from 'vue-toastification'
 import apiService from '@/services/services'
-import { Loader, Search } from 'lucide-vue-next'
+import { Loader, Search, EditIcon, EyeIcon, FileText, BuildingIcon, UserIcon, GlobeIcon, ClipboardIcon, AlertCircle, AlertTriangle, UploadIcon, InfoIcon, CheckCircleIcon, XIcon, SaveIcon, SendIcon, AlertOctagonIcon, ListIcon, FolderIcon } from 'lucide-vue-next'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -426,6 +604,7 @@ const validationErrors = ref({})
 const selectedFile = ref(null)
 const selectedFileName = ref('')
 const formData = ref({
+  id: null,
   proposal_title: '',
   duration_months: null,
   commencement_date: '',
@@ -436,7 +615,12 @@ const formData = ref({
   is_active: true,
   training_institute: null,
   institute_name: '',
+  is_draft: false,
 })
+
+// Modal related state
+const showModal = ref(false)
+const selectedApplication = ref({})
 
 // State for Application Status Table
 const submittedApplications = ref([])
@@ -495,7 +679,7 @@ const fetchInstituteData = async () => {
 
       if (foundInstitute) {
         userInstitute.value = foundInstitute
-        formData.value.training_institute = userInstitute.value.id  // ✅ FIXED: Changed to training_institute
+        formData.value.training_institute = userInstitute.value.id
         formData.value.institute_name = userInstitute.value.name_of_institution
         await fetchSubmittedApplications()
       } else {
@@ -515,7 +699,7 @@ const fetchInstituteData = async () => {
   }
 }
 
-// Fetch Submitted Applications for the Table
+// Fetch Submitted and Draft Applications
 const fetchSubmittedApplications = async () => {
   if (!userInstitute.value?.id) {
     console.warn('Cannot fetch applications without institute ID.')
@@ -529,19 +713,60 @@ const fetchSubmittedApplications = async () => {
       institute: userInstitute.value.id,
     }
     const response = await apiService.getEpcNewEducationPrograms(filterParams)
-
-    if (response && response.data) {
-      submittedApplications.value = response.data.results || response.data || []
-    } else {
-      submittedApplications.value = []
-    }
+    submittedApplications.value = response.data.results || response.data || []
   } catch (error) {
-    console.error('Error fetching submitted applications:', error)
+    console.error('Error fetching applications:', error)
     tableApiError.value = true
     submittedApplications.value = []
   } finally {
     isTableLoading.value = false
   }
+}
+
+const loadApplication = async (applicationId, forEditing = false) => {
+  try {
+    const response = await apiService.getEpcNewEducationProgram(applicationId);
+    if (response && response.data) {
+      const app = response.data;
+      if (forEditing && app.is_draft) {
+        formData.value = {
+          id: app.id,
+          proposal_title: app.proposal_title || '',
+          duration_months: app.duration_months || null,
+          commencement_date: app.commencement_date || '',
+          remarks: app.remarks || '',
+          ins_declaration: app.ins_declaration || false,
+          proposal_attachment: null,
+          ins_review_decision: app.ins_review_decision || 'Pending',
+          is_active: app.is_active !== false,
+          training_institute: app.training_institute || userInstitute.value.id,
+          institute_name: userInstitute.value.name_of_institution || '',
+          is_draft: app.is_draft || false,
+        };
+        selectedFileName.value = app.proposal_attachment ? app.proposal_attachment.split('/').pop() : '';
+        selectedFile.value = null;
+        document.getElementById('attachments').value = null;
+        toast.info('Draft loaded successfully for editing.');
+        document.querySelector('form')?.scrollIntoView({ behavior: 'smooth' });
+      } else {
+
+        selectedApplication.value = {
+          ...app // 
+        };
+        showModal.value = true;
+      }
+    } else {
+      toast.error('Failed to load application details.');
+    }
+  } catch (error) {
+    console.error('Error loading application:', error);
+    toast.error('An error occurred while loading the application.');
+  }
+};
+// Close Modal
+const closeModal = () => {
+  showModal.value = false
+  selectedApplication.value = {}
 }
 
 // File Handling
@@ -568,19 +793,22 @@ const validateForm = (isDraft = false) => {
   const errors = {}
   validationErrors.value = {}
 
-  if (!formData.value.proposal_title?.trim()) errors.proposal_title = ['Proposal title is required']
+  if (!formData.value.proposal_title?.trim()) {
+    errors.proposal_title = ['Proposal title is required']
+  }
 
   if (!isDraft) {
-    // ✅ FIXED: Changed from duration_in_months to duration_months
-    if (!formData.value.duration_months || formData.value.duration_months <= 0)
+    if (!formData.value.duration_months || formData.value.duration_months <= 0) {
       errors.duration_months = ['Duration must be a positive number']
-
-    if (!formData.value.commencement_date)
+    }
+    if (!formData.value.commencement_date) {
       errors.commencement_date = ['Commencement date is required']
-    else if (new Date(formData.value.commencement_date) < new Date(todayDate.value))
+    } else if (new Date(formData.value.commencement_date) < new Date(todayDate.value)) {
       errors.commencement_date = ['Commencement date cannot be in the past']
-    if (!formData.value.ins_declaration)
+    }
+    if (!formData.value.ins_declaration) {
       errors.ins_declaration = ['You must accept the declaration']
+    }
   }
 
   if (Object.keys(errors).length > 0) {
@@ -594,21 +822,21 @@ const validateForm = (isDraft = false) => {
 const prepareFormData = (status = 'Pending') => {
   const submissionData = new FormData()
   Object.keys(formData.value).forEach((key) => {
-    if (key === 'proposal_attachment') return  // ✅ FIXED: Handle file separately
+    if (key === 'proposal_attachment' || key === 'id' || key === 'is_draft') return
     const value = formData.value[key]
     if (value !== null && value !== undefined) {
       if (typeof value === 'boolean') {
         submissionData.append(key, value ? 'true' : 'false')
-      } else if (key === 'duration_months') {  // ✅ FIXED: Changed from duration_in_months
-        submissionData.append(key, Number(value))
       } else {
         submissionData.append(key, value)
       }
     }
   })
-  submissionData.set('ins_review_decision', status)
+  const isDraft = status === 'Draft'
+  submissionData.append('is_draft', isDraft ? 'true' : 'false')
+  submissionData.append('review_decision', 'Pending')
   if (selectedFile.value) {
-    submissionData.append('proposal_attachment', selectedFile.value, selectedFile.value.name)  // ✅ FIXED: Changed from institute_attachments
+    submissionData.append('proposal_attachment', selectedFile.value, selectedFile.value.name)
   }
   return submissionData
 }
@@ -632,21 +860,21 @@ const handleSubmit = async () => {
 
   try {
     const finalFormData = prepareFormData('Pending')
-    await apiService.createEpcNewEducationProgram(finalFormData)
-    toast.success('Educational programme application submitted successfully for review!')
+    if (formData.value.id) {
+      await apiService.updateEpcNewEducationProgram(formData.value.id, finalFormData)
+      toast.success('Educational programme application updated and submitted successfully!')
+    } else {
+      await apiService.createEpcNewEducationProgram(finalFormData)
+      toast.success('Educational programme application submitted successfully for review!')
+    }
 
-    // ✅ FIXED: Updated form reset to use correct field names
+    // Reset form
     Object.keys(formData.value).forEach((key) => {
-      if (
-        key !== 'training_institute' &&  // ✅ FIXED: Changed to training_institute
-        key !== 'institute_name' &&
-        key !== 'ins_review_decision' &&
-        key !== 'is_active'
-      ) {
-        if (typeof formData.value[key] === 'boolean') formData.value[key] = false
-        else if (typeof formData.value[key] === 'number') formData.value[key] = null
-        else formData.value[key] = ''
-      }
+      if (key === 'training_institute' || key === 'institute_name') return
+      if (key === 'id' || key === 'is_draft') formData.value[key] = null
+      else if (typeof formData.value[key] === 'boolean') formData.value[key] = false
+      else if (typeof formData.value[key] === 'number') formData.value[key] = null
+      else formData.value[key] = ''
     })
     selectedFile.value = null
     selectedFileName.value = ''
@@ -692,9 +920,25 @@ const handleSaveDraft = async () => {
 
   try {
     const draftFormData = prepareFormData('Draft')
-    await apiService.createEpcNewEducationProgram(draftFormData)
-    toast.success('Draft saved successfully!')
+    if (formData.value.id) {
+      await apiService.updateEpcNewEducationProgram(formData.value.id, draftFormData)
+      toast.success('Draft updated successfully!')
+    } else {
+      await apiService.createEpcNewEducationProgram(draftFormData)
+      toast.success('Draft saved successfully!')
+    }
     await fetchSubmittedApplications()
+    // Reset form after saving draft
+    Object.keys(formData.value).forEach((key) => {
+      if (key === 'training_institute' || key === 'institute_name') return
+      if (key === 'id' || key === 'is_draft') formData.value[key] = null
+      else if (typeof formData.value[key] === 'boolean') formData.value[key] = false
+      else if (typeof formData.value[key] === 'number') formData.value[key] = null
+      else formData.value[key] = ''
+    })
+    selectedFile.value = null
+    selectedFileName.value = ''
+    document.getElementById('attachments').value = null
   } catch (error) {
     console.error('Error saving draft:', error)
     if (error.response && error.response.data) {
@@ -718,27 +962,46 @@ const handleSaveDraft = async () => {
 }
 
 const handleCancel = () => {
-  const hasData =
-    Object.keys(formData.value).some((key) => {
-      const value = formData.value[key]
-      return (
-        value !== '' &&
-        value !== null &&
-        value !== false &&
-        !(Array.isArray(value) && value.length === 0) &&
-        !(key === 'training_institute' && value === null) &&  // ✅ FIXED: Changed to training_institute
-        !(key === 'institute_name' && value === '') &&
-        !(key === 'ins_review_decision' && value === 'Pending') &&
-        !(key === 'is_active' && value === true)
-      )
-    }) || selectedFile.value
+  const hasData = Object.keys(formData.value).some((key) => {
+    const value = formData.value[key]
+    return (
+      value !== '' &&
+      value !== null &&
+      value !== false &&
+      !(Array.isArray(value) && value.length === 0) &&
+      !(key === 'training_institute' && value === null) &&
+      !(key === 'institute_name' && value === '') &&
+      !(key === 'ins_review_decision' && value === 'Pending') &&
+      !(key === 'is_active' && value === true) &&
+      !(key === 'id' && value === null) &&
+      !(key === 'is_draft' && value === false)
+    )
+  }) || selectedFile.value
 
   if (hasData) {
     if (confirm('Are you sure you want to cancel? Any unsaved changes will be lost.')) {
-      router.go(-1)
+      Object.keys(formData.value).forEach((key) => {
+        if (key === 'training_institute' || key === 'institute_name') return
+        if (key === 'id' || key === 'is_draft') formData.value[key] = null
+        else if (typeof formData.value[key] === 'boolean') formData.value[key] = false
+        else if (typeof formData.value[key] === 'number') formData.value[key] = null
+        else formData.value[key] = ''
+      })
+      selectedFile.value = null
+      selectedFileName.value = ''
+      document.getElementById('attachments').value = null
     }
   } else {
-    router.go(-1)
+    Object.keys(formData.value).forEach((key) => {
+      if (key === 'training_institute' || key === 'institute_name') return
+      if (key === 'id' || key === 'is_draft') formData.value[key] = null
+      else if (typeof formData.value[key] === 'boolean') formData.value[key] = false
+      else if (typeof formData.value[key] === 'number') formData.value[key] = null
+      else formData.value[key] = ''
+    })
+    selectedFile.value = null
+    selectedFileName.value = ''
+    document.getElementById('attachments').value = null
   }
 }
 
