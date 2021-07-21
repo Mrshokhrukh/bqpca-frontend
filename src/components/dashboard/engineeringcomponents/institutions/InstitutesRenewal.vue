@@ -1,13 +1,12 @@
-
 <template>
   <div class="max-w-7xl mx-auto px-4 py-8">
     <!-- Page Header -->
     <div class="bg-gray-100 rounded-xl p-8 mb-10">
       <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">
-        Expired Engineering Institute Status
+        Institute Registration Status
       </h2>
       <p class="text-gray-600 text-center max-w-2xl mx-auto">
-        View and renew your expired engineering institute registration
+        View and manage your engineering institute registration.
       </p>
     </div>
 
@@ -18,30 +17,22 @@
     </div>
 
     <!-- Error State -->
-    <div
-      v-else-if="apiError"
-      class="bg-gray-50 border border-gray-200 text-gray-700 p-6 rounded-lg mb-6"
-    >
+    <div v-else-if="apiError" class="bg-red-50 border border-red-200 text-red-700 p-6 rounded-lg mb-6">
       <h3 class="text-lg font-medium mb-2">Error Loading Institute Data</h3>
       <p>{{ errorMessage }}</p>
-      <button
-        @click="fetchInstituteData"
-        class="mt-4 bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-      >
+      <button @click="fetchInstituteAndCapaData"
+        class="mt-4 bg-red-100 hover:bg-red-200 text-red-800 font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
         Try Again
       </button>
     </div>
 
-    <!-- No Expired Institute Found -->
-    <div
-      v-else-if="!instituteData"
-      class="bg-gray-50 border border-gray-200 text-gray-700 p-6 rounded-lg mb-6"
-    >
-      <h3 class="text-lg font-medium mb-2">No Expired Institutes Found</h3>
-      <p>No engineering institutes associated with your account have expired.</p>
+    <!-- No Institute Found -->
+    <div v-else-if="!instituteData" class="bg-gray-50 border border-gray-200 text-gray-700 p-6 rounded-lg mb-6">
+      <h3 class="text-lg font-medium mb-2">No Institutes Found</h3>
+      <p>No engineering institutes are associated with your account.</p>
     </div>
 
-    <!-- Expired Institute Card -->
+    <!-- Institute Card -->
     <div v-else class="bg-white rounded-xl shadow-md overflow-hidden">
       <!-- Institute Header -->
       <div class="p-6 border-b border-gray-200">
@@ -49,10 +40,11 @@
           <div>
             <h3 class="text-xl font-bold text-gray-800 relative">
               {{ instituteData.name_of_institution }}
-              <!-- Expired Status Indicator -->
-              <span class="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-red-500"></span>
+              <!-- Status Indicator -->
+              <span v-if="isExpiringSoon || isExpired"
+                :class="['absolute -top-1 -right-1 h-3 w-3 rounded-full', { 'bg-yellow-500': isExpiringSoon && !isExpired, 'bg-red-500': isExpired }]"></span>
             </h3>
-            <p class="text-gray-600">Registration Expired</p>
+            <p class="text-gray-600">{{ registrationStatusText }}</p>
           </div>
         </div>
       </div>
@@ -60,20 +52,14 @@
       <!-- Institute Details -->
       <div class="p-6">
         <!-- Expiration Alert -->
-        <div class="mb-6 p-4 rounded-lg border border-red-400">
+        <div v-if="isExpired" class="mb-6 p-4 rounded-lg border border-red-400 bg-red-50">
           <div class="flex items-start">
             <div class="flex-shrink-0 mt-0.5">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5 text-red-500"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fill-rule="evenodd"
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500" viewBox="0 0 20 20"
+                fill="currentColor">
+                <path fill-rule="evenodd"
                   d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                  clip-rule="evenodd"
-                />
+                  clip-rule="evenodd" />
               </svg>
             </div>
             <div class="ml-3">
@@ -86,6 +72,27 @@
             </div>
           </div>
         </div>
+        <!-- Expiration Soon Alert -->
+        <div v-else-if="isExpiringSoon" class="mb-6 p-4 rounded-lg border border-yellow-400 bg-yellow-50">
+          <div class="flex items-start">
+            <div class="flex-shrink-0 mt-0.5">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-500" viewBox="0 0 20 20"
+                fill="currentColor">
+                <path fill-rule="evenodd"
+                  d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                  clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="ml-3">
+              <h3 class="text-sm font-medium text-yellow-700">Registration Expiring Soon!</h3>
+              <p class="mt-1 text-sm text-gray-600">
+                Your engineering institute registration will expire on
+                {{ formattedExpirationDate }}. Please renew to maintain your active status.
+              </p>
+            </div>
+          </div>
+        </div>
+
 
         <!-- Institute Information -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -95,7 +102,10 @@
               <div class="grid grid-cols-1 gap-3">
                 <div>
                   <p class="text-xs text-gray-500">Registration Status</p>
-                  <p class="text-sm font-medium text-red-600">Expired</p>
+                  <p class="text-sm font-medium"
+                    :class="{ 'text-red-600': isExpired, 'text-yellow-600': isExpiringSoon && !isExpired, 'text-green-600': !isExpired && !isExpiringSoon }">
+                    {{ registrationStatusText }}
+                  </p>
                 </div>
                 <div>
                   <p class="text-xs text-gray-500">Valid From</p>
@@ -103,7 +113,9 @@
                 </div>
                 <div>
                   <p class="text-xs text-gray-500">Valid Until</p>
-                  <p class="text-sm font-medium text-red-600">{{ formattedExpirationDate }}</p>
+                  <p class="text-sm font-medium"
+                    :class="{ 'text-red-600': isExpired, 'text-yellow-600': isExpiringSoon && !isExpired }">
+                    {{ formattedExpirationDate }}</p>
                 </div>
               </div>
             </div>
@@ -135,23 +147,16 @@
           </div>
         </div>
 
-        <!-- Renew Button -->
         <!-- Renew Button Section -->
         <div class="mt-8">
           <div class="bg-blue-50 p-4 rounded-lg border border-blue-200 mb-6">
             <div class="flex items-start">
               <div class="flex-shrink-0 mt-0.5">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-5 w-5 text-blue-600"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fill-rule="evenodd"
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" viewBox="0 0 20 20"
+                  fill="currentColor">
+                  <path fill-rule="evenodd"
                     d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
-                    clip-rule="evenodd"
-                  />
+                    clip-rule="evenodd" />
                 </svg>
               </div>
               <div class="ml-3">
@@ -164,45 +169,43 @@
             </div>
           </div>
 
+          <!-- CAPA PENDING MESSAGE -->
+          <div v-if="isCapaPending"
+            class="text-center mb-4 p-3 bg-yellow-100 border border-yellow-300 text-yellow-800 rounded-lg">
+            Can't renew as a CAPA on {{ instituteData.name_of_institution }} is not Resolved.
+          </div>
+
+
           <div class="flex justify-center">
-            <button
-              @click="openRenewalDialog"
-              class="group relative bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-8 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-md transform transition-all duration-200 hover:scale-[1.02] hover:shadow-lg"
-            >
+            <button @click="openRenewalDialog" :disabled="isCapaPending" :class="['group relative font-semibold py-3 px-8 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 shadow-md transform transition-all duration-200',
+              { 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white focus:ring-blue-500 hover:scale-[1.02] hover:shadow-lg': !isCapaPending },
+              { 'bg-gray-400 text-gray-700 cursor-not-allowed': isCapaPending }
+            ]">
               <div class="flex items-center justify-center">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-5 w-5 mr-2 group-hover:animate-spin"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fill-rule="evenodd"
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 group-hover:animate-spin"
+                  viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd"
                     d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
-                    clip-rule="evenodd"
-                  />
+                    clip-rule="evenodd" />
                 </svg>
                 Renew Registration
-                <span
-                  class="absolute top-0 right-0 -mt-2 -mr-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full"
-                  >Expired</span
-                >
+                <span v-if="isExpired"
+                  class="absolute top-0 right-0 -mt-2 -mr-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">Expired</span>
+                <span v-else-if="isExpiringSoon"
+                  class="absolute top-0 right-0 -mt-2 -mr-2 bg-yellow-500 text-white text-xs font-bold px-2 py-1 rounded-full">Expiring</span>
               </div>
             </button>
           </div>
 
           <p class="text-center text-sm text-gray-500 mt-4">
-            Your renewal will be valid for one year from the date of approval
+            Your renewal will be valid for one year from the date of approval.
           </p>
         </div>
       </div>
     </div>
 
     <!-- Renewal Confirmation Dialog -->
-    <div
-      v-if="showRenewalDialog"
-      class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50"
-    >
+    <div v-if="showRenewalDialog" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
       <div class="bg-white rounded-lg shadow-xl p-6 m-4 max-w-md w-full">
         <h3 class="text-xl font-bold text-gray-900 mb-4">Confirm Institute Renewal</h3>
         <p class="mb-6 text-gray-600">
@@ -211,21 +214,17 @@
         </p>
         <div v-if="isRenewing" class="flex items-center justify-center mb-4">
           <Loader class="inline-block animate-spin text-blue-600 w-6 h-6" />
-          <p>Processing...</p>
+          <p class="ml-2">Processing...</p>
         </div>
         <div class="flex justify-end space-x-4">
-          <button
-            @click="closeRenewalDialog"
+          <button @click="closeRenewalDialog"
             class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            :disabled="isRenewing"
-          >
+            :disabled="isRenewing">
             Cancel
           </button>
-          <button
-            @click="initiatePayment"
+          <button @click="initiatePayment"
             class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            :disabled="isRenewing"
-          >
+            :disabled="isRenewing">
             Proceed to Payment
           </button>
         </div>
@@ -233,12 +232,8 @@
     </div>
 
     <!-- Payment Modal -->
-    <PaymentModal
-      ref="paymentModal"
-      :amount="1000"
-      @payment-completed="handlePaymentCompleted"
-      @close="closePaymentModal"
-    />
+    <PaymentModal ref="paymentModal" :amount="1000" @payment-completed="handlePaymentCompleted"
+      @close="closePaymentModal" />
   </div>
 </template>
 
@@ -252,12 +247,14 @@ import { Loader } from 'lucide-vue-next'
 
 // State variables
 const instituteData = ref(null)
+const capaData = ref(null)
 const isLoading = ref(true)
 const apiError = ref(false)
 const errorMessage = ref('')
 const showRenewalDialog = ref(false)
 const isRenewing = ref(false)
 const paymentModal = ref(null)
+const isCapaPending = ref(false)
 
 // Get auth store and toast notification
 const authStore = useAuthStore()
@@ -269,18 +266,44 @@ const userCid = computed(() => {
 })
 
 // Format dates
-const formattedActiveDate = computed(() => {
-  if (!instituteData.value?.valid_since) return 'N/A'
-  return new Date(instituteData.value.valid_since).toLocaleDateString()
-})
+const formatDate = (dateString) => {
+  if (!dateString) return 'N/A'
+  return new Date(dateString).toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric'
+  })
+}
 
-const formattedExpirationDate = computed(() => {
-  if (!instituteData.value?.valid_till) return 'N/A'
-  return new Date(instituteData.value.valid_till).toLocaleDateString()
-})
+const formattedActiveDate = computed(() => formatDate(instituteData.value?.valid_since))
+const formattedExpirationDate = computed(() => formatDate(instituteData.value?.valid_till))
 
-// Fetch institute data and filter for expired institutes
-const fetchInstituteData = async () => {
+const expirationStatus = computed(() => {
+  if (!instituteData.value?.valid_till) return { expired: false, expiringSoon: false };
+
+  const expirationDate = new Date(instituteData.value.valid_till);
+  const today = new Date();
+  const threeMonthsFromNow = new Date();
+  threeMonthsFromNow.setMonth(today.getMonth() + 3);
+
+  const isExpired = expirationDate < today;
+  const isExpiringSoon = expirationDate >= today && expirationDate <= threeMonthsFromNow;
+
+  return { isExpired, isExpiringSoon };
+});
+
+const isExpired = computed(() => expirationStatus.value.isExpired);
+const isExpiringSoon = computed(() => expirationStatus.value.expiringSoon);
+
+const registrationStatusText = computed(() => {
+  if (isExpired.value) return 'Expired';
+  if (isExpiringSoon.value) return 'Expiring Soon';
+  return 'Active';
+});
+
+
+// Fetch both institute and CAPA data
+const fetchInstituteAndCapaData = async () => {
   if (!userCid.value) {
     errorMessage.value = 'User information not available. Please log in again.'
     apiError.value = true
@@ -290,31 +313,50 @@ const fetchInstituteData = async () => {
 
   isLoading.value = true
   apiError.value = false
+  isCapaPending.value = false
 
   try {
-    const response = await apiServices.getEpcInstitutes()
-
-    if (response && response.data && response.data.results) {
-      // Filter institutes to find one matching the user's CID and expired status
-      const userInstitutes = response.data.results.filter(
+    // Fetch institute data
+    const instituteResponse = await apiServices.getEpcInstitutes()
+    if (instituteResponse && instituteResponse.data && instituteResponse.data.results) {
+      const userInstitute = instituteResponse.data.results.find(
         (institute) => institute.CID.toLowerCase() === userCid.value.toLowerCase()
       )
-
-      // Find the first expired institute
-      const expiredInstitute = userInstitutes.find((institute) => {
-        const expirationDate = new Date(institute.valid_till)
-        return expirationDate < new Date()
-      })
-
-      instituteData.value = expiredInstitute || null
+      instituteData.value = userInstitute || null
     } else {
       errorMessage.value = 'Unable to retrieve institute data.'
       apiError.value = true
+      isLoading.value = false
+      return;
     }
+
+    if (instituteData.value) {
+      // Fetch CAPA data only if an institute was found
+      const capaResponse = await apiServices.getEpcCapas()
+      if (capaResponse && capaResponse.data && capaResponse.data.results) {
+        capaData.value = capaResponse.data.results
+
+        // Check for pending CAPA
+        const pendingCapa = capaData.value.find(capa =>
+          capa.institute.CID === instituteData.value.CID &&
+          capa.institute.name_of_institution === instituteData.value.name_of_institution &&
+          capa.status_display === 'Pending'
+        );
+
+        if (pendingCapa) {
+          isCapaPending.value = true;
+        }
+
+      } else {
+        // Handle cases where CAPA data might not be available but shouldn't block the UI
+        console.warn('Could not retrieve CAPA data.');
+      }
+    }
+
   } catch (error) {
-    console.error('Error fetching institute data:', error)
+    console.error('Error fetching data:', error)
     errorMessage.value =
-      error.response?.data?.message || 'Error fetching institute data. Please try again.'
+      error.response?.data?.message || 'An error occurred while fetching data. Please try again.'
     apiError.value = true
   } finally {
     isLoading.value = false
@@ -339,6 +381,7 @@ const initiatePayment = () => {
     return
   }
   isRenewing.value = true
+  // Assuming paymentModal is a ref to a component with an openModal method
   paymentModal.value.openModal()
   closeRenewalDialog()
 }
@@ -366,10 +409,11 @@ const handlePaymentCompleted = async (paymentData) => {
     return
   }
 
-  try {
-    isLoading.value = true
+  isRenewing.value = true;
+  isLoading.value = true;
 
-    // 1. Initiate Payment
+  try {
+    // The payment initiation and institute update logic remains the same
     const paymentInitiationFormData = new FormData()
     paymentInitiationFormData.append('refNo', paymentId)
     paymentInitiationFormData.append('serviceCode', 'registration_fee_for_engineering_institute')
@@ -387,9 +431,8 @@ const handlePaymentCompleted = async (paymentData) => {
 
     await apiServices.makePayment(paymentInitiationFormData)
 
-    // 2. Update Institute
     const today = new Date()
-    const newValidTill = new Date(today)
+    const newValidTill = new Date()
     newValidTill.setFullYear(today.getFullYear() + 1)
 
     const renewalData = {
@@ -397,44 +440,35 @@ const handlePaymentCompleted = async (paymentData) => {
       is_payment_complete: false,
       is_active: false,
       payment_id: paymentId,
-      payment_status: 'processing_payment',
       valid_since: today.toISOString().split('T')[0],
       valid_till: newValidTill.toISOString().split('T')[0],
     }
 
     await apiServices.patchEpcInstitute(instituteId, renewalData)
 
-    // 3. Update local state
-    Object.assign(instituteData.value, renewalData)
+    toast.success(`Renewal process initiated successfully! Payment ID: ${paymentId}.`)
+    // Refetch data to update the UI
+    await fetchInstituteAndCapaData();
 
-    toast.success(`Payment initiated! ID: ${paymentId}. Renewal process started.`)
-    instituteData.value = null // Clear to show no expired institutes
   } catch (error) {
-    console.error('Payment update error:', error)
-    if (error.response) {
-      toast.error(
-        error.response.data?.detail ||
-          JSON.stringify(error.response.data) ||
-          error.response.statusText
-      )
-    } else if (error.request) {
-      toast.error('Network Error: No response from server')
-    } else {
-      toast.error(
-        `Payment request generated successfully, but there was an error confirming the payment. Contact support with payment ID: ${paymentId}`
-      )
-    }
+    console.error('Renewal error:', error)
+    toast.error(
+      error.response?.data?.detail ||
+      'An error occurred during the renewal process. Please contact support.'
+    )
   } finally {
     isLoading.value = false
     isRenewing.value = false
   }
 }
 
-// Fetch institute data on component mount
-onMounted(fetchInstituteData)
+// Fetch data on component mount
+onMounted(fetchInstituteAndCapaData)
 </script>
 
 <style scoped>
-/* Component-specific styles */
+/* Scoped styles can be added here if needed */
+.cursor-not-allowed {
+  cursor: not-allowed;
+}
 </style>
-
