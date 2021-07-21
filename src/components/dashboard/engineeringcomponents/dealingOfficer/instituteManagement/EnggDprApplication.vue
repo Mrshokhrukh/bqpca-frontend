@@ -114,8 +114,9 @@
 
     <!-- Modal -->
     <DprModal v-if="isModalOpen" :isOpen="isModalOpen" :application="selectedApplication" @close="closeApplication"
-      @save="handleSave" @approve="onApplicationApproved" @Regretted="onApplicationRejected"
+      @save="handleSave" @approve="onApplicationApproved" @regretted="onApplicationRejected"
       :key="selectedApplication ? `modal-${selectedApplication.id}` : 'modal-no-app'" />
+
   </div>
 </template>
 
@@ -134,6 +135,12 @@ const error = ref(null)
 onMounted(async () => {
   await fetchApplications()
 })
+
+const onApplicationRejected = async () => {
+  console.log('Regretted event received for DPR.')
+  closeApplication()
+  await fetchApplications()
+}
 
 const fetchApplications = async () => {
   loading.value = true
@@ -180,11 +187,6 @@ const onApplicationApproved = async (approvedApplication) => {
   await fetchApplications()
 }
 
-const onApplicationRejected = async (rejectedApplication) => {
-  console.log('Regretted event received for DPR:', rejectedApplication.id)
-  closeApplication()
-  await fetchApplications()
-}
 
 const formatDate = (dateString) => {
   if (!dateString) return 'N/A'
