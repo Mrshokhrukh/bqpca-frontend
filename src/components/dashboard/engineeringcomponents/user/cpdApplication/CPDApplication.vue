@@ -8,14 +8,6 @@
         Complete required fields <span class="text-red-600 font-semibold">*</span>. Ensure
         information is accurate.
       </template>
-      <!-- ADDED: Button to open the drafts modal -->
-      <template #actions>
-        <button @click="openDraftsModal"
-          class="flex items-center px-4 py-2 bg-white border rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 shadow-sm transition-colors">
-          <span class="mr-2"></span> <!-- Folder Icon -->
-          Load My Drafts
-        </button>
-      </template>
     </PageHeader>
 
     <form @submit.prevent="handleSubmit" class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
@@ -33,9 +25,7 @@
               Number</label>
             <p id="display_registration_no_str"
               class="w-full px-3 py-2 rounded-md border border-gray-200 bg-gray-100 text-gray-600 text-sm shadow-sm min-h-[38px] flex items-center">
-              {{
-                form.display_registration_no || (isLoadingRegistrationNo ? 'Fetching...' : 'N/A')
-              }}
+              {{ form.display_registration_no || (isLoadingRegistrationNo ? 'Fetching...' : 'N/A') }}
             </p>
           </div>
           <div class="space-y-1.5">
@@ -62,6 +52,31 @@
         </div>
       </div>
 
+      <!-- Draft Selection -->
+      <div class="p-6 border-b border-gray-100">
+        <h3 class="text-lg font-semibold text-gray-800">Load Draft</h3>
+        <p class="mt-1 text-gray-500 text-sm">Select a draft to load CPD details.</p>
+        <div class="mt-4 space-y-1.5">
+          <label for="select_draft" class="text-xs font-medium text-gray-700">Select Draft</label>
+          <select id="select_draft" v-model="selectedDraftId" @change="loadSelectedDraft"
+            :disabled="isLoadingDrafts || userDrafts.length === 0"
+            class="w-full max-w-md px-3 py-2 rounded-md border border-gray-200 bg-gray-50 text-gray-900 text-sm focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 shadow-sm hover:border-gray-300 appearance-none disabled:bg-gray-100 disabled:cursor-not-allowed">
+            <option value="" disabled>
+              {{ isLoadingDrafts ? 'Loading drafts...' : 'Select a draft' }}
+            </option>
+            <option v-if="!isLoadingDrafts && userDrafts.length === 0" value="" disabled>
+              No drafts available
+            </option>
+            <option v-for="draft in userDrafts" :key="draft.id" :value="draft.id">
+              {{ draft.title_of_cpd || `Draft ${draft.id}` }}
+            </option>
+          </select>
+        </div>
+        <p v-if="isEditingDraft" class="mt-2 text-sm text-indigo-600 font-medium">
+          Editing Draft: {{ form.title_of_cpd || `Draft ${currentDraftId.value}` }}
+        </p>
+      </div>
+
       <!-- Form Header - CPD Details -->
       <div class="bg-gray-50/70 p-6 border-b border-gray-100">
         <h3 class="text-lg font-semibold text-gray-800">CPD Details</h3>
@@ -78,9 +93,7 @@
             <input id="title_of_cpd" v-model="form.title_of_cpd" type="text"
               class="w-full px-3 py-2 rounded-md border border-gray-200 bg-gray-50 text-gray-900 text-sm placeholder-gray-400 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 shadow-sm hover:border-gray-300"
               required placeholder="Enter CPD title" />
-            <span v-if="errors.title_of_cpd" class="text-xs text-red-500 block">{{
-              errors.title_of_cpd
-              }}</span>
+            <span v-if="errors.title_of_cpd" class="text-xs text-red-500 block">{{ errors.title_of_cpd }}</span>
           </div>
 
           <div class="space-y-1.5">
@@ -92,7 +105,7 @@
               required placeholder="Describe relevance" />
             <span v-if="errors.relevance_to_profession" class="text-xs text-red-500 block">{{
               errors.relevance_to_profession
-              }}</span>
+            }}</span>
           </div>
 
           <div class="space-y-1.5">
@@ -115,7 +128,7 @@
             </select>
             <span v-if="errors.type_of_cpd_activity" class="text-xs text-red-500 block">{{
               errors.type_of_cpd_activity
-              }}</span>
+            }}</span>
           </div>
 
           <div class="space-y-1.5">
@@ -139,11 +152,11 @@
           class="px-4 py-2 rounded-md bg-white text-gray-700 text-sm border border-gray-200 hover:bg-gray-100 hover:border-gray-300 transition duration-200 shadow-sm focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-gray-400">
           Cancel
         </button>
-        <button type="button" @click="handleSaveDraft" :disabled="isSubmitting"
+        <button type="button" @click="handleSaveDraft" :disabled="isSubmitting || isSubmittingDraft"
           class="px-4 py-2 rounded-md bg-yellow-500 text-white text-sm hover:bg-yellow-600 transition duration-200 shadow-sm focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-yellow-400 disabled:opacity-60 disabled:cursor-not-allowed">
-          {{ isEditMode ? 'Update Draft' : 'Save as Draft' }}
+          {{ isSubmittingDraft ? 'Saving Draft...' : (isEditMode ? 'Update Draft' : 'Save as Draft') }}
         </button>
-        <button type="submit" :disabled="isSubmitting || isLoadingData"
+        <button type="submit" :disabled="isSubmitting || isLoadingData || isSubmittingDraft"
           class="px-4 py-2 rounded-md bg-gradient-to-r from-indigo-600 to-blue-600 text-white text-sm hover:from-indigo-700 hover:to-blue-700 transition duration-200 shadow-sm focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-indigo-500 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center min-w-[120px]">
           <span v-if="isSubmitting" class="flex items-center">
             <svg class="animate-spin -ml-0.5 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -159,47 +172,6 @@
         </button>
       </div>
     </form>
-
-    <!-- Drafts Modal -->
-    <Transition name="modal">
-      <div v-if="isDraftsModalOpen"
-        class="fixed z-50 inset-0 overflow-y-auto bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl" ref="modalContentRef">
-          <div class="p-5 border-b flex justify-between items-center">
-            <h3 class="text-xl font-semibold text-gray-800">My Saved Drafts</h3>
-            <button @click="isDraftsModalOpen = false"
-              class="p-1 rounded-full text-gray-400 hover:bg-gray-200 hover:text-gray-800 transition-colors">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-              </svg>
-            </button>
-          </div>
-          <div class="p-6 max-h-[60vh] overflow-y-auto">
-            <div v-if="isLoadingDrafts" class="text-center py-8 text-gray-500">Loading drafts...</div>
-            <div v-else-if="userDrafts.length === 0" class="text-center py-8 text-gray-500">You have no saved drafts.
-            </div>
-            <ul v-else class="space-y-3">
-              <li v-for="draft in userDrafts" :key="draft.id"
-                class="p-4 border rounded-lg hover:bg-indigo-50 flex justify-between items-center transition-colors">
-                <div>
-                  <p class="font-medium text-gray-800">{{ draft.title_of_cpd || 'Untitled Draft' }}</p>
-                  <p class="text-sm text-gray-500 mt-1">Last saved: {{ new Date(draft.updated_at).toLocaleDateString()
-                  }}
-                  </p>
-                </div>
-                <button @click="loadSelectedDraft(draft.id)"
-                  class="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700 transition-shadow shadow-sm">Load
-                  Draft</button>
-              </li>
-            </ul>
-          </div>
-          <div class="p-4 bg-gray-50 border-t text-right">
-            <button @click="isDraftsModalOpen = false"
-              class="px-5 py-2 bg-white border border-gray-300 rounded-md text-sm hover:bg-gray-100">Close</button>
-          </div>
-        </div>
-      </div>
-    </Transition>
   </div>
 </template>
 
@@ -209,7 +181,6 @@ import { useToast } from 'vue-toastification';
 import { useAuthStore } from '@/stores/authStore';
 import apiService from '@/services/services';
 import { useRouter } from 'vue-router';
-import { onClickOutside } from '@vueuse/core';
 import PageHeader from '@/components/common/MHPC/PageHeader.vue';
 import { ClipboardList } from 'lucide-vue-next';
 
@@ -231,71 +202,88 @@ const form = reactive({
 });
 const errors = reactive({});
 const isSubmitting = ref(false);
+const isSubmittingDraft = ref(false);
 const isLoadingRegistrationNo = ref(false);
 const isLoadingData = ref(false);
+const isLoadingDrafts = ref(false);
 const cpdActivities = ref([]);
 const fileInputRef = ref(null);
 const attachmentFileName = ref('');
-
-// --- DRAFTS AND EDIT MODE STATE ---
 const userDrafts = ref([]);
-const isDraftsModalOpen = ref(false);
-const isLoadingDrafts = ref(false);
-const modalContentRef = ref(null);
+const selectedDraftId = ref('');
 const currentDraftId = ref(null);
-
-onClickOutside(modalContentRef, () => (isDraftsModalOpen.value = false));
-
 const isEditMode = computed(() => !!currentDraftId.value);
+const isEditingDraft = computed(() => !!currentDraftId.value);
 
-// --- DRAFT MODAL AND LOADING LOGIC ---
-const openDraftsModal = async () => {
+// --- DRAFT LOADING ---
+const fetchDraftData = async () => {
+  if (!form.cid_no) {
+    console.warn('No CID set, skipping draft fetch.');
+    return;
+  }
   isLoadingDrafts.value = true;
-  isDraftsModalOpen.value = true;
   try {
-    const response = await apiService.getEpcCpdRecords({
-      cid_no: authStore.user.cid,
-      is_draft: true,
-    });
-    userDrafts.value = response.data.results || [];
+    const filterParams = {
+      cid: form.cid_no, // Adjusted to match API endpoint parameter
+    };
+    const response = await apiService.getEpcCpdRecordsByCid(form.cid_no);
+    const drafts = response.data?.results || response.data || [];
+    console.log('API Response:', JSON.stringify(response.data, null, 2)); // Debug log
+    userDrafts.value = drafts.filter(draft => draft.is_draft === true);
+
+    // Load the latest draft if available
+    const latestDraft = userDrafts.value[0]; // Assuming first draft is latest
+    if (latestDraft) {
+      console.log('Loading draft:', latestDraft);
+      selectedDraftId.value = latestDraft.id;
+      await loadSelectedDraft();
+    } else {
+      console.log('No valid drafts found for cid_no:', form.cid_no);
+      resetCpdFields();
+      toast.info('No draft found for this user. Start a new application.');
+    }
   } catch (error) {
-    toast.error("Could not fetch your drafts.");
-    console.error(error);
+    console.error('Error fetching draft data:', error);
+    toast.error('Failed to load draft data. Please try again.');
+    resetCpdFields();
   } finally {
     isLoadingDrafts.value = false;
   }
 };
 
-const loadSelectedDraft = async (draftId) => {
-  isDraftsModalOpen.value = false;
+const loadSelectedDraft = async () => {
+  if (!selectedDraftId.value) {
+    resetCpdFields();
+    return;
+  }
   isLoadingData.value = true;
   try {
-    // NOTE: Your apiService needs a method for this, e.g., getSingleEpcCpdRecord(id)
-    const response = await apiService.getSingleEpcCpdRecord(draftId);
+    const response = await apiService.getEpcCpdRecord(selectedDraftId.value);
     const draftData = response.data;
 
-    resetForm(false); // Reset form without showing a toast
+    console.log('Loaded draft data:', draftData); // Debug log
 
-    // Populate form with fetched draft data
+    resetCpdFields(false);
+
     currentDraftId.value = draftData.id;
-    form.registration_record_id = draftData.registration_no;
-    form.title_of_cpd = draftData.title_of_cpd;
-    form.relevance_to_profession = draftData.relevance_to_profession;
-    form.type_of_cpd_activity = draftData.type_of_cpd_activity;
-
+    form.title_of_cpd = draftData.title_of_cpd || '';
+    form.relevance_to_profession = draftData.relevance_to_profession || '';
+    form.type_of_cpd_activity = draftData.type_of_cpd_activity || '';
     if (draftData.attachment) {
       attachmentFileName.value = draftData.attachment.split('/').pop();
+      form.attachment = null; // Reset; user must re-upload
     }
-    toast.success("Draft loaded successfully!");
+    toast.success('Draft loaded successfully. You can now edit and save or submit.');
   } catch (error) {
-    toast.error("Failed to load the selected draft.");
-    console.error(error);
+    console.error('Error loading draft:', error);
+    toast.error('Failed to load the selected draft.');
+    resetCpdFields();
   } finally {
     isLoadingData.value = false;
   }
 };
 
-// --- CORE FORM LOGIC (CREATE, UPDATE, SUBMIT) ---
+// --- FORM HANDLING ---
 const createFormData = () => {
   const formData = new FormData();
   formData.append('registration_no', String(form.registration_record_id));
@@ -315,17 +303,16 @@ const createFormData = () => {
 
 const handleSaveDraft = async () => {
   if (!form.title_of_cpd?.trim()) {
-    toast.error("Please enter a title to save the draft.");
+    toast.error('Please enter a title to save the draft.');
     return;
   }
-  isSubmitting.value = true;
+  isSubmittingDraft.value = true;
   const formData = createFormData();
   formData.append('is_draft', 'true');
 
   try {
     let response;
     if (isEditMode.value) {
-      // NOTE: Your apiService needs an update method
       response = await apiService.updateEpcCpdRecord(currentDraftId.value, formData);
       toast.success('Draft updated successfully!');
     } else {
@@ -333,10 +320,12 @@ const handleSaveDraft = async () => {
       currentDraftId.value = response.data.id;
       toast.success('Draft saved successfully!');
     }
+    await fetchDraftData(); // Refresh drafts list
+    selectedDraftId.value = currentDraftId.value; // Update selected draft
   } catch (error) {
     handleSubmissionError(error.response?.data, error);
   } finally {
-    isSubmitting.value = false;
+    isSubmittingDraft.value = false;
   }
 };
 
@@ -372,8 +361,9 @@ const handleSubmit = async () => {
 };
 
 // --- HELPER FUNCTIONS ---
-const resetForm = (showToast = true) => {
-  currentDraftId.value = null; // Exit edit mode
+const resetCpdFields = (showToast = true) => {
+  currentDraftId.value = null;
+  selectedDraftId.value = '';
   form.title_of_cpd = '';
   form.relevance_to_profession = '';
   form.type_of_cpd_activity = '';
@@ -381,16 +371,16 @@ const resetForm = (showToast = true) => {
   attachmentFileName.value = '';
   Object.keys(errors).forEach((key) => delete errors[key]);
   if (fileInputRef.value) fileInputRef.value.value = '';
-  if (showToast) toast.info('Form has been cleared.');
+  if (showToast) toast.info('CPD fields cleared.');
 };
 
 const handleCancel = () => {
   if (isEditMode.value) {
-    if (confirm("Are you sure? This will clear the loaded draft and you will lose any unsaved changes.")) {
-      resetForm();
+    if (confirm('Are you sure? This will clear the loaded draft and you will lose any unsaved changes.')) {
+      resetCpdFields();
     }
   } else {
-    resetForm();
+    resetCpdFields();
   }
 };
 
@@ -398,19 +388,25 @@ const validateForm = () => {
   Object.keys(errors).forEach((key) => delete errors[key]);
   let isValid = true;
   if (!form.title_of_cpd?.trim()) {
-    errors.title_of_cpd = 'Title of CPD is required.'; isValid = false;
+    errors.title_of_cpd = 'Title of CPD is required.';
+    isValid = false;
   }
   if (!form.relevance_to_profession?.trim()) {
-    errors.relevance_to_profession = 'Professional relevance is required.'; isValid = false;
+    errors.relevance_to_profession = 'Professional relevance is required.';
+    isValid = false;
   }
   if (!form.type_of_cpd_activity) {
-    errors.type_of_cpd_activity = 'CPD activity type is required.'; isValid = false;
+    errors.type_of_cpd_activity = 'CPD activity type is required.';
+    isValid = false;
   }
-  if (form.attachment && form.attachment.size > 2 * 1024 * 1024) {
-    errors.attachment = 'File size must not exceed 2MB.'; isValid = false;
+  if (form.attachment && form.attachment instanceof File && form.attachment.size > 2 * 1024 * 1024) {
+    errors.attachment = 'File size must not exceed 2MB.';
+    isValid = false;
   }
   if (!form.registration_record_id) {
-    errors.general_registration = 'Registration information is missing.'; toast.error(errors.general_registration); isValid = false;
+    errors.general_registration = 'Registration information is missing.';
+    toast.error(errors.general_registration);
+    isValid = false;
   }
   return isValid;
 };
@@ -471,7 +467,6 @@ const fetchRegistrationDetails = async (cid) => {
   try {
     const response = await apiService.getEpcApplicationsByCid(cid);
     if (response.data && Array.isArray(response.data) && response.data.length > 0) {
-      // Simple logic: just take the first application found
       const appToUse = response.data[0];
       return { recordId: appToUse.id, displayNo: appToUse.registration_no || `ID: ${appToUse.id}` };
     }
@@ -484,6 +479,7 @@ const fetchRegistrationDetails = async (cid) => {
   return null;
 };
 
+// --- LIFECYCLE HOOKS ---
 onMounted(async () => {
   if (authStore.user) {
     form.cid_no = authStore.user.cid;
@@ -494,28 +490,18 @@ onMounted(async () => {
     router.push('/login');
     return;
   }
-  await fetchMasterData();
-  const regDetails = await fetchRegistrationDetails(form.cid_no);
-  if (regDetails) {
-    form.registration_record_id = regDetails.recordId;
-    form.display_registration_no = regDetails.displayNo;
-  }
+  await Promise.all([fetchMasterData(), fetchRegistrationDetails(form.cid_no)]).then(([_, regDetails]) => {
+    if (regDetails) {
+      form.registration_record_id = regDetails.recordId;
+      form.display_registration_no = regDetails.displayNo;
+    }
+    // Fetch drafts after personal info is set
+    fetchDraftData();
+  });
 });
 </script>
 
 <style scoped>
-/* Add this for the modal transition */
-.modal-enter-active,
-.modal-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.modal-enter-from,
-.modal-leave-to {
-  opacity: 0;
-}
-
-/* Other existing styles */
 select:required:invalid {
   color: #9ca3af;
 }
