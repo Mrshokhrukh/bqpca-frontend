@@ -324,12 +324,30 @@ const handleReject = (message) => {
     })
 }
 
+// MODIFIED LIFECYCLE HOOK
 onMounted(async () => {
   isLoading.value = true
   try {
     const response = await apiServices.getEpcCpdRecords()
     if (response && response.data && response.data.results) {
-      participants.value = response.data.results.map((item) => ({
+      const allResults = response.data.results;
+
+      // 1. Separate draft data from non-draft data
+      const draftData = allResults.filter(item => item.is_draft);
+      const nonDraftData = allResults.filter(item => !item.is_draft);
+
+      // 2. Show a toast notification if there are drafts
+      if (draftData.length > 0) {
+        showNotification(
+          'info',
+          'Drafts Found',
+          `You have ${draftData.length} item(s) in your drafts which are not shown in this list.`,
+          10000 // Show for 10 seconds
+        );
+      }
+
+      // 3. Map and load only the non-draft data into the participants list
+      participants.value = nonDraftData.map((item) => ({
         id: item.id,
         fullName: item.full_name,
         registrationNumber: item.registration_no,
@@ -344,7 +362,8 @@ onMounted(async () => {
         attachment: item.attachment ? { url: item.attachment } : null,
         reviewStatus: item.review_status,
         remarks: item.remark,
-      }))
+      }));
+
     } else {
       console.error('Error fetching CPD records: Unexpected response format', response)
       participants.value = []
@@ -363,7 +382,6 @@ onMounted(async () => {
   }
 })
 </script>
-
 <style scoped>
 /* Scoped styles for main component */
 </style>

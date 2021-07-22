@@ -19,42 +19,21 @@
 
     <!-- Error State -->
     <div v-else-if="apiError" class="bg-red-50 border border-red-200 rounded-xl p-8 text-center">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="h-16 w-16 mx-auto text-red-500 mb-4"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-        />
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-red-500 mb-4" fill="none"
+        viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
       </svg>
       <h3 class="text-xl font-semibold text-red-700 mb-2">Data Retrieval Error</h3>
       <p class="text-red-600">We couldn't fetch your CPD records. Please try again later.</p>
     </div>
 
     <!-- No Applications State -->
-    <div
-      v-else-if="filteredApplications.length === 0"
-      class="bg-white shadow-lg rounded-xl p-8 text-center"
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="h-16 w-16 mx-auto text-blue-500 mb-4"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-        />
+    <div v-else-if="filteredApplications.length === 0" class="bg-white shadow-lg rounded-xl p-8 text-center">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-blue-500 mb-4" fill="none"
+        viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
       <h3 class="text-xl font-semibold text-gray-800 mb-2">No CPD Records</h3>
       <p class="text-gray-600">You haven't submitted any CPD applications yet.</p>
@@ -62,44 +41,33 @@
 
     <!-- Applications List -->
     <transition-group v-else name="list" tag="div" class="space-y-6">
-      <div
-        v-for="(record, index) in filteredApplications"
-        :key="index"
-        class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden transition-all duration-300 ease-in-out transform hover:-translate-y-2 hover:shadow-xl"
-      >
+      <div v-for="(record, index) in filteredApplications" :key="index"
+        class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden transition-all duration-300 ease-in-out transform hover:-translate-y-2 hover:shadow-xl">
         <!-- Header with Status and Credits -->
         <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 p-6">
-          <div
-            class="flex flex-col md:flex-row items-start md:items-center justify-between space-y-4 md:space-y-0"
-          >
+          <div class="flex flex-col md:flex-row items-start md:items-center justify-between space-y-4 md:space-y-0">
             <div>
               <h3 class="text-xl font-bold text-gray-900 mb-2">{{ record.title_of_cpd }}</h3>
               <div class="flex items-center space-x-3">
-                <span class="text-sm text-gray-600"
-                  >Registration #{{ record.registration_no || 'N/A' }}</span
-                >
+                <span class="text-sm text-gray-600">Registration #{{ record.registration_no || 'N/A' }}</span>
               </div>
             </div>
 
             <div class="flex items-center space-x-3">
               <!-- Status Badge with Dynamic Coloring -->
-              <span
-                :class="[
-                  record.review_status === 'Approved'
-                    ? 'bg-green-100 text-green-800'
-                    : record.review_status === 'Rejected'
-                      ? 'bg-red-100 text-red-800'
-                      : 'bg-yellow-100 text-yellow-800',
-                  'px-4 py-2 rounded-full text-sm font-medium shadow-sm',
-                ]"
-              >
+              <span :class="[
+                record.review_status === 'Approved'
+                  ? 'bg-green-100 text-green-800'
+                  : record.review_status === 'Rejected'
+                    ? 'bg-red-100 text-red-800'
+                    : 'bg-yellow-100 text-yellow-800',
+                'px-4 py-2 rounded-full text-sm font-medium shadow-sm',
+              ]">
                 {{ record.review_status || 'Pending' }}
               </span>
 
               <!-- Credits Badge with Standout Design -->
-              <span
-                class="bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-md"
-              >
+              <span class="bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-md">
                 {{ record.cpd_credit }} Credits
               </span>
             </div>
@@ -196,12 +164,8 @@
             <FileText class="w-6 h-6 text-blue-600" />
             <span class="font-medium text-gray-900">Supporting Document</span>
           </div>
-          <a
-            v-if="record.attachment"
-            :href="record.attachment"
-            target="_blank"
-            class="group flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-300 ease-in-out"
-          >
+          <a v-if="record.attachment" :href="record.attachment" target="_blank"
+            class="group flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-300 ease-in-out">
             <Download class="w-5 h-5 mr-2 group-hover:animate-bounce" />
             Download
           </a>
@@ -237,13 +201,15 @@ const apiError = ref(false)
 const authStore = useAuthStore()
 const learningMethods = ref([])
 
-// Computed Property for filtered applications - Updated to use cid_no
+// Computed Property for filtered applications - Updated to filter out drafts
 const filteredApplications = computed(() => {
   if (!authStore.user || !authStore.user.cid) {
     return []
   }
 
-  return applications.value.filter((app) => app.cid_no === authStore.user.cid)
+  return applications.value.filter(
+    (app) => app.cid_no === authStore.user.cid && !app.is_draft
+  )
 })
 
 // Format date helper

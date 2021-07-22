@@ -173,7 +173,6 @@ const dashboardState = computed(() => {
     }
   }
 
-  // If we have applications but don't fit other criteria, show basic dashboard
   return {
     isApproved: true,
     primaryQualifications: []

@@ -164,14 +164,16 @@
                   </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="space-y-2">
-                    <span :class="getStatusClass(application.review_status)"
-                      class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full">
+                  <div class="flex flex-col space-y-2">
+                    <!-- Review Status -->
+                    <span
+                      :class="[getStatusClass(application.review_status), 'px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full']">
                       <span class="w-2 h-2 rounded-full mr-1 mt-1.5"
                         :class="getStatusDotClass(application.review_status)"></span>
                       Review: {{ application.review_status }}
                     </span>
 
+                    <!-- Payment Status -->
                     <span v-if="application.is_payment_complete"
                       class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
                       <span class="w-2 h-2 rounded-full bg-green-500 mr-1 mt-1.5"></span>
@@ -183,14 +185,16 @@
                       Payment Pending
                     </span>
 
-                    <span :class="getStatusClass(application.endorsement_decision)"
-                      class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full">
+                    <!-- Endorsement Decision -->
+                    <span
+                      :class="[getStatusClass(application.endorsement_decision), 'px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full']">
                       <span class="w-2 h-2 rounded-full mr-1 mt-1.5"
                         :class="getStatusDotClass(application.endorsement_decision)"></span>
                       Endorsement: {{ application.endorsement_decision }}
                     </span>
                   </div>
                 </td>
+
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <div class="flex flex-col space-y-2">
                     <!-- View Details Button -->
@@ -201,8 +205,7 @@
                     </button>
 
                     <!-- MODIFIED: Changed from "Certificate" to "View Certificate" and updated the function -->
-                    <button v-if="application.endorsement_decision === 'Approved'"
-                      @click="viewCertificate(application)"
+                    <button v-if="application.endorsement_decision === 'Approved'" @click="viewCertificate(application)"
                       class="inline-flex items-center justify-center bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">
                       <EyeIcon class="h-4 w-4 mr-1" />
                       View Certificate
@@ -273,11 +276,8 @@
       @cancel="cancelReviewAction" />
 
     <!-- ADDED: Certificate Modal -->
-    <EPCcogsCertificateModal
-      :cogs-application="selectedCertificateApplication"
-      :show-modal="showCertificateModal"
-      @close="closeCertificateModal"
-    />
+    <EPCcogsCertificateModal :cogs-application="selectedCertificateApplication" :show-modal="showCertificateModal"
+      @close="closeCertificateModal" />
 
     <!-- Success Toast Notification (New Addition) -->
     <div v-if="showSuccessToast"

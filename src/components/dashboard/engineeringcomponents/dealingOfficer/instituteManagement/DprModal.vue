@@ -74,19 +74,19 @@
                           <span class="w-2/5 font-medium text-gray-500">CID:</span>
                           <span class="w-3/5 text-gray-800">{{
                             transformedApplication.cid || 'N/A'
-                            }}</span>
+                          }}</span>
                         </div>
                         <div class="flex">
                           <span class="w-2/5 font-medium text-gray-500">Full Name:</span>
                           <span class="w-3/5 text-gray-800">{{
                             transformedApplication.fullName || 'N/A'
-                            }}</span>
+                          }}</span>
                         </div>
                         <div class="flex">
                           <span class="w-2/5 font-medium text-gray-500">Contact:</span>
                           <span v-if="!isEditing" class="w-3/5 text-gray-800">{{
                             transformedApplication.contactNo || 'N/A'
-                            }}</span>
+                          }}</span>
                           <input v-else type="text" v-model="editedApplication.contactNo"
                             class="form-input w-3/5 text-sm py-1" />
                         </div>
@@ -94,7 +94,7 @@
                           <span class="w-2/5 font-medium text-gray-500">Email:</span>
                           <span v-if="!isEditing" class="w-3/5 text-gray-800 break-all">{{
                             transformedApplication.emailAddress || 'N/A'
-                            }}</span>
+                          }}</span>
                           <input v-else type="email" v-model="editedApplication.emailAddress"
                             class="form-input w-3/5 text-sm py-1" />
                         </div>
@@ -111,7 +111,7 @@
                           <span class="w-2/5 font-medium text-gray-500">Name:</span>
                           <span v-if="!isEditing" class="w-3/5 text-gray-800">{{
                             transformedApplication.headName || 'N/A'
-                            }}</span>
+                          }}</span>
                           <input v-else type="text" v-model="editedApplication.headName"
                             class="form-input w-3/5 text-sm py-1" />
                         </div>
@@ -119,7 +119,7 @@
                           <span class="w-2/5 font-medium text-gray-500">Phone:</span>
                           <span v-if="!isEditing" class="w-3/5 text-gray-800">{{
                             transformedApplication.headPhone || 'N/A'
-                            }}</span>
+                          }}</span>
                           <input v-else type="text" v-model="editedApplication.headPhone"
                             class="form-input w-3/5 text-sm py-1" />
                         </div>
@@ -127,7 +127,7 @@
                           <span class="w-2/5 font-medium text-gray-500">Email:</span>
                           <span v-if="!isEditing" class="w-3/5 text-gray-800 break-all">{{
                             transformedApplication.headEmail || 'N/A'
-                            }}</span>
+                          }}</span>
                           <input v-else type="email" v-model="editedApplication.headEmail"
                             class="form-input w-3/5 text-sm py-1" />
                         </div>
@@ -147,7 +147,7 @@
                           <span class="w-full sm:w-1/3 font-medium text-gray-500 mb-1 sm:mb-0">DPR Name:</span>
                           <span v-if="!isEditing" class="w-full sm:w-2/3 text-gray-800">{{
                             transformedApplication.dprName || 'N/A'
-                            }}</span>
+                          }}</span>
                           <input v-else type="text" v-model="editedApplication.dprName"
                             class="form-input w-full sm:w-2/3 text-sm py-1" />
                         </div>
@@ -303,8 +303,8 @@
                     <template v-if="!isEditing && overallStatus === 'Pending'">
                       <button type="button" class="btn btn-success" @click="openApproveDialog"
                         :disabled="!transformedApplication.isPaymentComplete" :title="!transformedApplication.isPaymentComplete
-                            ? 'Cannot approve, payment is pending.'
-                            : 'Approve Application'
+                          ? 'Cannot approve, payment is pending.'
+                          : 'Approve Application'
                           ">
                         <Check class="h-4 w-4" /> <span>Approve</span>
                       </button>
@@ -634,7 +634,7 @@ const confirmApproval = async () => {
       do_dpr_review_summary: approvalNotes.value.trim() || 'Application Approved',
     };
     await apiService.patchEpcInstitute(transformedApplication.value.id, updateData);
-    emit('approve');
+    emit('approve', transformedApplication.value);
     isApproveDialogOpen.value = false;
   } catch (error) {
     console.error('Error approving application:', error);
