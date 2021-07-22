@@ -1,5 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+    <!-- Notification Transition -->
     <Transition name="notification">
       <div v-if="notification.show" :class="[
         'fixed right-4 top-4 p-4 rounded-md shadow-lg flex items-center z-50 max-w-md',
@@ -76,6 +77,7 @@
         </div>
       </div>
 
+      <!-- Search and Filter Controls -->
       <div class="flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-4 mb-6">
         <div class="relative flex-grow">
           <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -99,11 +101,13 @@
         </select>
       </div>
 
+      <!-- Loading Indicator -->
       <div v-if="loading" class="flex justify-center items-center py-16">
         <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
         <span class="ml-3 text-gray-600">Loading applications...</span>
       </div>
 
+      <!-- No Applications Message -->
       <div v-else-if="paginatedApplications.length === 0"
         class="bg-white shadow-sm rounded-lg py-16 text-center border border-gray-200">
         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"
@@ -121,6 +125,7 @@
         </p>
       </div>
 
+      <!-- Applications Table -->
       <div v-else class="bg-white shadow-sm rounded-lg overflow-hidden border border-gray-200">
         <div class="overflow-x-auto">
           <table class="min-w-full divide-y divide-gray-200">
@@ -182,6 +187,7 @@
           </table>
         </div>
 
+        <!-- Pagination Controls -->
         <div v-if="filteredApplications.length > pageSize"
           class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
           <div class="flex-1 flex justify-between items-center">
@@ -223,6 +229,7 @@
       </div>
     </div>
 
+    <!-- Modal Component -->
     <CpdViewApplicationsModal v-if="isViewModalOpen" :application="selectedApplication" @save="saveApplication"
       @approve="approveApplication" @reject="rejectApplication" @updateParticipant="updateParticipant"
       @close="closeViewModal" />
@@ -359,7 +366,9 @@ const getStatusColor = (status) => {
 }
 
 const openViewModal = (app) => {
-  selectedApplication.value = app
+  // Use a deep copy to prevent mutations from affecting the main list directly
+  // until they are saved.
+  selectedApplication.value = JSON.parse(JSON.stringify(app));
   isViewModalOpen.value = true
 }
 
@@ -370,28 +379,55 @@ const closeViewModal = () => {
 
 const updateParticipant = async (participantData) => {
   if (!participantData || !participantData.id) {
-    showNotification('error', 'Update Failed', 'Invalid participant data.')
-    return
+    showNotification('error', 'Update Failed', 'Invalid participant data.');
+    return;
   }
+
+  const appToUpdate = selectedApplication.value;
+  if (!appToUpdate) return;
+
+  const participantToUpdate = appToUpdate.participants.find(p => p.id === participantData.id);
+  if (!participantToUpdate) return;
+
+  // Store old values to revert on API failure
+  const oldCredits = participantToUpdate.cpd_credits;
+  const oldStatus = participantToUpdate.review_status;
+
+  // **INSTANT UI UPDATE**
+  // Update the local data in the modal immediately
+  participantToUpdate.cpd_credits = participantData.cpd_credits;
+  participantToUpdate.review_status = participantData.review_status;
+
   try {
-    loading.value = true
     const patchData = {
       cpd_credits: participantData.cpd_credits,
       review_status: participantData.review_status,
       review_remarks: participantData.review_remarks || 'Updated via review',
+    };
+    await apiServices.patchEpcCpdTaskParticipant(participantData.id, patchData);
+    showNotification('success', 'Update Successful', 'Participant credits have been saved.');
+
+    // Also update the main list in the background for consistency
+    const mainListApp = applications.value.find(app => app.id === appToUpdate.id);
+    if (mainListApp) {
+      const mainListParticipant = mainListApp.participants.find(p => p.id === participantData.id);
+      if (mainListParticipant) {
+        Object.assign(mainListParticipant, participantToUpdate);
+      }
     }
-    await apiServices.patchEpcCpdTaskParticipant(participantData.id, patchData)
-    showNotification('success', 'Participant Updated', 'Participant information updated successfully.')
-    await fetchApplications()
+
   } catch (err) {
-    console.error('Failed to update participant:', err.response ? err.response.data : err)
+    // **REVERT ON FAILURE**
+    // If the API call fails, revert the local data to its original state
+    participantToUpdate.cpd_credits = oldCredits;
+    participantToUpdate.review_status = oldStatus;
+
+    console.error('Failed to update participant:', err.response ? err.response.data : err);
     showNotification(
       'error',
       'Update Failed',
-      `Error updating participant: ${err.response?.data?.detail || err.message || 'Please try again.'}`
-    )
-  } finally {
-    loading.value = false
+      `Could not save changes: ${err.response?.data?.detail || err.message}`
+    );
   }
 }
 
@@ -408,7 +444,7 @@ const saveApplication = async (updatedApplicationData) => {
     }
     await apiServices.patchEpcCpdTask(updatedApplicationData.id, patchData)
     showNotification('success', 'Application Updated', 'Changes saved successfully.')
-    await fetchApplications()
+    await fetchApplications() // Full refresh is ok here since modal closes
     closeViewModal()
   } catch (err) {
     console.error('Failed to save application:', err.response ? err.response.data : err)
@@ -431,6 +467,7 @@ const approveApplication = async (payload) => {
   }
 
   closeViewModal();
+  loading.value = true;
 
   try {
     const patchData = {
@@ -444,7 +481,7 @@ const approveApplication = async (payload) => {
     await apiServices.patchEpcCpdTask(payload.id, patchData);
 
     showNotification('success', 'Application Approved', 'The CPD application has been approved.');
-    await fetchApplications();
+    await fetchApplications(); // Refresh the list with the new status
 
   } catch (err) {
     console.error('Failed to approve application. Server responded with:', err.response.data);
@@ -454,6 +491,8 @@ const approveApplication = async (payload) => {
       'Approval Failed',
       `Update failed: ${serverError}`
     );
+  } finally {
+    loading.value = false;
   }
 };
 
@@ -465,11 +504,12 @@ const rejectApplication = async (payload) => {
   }
 
   closeViewModal();
+  loading.value = true;
 
   try {
     const patchData = {
       is_cpd_approved: false,
-      status: 'Rejected',
+      status: 'Rejected', // Note: Your backend might use 'Regretted'. Adjust if needed.
       is_draft: false,
       review_remarks: payload.remarks,
       credit: 0,
@@ -478,7 +518,7 @@ const rejectApplication = async (payload) => {
     await apiServices.patchEpcCpdTask(payload.id, patchData);
 
     showNotification('success', 'Application Rejected', 'The CPD application has been rejected.');
-    await fetchApplications();
+    await fetchApplications(); // Refresh the list with the new status
 
   } catch (err) {
     console.error('Failed to reject application. Server responded with:', err.response.data);
@@ -488,6 +528,8 @@ const rejectApplication = async (payload) => {
       'Rejection Failed',
       `Update failed: ${serverError}`
     );
+  } finally {
+    loading.value = false;
   }
 };
 const fetchApplications = async () => {

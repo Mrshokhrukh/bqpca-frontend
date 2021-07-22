@@ -340,7 +340,7 @@
                                                 class="w-20 px-2 py-1 text-sm bg-white border border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:border-green-500" />
                                             </div>
                                             <p v-else class="text-sm font-medium text-gray-900">
-                                              {{ getResourceCredits(resource) || 0 }}
+                                              {{ getResourceCredits(resource) || application.credit }}
                                             </p>
                                           </div>
                                         </div>
@@ -451,7 +451,7 @@
                                           class="w-20 px-2 py-1 text-sm bg-white border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
                                       </div>
                                       <p v-else class="text-sm font-medium text-gray-900">
-                                        {{ participant.cpd_credits || 0 }}
+                                        {{ participant.cpd_credits || application.credit }}
                                       </p>
                                     </div>
                                   </div>
