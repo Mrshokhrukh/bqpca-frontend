@@ -18,9 +18,9 @@
                 <div :class="[
                   'px-8 py-6 border-b relative overflow-hidden',
                   {
-                    'bg-yellow-50 border-yellow-100': getApplicationStatus() === 'Pending',
-                    'bg-green-50 border-green-100': getApplicationStatus() === 'Approved',
-                    'bg-red-50 border-red-100': getApplicationStatus() === 'Regretted',
+                    'bg-yellow-50 border-yellow-100': application.status === 'Pending',
+                    'bg-green-50 border-green-100': application.status === 'Approved',
+                    'bg-red-50 border-red-100': application.status === 'Regretted',
                   },
                 ]">
                   <div class="flex items-center justify-between relative z-10">
@@ -41,17 +41,17 @@
                       <span :class="[
                         'px-5 py-2.5 rounded-full text-sm font-medium inline-flex items-center space-x-2 shadow-sm',
                         {
-                          'bg-yellow-100 text-yellow-800': getApplicationStatus() === 'Pending',
-                          'bg-green-100 text-green-800': getApplicationStatus() === 'Approved',
-                          'bg-red-100 text-red-800': getApplicationStatus() === 'Regretted',
+                          'bg-yellow-100 text-yellow-800': application.status === 'Pending',
+                          'bg-green-100 text-green-800': application.status === 'Approved',
+                          'bg-red-100 text-red-800': application.status === 'Regretted',
                         },
                       ]">
                         <Circle class="h-4 w-4" :class="{
-                          'text-yellow-500': getApplicationStatus() === 'Pending',
-                          'text-green-500': getApplicationStatus() === 'Approved',
-                          'text-red-500': getApplicationStatus() === 'Regretted',
+                          'text-yellow-500': application.status === 'Pending',
+                          'text-green-500': application.status === 'Approved',
+                          'text-red-500': application.status === 'Regretted',
                         }" />
-                        <span>{{ getApplicationStatus() }}</span>
+                        <span>{{ application.status }}</span>
                       </span>
                       <button type="button"
                         class="p-2 text-gray-400 hover:text-gray-500 transition-colors rounded-full hover:bg-white"
@@ -928,21 +928,7 @@ watch(
   { immediate: true }
 )
 
-const getApplicationStatus = () => {
-  const app = props.application;
-  if (!app) return 'Pending';
 
-  if (app.is_draft) {
-    return 'Draft';
-  }
-  if (app.is_cpd_approved === true) {
-    return 'Approved';
-  }
-  if (app.is_cpd_approved === false) {
-    return 'Regretted';
-  }
-  return 'Pending';
-};
 
 const formatDate = (dateString) => {
   if (!dateString) return 'Not provided'

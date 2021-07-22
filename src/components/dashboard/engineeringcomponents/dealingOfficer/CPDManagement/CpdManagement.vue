@@ -92,12 +92,10 @@
         </div>
         <select v-model="statusFilter"
           class="w-full md:w-64 block pl-3 pr-10 py-2 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-          <option value="All">All (Exclude Drafts)</option>
-          <option value="AllIncludeDrafts">All (Include Drafts)</option>
+          <option value="All">All</option>
           <option value="Pending">Pending</option>
           <option value="Approved">Approved</option>
           <option value="Regretted">Regretted</option>
-          <option value="Draft">Draft</option>
         </select>
       </div>
 
@@ -165,10 +163,10 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <span :class="[
-                    getStatusColor(app.displayStatus),
+                    getStatusColor(app.status),
                     'px-2 py-1 text-xs font-semibold rounded-full',
                   ]">
-                    {{ app.displayStatus }}
+                    {{ app.status }}
                   </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
@@ -255,21 +253,25 @@ const notification = ref({
 
 
 const getTaskStatus = (item) => {
+
   if (item.is_draft) {
     return 'Draft';
+  }
+  if (item.status === 'Approved' || item.status === 'Regretted') {
+    return item.status;
   }
   if (item.is_cpd_approved === true) {
     return 'Approved';
   }
 
-  if (item.is_cpd_approved === false) {
+  if (item.is_cpd_approved === false && item.status !== 'Pending') {
     return 'Regretted';
   }
+
   return 'Pending';
 };
-
 const pendingCount = computed(() => {
-  return applications.value.filter((app) => app.displayStatus === 'Pending').length
+  return applications.value.filter((app) => app.status === 'Pending').length
 })
 
 const filteredApplications = computed(() => {
@@ -286,10 +288,12 @@ const filteredApplications = computed(() => {
     )
   }
 
-  if (statusFilter.value === 'All') {
-    filtered = filtered.filter((app) => app.displayStatus !== 'Draft')
-  } else if (statusFilter.value !== 'AllIncludeDrafts') {
-    filtered = filtered.filter((app) => app.displayStatus === statusFilter.value)
+  // Always filter out drafts from the view
+  filtered = filtered.filter((app) => app.status !== 'Draft');
+
+  // If a specific status is chosen (not 'All'), apply that filter
+  if (statusFilter.value !== 'All') {
+    filtered = filtered.filter((app) => app.status === statusFilter.value);
   }
 
   return filtered
@@ -418,35 +422,61 @@ const saveApplication = async (updatedApplicationData) => {
   }
 }
 
+// In your script setup for the parent component
+
 const approveApplication = async (applicationDataFromModal) => {
   if (!applicationDataFromModal || !applicationDataFromModal.id) {
-    showNotification('error', 'Approval Failed', 'Invalid application data for approval.')
-    return
+    showNotification('error', 'Approval Failed', 'Invalid application data for approval.');
+    return;
   }
+
+  // --- Optimistic UI Update ---
+  // 1. Find the application in the local array.
+  const appIndex = applications.value.findIndex(app => app.id === applicationDataFromModal.id);
+
+  if (appIndex === -1) {
+    showNotification('error', 'Update Failed', 'Could not find the application to update.');
+    return;
+  }
+
+  // 2. Store the original state in case we need to revert.
+  const originalApplicationState = { ...applications.value[appIndex] };
+
+  // 3. Immediately update the local data.
+  applications.value[appIndex].status = 'Approved';
+  applications.value[appIndex].credit = applicationDataFromModal.credit;
+  // You might want to update other relevant fields as well.
+
+  // 4. Close the modal and show a success notification instantly.
+  closeViewModal();
+  showNotification('success', 'Application Approved', 'The CPD application has been approved.');
+  // --- End of Optimistic Update ---
+
   try {
-    loading.value = true
+    // 5. Perform the API call in the background.
     const patchData = {
-      is_cpd_approved: true, // This likely triggers the backend logic to change the status
-      status: 'approved', // Explicitly setting status might be required by your API
+      is_cpd_approved: true,
+      status: 'approved',
       is_draft: false,
       review_remarks: applicationDataFromModal.remarks || 'Application approved',
       credit: applicationDataFromModal.credit,
-    }
-    await apiServices.patchEpcCpdTask(applicationDataFromModal.id, patchData)
-    showNotification('success', 'Application Approved', 'The CPD application has been approved.')
-    await fetchApplications()
-    closeViewModal()
+    };
+    await apiServices.patchEpcCpdTask(applicationDataFromModal.id, patchData);
+
+
   } catch (err) {
-    console.error('Failed to approve application:', err.response ? err.response.data : err)
+    console.error('Failed to approve application:', err.response ? err.response.data : err);
+
+    applications.value[appIndex] = originalApplicationState;
+
     showNotification(
       'error',
       'Approval Failed',
-      `Error approving application: ${err.response?.data?.detail || err.message || 'Please try again.'}`
-    )
-  } finally {
-    loading.value = false
+      `The update failed. Please try again. (${err.message})`
+    );
   }
-}
+
+};
 
 const rejectApplication = async (applicationDataFromModal) => {
   if (!applicationDataFromModal || !applicationDataFromModal.id) {
@@ -523,7 +553,7 @@ const processApiResponse = (rawResults) => {
   }
   applications.value = rawResults.map((item) => ({
     ...item,
-    displayStatus: getTaskStatus(item),
+    status: getTaskStatus(item),
     displayDate: formatDate(item.created_at),
     displayActivityType: getActivityType(item),
   }))
