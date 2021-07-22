@@ -422,92 +422,74 @@ const saveApplication = async (updatedApplicationData) => {
   }
 }
 
-// In your script setup for the parent component
 
-const approveApplication = async (applicationDataFromModal) => {
-  if (!applicationDataFromModal || !applicationDataFromModal.id) {
+
+const approveApplication = async (payload) => {
+  if (!payload || !payload.id) {
     showNotification('error', 'Approval Failed', 'Invalid application data for approval.');
     return;
   }
 
-  // --- Optimistic UI Update ---
-  // 1. Find the application in the local array.
-  const appIndex = applications.value.findIndex(app => app.id === applicationDataFromModal.id);
-
-  if (appIndex === -1) {
-    showNotification('error', 'Update Failed', 'Could not find the application to update.');
-    return;
-  }
-
-  // 2. Store the original state in case we need to revert.
-  const originalApplicationState = { ...applications.value[appIndex] };
-
-  // 3. Immediately update the local data.
-  applications.value[appIndex].status = 'Approved';
-  applications.value[appIndex].credit = applicationDataFromModal.credit;
-  // You might want to update other relevant fields as well.
-
-  // 4. Close the modal and show a success notification instantly.
   closeViewModal();
-  showNotification('success', 'Application Approved', 'The CPD application has been approved.');
-  // --- End of Optimistic Update ---
 
   try {
-    // 5. Perform the API call in the background.
     const patchData = {
       is_cpd_approved: true,
-      status: 'approved',
+      status: 'Approved',
       is_draft: false,
-      review_remarks: applicationDataFromModal.remarks || 'Application approved',
-      credit: applicationDataFromModal.credit,
+      review_remarks: payload.remarks || 'Application approved',
+      credit: payload.credit,
     };
-    await apiServices.patchEpcCpdTask(applicationDataFromModal.id, patchData);
 
+    await apiServices.patchEpcCpdTask(payload.id, patchData);
+
+    showNotification('success', 'Application Approved', 'The CPD application has been approved.');
+    await fetchApplications();
 
   } catch (err) {
-    console.error('Failed to approve application:', err.response ? err.response.data : err);
-
-    applications.value[appIndex] = originalApplicationState;
-
+    console.error('Failed to approve application. Server responded with:', err.response.data);
+    const serverError = err.response?.data?.detail || JSON.stringify(err.response.data);
     showNotification(
       'error',
       'Approval Failed',
-      `The update failed. Please try again. (${err.message})`
+      `Update failed: ${serverError}`
     );
   }
-
 };
 
-const rejectApplication = async (applicationDataFromModal) => {
-  if (!applicationDataFromModal || !applicationDataFromModal.id) {
-    showNotification('error', 'Rejection Failed', 'Invalid application data for rejection.')
-    return
+
+const rejectApplication = async (payload) => {
+  if (!payload || !payload.id) {
+    showNotification('error', 'Rejection Failed', 'Invalid application data for rejection.');
+    return;
   }
+
+  closeViewModal();
+
   try {
-    loading.value = true
     const patchData = {
       is_cpd_approved: false,
-      status: 'regretted', // Use the 'regretted' status as per your API
+      status: 'Rejected',
       is_draft: false,
-      review_remarks: applicationDataFromModal.remarks || 'Application rejected',
+      review_remarks: payload.remarks,
       credit: 0,
-    }
-    await apiServices.patchEpcCpdTask(applicationDataFromModal.id, patchData)
-    showNotification('success', 'Application Rejected', 'The CPD application has been rejected.')
-    await fetchApplications()
-    closeViewModal()
+    };
+
+    await apiServices.patchEpcCpdTask(payload.id, patchData);
+
+    showNotification('success', 'Application Rejected', 'The CPD application has been rejected.');
+    await fetchApplications();
+
   } catch (err) {
-    console.error('Failed to reject application:', err.response ? err.response.data : err)
+    console.error('Failed to reject application. Server responded with:', err.response.data);
+    const serverError = err.response?.data?.detail || JSON.stringify(err.response.data);
     showNotification(
       'error',
       'Rejection Failed',
-      `Error rejecting application: ${err.response?.data?.detail || err.message || 'Please try again.'}`
-    )
-  } finally {
-    loading.value = false
+      `Update failed: ${serverError}`
+    );
   }
-}
-
+};
 const fetchApplications = async () => {
   try {
     loading.value = true
