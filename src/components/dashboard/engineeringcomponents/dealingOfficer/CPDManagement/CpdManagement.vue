@@ -67,7 +67,7 @@
         <div class="flex mt-4 space-x-6">
           <div class="flex items-center">
             <div class="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
-            <span class="text-gray-600">Total (Non-Draft): {{applications.filter(app => !app.is_draft).length}}</span>
+            <span class="text-gray-600">Total : {{applications.filter(app => !app.is_draft).length}}</span>
           </div>
           <div class="flex items-center">
             <div class="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
