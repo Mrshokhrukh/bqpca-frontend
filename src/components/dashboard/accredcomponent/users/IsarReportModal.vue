@@ -316,50 +316,49 @@ const initializeFormData = (app) => {
   // *** KEY MAPPING: These keys now EXACTLY match the Django model fields ***
   formData.value = {
     application: app?.id || null,
+    status: 'draft_isar', // Default status for creation
     executive_summary: '',
     // General Info
     isar_location_details: profile.address || '',
-    isar_type_of_institute_details: profile.type_details?.id || '',
+    isar_type_of_institute_details: profile.type || '',
     isar_affiliated_to_details: profile.affiliated_to || '',
     isar_date_last_accreditation: null,
-    isar_source_of_funding_details: '',
+    isar_source_of_funding_details: profile.source_of_funding || '',
     isar_cost_of_education_details: '',
-    isar_total_area_acres_details: null,
-    isar_year_establishment_details: profile.year_of_establishment || null,
-    isar_head_of_institute_text_details: '',
+    isar_total_area_acres_details: profile.total_area || null,
+    isar_year_establishment_details: profile.year_established || null,
+    isar_head_of_institute_text_details: `${profile.head_name}, ${profile.head_position}` || '',
     isar_website_details: profile.website || '',
-    isar_telephone_details: profile.phone || '',
+    isar_telephone_details: profile.telephone || '',
     isar_email_details: profile.email || '',
-    isar_focal_person_iqa_details: '',
+    isar_focal_person_iqa_details: profile.focal_person || '',
     // Academic Activities
     isar_num_departments: profile.departments || 0,
-    isar_num_programmes_ug: 0,
-    isar_num_programmes_pg: 0,
-    isar_num_programmes_doctoral: 0,
-    isar_num_programmes_other: 0,
-    isar_num_programmes_with_electives: 0,
-    isar_electives_details: '',
-    isar_new_programmes_last_5_years_details: '',
-    isar_num_working_days_last_year: 0,
-    isar_num_teaching_days_last_year: 0,
+    isar_num_programmes_ug: profile.programs_ug || 0,
+    isar_num_programmes_pg: profile.programs_pg || 0,
+    isar_num_programmes_doctoral: profile.programs_doctoral || 0,
+    isar_num_programmes_other: profile.programs_other || 0,
+    isar_num_programmes_with_electives: profile.programs_with_electives || 0,
+    isar_electives_details: profile.electives_details || '',
+    isar_new_programmes_last_5_years_details: profile.new_programs || '',
+    isar_num_working_days_last_year: profile.working_days || 0,
+    isar_num_teaching_days_last_year: profile.teaching_days || 0,
     isar_level_of_autonomy_details: '',
     // Faculty Details
-    isar_faculty_male: 0, isar_faculty_female: 0,
-    isar_regular_faculty_male: 0, isar_regular_faculty_female: 0,
-    isar_contract_faculty_male: 0, isar_contract_faculty_female: 0,
-    isar_visiting_faculty_male: 0, isar_visiting_faculty_female: 0,
-    isar_faculty_doctoral: 0, isar_faculty_masters: 0, isar_faculty_bachelors: 0,
+    isar_faculty_male: profile.faculty_male || 0, isar_faculty_female: profile.faculty_female || 0,
+    isar_regular_faculty_male: profile.regular_faculty_male || 0, isar_regular_faculty_female: profile.regular_faculty_female || 0,
+    isar_contract_faculty_male: profile.contract_faculty_male || 0, isar_contract_faculty_female: profile.contract_faculty_female || 0,
+    isar_visiting_faculty_male: profile.visiting_faculty_male || 0, isar_visiting_faculty_female: profile.visiting_faculty_female || 0,
+    isar_faculty_doctoral: profile.faculty_doctoral || 0, isar_faculty_masters: profile.faculty_masters || 0, isar_faculty_bachelors: profile.faculty_bachelors || 0,
     // Non-Teaching Staff
-    isar_technical_staff_male: 0, isar_technical_staff_female: 0,
-    isar_admin_staff_male: 0, isar_admin_staff_female: 0,
-    isar_support_staff_male: 0, isar_support_staff_female: 0,
+    isar_technical_staff_male: profile.technical_staff_male || 0, isar_technical_staff_female: profile.technical_staff_female || 0,
+    isar_admin_staff_male: profile.admin_staff_male || 0, isar_admin_staff_female: profile.admin_staff_female || 0,
+    isar_support_staff_male: profile.support_staff_male || 0, isar_support_staff_female: profile.support_staff_female || 0,
     // Student Enrolment
-    isar_students_diploma_male: 0, isar_students_diploma_female: 0,
-    isar_students_bachelors_male: 0, isar_students_bachelors_female: 0,
-    isar_students_masters_male: 0, isar_students_masters_female: 0,
-    isar_students_other_male: 0, isar_students_other_female: 0,
-    // Submission Date (Set automatically)
-    isar_submission_date_by_institute: new Date().toISOString().split('T')[0],
+    isar_students_diploma_male: profile.students_diploma_male || 0, isar_students_diploma_female: profile.students_diploma_female || 0,
+    isar_students_bachelors_male: profile.students_bachelors_male || 0, isar_students_bachelors_female: profile.students_bachelors_female || 0,
+    isar_students_masters_male: profile.students_masters_male || 0, isar_students_masters_female: profile.students_masters_female || 0,
+    isar_students_other_male: profile.students_other_male || 0, isar_students_other_female: profile.students_other_female || 0,
   };
   filesToUpload.value = {};
 };
@@ -386,6 +385,7 @@ const totalBachelorsStudents = computed(() => number(formData.value.isar_student
 const totalMastersStudents = computed(() => number(formData.value.isar_students_masters_male) + number(formData.value.isar_students_masters_female));
 const totalOtherStudents = computed(() => number(formData.value.isar_students_other_male) + number(formData.value.isar_students_other_female));
 const totalAllStudents = computed(() => totalDiplomaStudents.value + totalBachelorsStudents.value + totalMastersStudents.value + totalOtherStudents.value);
+
 
 const handleFileChange = (event, key) => {
   const file = event.target.files[0];

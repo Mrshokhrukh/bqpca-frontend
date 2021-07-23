@@ -1,276 +1,166 @@
 <template>
   <div class="min-h-screen bg-gray-100">
-    <div class="container mx-auto p-6">
+    <div class="mx-auto p-6">
       <!-- Dashboard Header -->
       <header class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900">HEQC Dashboard</h1>
-        <p class="text-gray-600 mt-1">Welcome to your HEQC administration panel.</p>
+        <h1 class="text-3xl font-bold text-gray-900">HEQC Officer Dashboard</h1>
+        <p class="text-gray-600 mt-1">System-wide statistics and recent activity.</p>
       </header>
 
-      <!-- Stats Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <!-- Pending Applications Card -->
+      <!-- Error Message Display -->
+      <div v-if="error" class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-md" role="alert">
+        <p class="font-bold">Error Loading Dashboard</p>
+        <p>{{ error }}</p>
+      </div>
+
+      <!-- Stats Cards - Now showing more relevant, historical data -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <!-- Total Applications (This Year) -->
         <div class="bg-white rounded-xl shadow-md overflow-hidden">
-          <div class="px-6 py-4">
+          <div class="p-6">
             <div class="flex items-center justify-between">
               <div>
                 <p class="text-sm font-semibold text-gray-700 uppercase tracking-wide">
-                  Pending Applications
+                  Total Applications (This Year)
                 </p>
-                <p class="text-3xl font-bold text-gray-900 mt-2">{{ pendingCount }}</p>
+                <div class="flex items-baseline mt-2">
+                    <p class="text-3xl font-bold text-gray-900">
+                        <span v-if="loading">...</span>
+                        <span v-else>{{ stats.totalThisYear }}</span>
+                    </p>
+                </div>
+              </div>
+              <div class="p-3 rounded-full bg-indigo-100 text-indigo-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Active Processes -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+          <div class="p-6">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+                  Active Processes
+                </p>
+                <p class="text-3xl font-bold text-gray-900 mt-2">
+                    <span v-if="loading">...</span>
+                    <span v-else>{{ stats.activeProcesses }}</span>
+                </p>
               </div>
               <div class="p-3 rounded-full bg-blue-100 text-blue-500">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
               </div>
             </div>
-          </div>
-          <div
-            class="bg-gray-50 px-6 py-2 border-t border-gray-100 flex justify-between items-center"
-          >
-            <div class="text-sm text-green-600 font-medium flex items-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-4 w-4 mr-1"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-              +4.5%
-            </div>
-            <span class="text-xs text-gray-500">vs Last Week</span>
           </div>
         </div>
 
-        <!-- In Progress Card -->
+        <!-- Accredited Institutes -->
         <div class="bg-white rounded-xl shadow-md overflow-hidden">
-          <div class="px-6 py-4">
+          <div class="p-6">
             <div class="flex items-center justify-between">
               <div>
                 <p class="text-sm font-semibold text-gray-700 uppercase tracking-wide">
-                  Applications In Progress
+                  Accredited Institutes
                 </p>
-                <p class="text-3xl font-bold text-gray-900 mt-2">{{ inProgressCount }}</p>
-              </div>
-              <div class="p-3 rounded-full bg-yellow-100 text-yellow-500">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M6 11h.01M6 15h.01"
-                  />
-                </svg>
-              </div>
-            </div>
-          </div>
-          <div
-            class="bg-gray-50 px-6 py-2 border-t border-gray-100 flex justify-between items-center"
-          >
-            <div class="text-sm text-gray-700 font-medium flex items-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-4 w-4 mr-1 text-yellow-500"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M6 3a1 1 0 011-1h12a1 1 0 110 2H7a1 1 0 01-1-1zm0 7a1 1 0 011-1h12a1 1 0 110 2H7a1 1 0 01-1-1zm0 7a1 1 0 011-1h12a1 1 0 110 2H7a1 1 0 01-1-1z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-              Active
-            </div>
-            <span class="text-xs text-gray-500">Avg. Processing: 2.3 Days</span>
-          </div>
-        </div>
-
-        <!-- Completed Card -->
-        <div class="bg-white rounded-xl shadow-md overflow-hidden">
-          <div class="px-6 py-4">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm font-semibold text-gray-700 uppercase tracking-wide">
-                  Completed Applications
+                <p class="text-3xl font-bold text-gray-900 mt-2">
+                    <span v-if="loading">...</span>
+                    <span v-else>{{ stats.accredited }}</span>
                 </p>
-                <p class="text-3xl font-bold text-gray-900 mt-2">{{ completedCount }}</p>
               </div>
               <div class="p-3 rounded-full bg-green-100 text-green-500">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
+                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
               </div>
             </div>
           </div>
-          <div
-            class="bg-gray-50 px-6 py-2 border-t border-gray-100 flex justify-between items-center"
-          >
-            <div class="text-sm text-green-600 font-medium flex items-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-4 w-4 mr-1"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-              98%
+        </div>
+
+        <!-- Completed Processes (All Time) -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+          <div class="p-6">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+                  Completed Processes
+                </p>
+                <p class="text-3xl font-bold text-gray-900 mt-2">
+                    <span v-if="loading">...</span>
+                    <span v-else>{{ stats.completed }}</span>
+                </p>
+              </div>
+              <div class="p-3 rounded-full bg-gray-200 text-gray-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a1 1 0 011-1h14a1 1 0 110 2H3a1 1 0 01-1-1z" /></svg>
+              </div>
             </div>
-            <span class="text-xs text-gray-500">Success Rate</span>
           </div>
         </div>
       </div>
 
-      <!-- Recent Applications Table -->
-      <div class="bg-white rounded-xl shadow-md overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-200">
-          <div class="flex items-center justify-between">
-            <h2 class="text-lg font-semibold text-gray-900">Recent Applications</h2>
-            <span class="text-sm text-gray-600">Latest entries in the system</span>
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+        <!-- Recent Activity Table -->
+        <div class="lg:col-span-2 bg-white rounded-xl shadow-md overflow-hidden">
+          <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-semibold text-gray-900">Recent Activity</h2>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reference No.</th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Institute</th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Current Stage</th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Updated</th>
+                  <th scope="col" class="relative px-6 py-3"><span class="sr-only">Action</span></th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <tr v-if="loading">
+                  <td colspan="5" class="px-6 py-12 text-center text-gray-500">
+                    <div class="flex justify-center items-center">
+                      <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Loading recent activity...
+                    </div>
+                  </td>
+                </tr>
+                <tr v-else-if="recentApplications.length === 0">
+                    <td colspan="5" class="px-6 py-12 text-center text-sm text-gray-500">No applications found in the system.</td>
+                </tr>
+                <tr v-for="app in recentApplications" :key="app.application_uid">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ app.application_reference_no }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ app.institute_profile_name_display }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    <span :class="getStatusClass(app.status)">{{ app.status_display }}</span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatDate(app.updated_at) }}</td>
+                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <a href="#" @click.prevent="viewApplication(app.id)" class="text-blue-600 hover:text-blue-900">View Details</a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
 
-        <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-              <tr>
-                <th
-                  scope="col"
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Application ID
-                </th>
-                <th
-                  scope="col"
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Company Name
-                </th>
-                <th
-                  scope="col"
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Status
-                </th>
-                <th
-                  scope="col"
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Submission Date
-                </th>
-                <!-- REMOVED VIEW COLUMN HEADER -->
-              </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-              <tr v-for="app in applications" :key="app.id">
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                  {{ app.id }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                  {{ app.companyName }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm">
-                  <span
-                    :class="{
-                      'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium': true,
-                      'bg-yellow-100 text-yellow-800': app.status === 'Pending',
-                      'bg-blue-100 text-blue-800': app.status === 'In Progress',
-                      'bg-green-100 text-green-800': app.status === 'Completed',
-                    }"
-                  >
-                    <span class="mr-1" v-if="app.status === 'Pending'">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-4 w-4 inline-block align-middle"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path
-                          fill-rule="evenodd"
-                          d="M10 2a8 8 0 100 16 8 8 0 000-16zM9 5a1 1 0 00-2 0v5a1 1 0 102 0V5zm1 6a1 1 0 11-2 0 1 1 0 012 0z"
-                          clip-rule="evenodd"
-                        />
-                      </svg>
-                    </span>
-                    <span class="mr-1" v-if="app.status === 'In Progress'">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-4 w-4 inline-block align-middle animate-spin"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                        color="currentColor"
-                      >
-                        <path
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647zM20 12a8 8 0 01-8 8v4c6.627 0 12-5.373 12-12h-4zm-2-5.291A7.962 7.962 0 0120 12h4c0-3.042-1.135-5.824-3-7.938l-3 2.647z"
-                        />
-                      </svg>
-                    </span>
-                    <span class="mr-1" v-if="app.status === 'Completed'">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-4 w-4 inline-block align-middle"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path
-                          fill-rule="evenodd"
-                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4a1 1 0 00-1.414-1.414z"
-                          clip-rule="evenodd"
-                        />
-                      </svg>
-                    </span>
-                    {{ app.status }}
-                  </span>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {{ formatDate(app.submissionDate) }}
-                </td>
-                <!-- REMOVED VIEW BUTTON CELL -->
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="px-6 py-3 bg-gray-50 border-t border-gray-200 flex justify-end">
-          <button class="text-sm text-gray-700 hover:text-gray-900">View All Applications</button>
+        <!-- Application Status Overview Chart -->
+        <div class="bg-white rounded-xl shadow-md p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">System Overview</h3>
+            <div v-if="loading" class="text-center text-gray-500 py-4">Loading stats...</div>
+            <div v-else class="space-y-3">
+                <div v-for="status in applicationStatusDistribution" :key="status.name" class="w-full">
+                    <div class="flex justify-between mb-1">
+                        <span class="text-sm font-medium text-gray-700">{{ status.name }}</span>
+                        <span class="text-sm font-medium text-gray-500">{{ status.count }}</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5">
+                        <div :class="status.barClass" class="h-2.5 rounded-full" :style="{ width: status.percentage + '%' }"></div>
+                    </div>
+                </div>
+            </div>
         </div>
       </div>
     </div>
@@ -278,89 +168,126 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue';
+import apiService from '@/services/services'; 
 
-const pendingCount = ref(0)
-const inProgressCount = ref(0)
-const completedCount = ref(0)
-const applications = ref([])
+// --- Reactive State ---
+const loading = ref(true);
+const error = ref(null);
+const stats = ref({ totalThisYear: 0, activeProcesses: 0, accredited: 0, completed: 0 });
+const recentApplications = ref([]); // For table and chart
 
-const fetchDashboardData = async () => {
-  try {
-    // TODO: Implement API call to fetch dashboard data
-    // Example using a mock API call (replace with your actual API call)
-    // const response = await fetch('/api/dashboard');
-    // const data = await response.json();
+// --- Constants for Status Groups ---
+const FINAL_STATUSES = ['approved_accredited', 'approved_conditional', 'rejected_not_accredited', 'closed_withdrawn', 'closed_completed'];
 
-    // pendingCount.value = data.pendingCount;
-    // inProgressCount.value = data.inProgressCount;
-    // completedCount.value = data.completedCount;
-    // applications.value = data.applications;
-
-    //Mock data, as in the original code.
-    pendingCount.value = 5
-    inProgressCount.value = 3
-    completedCount.value = 10
-    applications.value = [
-      {
-        id: 'APP001',
-        companyName: 'Tech Solutions Inc.',
-        status: 'Pending',
-        submissionDate: new Date(),
-      },
-      {
-        id: 'APP002',
-        companyName: 'Global Industries',
-        status: 'In Progress',
-        submissionDate: new Date(Date.now() - 86400000),
-      },
-      {
-        id: 'APP003',
-        companyName: 'Digital Ventures',
-        status: 'Completed',
-        submissionDate: new Date(Date.now() - 172800000),
-      },
-      {
-        id: 'APP004',
-        companyName: 'Innovation Corp',
-        status: 'In Progress',
-        submissionDate: new Date(Date.now() - 259200000),
-      },
-      {
-        id: 'APP005',
-        companyName: 'Pioneer Enterprises',
-        status: 'Pending',
-        submissionDate: new Date(Date.now() - 345600000),
-      },
-    ]
-  } catch (error) {
-    console.error('Error fetching dashboard data:', error)
-  }
-}
-
-const formatDate = (date) => {
-  return new Date(date).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-  })
-}
-
+// --- Lifecycle Hooks ---
 onMounted(() => {
-  fetchDashboardData()
-})
+  fetchDashboardData();
+});
+
+// --- Main Data Fetching Method ---
+const fetchDashboardData = async () => {
+  loading.value = true;
+  error.value = null;
+  try {
+    const currentYear = new Date().getFullYear();
+
+    // Fetch all necessary data in parallel
+    const [
+      totalThisYearResponse,
+      accreditedResponse,
+      allAppsResponse,
+    ] = await Promise.all([
+      // 1. Get count for applications created this year
+      apiService.getAccreditationApplications({ created_at__year: currentYear }),
+      // 2. Get count of all accredited applications
+      apiService.getAccreditationApplications({ status: 'approved_accredited' }),
+      // 3. Get a list of all applications for calculating other stats and populating the table
+      apiService.getAccreditationApplications({ limit: 200, ordering: '-updated_at' }),
+    ]);
+
+    // Populate the dashboard from the fetched data
+    const allApps = allAppsResponse.data.results;
+
+    // -- Set Card Statistics --
+    stats.value.totalThisYear = totalThisYearResponse.data.count;
+    stats.value.accredited = accreditedResponse.data.count;
+
+    // Calculate other stats from the main list
+    stats.value.activeProcesses = allApps.filter(app => !FINAL_STATUSES.includes(app.status)).length;
+    stats.value.completed = allApps.filter(app => FINAL_STATUSES.includes(app.status)).length;
+
+    // -- Set Recent Activity Table --
+    // Show top 10 most recently updated applications
+    recentApplications.value = allApps.slice(0, 10);
+
+  } catch (err) {
+    console.error('Error fetching dashboard data:', err);
+    error.value = 'Failed to load dashboard data. The API might be unreachable or an error occurred.';
+  } finally {
+    loading.value = false;
+  }
+};
+
+// --- Helper & Display Functions ---
+const formatDate = (dateString) => {
+  if (!dateString) return 'N/A';
+  return new Date(dateString).toLocaleDateString('en-US', {
+    year: 'numeric', month: 'short', day: 'numeric',
+  });
+};
+
+const getStatusClass = (status) => {
+    const base = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium';
+    const classMap = {
+        'initial_app_submitted_heqc_review': 'bg-blue-100 text-blue-800',
+        'isar_submitted_heqc_review': 'bg-yellow-100 text-yellow-800',
+        'assessment_report_submitted': 'bg-purple-100 text-purple-800',
+        'approved_accredited': 'bg-green-100 text-green-800',
+        'rejected_not_accredited': 'bg-gray-200 text-gray-800',
+        'appealed': 'bg-red-100 text-red-800',
+        'site_visit_scheduled': 'bg-teal-100 text-teal-800',
+        'draft_initial': 'bg-gray-100 text-gray-700'
+    };
+    return `${base} ${classMap[status] || 'bg-gray-100 text-gray-800'}`;
+};
+
+const viewApplication = (appId) => {
+    // In a real app, use Vue Router to navigate
+    // import { useRouter } from 'vue-router'; const router = useRouter();
+    // router.push({ name: 'ApplicationDetails', params: { id: appId } });
+    alert(`Navigating to details for application ID: ${appId}`);
+};
+
+// --- Computed Properties for Chart ---
+const applicationStatusDistribution = computed(() => {
+    const statusCounts = recentApplications.value.reduce((acc, app) => {
+        const displayName = app.status_display || 'Unknown Status';
+        acc[displayName] = (acc[displayName] || 0) + 1;
+        return acc;
+    }, {});
+
+    const total = recentApplications.value.length;
+    if (total === 0) return [];
+
+    const barColorMap = {
+        'Initial App Submitted (HEQC Review)': 'bg-blue-500',
+        'ISAR Submitted (HEQC Review)': 'bg-yellow-500',
+        'Assessment Report Submitted': 'bg-purple-500',
+        'Approved & Accredited': 'bg-green-500',
+        'Rejected / Not Accredited': 'bg-gray-600',
+        'Appealed': 'bg-red-500',
+        'Site Visit: Scheduled': 'bg-teal-500',
+        'Draft Initial Application': 'bg-gray-400',
+    };
+
+    return Object.entries(statusCounts)
+        .map(([name, count]) => ({
+            name,
+            count,
+            percentage: (count / total) * 100,
+            barClass: barColorMap[name] || 'bg-indigo-500',
+        }))
+        .sort((a, b) => b.count - a.count);
+});
 </script>
-
-<style scoped>
-.animate-spin {
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-</style>

@@ -2,15 +2,14 @@
   <div class="p-6 font-sans">
     <h1 class="text-2xl font-bold mb-6">Track Accreditation Applications</h1>
 
+    <!-- Search and Filter Controls -->
     <div class="mb-6 flex gap-4">
-      <!-- ... search and filter inputs are unchanged ... -->
-       <input
+      <input
         v-model="searchQuery"
         type="text"
-        placeholder="Search by Application ID or Institute..."
+        placeholder="Search by Application Ref or Institute..."
         class="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 w-1/3"
       />
-
       <select
         v-model="selectedStatus"
         class="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -20,34 +19,35 @@
       </select>
     </div>
 
-    <!-- ... loading and error states are unchanged ... -->
+    <!-- Loading and Error States -->
     <div v-if="loading" class="text-center py-10">
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
-        <p class="mt-2">Loading applications...</p>
+      <div class="animate-spin inline-block w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full" role="status">
+          <span class="sr-only">Loading...</span>
+      </div>
+      <p class="mt-2 text-gray-600">Loading applications...</p>
     </div>
     <div v-else-if="error" class="text-center py-10 text-red-500">
         <p>Error loading applications: {{ error }}</p>
     </div>
 
+    <!-- Applications Table -->
     <div v-else class="overflow-x-auto">
       <table class="min-w-full bg-white border border-gray-200">
-        <!-- ... table head is unchanged ... -->
          <thead>
           <tr class="bg-gray-100">
-            <th class="py-3 px-4 text-left border-b">Application ID</th>
-            <th class="py-3 px-4 text-left border-b">Institute Name</th>
-            <th class="py-3 px-4 text-left border-b">Submission Date</th>
-            <th class="py-3 px-4 text-left border-b">Status</th>
-            <th class="py-3 px-4 text-left border-b">Actions</th>
+            <th class="py-3 px-4 text-left border-b font-semibold text-gray-600">Application Ref #</th>
+            <th class="py-3 px-4 text-left border-b font-semibold text-gray-600">Institute Name</th>
+            <th class="py-3 px-4 text-left border-b font-semibold text-gray-600">Submission Date</th>
+            <th class="py-3 px-4 text-left border-b font-semibold text-gray-600">Status</th>
+            <th class="py-3 px-4 text-left border-b font-semibold text-gray-600">Validity Period</th>
+            <th class="py-3 px-4 text-left border-b font-semibold text-gray-600">ISAR Deadline</th>
+            <th class="py-3 px-4 text-left border-b font-semibold text-gray-600">Actions</th>
           </tr>
         </thead>
         <tbody>
-          <!-- ... empty state is unchanged ... -->
           <tr v-if="filteredApplications.length === 0">
-            <td colspan="5" class="py-4 px-4 text-center border-b">
-              No applications found.
+            <td colspan="7" class="py-4 px-4 text-center border-b text-gray-500">
+              No applications found matching your criteria.
             </td>
           </tr>
           <tr
@@ -55,7 +55,10 @@
             :key="application.id"
             class="hover:bg-gray-50"
           >
-            <td class="py-3 px-4 border-b">{{ application.application_uid ? application.application_uid.substring(0, 8) : 'N/A' }}</td>
+            <!-- === UPDATED TO SHOW THE NEW HUMAN-READABLE REFERENCE NUMBER === -->
+            <td class="py-3 px-4 border-b font-medium text-gray-700">
+                {{ application.application_reference_no || application.application_uid.substring(0, 8) }}
+            </td>
             <td class="py-3 px-4 border-b">{{ application.institute_profile_details.name }}</td>
             <td class="py-3 px-4 border-b">
               {{ formatDate(application.date_initial_app_submitted_to_heqc || application.created_at) }}
@@ -65,6 +68,24 @@
                 {{ application.status_display || 'N/A' }}
               </span>
             </td>
+            <td class="py-3 px-4 border-b text-sm">
+              <div v-if="application.status === 'approved_accredited' && application.accreditation_validity_from">
+                  <span class="font-semibold text-green-700">{{ formatDate(application.accreditation_validity_from) }}</span>
+                  <span class="text-gray-500"> to </span>
+                  <span class="font-semibold text-green-700">{{ formatDate(application.accreditation_validity_to) }}</span>
+              </div>
+              <span v-else class="text-gray-400">N/A</span>
+            </td>
+            <td class="py-3 px-4 border-b text-sm">
+              <div v-if="application.status === 'initial_app_approved_awaiting_isar'">
+                <IsarCountdown :deadline="application.isar_submission_deadline" />
+              </div>
+              <div v-else-if="application.isar_report?.date_isar_formally_submitted">
+                  <span class="font-medium text-gray-700">Submitted:</span><br>
+                  <span class="text-gray-600">{{ formatDate(application.isar_report.date_isar_formally_submitted) }}</span>
+              </div>
+              <span v-else class="text-gray-400">N/A</span>
+            </td>
             <td class="py-3 px-4 border-b">
               <button
                 @click="viewApplication(application)"
@@ -72,14 +93,19 @@
               >
                 View Details
               </button>
-
-              <!-- CHANGE: This button now opens the ISAR modal -->
               <button
-                v-if="canSubmitIsar(application.status)"
+                v-if="canSubmitIsar(application)"
                 @click="openIsarModal(application)"
                 class="bg-green-500 hover:bg-green-600 text-white py-1 px-3 rounded text-sm"
               >
                 Submit ISAR
+              </button>
+              <button
+                v-if="application.status === 'approved_accredited'"
+                @click="openCertificateModal(application)"
+                class="bg-purple-500 hover:bg-purple-600 text-white py-1 px-3 rounded text-sm"
+              >
+                View Certificate
               </button>
             </td>
           </tr>
@@ -87,10 +113,13 @@
       </table>
     </div>
 
-    <!-- Modals -->
-    <ApplicationDetailsModal :is-open="isModalOpen" :application="selectedApplication" @close="closeModal" />
+    <!-- All Modals are placed here -->
+    <ApplicationDetailsModal
+        :is-open="isModalOpen"
+        :application="selectedApplication"
+        @close="closeModal"
+    />
 
-    <!-- CHANGE: Add the new ISAR Modal here -->
     <IsarReportModal
         :is-open="isIsarModalOpen"
         :application="selectedApplicationForIsar"
@@ -98,33 +127,45 @@
         @submit-isar="handleIsarSubmit"
     />
 
+    <AccreCertificateModal
+        :is-open="isCertificateModalOpen"
+        :application="selectedApplicationForCertificate"
+        @close="closeCertificateModal"
+    />
+
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import { useRouter } from 'vue-router';
+import { useToast } from 'vue-toastification';
 import apiService from '@/services/services';
-import ApplicationDetailsModal from './ApplicationDetailsModal.vue';
-import IsarReportModal from './IsarReportModal.vue'; // <-- CHANGE: Import the new modal
 
+// Component Imports
+import ApplicationDetailsModal from './ApplicationDetailsModal.vue';
+import IsarReportModal from './IsarReportModal.vue';
+import IsarCountdown from './IsarCountdown.vue';
+import AccreCertificateModal from '@/components/common/Accreditation/AccreCertificateModal.vue';
+
+// Reactive State
 const applications = ref([]);
 const loading = ref(true);
 const error = ref(null);
 const searchQuery = ref('');
 const selectedStatus = ref('');
-const router = useRouter();
+const toast = useToast();
 
-// State for Details Modal
 const isModalOpen = ref(false);
 const selectedApplication = ref(null);
 
-// CHANGE: Add state for the new ISAR Modal
 const isIsarModalOpen = ref(false);
 const selectedApplicationForIsar = ref(null);
 
+const isCertificateModalOpen = ref(false);
+const selectedApplicationForCertificate = ref(null);
+
+// Fetching Data
 const fetchApplications = async () => {
-  // ... this function is unchanged ...
   loading.value = true;
   error.value = null;
   try {
@@ -133,6 +174,7 @@ const fetchApplications = async () => {
   } catch (err) {
     console.error('Error fetching accreditation applications:', err);
     error.value = 'Failed to load applications.';
+    toast.error(error.value);
   } finally {
     loading.value = false;
   }
@@ -140,28 +182,40 @@ const fetchApplications = async () => {
 
 onMounted(fetchApplications);
 
-// ... computed properties (uniqueStatuses, filteredApplications) are unchanged ...
+// Computed Properties
 const uniqueStatuses = computed(() => {
+  if (!Array.isArray(applications.value)) return [];
   const statuses = new Set(applications.value.map(app => app.status_display));
-  return Array.from(statuses);
+  return Array.from(statuses).sort();
 });
 
 const filteredApplications = computed(() => {
+  if (!Array.isArray(applications.value)) return [];
   return applications.value.filter(app => {
+    // UPDATED: Search now includes the new reference number
+    const appName = app.institute_profile_details?.name || '';
+    const appRef = app.application_reference_no || '';
+    const appUID = app.application_uid || ''; // Fallback search
+
+    const lowerCaseQuery = searchQuery.value.toLowerCase();
+
     const matchesSearch =
-      (app.application_uid && app.application_uid.toLowerCase().includes(searchQuery.value.toLowerCase())) ||
-      (app.institute_profile_details.name && app.institute_profile_details.name.toLowerCase().includes(searchQuery.value.toLowerCase()));
+      appName.toLowerCase().includes(lowerCaseQuery) ||
+      appRef.toLowerCase().includes(lowerCaseQuery) ||
+      appUID.toLowerCase().includes(lowerCaseQuery);
+
     const matchesStatus = selectedStatus.value ? app.status_display === selectedStatus.value : true;
     return matchesSearch && matchesStatus;
   });
 });
 
-// ... helper functions (formatDate, getStatusClass, canSubmitIsar) are unchanged ...
+// Helper Functions
 const formatDate = (dateString) => {
   if (!dateString) return 'N/A';
-  const options = { year: 'numeric', month: 'long', day: 'numeric' };
+  const options = { year: 'numeric', month: 'short', day: 'numeric' };
   return new Date(dateString).toLocaleDateString(undefined, options);
 };
+
 const getStatusClass = (statusKey) => {
     const mapping = {
         'draft_initial': 'bg-gray-200 text-gray-800',
@@ -172,19 +226,30 @@ const getStatusClass = (statusKey) => {
         'isar_submitted_heqc_review': 'bg-indigo-100 text-indigo-800',
         'approved_accredited': 'bg-green-200 text-green-900 font-bold',
         'rejected_not_accredited': 'bg-red-200 text-red-900 font-bold',
+        'isar_queried_by_heqc': 'bg-yellow-200 text-yellow-900',
+        'isar_accepted_by_heqc': 'bg-green-200 text-green-900',
+        'coi_pending_declaration': 'bg-purple-100 text-purple-800',
+        'site_visit_scheduled': 'bg-pink-100 text-pink-800',
+        'assessment_report_submitted': 'bg-teal-100 text-teal-800',
     };
     return `inline-block py-1 px-2 rounded text-xs font-medium ${mapping[statusKey] || 'bg-gray-100 text-gray-800'}`;
 };
-const canSubmitIsar = (status) => {
-  const validStatuses = [
-    'initial_app_submitted_heqc_review',
-    'initial_app_approved_awaiting_isar'
-  ];
-  return validStatuses.includes(status);
+
+const isDeadlinePassed = (deadlineString) => {
+    if (!deadlineString) return false;
+    const deadline = new Date(deadlineString);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return deadline < today;
 };
 
+const canSubmitIsar = (application) => {
+  if (application.status !== 'initial_app_approved_awaiting_isar') return false;
+  if (isDeadlinePassed(application.isar_submission_deadline)) return false;
+  return true;
+};
 
-// Functions for Details Modal
+// Modal Control Handlers
 const viewApplication = (application) => {
   selectedApplication.value = application;
   isModalOpen.value = true;
@@ -194,35 +259,51 @@ const closeModal = () => {
   selectedApplication.value = null;
 };
 
-// CHANGE: Add functions to control the ISAR Modal
 const openIsarModal = (application) => {
     selectedApplicationForIsar.value = application;
     isIsarModalOpen.value = true;
 };
-
 const closeIsarModal = () => {
     isIsarModalOpen.value = false;
     selectedApplicationForIsar.value = null;
 };
 
-const handleIsarSubmit = async (formData) => {
-    // You'll need to create a new method in your apiService for this
-    // For example: apiService.createIsarReport(formData)
-    console.log('Submitting ISAR data:', Object.fromEntries(formData));
-    try {
-        // IMPORTANT: Ensure your apiService sends this with 'Content-Type': 'multipart/form-data'
-        await apiService.createIsarReport(formData); // Assumes this new method exists
-        alert('ISAR submitted successfully!');
-        closeIsarModal();
-        fetchApplications(); // Refresh the list to show new status
-    } catch (err) {
-        console.error('Error submitting ISAR:', err);
-        alert('Failed to submit ISAR. Please check the console for errors.');
-    }
+const openCertificateModal = (application) => {
+  selectedApplicationForCertificate.value = application;
+  isCertificateModalOpen.value = true;
+};
+const closeCertificateModal = () => {
+  isCertificateModalOpen.value = false;
+  selectedApplicationForCertificate.value = null;
 };
 
+// API Interaction
+const handleIsarSubmit = async (formData) => {
+    try {
+        formData.append('is_final_submission', 'true');
+        const response = await apiService.createIsarReport(formData);
+        const updatedApplication = response.data;
+        const index = applications.value.findIndex(app => app.id === updatedApplication.id);
+        if (index !== -1) {
+            applications.value[index] = updatedApplication;
+        } else {
+            await fetchApplications();
+        }
+        toast.success('ISAR submitted successfully! The application status has been updated.');
+        closeIsarModal();
+    } catch (err) {
+        console.error('Error submitting ISAR:', err.response?.data || err);
+        const errorMsg = err.response?.data?.detail || 'Failed to submit ISAR. Please check the form and try again.';
+        toast.error(errorMsg);
+    }
+};
 </script>
 
 <style scoped>
-/* Scoped styles for the component */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
 </style>

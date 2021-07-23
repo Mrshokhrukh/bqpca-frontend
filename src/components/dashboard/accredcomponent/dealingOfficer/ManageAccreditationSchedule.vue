@@ -1,5 +1,5 @@
 <template>
-  <div class="schedule-management container mx-auto mt-8 p-6 bg-gray-50 shadow-lg rounded-lg">
+  <div class="schedule-management mx-auto mt-8 p-6 bg-gray-50 shadow-lg rounded-lg">
     <div class="flex justify-between items-center mb-6">
       <h3 class="text-2xl font-semibold text-blue-700">Accreditation Schedule Management</h3>
       <button
@@ -33,34 +33,29 @@
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Schedule Name</th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">From Date</th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">End Date</th>
-            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-            <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Currently Running</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Effective Status</th>
+            <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">In Date Range</th>
             <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
-          <tr v-for="schedule in schedules" :key="schedule.id" class="hover:bg-gray-50" :class="{'bg-blue-50': isCurrentlyActive(schedule) && schedule.is_active}">
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ schedule.schedule_name }}</td>
+          <tr v-for="schedule in schedules" :key="schedule.id" class="hover:bg-gray-50" :class="{'bg-green-50 font-semibold': schedule.is_truly_active}">
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ schedule.schedule_name }}</td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ formatDate(schedule.from_date) }}</td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ formatDate(schedule.end_date) }}</td>
             <td class="px-6 py-4 whitespace-nowrap">
               <span
-                :class="[
-                  'px-2 inline-flex text-xs leading-5 font-semibold rounded-full',
-                  schedule.is_active ? 'bg-green-100 text-green-800' : 'bg-gray-200 text-gray-700'
-                ]"
+                :class="getStatusClass(schedule.effective_status)"
+                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
               >
-                {{ schedule.is_active ? 'Active' : 'Inactive' }}
+                {{ schedule.effective_status }}
               </span>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-center">
-                <svg v-if="isCurrentlyActive(schedule) && schedule.is_active" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-6 h-6 text-green-500 inline-block" title="Currently Running & Active">
+                <svg v-if="schedule.is_currently_running" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-6 h-6 text-green-500 inline-block" title="This schedule is within its designated date range.">
                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.06 0l4.002-5.5a.75.75 0 00-.326-1.061z" clip-rule="evenodd" />
                 </svg>
-                <svg v-else-if="isCurrentlyActive(schedule) && !schedule.is_active" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-6 h-6 text-yellow-500 inline-block" title="Within Date Range but Inactive">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 5.168A.75.75 0 008 5.75v3.493l.149-.065a.75.75 0 00.302-1.232L9.555 5.168zM10 12.5a.75.75 0 00-.75-.75H7.757a.75.75 0 000 1.5H9.25V14a.75.75 0 001.5 0v-1.5z" clip-rule="evenodd" />
-                </svg>
-                 <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-6 h-6 text-gray-400 inline-block" title="Not Currently Running">
+                 <svg v-else xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-6 h-6 text-gray-400 inline-block" title="This schedule is not within its designated date range.">
                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM6.75 9.25a.75.75 0 000 1.5h6.5a.75.75 0 000-1.5h-6.5z" clip-rule="evenodd" />
                 </svg>
             </td>
@@ -71,9 +66,12 @@
               <button
                 @click="toggleScheduleActive(schedule)"
                 :class="schedule.is_active ? 'text-yellow-600 hover:text-yellow-900' : 'text-green-600 hover:text-green-900'"
-                :title="schedule.is_active ? 'Set to Inactive' : 'Set to Active'"
+                :title="schedule.is_active ? 'Manually Deactivate' : 'Manually Activate'"
               >
                 {{ schedule.is_active ? 'Deactivate' : 'Activate' }}
+              </button>
+              <button @click="confirmDeleteSchedule(schedule)" class="text-red-600 hover:text-red-900" title="Delete Schedule">
+                Delete
               </button>
             </td>
           </tr>
@@ -167,7 +165,7 @@
 </template>
 
 <script>
-import apiService from '@/services/services'; // Ensure this path is correct
+import apiService from '@/services/services';
 
 const initialScheduleState = () => ({
   id: null,
@@ -187,7 +185,7 @@ export default {
       isSaving: false,
       error: null,
       modalError: null,
-      showModal: false, // Controls custom modal visibility
+      showModal: false,
     };
   },
   mounted() {
@@ -196,22 +194,24 @@ export default {
   methods: {
     formatDate(dateString) {
       if (!dateString) return 'N/A';
-      const options = { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' }; // Ensure UTC for consistency
+      const options = { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' };
       return new Date(dateString + 'T00:00:00Z').toLocaleDateString(undefined, options);
     },
-    isCurrentlyActive(schedule) {
-      if (!schedule.from_date || !schedule.end_date) return false;
-      const today = new Date();
-      today.setUTCHours(0, 0, 0, 0); // Normalize today to UTC start of day
-      const fromDate = new Date(schedule.from_date + 'T00:00:00Z');
-      const endDate = new Date(schedule.end_date + 'T00:00:00Z');
-      return fromDate <= today && endDate >= today;
+    getStatusClass(status) {
+      const statusMap = {
+        'Active & Running': 'bg-green-100 text-green-800',
+        'Expired': 'bg-red-100 text-red-800',
+        'Upcoming': 'bg-blue-100 text-blue-800',
+        'Manually Deactivated': 'bg-yellow-100 text-yellow-800',
+        'default': 'bg-gray-100 text-gray-800'
+      };
+      return statusMap[status] || statusMap['default'];
     },
     async fetchSchedules() {
       this.isLoading = true;
       this.error = null;
       try {
-        const response = await apiService.getMastersApplicationDurations(); 
+        const response = await apiService.getMastersApplicationDurations();
         this.schedules = response.data.results || response.data;
       } catch (err) {
         console.error("Error fetching schedules:", err.response?.data || err.message);
@@ -223,12 +223,19 @@ export default {
     openScheduleModal(schedule = null) {
       this.modalError = null;
       if (schedule) {
-        this.currentSchedule = JSON.parse(JSON.stringify(schedule)); // Deep copy
+        // **THE FIX:** Create a new, clean object for the form.
+        // This prevents freezing by only copying the fields that are meant to be edited.
+        this.currentSchedule = {
+          id: schedule.id,
+          schedule_name: schedule.schedule_name,
+          from_date: schedule.from_date,
+          end_date: schedule.end_date,
+          is_active: schedule.is_active,
+        };
       } else {
         this.currentSchedule = initialScheduleState();
       }
       this.showModal = true;
-      // Prevent body scroll when modal is open
       document.body.classList.add('overflow-hidden');
     },
     closeModal() {
@@ -255,9 +262,9 @@ export default {
 
       try {
         if (payload.id) {
-          await apiService.updateApplicationSchedule(payload.id, payload);
+          await apiService.updateMastersApplicationDuration(payload.id, payload);
         } else {
-          await apiService.createMastersApplicationDuration(payload); 
+          await apiService.createMastersApplicationDuration(payload);
         }
         this.closeModal();
         await this.fetchSchedules();
@@ -275,12 +282,13 @@ export default {
     },
     async toggleScheduleActive(schedule) {
       const action = schedule.is_active ? 'deactivate' : 'activate';
-      if (!confirm(`Are you sure you want to ${action} the schedule "${schedule.schedule_name}"?`)) {
+      if (!confirm(`Are you sure you want to manually ${action} the schedule "${schedule.schedule_name}"?`)) {
         return;
       }
-      this.isLoading = true; // Use for table-level operations
+      this.isLoading = true;
+      this.error = null;
       try {
-        await apiService.patchApplicationSchedule(schedule.id, { is_active: !schedule.is_active });
+        await apiService.patchMastersApplicationDuration(schedule.id, { is_active: !schedule.is_active });
         await this.fetchSchedules();
       } catch (err) {
         console.error(`Error ${action}ing schedule:`, err.response?.data || err.message);
@@ -289,13 +297,27 @@ export default {
         this.isLoading = false;
       }
     },
-    // confirmDeleteSchedule(scheduleId) { ... } // Implement if needed
+    async confirmDeleteSchedule(schedule) {
+      if (!confirm(`Are you sure you want to permanently delete the schedule "${schedule.schedule_name}"? This action cannot be undone.`)) {
+        return;
+      }
+      this.isLoading = true;
+      this.error = null;
+      try {
+        await apiService.deleteMastersApplicationDuration(schedule.id);
+        await this.fetchSchedules();
+      } catch (err) {
+        console.error(`Error deleting schedule:`, err.response?.data || err.message);
+        this.error = `Failed to delete schedule. ` + (err.response?.data?.detail || err.message);
+      } finally {
+        this.isLoading = false;
+      }
+    },
   },
 };
 </script>
 
 <style scoped>
-/* Add any specific styles here if needed, but primarily rely on Tailwind classes */
 /* For the modal background scroll lock */
 body.overflow-hidden {
   overflow: hidden;
