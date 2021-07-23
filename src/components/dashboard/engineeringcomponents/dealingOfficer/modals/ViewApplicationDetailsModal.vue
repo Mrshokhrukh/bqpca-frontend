@@ -22,24 +22,7 @@
                   <div class="lg:col-span-1 space-y-6">
                     <PersonalInformation :application="application" @update="refreshApplication" />
                     <ContactInformation :application="application" />
-                    <!-- Counselor Status -->
-                    <!-- <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                      <div class="border-t border-gray-100 p-6 bg-gray-50">
-                        <div class="flex flex-col space-y-4">
-                          <h5 class="font-medium text-gray-900">Counselor Status</h5>
-                          <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-600">
-                              {{
-                                application.is_counselor
-                                ? 'Registered Counselor'
-                                : 'Not a Counselor'
-                              }}
-                            </span>
-                            <CounselorStatus :application="application" @update="refreshApplication" />
-                          </div>
-                        </div>
-                      </div>
-                    </div> -->
+
                   </div>
 
                   <!-- Right Column -->

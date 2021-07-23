@@ -9,9 +9,9 @@
           :message="dashboardState.message"
           :key="dashboardState.qualificationInfo?.qualification?.id + (dashboardState.qualificationInfo?.qualification?.updated_at || '')" />
         <template v-else-if="dashboardState.isApproved">
-          <!-- Removed :renewal-message prop since ProfileHeader now calculates its own -->
-          <ProfileHeader :user-detail="userDetail" :qualifications="dashboardState.primaryQualifications"
+          <ProfileHeader v-if="combinedUserDetail" :user-detail="combinedUserDetail"
             @view-certificate="handleViewCertificate" />
+
           <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
             <StatCard title="CPD Credits" icon="Award" :progress="cpdCredits" :total="50" type="progress" />
             <CogsStatusCard :expiry-date="licenseExpiryDate" :status="licenseStatus" />
@@ -23,6 +23,7 @@
           </div>
           <ApplicationsModal v-if="selectedApplications.length" :applications="selectedApplications" :title="modalTitle"
             @close="closeApplicationsModal" @visit="visitApplication" />
+
           <CertificateModal v-if="showCertificateModal" :application="selectedApplication"
             @close="closeCertificateModal" />
         </template>
@@ -57,6 +58,7 @@ import FirstDashboardState from './dashboardComponents/FirstDashboardStates.vue'
 const authStore = useAuthStore()
 const dashboardStore = useEpcDashboardStore()
 const { user } = storeToRefs(authStore)
+
 const {
   userDetail,
   applications,
@@ -71,18 +73,22 @@ const {
   selectedApplication,
   showCertificateModal
 } = storeToRefs(dashboardStore)
+const combinedUserDetail = computed(() => {
+  if (!userDetail.value) return null
+  const allQualifications = applications.value?.flatMap(app => app.user_qualifications || []) || []
+  return {
+    ...userDetail.value,
+    user_qualifications: allQualifications
+  }
+})
 
-// Reactive variable to track engineering program enablement (similar to DPR in MHPC)
 const isEngineeringProgramEnabled = ref(false)
 
-// Helper function to determine the status message based on qualification state
 const getQualificationStatusMessage = (qualification) => {
   const appReviewStatus = qualification.application_review_status
   const physicalReviewStatus = qualification.physical_review_status
   const endorsementDecision = qualification.endorsement_decision
   const paymentStatus = qualification.payment_status
-
-  // Check for rejections/regrets first
   if (appReviewStatus === 'Rejected' || appReviewStatus === 'Regretted') {
     return "Your application review has been rejected. Please check the rejection reason and consider reapplying with corrected information."
   }
@@ -94,8 +100,6 @@ const getQualificationStatusMessage = (qualification) => {
   if (endorsementDecision === 'Rejected' || endorsementDecision === 'Regretted') {
     return "Your endorsement has been regretted. Please review the feedback provided and contact support if needed."
   }
-
-  // Check progression states for approved/pending
   if (appReviewStatus === 'Approved' && (physicalReviewStatus === 'Pending' || !physicalReviewStatus)) {
     return "Congratulations! Your application review has been approved. Please come for physical verification with all required documents."
   }
@@ -115,11 +119,9 @@ const getQualificationStatusMessage = (qualification) => {
     return "Your payment is being processed. Once confirmed, your application will proceed to final endorsement."
   }
 
-  // Default pending state
   return "Your application is under review. We will notify you once there is an update."
 }
 
-// Advanced dashboard state logic similar to MHPC
 const dashboardState = computed(() => {
   if (isLoading.value) return { isLoading: true }
 
@@ -131,7 +133,6 @@ const dashboardState = computed(() => {
     }
   }
 
-  // Check if applications have qualifications
   const hasApplicationsButNoQualifications = applications.value.every(
     app => !app.user_qualifications?.length
   )
@@ -143,7 +144,6 @@ const dashboardState = computed(() => {
     }
   }
 
-  // Check for approved primary qualifications
   const primaryQualifications = applications.value
     .flatMap(app => app.user_qualifications || [])
     .filter(q => q.is_primary_qualification && q.endorsement_decision === 'Approved')
@@ -154,8 +154,6 @@ const dashboardState = computed(() => {
       primaryQualifications
     }
   }
-
-  // Check for pending primary qualifications
   const qualificationInfo = applications.value.reduce((acc, app) => {
     const primaryQual = app.user_qualifications?.find(q =>
       q.is_primary_qualification && q.endorsement_decision !== 'Approved'
@@ -225,7 +223,6 @@ const closeCertificateModal = () => {
 onMounted(fetchDashboardData)
 
 watch(applications, (newApplications) => {
-  // Check for approved engineering program applications (similar to EOI in MHPC)
   const approvedProgram = newApplications?.find(app =>
     app.type === 'Engineering Program' && app.status === 'Approved'
   )
