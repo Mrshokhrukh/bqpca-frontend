@@ -1642,20 +1642,15 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/user/${serviceType}/apply_for_accreditation`,
           },
           {
-            name: 'Track Accreditation',
+            name: 'Track Application',
             icon: getIconComponent('FilePlus'),
             route: (serviceType) => `/admin/user/${serviceType}/track_accreditation`,
           },
-          {
-            name: 'Submit ISAR Report',
-            icon: getIconComponent('FilePlus'),
-            route: (serviceType) => `/admin/user/${serviceType}/submit_isar_report`,
-          },
-          {
-            name: 'Track ISAR Report',
-            icon: getIconComponent('FilePlus'),
-            route: (serviceType) => `/admin/user/${serviceType}/track_isar_reports`,
-          },
+          // {
+          //   name: 'Track ISAR Report',
+          //   icon: getIconComponent('FilePlus'),
+          //   route: (serviceType) => `/admin/user/${serviceType}/track_isar_reports`,
+          // },
           {
             name: 'CoI Confirmation',
             icon: getIconComponent('CheckSquare'),
@@ -1674,27 +1669,22 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/user/${serviceType}/appeal`,
       },
 
-      {
-        name: 'Track Applications',
-        icon: getIconComponent('FileSearch'),
-        route: (serviceType) => `/admin/user/${serviceType}/results`,
-      },
-      {
-        name: 'Profile',
-        icon: getIconComponent('UserCircle'),
-        children: [
-          {
-            name: 'Institute Profile',
-            icon: getIconComponent('Building'),
-            route: (serviceType) => `/admin/user/${serviceType}/profile`,
-          },
-          {
-            name: 'User Profile',
-            icon: getIconComponent('Users'), // Corrected from User
-            route: (serviceType) => `/admin/user/${serviceType}/user_profile`, // Corrected "usser" to "user"
-          },
-        ],
-      },
+      // {
+      //   name: 'Profile',
+      //   icon: getIconComponent('UserCircle'),
+      //   children: [
+      //     {
+      //       name: 'Institute Profile',
+      //       icon: getIconComponent('Building'),
+      //       route: (serviceType) => `/admin/user/${serviceType}/profile`,
+      //     },
+      //     {
+      //       name: 'User Profile',
+      //       icon: getIconComponent('Users'), // Corrected from User
+      //       route: (serviceType) => `/admin/user/${serviceType}/user_profile`, // Corrected "usser" to "user"
+      //     },
+      //   ],
+      // },
     ],
     dealing_officer: [
       {
@@ -1705,36 +1695,37 @@ const serviceSpecificMenuItems = {
       {
         name: 'Manage Accreditation Schedule',
         icon: getIconComponent('LayoutDashboard'),
-        route: (serviceType) =>
-          `/admin/dealing_officer/${serviceType}/manage_accreditation_schedule`, // Corrected "dealing_Officer"
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/manage_accreditation_schedule`, // Corrected "dealing_Officer"
       },
       {
         name: 'Accreditation Applications',
         icon: getIconComponent('ClipboardList'),
         children: [
           {
-            name: 'Initial AccreditationApplication',
-            route: (serviceType) => `/admin/dealing_officer/${serviceType}/initial_accreditations`,
-          },
-          {
-            name: 'Institutional Accreditation',
+            name: 'Initial Accreditation Application',
             route: (serviceType) =>
-              `/admin/dealing_officer/${serviceType}/institutional_accreditations`,
+              `/admin/dealing_officer/${serviceType}/initial_accreditations`,
           },
+
           {
-            name: 'Assign Assessor',
-            route: (serviceType) => `/admin/dealing_officer/${serviceType}/assign_assessor`,
-          },
-          {
-            name: 'Site Visit Scheduling',
-            route: (serviceType) => `/admin/dealing_officer/${serviceType}/site_visit_scheduling`,
-          },
-          {
-            name: 'Accreditation Assessment',
-            icon: getIconComponent('CheckSquare'),
+            name: 'ISAR Report',
             route: (serviceType) =>
-              `/admin/dealing_officer/${serviceType}/accreditation_assessment`,
+              `/admin/dealing_officer/${serviceType}/isar_reports`,
           },
+          // {
+          //   name: 'Assign Assessor',
+          //   route: (serviceType) => `/admin/dealing_officer/${serviceType}/assign_assessor`,
+          // },
+          // {
+          //   name: 'Site Visit Scheduling',
+          //   route: (serviceType) => `/admin/dealing_officer/${serviceType}/site_visit_scheduling`,
+          // },
+          // {
+          //   name: 'Accreditation Assessment',
+          //   icon: getIconComponent('CheckSquare'),
+          //   route: (serviceType) =>
+          //     `/admin/dealing_officer/${serviceType}/accreditation_assessment`,
+          // },
         ],
       },
       {
@@ -1908,6 +1899,26 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/admin/${serviceType}/source_of_funding`,
           },
         ],
+
+      },
+    ],
+    assessor: [
+      {
+        name: 'Dashboard',
+        icon: getIconComponent('LayoutDashboard'),
+        route: (serviceType) => `/admin/assessor/${serviceType}/dashboard`,
+      },
+
+      {
+        name: 'My Assignments ',
+        icon: getIconComponent('ShieldQuestion'), // Using a specific icon for clarity
+        route: (serviceType) => `/admin/assessor/${serviceType}/my_assignments`,
+      },
+
+      {
+        name: 'Submit Reports',
+        icon: getIconComponent('FilePlus'),
+        route: (serviceType) => `/admin/assessor/${serviceType}/upload_report`,
       },
     ],
   },

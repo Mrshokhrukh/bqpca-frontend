@@ -118,6 +118,7 @@
                 <span class="text-lg font-bold text-gray-900">Nu. {{ amount.toFixed(2) }}</span>
               </div>
             </div>
+            <!-- Error Message Display -->
             <div v-if="errorMessage" class="p-4 bg-red-50 text-red-700 rounded-lg text-sm">
               {{ errorMessage }}
             </div>
@@ -251,11 +252,27 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick } from 'vue' // *** ADDED nextTick ***
 import { v4 as uuidv4 } from 'uuid'
 import { useToast } from 'vue-toastification'
 
 const toast = useToast()
+
+const props = defineProps({
+  amount: {
+    type: Number,
+    required: true,
+    default: 0,
+  },
+  // *** NEW PROP ***: Controls whether the modal closes on successful initiation.
+  // Defaults to true, so it will now close automatically as you requested.
+  closeOnSuccess: {
+    type: Boolean,
+    default: true,
+  },
+})
+
+const emit = defineEmits(['payment-completed', 'close'])
 
 const isVisible = ref(false)
 const isMobile = ref(false)
@@ -269,28 +286,21 @@ const slider = ref(null)
 const sliderThumb = ref(null)
 const errorMessage = ref('')
 
-defineProps({
-  amount: {
-    type: Number,
-    required: true,
-    default: 0,
-  },
-})
-
-const emit = defineEmits(['payment-completed', 'close'])
-
 const checkMobile = () => {
   isMobile.value = window.innerWidth < 768
 }
 
 const startSlide = (event) => {
-  if (!isMobile.value) return
+  if (!isMobile.value || isProcessing.value) return
   isSliding.value = true
   startX.value = event.type === 'mousedown' ? event.clientX : event.touches[0].clientX
 }
 
 const updateSlide = (event) => {
   if (!isSliding.value || !isMobile.value) return
+
+  // Prevents text selection while dragging
+  event.preventDefault()
 
   const currentX = event.type === 'mousemove' ? event.clientX : event.touches[0].clientX
   const diff = currentX - startX.value
@@ -301,6 +311,7 @@ const updateSlide = (event) => {
   startX.value = currentX
 
   if (slideProgress.value >= 100) {
+    endSlide() // Prevent further sliding
     initiatePayment()
   }
 }
@@ -320,12 +331,16 @@ const resetSlide = () => {
   isSliding.value = false
 }
 
+// --- MODIFIED FUNCTION ---
 const initiatePayment = async () => {
+  if (isProcessing.value) return // Prevent double submission
   isProcessing.value = true
   errorMessage.value = ''
   try {
     const paymentHash = uuidv4()
-    const paymentDone = true // Replace with actual payment gateway logic
+    // In a real scenario, this would be an API call.
+    // We are simulating a successful response.
+    const paymentDone = true
 
     emit('payment-completed', {
       paymentHash,
@@ -334,12 +349,22 @@ const initiatePayment = async () => {
       message: 'Payment link will be sent to your email via BIRMS',
     })
     toast.success('Payment initiated successfully!')
-    // Do not close modal here; let parent handle it
+
+    // *** THE FIX IS HERE ***
+    // Check the new prop and close the modal if it's true.
+    if (props.closeOnSuccess) {
+      closeModal()
+    }
+
   } catch (error) {
+    // On failure/rejection, we display the error message inside the modal.
+    // Therefore, we should NOT close it automatically.
     errorMessage.value = 'Failed to initiate payment. Please try again.'
     toast.error(errorMessage.value)
     console.error('Payment initiation error:', error)
+    resetSlide(); // Reset slider so the user can try again.
   } finally {
+    // This runs regardless of success or failure.
     isProcessing.value = false
   }
 }
@@ -347,7 +372,12 @@ const initiatePayment = async () => {
 const openModal = () => {
   isVisible.value = true
   errorMessage.value = ''
+  resetSlide()
   document.body.style.overflow = 'hidden'
+  // Use nextTick to ensure the DOM is updated before calculating width
+  nextTick(() => {
+    updateMaxSlideWidth()
+  })
 }
 
 const closeModal = () => {
@@ -362,12 +392,13 @@ const updateMaxSlideWidth = () => {
   if (!isMobile.value || !slider.value || !sliderThumb.value) return
   const sliderWidth = slider.value.offsetWidth
   const thumbWidth = sliderThumb.value.offsetWidth
+  // The thumb sits inside the slider, so subtract its width and any padding/border.
+  // Using 8px as a safe margin for left/right inset (inset-y-1 left-1 -> 4px each side).
   maxSlideWidth.value = sliderWidth - thumbWidth - 8
 }
 
 onMounted(() => {
   checkMobile()
-  updateMaxSlideWidth()
   window.addEventListener('resize', checkMobile)
   window.addEventListener('resize', updateMaxSlideWidth)
 })
@@ -380,8 +411,8 @@ onUnmounted(() => {
 
 defineExpose({
   openModal,
-  closeModal,
-})
+  closeModal
+});
 </script>
 
 <style scoped>
@@ -395,9 +426,7 @@ defineExpose({
 }
 .modal-fade-enter-active .bg-white,
 .modal-fade-leave-active .bg-white {
-  transition:
-    opacity 0.3s ease-in-out,
-    transform 0.3s ease-in-out;
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
 }
 .modal-fade-enter-from .bg-white,
 .modal-fade-leave-to .bg-white {

@@ -234,6 +234,7 @@ export default {
       accreditation_assessment: accredDashboard,
       initial_accreditations: accredDashboard,
       manage_accreditation_schedule: accredDashboard,
+      isar_reports: accredDashboard,
     },
     engineering_certification: {
       dashboard: engineeringDashboard,
@@ -480,6 +481,13 @@ export default {
       reports: mhpcDashboard,
       cpd_approved_add_participants: mhpcDashboard,
       cpd_provider_application_form: mhpcDashboard,
+    },
+  },
+  assessor: {
+    accreditation: {
+      dashboard: accredDashboard,
+      my_assignments: accredDashboard,
+      upload_report: accredDashboard,
     },
   },
   legal_officer: {

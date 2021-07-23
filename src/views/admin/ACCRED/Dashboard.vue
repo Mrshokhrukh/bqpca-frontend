@@ -35,7 +35,10 @@
     <template v-else-if="role === 'user'">
       <component :is="userComponent" />
     </template>
-
+    <!-- User Section -->
+    <template v-else-if="role === 'assessor'">
+      <component :is="assessorComponent" />
+    </template>
     <!-- Default Section -->
     <template v-else>
       <div>Select the service and role.</div>
@@ -78,14 +81,14 @@ import DocumentType from '@/components/dashboard/accredcomponent/admin/DocumentT
 import AccreUserDashboard from '@/components/dashboard/accredcomponent/users/AccreUserDashboard.vue'
 import AccreApplyForAccreditation from '@/components/dashboard/accredcomponent/users/AccreApplyForAccreditation.vue'
 import AccreViewResults from '@/components/dashboard/accredcomponent/users/AccreViewResults.vue'
-import AccreApplyForAppeal from '@/components/dashboard/accredcomponent/users/AccreApplyForAppeal.vue'
+import AppealTable from '@/components/dashboard/accredcomponent/users/AppealTable.vue'
 import AccreUserProfile from '@/components/dashboard/accredcomponent/users/AccreUserProfile.vue'
 import CoIConfirmation from '@/components/dashboard/accredcomponent/users/CoIConfirmation.vue'
 import SiteVisitConfirmation from '@/components/dashboard/accredcomponent/users/SiteVisitConfirmation.vue'
 import CreateInstituteProfile from '@/components/dashboard/accredcomponent/users/CreateInstituteProfile.vue'
-import SubmitIsarReport from '@/components/dashboard/accredcomponent/users/SubmitIsarReport.vue'
-import TrackIsarReports from '@/components/dashboard/accredcomponent/users/TrackIsarReports.vue'
-import TrackAccreditation from '@/components/dashboard/accredcomponent/users/TrackAccreditation.vue'
+import SubmitIsarReport from '@/components/dashboard/accredcomponent/users/SubmitIsarReport.vue';
+import TrackIsarReports from '@/components/dashboard/accredcomponent/users/TrackIsarReports.vue';
+import TrackAccreditation from '@/components/dashboard/accredcomponent/users/TrackAccreditation.vue';
 
 // Import Dealing Officer Components
 import AccreDealingdashboard from '@/components/dashboard/accredcomponent/dealingOfficer/AccreDealingdashboard.vue'
@@ -97,8 +100,13 @@ import Reports from '@/components/dashboard/accredcomponent/dealingOfficer/Repor
 import PaymentHistory from '@/components/dashboard/accredcomponent/dealingOfficer/PaymentHistory.vue'
 import AssignAssessor from '@/components/dashboard/accredcomponent/dealingOfficer/AssignAssessor.vue'
 import AccreditationAssessment from '@/components/dashboard/accredcomponent/dealingOfficer/AccreditationAssessment.vue'
-import InitialAccreditaionApplication from '@/components/dashboard/accredcomponent/dealingOfficer/InitialAccreditaionApplication.vue'
+import InitialAccreditaionApplication from '@/components/dashboard/accredcomponent/dealingOfficer/InitialAccreditationApplication.vue'
 import ManageAccreditationSchedule from '@/components/dashboard/accredcomponent/dealingOfficer/ManageAccreditationSchedule.vue'
+import IsarReport from '@/components/dashboard/accredcomponent/dealingOfficer/IsarReport.vue'
+//Assessor Components
+import AssessorDashboard from '@/components/dashboard/accredcomponent/assessor/AssessorDashboard.vue'
+import CoiDeclaration from '@/components/dashboard/accredcomponent/assessor/CoiDeclaration.vue'
+import AssessorUploadReport from '@/components/dashboard/accredcomponent/assessor/AssessorUploadReport.vue'
 
 const route = useRoute()
 const { role } = useAuthStore()
@@ -202,10 +210,12 @@ const dealingOfficerComponent = computed(() => {
       return AssignAssessor
     case path.endsWith('/accreditation/accreditation_assessment'):
       return AccreditationAssessment
-    case path.endsWith('/accreditation/initial_accreditation_application'):
+    case path.endsWith('/accreditation/initial_accreditations'):
       return InitialAccreditaionApplication
     case path.endsWith('/accreditation/manage_accreditation_schedule'):
       return ManageAccreditationSchedule
+    case path.endsWith('/accreditation/isar_reports'):
+      return IsarReport
 
     default:
       return null
@@ -244,7 +254,7 @@ const userComponent = computed(() => {
     case path.endsWith('/accreditation/apply_for_accreditation'):
       return AccreApplyForAccreditation
     case path.endsWith('/accreditation/appeal'):
-      return AccreApplyForAppeal
+      return AppealTable
     case path.endsWith('/accreditation/results'):
       return AccreViewResults
     case path.endsWith('/accreditation/profile'):
@@ -265,4 +275,19 @@ const userComponent = computed(() => {
       return null
   }
 })
+
+const assessorComponent = computed(() => {
+  const path = route.path
+  switch (true) {
+    case path.endsWith('/accreditation/dashboard'):
+      return AssessorDashboard
+    case path.endsWith('/accreditation/my_assignments'):
+      return CoiDeclaration
+    case path.endsWith('/accreditation/upload_report'):
+      return AssessorUploadReport
+    default:
+      return null
+  }
+})
+
 </script>

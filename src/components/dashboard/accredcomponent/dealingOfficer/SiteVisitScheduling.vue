@@ -105,6 +105,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import apiService from '@/services/accreditationservices'
 
 const verifiedUsers = ref([
   {
@@ -144,12 +145,25 @@ const coiAcceptedUsers = computed(() => {
   )
 })
 
-const scheduleSiteVisit = (user) => {
+const scheduleSiteVisit = async (user) => {
   if (user.siteVisitDate) {
-    user.status = 'Site Visit Scheduled'
-    alert(`Site visit scheduled for ${user.userName} on ${user.siteVisitDate}`)
-    console.log(`Site visit scheduled for user ${user.userId} on ${user.siteVisitDate}`)
-    // In a real application, you would send a notification to the user and update the backend
+    const payload = {
+      application: user.userId, // Assuming userId is the application ID
+      site_visit_name: 'Accreditation Site Visit',
+      start_datetime: user.siteVisitDate + 'T09:00:00Z', // Assuming a default time
+      end_datetime: user.siteVisitDate + 'T17:00:00Z', // Assuming a default time
+      remarks_heqc_agenda: 'Scheduled by Dealing Officer',
+    }
+
+    try {
+      await apiService.createApplicationSiteVisit(payload)
+      user.status = 'Site Visit Scheduled'
+      alert(`Site visit scheduled for ${user.userName} on ${user.siteVisitDate}`)
+      console.log(`Site visit scheduled for user ${user.userId} on ${user.siteVisitDate}`)
+    } catch (error) {
+      console.error('Error scheduling site visit:', error)
+      alert('Failed to schedule site visit. Please try again.')
+    }
   }
 }
 

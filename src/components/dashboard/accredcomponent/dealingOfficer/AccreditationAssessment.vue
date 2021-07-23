@@ -195,6 +195,10 @@
 
 <script setup>
 import { ref } from 'vue'
+import apiService from '@/services/accreditationservices'
+
+const applicationId = ref(1) // Placeholder: Replace with actual application ID
+const assessorId = ref(1) // Placeholder: Replace with actual assessor ID
 
 // Mock data for grades, standards, key aspects, indicators (replace with actual data fetching)
 const grades = ref([
@@ -241,11 +245,25 @@ const handleFileUpload = (event) => {
   formData.value.assessorReportFile = event.target.files[0]
 }
 
-const handleSubmit = () => {
-  // In a real application, you would send this formData to your backend API
-  console.log('Form Data Submitted:', formData.value)
-  // Reset form after submission (optional)
-  // formData.value = { ... };
-  alert('Results Saved (Check console for form data)') // Simple feedback for this example
+const handleSubmit = async () => {
+  if (!formData.value.assessorReportFile) {
+    alert('Please upload an assessor report file.')
+    return
+  }
+
+  const data = new FormData()
+  data.append('application', applicationId.value)
+  data.append('assessor', assessorId.value)
+  data.append('report_file', formData.value.assessorReportFile)
+  data.append('remarks', formData.value.remarks)
+
+  try {
+    await apiService.uploadAssessorReport(data)
+    alert('Assessor report submitted successfully!')
+    // Optionally, reset form or navigate
+  } catch (error) {
+    console.error('Error submitting assessor report:', error)
+    alert('Failed to submit assessor report. Please try again.')
+  }
 }
 </script>
