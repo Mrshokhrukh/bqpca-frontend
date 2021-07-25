@@ -30,9 +30,12 @@
                 <select id="applicationType" v-model="formData.application_type"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   required>
-                  <option value="CME">CME</option>
                   <option value="Applicant">Applicant</option>
-                  <option value="User">User</option>
+                  <option value="Applicant">CPD</option>
+                  <option value="Applicant">CoGS</option>
+                  <option value="Applicant">CAPA</option>
+                  <option value="Applicant">Institute</option>
+
                 </select>
               </div>
               <div class="flex gap-3">

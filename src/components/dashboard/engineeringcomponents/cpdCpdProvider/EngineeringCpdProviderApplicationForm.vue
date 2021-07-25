@@ -88,7 +88,8 @@
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                 </path>
               </svg>
-              {{ currentAction === 'submit' ? 'Submitting...' : currentAction === 'draft' ? 'Saving...' : 'Processing...' }}
+              {{ currentAction === 'submit' ? 'Submitting...' : currentAction === 'draft' ? 'Saving...' :
+                'Processing...' }}
             </div>
           </div>
 
@@ -247,8 +248,8 @@
                         <label :for="`activity-name-${index}`" class="form-label">
                           Activity Name {{ index + 1 }} <span class="text-rose-500">*</span>
                         </label>
-                        <textarea :id="`activity-name-${index}`" v-model="activity.name" rows="2"
-                          class="form-textarea" placeholder="e.g. Lecture on new guidelines"></textarea>
+                        <textarea :id="`activity-name-${index}`" v-model="activity.name" rows="2" class="form-textarea"
+                          placeholder="e.g. Lecture on new guidelines"></textarea>
                         <p v-if="activitiesErrors[index] && activitiesErrors[index].name" class="form-error-text">
                           {{ activitiesErrors[index].name }}
                         </p>
@@ -638,14 +639,14 @@ const showConfirmation = ref(false)
 const successMessage = ref('')
 const userRegistrations = ref([])
 
-// --- Reactive State ---
+
 const applicant = reactive({
   cidNumber: '',
   fullName: '',
   agencyTrainingLocation: '',
 })
 
-// MODIFIED: Removed deprecated activity and duration_in_hours fields
+
 const application = reactive({
   isApproved: 'false',
   title: '',
@@ -654,7 +655,6 @@ const application = reactive({
   toDate: '',
 })
 
-// NEW: State for multiple activities, starting with one empty row
 const activities = ref([{ name: '', duration: null }])
 
 const cpdProvider = reactive({
@@ -711,9 +711,9 @@ const resourcePersonsErrors = ref([])
 const teachingLearningErrors = ref({})
 const participantDetailsErrors = ref({})
 const approvedCpdErrors = ref({})
-const activitiesErrors = ref([{}]) // NEW: Error state for activities
+const activitiesErrors = ref([{}])
 
-// --- Computed Properties ---
+
 const filteredSubcategoryOptions = computed(() => {
   if (!participantDetails.category || participantDetails.category.length === 0) {
     return []
@@ -723,7 +723,6 @@ const filteredSubcategoryOptions = computed(() => {
   )
 })
 
-// NEW: Computed property to calculate total duration from all activities
 const totalDuration = computed(() => {
   return activities.value
     .reduce((total, activity) => {
@@ -733,15 +732,13 @@ const totalDuration = computed(() => {
     .toFixed(1)
 })
 
-// --- Methods ---
 
-// NEW: Method to add a new activity row
 const addActivity = () => {
   activities.value.push({ name: '', duration: null })
   activitiesErrors.value.push({})
 }
 
-// NEW: Method to remove an activity row
+
 const removeActivity = (index) => {
   if (activities.value.length > 1) {
     activities.value.splice(index, 1)
@@ -839,7 +836,6 @@ const handleCourseDocumentUpload = (event) =>
   handleFileUpload(event, courseDocument, 5, 'courseDocument', teachingLearningErrors)
 
 const validateForm = (forDraft = false) => {
-  // Clear all previous errors
   validationErrors.value = []
   applicantDetailsErrors.value = {}
   applicationDetailsErrors.value = {}
@@ -848,17 +844,16 @@ const validateForm = (forDraft = false) => {
   teachingLearningErrors.value = {}
   participantDetailsErrors.value = {}
   approvedCpdErrors.value = {}
-  activitiesErrors.value = activities.value.map(() => ({})) // Reset activity errors
+  activitiesErrors.value = activities.value.map(() => ({}))
 
   let isValid = true
 
-  // --- Section 1: Applicant Details ---
+
   if (!forDraft && !applicant.agencyTrainingLocation?.trim()) {
     applicantDetailsErrors.value.agencyTrainingLocation = 'Agency/Training Location is required.'
     isValid = false
   }
 
-  // --- Section 2: Application Details ---
   if (!forDraft && !application.title?.trim()) {
     applicationDetailsErrors.value.title = 'Title of CPD is required.'
     isValid = false
@@ -889,28 +884,26 @@ const validateForm = (forDraft = false) => {
     isValid = false
   }
 
-  // MODIFIED: Validation for the activities list
   if (!forDraft) {
     if (activities.value.length === 0) {
-        validationErrors.value.push('At least one activity is required.');
-        isValid = false;
+      validationErrors.value.push('At least one activity is required.');
+      isValid = false;
     } else {
-        activities.value.forEach((activity, index) => {
-            if (!activity.name?.trim()) {
-                if(!activitiesErrors.value[index]) activitiesErrors.value[index] = {};
-                activitiesErrors.value[index].name = 'Activity name is required.';
-                isValid = false;
-            }
-            if (!activity.duration || Number(activity.duration) <= 0) {
-                if(!activitiesErrors.value[index]) activitiesErrors.value[index] = {};
-                activitiesErrors.value[index].duration = 'A valid positive duration is required.';
-                isValid = false;
-            }
-        });
+      activities.value.forEach((activity, index) => {
+        if (!activity.name?.trim()) {
+          if (!activitiesErrors.value[index]) activitiesErrors.value[index] = {};
+          activitiesErrors.value[index].name = 'Activity name is required.';
+          isValid = false;
+        }
+        if (!activity.duration || Number(activity.duration) <= 0) {
+          if (!activitiesErrors.value[index]) activitiesErrors.value[index] = {};
+          activitiesErrors.value[index].duration = 'A valid positive duration is required.';
+          isValid = false;
+        }
+      });
     }
   }
 
-  // --- Section 3: CPD Provider Details ---
   if (!forDraft && !cpdProvider.agency) {
     cpdProviderErrors.value.agency = 'CPD Providing Agency is required.'
     isValid = false
@@ -928,26 +921,26 @@ const validateForm = (forDraft = false) => {
     isValid = false
   }
 
-  // --- Section 4: Resource Persons ---
+
   if (!forDraft) {
     if (resourcePersons.value.length === 0) {
       validationErrors.value.push('At least one Resource Person is required.')
       isValid = false
     } else {
-       resourcePersons.value.forEach((person, index) => {
-          if (!person.selectedPersonId) {
-            resourcePersonsErrors.value[index].selectedPersonId = 'Please select a resource person.'
-            isValid = false
-          }
-          if (!person.resourceDocument) {
-            resourcePersonsErrors.value[index].resourceDocument = 'A supporting document is required.'
-            isValid = false
-          }
-       })
+      resourcePersons.value.forEach((person, index) => {
+        if (!person.selectedPersonId) {
+          resourcePersonsErrors.value[index].selectedPersonId = 'Please select a resource person.'
+          isValid = false
+        }
+        if (!person.resourceDocument) {
+          resourcePersonsErrors.value[index].resourceDocument = 'A supporting document is required.'
+          isValid = false
+        }
+      })
     }
   }
 
-  // --- Section 5: Teaching Method ---
+
   if (!forDraft && !teachingMethod.type) {
     teachingLearningErrors.value.type = 'Type of CPD is required.'
     isValid = false
@@ -965,7 +958,7 @@ const validateForm = (forDraft = false) => {
     isValid = false
   }
 
-  // --- Section 6: Target Audience ---
+
   if (!forDraft && areOptionsLoaded.value) {
     if (participantDetails.category.length === 0) {
       participantDetailsErrors.value.categories = 'Target Participation Category is required.'
@@ -992,10 +985,12 @@ const validateForm = (forDraft = false) => {
   return isValid
 }
 
+// In your EngineeringCpdProviderApplicationForm.vue's <script setup>
+
 const prepareFormData = (isDraft = false) => {
   const fd = new FormData()
 
-  // Section 1 & 2
+  // --- Section 1 & 2: Pulling from `applicant` and `application` objects ---
   fd.append('cid_no', applicant.cidNumber || '')
   fd.append('full_name', applicant.fullName || '')
   fd.append('proposed_training_location', applicant.agencyTrainingLocation?.trim() || '')
@@ -1005,15 +1000,18 @@ const prepareFormData = (isDraft = false) => {
   fd.append('from_date', application.fromDate || '')
   fd.append('to_date', application.toDate || '')
   if (application.isApproved === 'true' && approvalLetter.value) {
-    fd.append('approval_letter_attachment', approvalLetter.value)
+    // The backend seems to expect 'attendance_sheet_attachment' for this based on your model.
+    // If it's an approval letter, you may need to rename the field in Django.
+    // Using 'attendance_sheet_attachment' as per your previous payload attempt.
+    fd.append('attendance_sheet_attachment', approvalLetter.value)
   }
 
-  // MODIFIED: Append the new activities array as a JSON string
+  // --- Activities: Pulling from the `activities` ref ---
   const activitiesToSend = activities.value
-    .filter(act => act.name?.trim() && (isDraft || act.duration > 0))
+    .filter(act => act.name?.trim() && (isDraft || (act.duration && act.duration > 0)))
     .map(act => ({
-        activity_name: act.name.trim(),
-        duration_in_hours: act.duration
+      activity_name: act.name.trim(),
+      duration_in_hours: act.duration
     }));
 
   if (activitiesToSend.length > 0) {
@@ -1022,7 +1020,7 @@ const prepareFormData = (isDraft = false) => {
     fd.append('activities', JSON.stringify([]));
   }
 
-  // Section 3
+  // --- Section 3: Pulling from `cpdProvider` object ---
   fd.append('cpd_providing_agency', cpdProvider.agency === 'other' ? '' : cpdProvider.agency || '')
   if (cpdProvider.agency === 'other') {
     fd.append('if_others_specify', cpdProvider.otherAgency?.trim() || '')
@@ -1030,22 +1028,19 @@ const prepareFormData = (isDraft = false) => {
   fd.append('reason_for_conducting', cpdProvider.reason || '')
   fd.append('reason_for_details', cpdProvider.reasonDetails?.trim() || '')
 
-  // Section 4
-  const resourcePersonsToSend = resourcePersons.value.filter((p) => isDraft ? p.selectedPersonId || p.resourceDocument : p.selectedPersonId && p.resourceDocument);
+  // --- Section 4: Pulling from `resourcePersons` ref ---
+  const resourcePersonsToSend = resourcePersons.value.filter(p => isDraft ? p.selectedPersonId || p.resourceDocument : p.selectedPersonId && p.resourceDocument);
   if (resourcePersonsToSend.length > 0) {
     resourcePersonsToSend.forEach((person, index) => {
-      const selectedUser = userRegistrations.value.find((u) => u.id === person.selectedPersonId)
-      const regNoToUse = selectedUser ? (selectedUser.registration_no || selectedUser.cid_no) : (person.regNo || '')
-      const nameToUse = selectedUser ? selectedUser.full_name : (person.name || '')
-      fd.append(`resources[${index}][resource_person_reg_no]`, regNoToUse)
-      fd.append(`resources[${index}][resource_person_name]`, nameToUse)
+      fd.append(`resources[${index}][resource_person_reg_no]`, person.regNo)
+      fd.append(`resources[${index}][resource_person_name]`, person.name)
       if (person.resourceDocument) {
         fd.append(`resources[${index}][resource_document]`, person.resourceDocument)
       }
     })
   }
 
-  // Section 5
+  // --- Section 5: Pulling from `teachingMethod` and `selectedMethodologies` ---
   fd.append('type_of_cpd', teachingMethod.type || '')
   if (selectedMethodologies.value.length > 0) {
     fd.append('methodologies', JSON.stringify(selectedMethodologies.value.map((id) => ({ methodology_name: id }))))
@@ -1057,21 +1052,20 @@ const prepareFormData = (isDraft = false) => {
     fd.append('course_document', courseDocument.value)
   }
 
-  // Section 6
   fd.append('participation_category', JSON.stringify(participantDetails.category || []))
   fd.append('participant_sub_category', JSON.stringify(participantDetails.subcategory || []))
   fd.append('number_of_participants', participantDetails.number || '')
   fd.append('relevance_to_topic', participantDetails.relevance?.trim() || '')
 
-  // Final fields
   fd.append('is_draft', isDraft)
   if (authStore.user?.id) {
     fd.append('user_id', authStore.user.id)
   }
 
+  fd.append('status', isDraft ? 'Draft' : 'Pending')
+
   return fd
 }
-
 const resetFormState = () => {
   applicant.agencyTrainingLocation = ''
   application.isApproved = 'false'
@@ -1100,7 +1094,7 @@ const resetFormState = () => {
   participantDetails.relevance = ''
 
   validationErrors.value = []
-  // Reset all error objects...
+
   successMessage.value = ''
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
@@ -1113,7 +1107,7 @@ const saveDraft = async () => {
     currentAction.value = ''
     return;
   }
-  // Clear errors for draft save
+
   validationErrors.value = [];
 
   try {
@@ -1160,14 +1154,17 @@ const confirmSubmit = async () => {
       router.push('/admin/cme_cpd_provider/engineering_certification/dashboard')
     }, 3000)
   } catch (error) {
-    console.error('Error submitting application:', error)
-    validationErrors.value = ['Submission failed. Please review the errors below.']
-    if (error.response?.data) {
-      // Logic to parse and display backend errors
+    console.error('Error submitting application:', error);
+    validationErrors.value = ['Submission failed. Please review the errors below.'];
+    if (error.response?.data?.details) {
+      validationErrors.value.push(error.response.data.details);
+    } else if (error.response?.data) {
       Object.entries(error.response.data).forEach(([key, value]) => {
-          validationErrors.value.push(`${key}: ${Array.isArray(value) ? value.join(', ') : value}`);
+        validationErrors.value.push(`${key}: ${Array.isArray(value) ? value.join(', ') : value}`);
       });
     }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
     window.scrollTo({ top: 0, behavior: 'smooth' })
   } finally {
     loading.value = false

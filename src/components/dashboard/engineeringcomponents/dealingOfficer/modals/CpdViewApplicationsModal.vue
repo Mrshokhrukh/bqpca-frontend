@@ -18,9 +18,9 @@
                 <div :class="[
                   'px-8 py-6 border-b relative overflow-hidden',
                   {
-                    'bg-yellow-50 border-yellow-100': getApplicationStatus() === 'Pending',
-                    'bg-green-50 border-green-100': getApplicationStatus() === 'Approved',
-                    'bg-red-50 border-red-100': getApplicationStatus() === 'Regretted',
+                    'bg-yellow-50 border-yellow-100': application.status === 'Pending',
+                    'bg-green-50 border-green-100': application.status === 'Approved',
+                    'bg-red-50 border-red-100': application.status === 'Regretted',
                   },
                 ]">
                   <div class="flex items-center justify-between relative z-10">
@@ -41,17 +41,17 @@
                       <span :class="[
                         'px-5 py-2.5 rounded-full text-sm font-medium inline-flex items-center space-x-2 shadow-sm',
                         {
-                          'bg-yellow-100 text-yellow-800': getApplicationStatus() === 'Pending',
-                          'bg-green-100 text-green-800': getApplicationStatus() === 'Approved',
-                          'bg-red-100 text-red-800': getApplicationStatus() === 'Regretted',
+                          'bg-yellow-100 text-yellow-800': application.status === 'Pending',
+                          'bg-green-100 text-green-800': application.status === 'Approved',
+                          'bg-red-100 text-red-800': application.status === 'Regretted',
                         },
                       ]">
                         <Circle class="h-4 w-4" :class="{
-                          'text-yellow-500': getApplicationStatus() === 'Pending',
-                          'text-green-500': getApplicationStatus() === 'Approved',
-                          'text-red-500': getApplicationStatus() === 'Regretted',
+                          'text-yellow-500': application.status === 'Pending',
+                          'text-green-500': application.status === 'Approved',
+                          'text-red-500': application.status === 'Regretted',
                         }" />
-                        <span>{{ getApplicationStatus() }}</span>
+                        <span>{{ application.status }}</span>
                       </span>
                       <button type="button"
                         class="p-2 text-gray-400 hover:text-gray-500 transition-colors rounded-full hover:bg-white"
@@ -340,7 +340,7 @@
                                                 class="w-20 px-2 py-1 text-sm bg-white border border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:border-green-500" />
                                             </div>
                                             <p v-else class="text-sm font-medium text-gray-900">
-                                              {{ getResourceCredits(resource) || 0 }}
+                                              {{ getResourceCredits(resource) || application.credit }}
                                             </p>
                                           </div>
                                         </div>
@@ -451,7 +451,7 @@
                                           class="w-20 px-2 py-1 text-sm bg-white border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
                                       </div>
                                       <p v-else class="text-sm font-medium text-gray-900">
-                                        {{ participant.cpd_credits || 0 }}
+                                        {{ participant.cpd_credits || application.credit }}
                                       </p>
                                     </div>
                                   </div>
@@ -928,21 +928,7 @@ watch(
   { immediate: true }
 )
 
-const getApplicationStatus = () => {
-  const app = props.application;
-  if (!app) return 'Pending';
 
-  if (app.is_draft) {
-    return 'Draft';
-  }
-  if (app.is_cpd_approved === true) {
-    return 'Approved';
-  }
-  if (app.is_cpd_approved === false) {
-    return 'Regretted';
-  }
-  return 'Pending';
-};
 
 const formatDate = (dateString) => {
   if (!dateString) return 'Not provided'
@@ -1005,74 +991,32 @@ const saveParticipant = (participant) => {
   participantCredits.value = {}
 }
 
-const approveApplication = async (applicationDataFromModal) => {
-  if (!applicationDataFromModal || !applicationDataFromModal.id) {
-    showNotification('error', 'Approval Failed', 'Invalid application data for approval.');
+const approveApplication = () => {
+  const credits = Number(approvalCredits.value);
+  if (isNaN(credits) || credits < 0) {
+    console.error("Invalid credits value.");
     return;
   }
 
-  // --- Optimistic UI Update ---
-  // 1. Find the application in the local array.
-  const appIndex = applications.value.findIndex(app => app.id === applicationDataFromModal.id);
-
-  // 2. Immediately update the status in the UI before the API call.
-  if (appIndex !== -1) {
-    applications.value[appIndex].status = 'approved';
-    applications.value[appIndex].displayStatus = 'Approved'; // This is the key change for the UI
-  }
-
-  // 3. Close the modal and show a success notification instantly.
-  closeViewModal();
-  showNotification('success', 'Application Approved', 'The CPD application has been approved.');
-  // --- End of Optimistic Update ---
-
-  try {
-    // 4. Perform the API call in the background.
-    const patchData = {
-      is_cpd_approved: true,
-      status: 'approved',
-      is_draft: false,
-      review_remarks: applicationDataFromModal.remarks || 'Application approved',
-      credit: applicationDataFromModal.credit,
-    };
-    await apiServices.patchEpcCpdTask(applicationDataFromModal.id, patchData);
-
-    // 5. Refetch from the server to ensure long-term data consistency.
-    // This will silently correct the data if the optimistic update was wrong.
-    await fetchApplications();
-
-  } catch (err) {
-    console.error('Failed to approve application:', err.response ? err.response.data : err);
-    showNotification(
-      'error',
-      'Approval Failed',
-      `Error approving application: ${err.response?.data?.detail || err.message || 'Please try again.'}`
-    );
-
-    // 6. If the API call fails, revert the change in the UI.
-    if (appIndex !== -1) {
-      applications.value[appIndex].status = 'pending';
-      applications.value[appIndex].displayStatus = 'Pending';
-    }
-  }
+  emit('approve', {
+    id: props.application.id,
+    credit: credits,
+    remarks: approvalMessage.value,
+  });
 };
 
 const rejectApplication = () => {
   if (!rejectionMessage.value.trim()) {
-    rejectionError.value = 'Please provide a reason for rejection'
-    return
+    rejectionError.value = 'Please provide a reason for rejection';
+    return;
   }
-  rejectionError.value = ''
+  rejectionError.value = '';
 
   emit('reject', {
     id: props.application.id,
-    status: 'regretted', // Changed to use status field
-    is_draft: false,
     remarks: rejectionMessage.value,
-  })
-  showRejectionForm.value = false
-  rejectionMessage.value = ''
-}
+  });
+};
 
 const handleApprovalClick = () => {
   showApprovalForm.value = true

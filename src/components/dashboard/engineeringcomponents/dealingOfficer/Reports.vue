@@ -444,16 +444,15 @@ const apiMethods = {
     }),
   },
   cpd_self_assessed: {
-    // No API function identified in services.js
-    fetch: null,
+    fetch: apiServices.getEpcCpdRecords,
     transform: (data) => ({
       ...data,
-      application_id: data.id ?? 'N/A',
-      applicant_reg_no: data.user?.registration_no ?? 'N/A',
-      activity_title: data.activity_name ?? 'N/A',
-      claimed_credits: data.credits_claimed ?? 0,
+      application_id: data?.id ?? 'N/A',
+      applicant_reg_no: data?.registration_no ?? 'N/A',
+      activity_title: data.title_of_cpd ?? 'N/A',
+      claimed_credits: data.cpd_credit ?? 0,
       submission_date: data.submitted_at ?? data.created_at ?? null,
-      assessment_status: data.status ?? 'N/A',
+      assessment_status: data.review_status ?? 'N/A',
     }),
   },
   eoi_applications: {
