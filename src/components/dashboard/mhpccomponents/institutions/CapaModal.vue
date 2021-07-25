@@ -65,7 +65,7 @@
 
               <!-- Modal Body -->
               <div class="flex-1 overflow-y-auto p-6 space-y-8">
-                <!-- Inspection Info Card (No changes here) -->
+                <!-- Inspection Info Card -->
                 <div class="bg-white rounded-lg shadow-sm border border-gray-100">
                   <div class="px-4 py-3 bg-gray-50 border-b border-gray-200">
                     <h4 class="font-medium text-gray-700">Inspection Information</h4>
@@ -82,6 +82,11 @@
                     <div class="md:col-span-2">
                       <label class="block text-sm font-medium text-gray-600 mb-1">Observation Description</label>
                       <p class="text-base text-gray-800 bg-gray-50 p-4 rounded-md border border-gray-200">{{ capa.observation_description }}</p>
+                    </div>
+                    <!-- CHANGE: Management Comments moved here and made read-only -->
+                    <div v-if="capa.management_comment" class="md:col-span-2">
+                      <label class="block text-sm font-medium text-gray-600 mb-1">Management Comments</label>
+                      <p class="text-base text-gray-800 bg-yellow-50 p-4 rounded-md border border-yellow-200">{{ capa.management_comment }}</p>
                     </div>
                     <div class="md:col-span-2">
                       <label class="block text-sm font-medium text-gray-600 mb-1">Status</label>
@@ -106,7 +111,6 @@
                     <h4 class="font-medium text-indigo-700">Your Corrective Action Plan</h4>
                   </div>
                   <div class="p-4 space-y-6">
-                    <!-- CHANGE: Root Cause is now an editable textarea -->
                     <div>
                       <label for="root-cause" class="block text-sm font-medium text-gray-700">
                         Root Cause <span class="text-red-500">*</span>
@@ -119,7 +123,6 @@
                         placeholder="Describe the root cause of the observation..."
                       ></textarea>
                     </div>
-                    <!-- CHANGE: Corrective Action is now an editable textarea -->
                     <div>
                       <label for="capa-plan" class="block text-sm font-medium text-gray-700">
                         Corrective and Preventive Action <span class="text-red-500">*</span>
@@ -132,30 +135,31 @@
                         placeholder="Detail the corrective and preventive actions you will take..."
                       ></textarea>
                     </div>
-                    <!-- CHANGE: Implementation Timeline is now an editable date input -->
+                    <!-- CHANGE: Implementation Timeline is now a date range -->
                     <div>
-                      <label for="implementation-timeline" class="block text-sm font-medium text-gray-700">
-                        Implementation Timeline <span class="text-red-500">*</span>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">
+                          Implementation Timeline <span class="text-red-500">*</span>
                       </label>
-                      <input
-                        type="date"
-                        id="implementation-timeline"
-                        v-model="internalCapa.implementation_timeline"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm py-2 px-3 focus:border-indigo-500 focus:ring-indigo-500 text-base"
-                      />
-                    </div>
-                    <!-- CHANGE: Management Comments is now an editable textarea -->
-                    <div>
-                      <label for="management-comment" class="block text-sm font-medium text-gray-700">
-                        Management Comments
-                      </label>
-                      <textarea
-                        id="management-comment"
-                        v-model="internalCapa.management_comment"
-                        rows="3"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm py-2 px-3 focus:border-indigo-500 focus:ring-indigo-500 text-base"
-                        placeholder="Add any additional comments from management..."
-                      ></textarea>
+                      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label for="implementation-timeline-from" class="block text-xs font-medium text-gray-500">From</label>
+                          <input
+                            type="date"
+                            id="implementation-timeline-from"
+                            v-model="internalCapa.implementation_timeline_from"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm py-2 px-3 focus:border-indigo-500 focus:ring-indigo-500 text-base"
+                          />
+                        </div>
+                        <div>
+                          <label for="implementation-timeline-to" class="block text-xs font-medium text-gray-500">To</label>
+                          <input
+                            type="date"
+                            id="implementation-timeline-to"
+                            v-model="internalCapa.implementation_timeline_to"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm py-2 px-3 focus:border-indigo-500 focus:ring-indigo-500 text-base"
+                          />
+                        </div>
+                      </div>
                     </div>
                     <!-- Dealing Officer Remarks remains disabled -->
                     <div v-if="internalCapa.DO_remarks">
@@ -170,7 +174,6 @@
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-50 py-2 px-3 focus:border-indigo-500 focus:ring-indigo-500 text-base"
                       ></textarea>
                     </div>
-                    <!-- User Remarks is for the final sign-off, let's keep it separate if needed or merge with Management Comments. For now, it's an extra field. -->
                     <div>
                       <label for="user-remarks" class="block text-sm font-medium text-gray-700">
                         Your Final Remarks (Optional)
@@ -231,7 +234,8 @@ watchEffect(() => {
     internalCapa.value = { // Initialize with default values for a new CAPA
       root_cause: '',
       capa: '',
-      implementation_timeline: '',
+      implementation_timeline_from: '', // CHANGE
+      implementation_timeline_to: '',   // CHANGE
       management_comment: '',
       user_remarks: '',
       // Add any other default fields for a new CAPA here
@@ -239,14 +243,15 @@ watchEffect(() => {
   }
 })
 
-// CHANGE: Updated the submit function to include all editable fields
+// CHANGE: Updated the submit function to handle date range and validation
 const submitCapa = async () => {
   try {
     // Add validation for required fields
     if (
       !internalCapa.value.root_cause ||
       !internalCapa.value.capa ||
-      !internalCapa.value.implementation_timeline
+      !internalCapa.value.implementation_timeline_from ||
+      !internalCapa.value.implementation_timeline_to
     ) {
       toast.warning('Please fill in all required fields (*).')
       return
@@ -255,8 +260,8 @@ const submitCapa = async () => {
     const dataToSubmit = {
       root_cause: internalCapa.value.root_cause,
       capa: internalCapa.value.capa,
-      implementation_timeline: internalCapa.value.implementation_timeline,
-      management_comment: internalCapa.value.management_comment,
+      implementation_timeline_from: internalCapa.value.implementation_timeline_from, // CHANGE
+      implementation_timeline_to: internalCapa.value.implementation_timeline_to,     // CHANGE
       user_remarks: internalCapa.value.user_remarks,
     }
 
@@ -264,11 +269,14 @@ const submitCapa = async () => {
     let successMessage;
 
     if (internalCapa.value.id) {
-      // Existing CAPA: PATCH request
+      // For updates, use the dedicated user update endpoint which only allows specific fields.
+      // This is more secure than sending all fields to a general update endpoint.
+      // Assuming your apiServices has a method like `patchMhpcCapaForUser`
       response = await apiServices.patchMhpcCapa(internalCapa.value.id, dataToSubmit);
       successMessage = 'CAPA plan updated successfully!';
     } else {
-      // New CAPA: POST request
+      // This block would be for creating a new CAPA from the user side, if applicable.
+      // Adjust the API call if necessary.
       response = await apiServices.postMhpcCapa(dataToSubmit);
       successMessage = 'New CAPA added successfully!';
     }

@@ -1,7 +1,7 @@
 <template>
   <div>
     <form @submit.prevent="handleSubmit" class="space-y-8">
-      
+
       <fieldset class="p-6 bg-white border border-gray-200 rounded-xl">
         <legend class="text-lg font-semibold text-gray-800 px-2">Institutional Information</legend>
         <div class="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6">
@@ -49,11 +49,11 @@
                 <label class="block text-sm font-medium text-gray-700 mb-1">Curriculum Validation Letter <span v-if="!isEditing || !formData.existing_validation_letter_url" class="text-red-500">*</span></label>
                 <div v-if="isEditing && formData.existing_validation_letter_url && !formData.curriculum_validation_letter_file" class="flex items-center justify-between p-2 text-sm text-gray-600 bg-gray-50 border rounded-lg">
                     <span>Current file: <a :href="formData.existing_validation_letter_url" target="_blank" class="font-medium text-indigo-600 hover:underline">View Letter</a></span>
-                    <button type="button" @click="removeFile('validationLetter')" class="text-red-500 hover:text-red-700 font-bold text-lg">&times;</button>
+                    <button type="button" @click="removeFile('validationLetter')" class="text-red-500 hover:text-red-700 font-bold text-lg">×</button>
                 </div>
                 <div v-else-if="formData.curriculum_validation_letter_file" class="flex items-center justify-between p-2 text-sm text-gray-600 bg-green-50 border border-green-200 rounded-lg">
                     <span class="font-medium text-green-800 truncate">📄 {{ formData.curriculum_validation_letter_file.name }}</span>
-                    <button type="button" @click="removeFile('validationLetter')" class="text-red-500 hover:text-red-700 font-bold text-lg">&times;</button>
+                    <button type="button" @click="removeFile('validationLetter')" class="text-red-500 hover:text-red-700 font-bold text-lg">×</button>
                 </div>
                 <input v-else type="file" id="validationLetter" @change="handleFileChange($event, 'validationLetter')" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer"/>
             </div>
@@ -62,11 +62,11 @@
                  <label class="block text-sm font-medium text-gray-700 mb-1">Curriculum Document <span v-if="!isEditing || !formData.existing_document_url" class="text-red-500">*</span></label>
                  <div v-if="isEditing && formData.existing_document_url && !formData.curriculum_document_file" class="flex items-center justify-between p-2 text-sm text-gray-600 bg-gray-50 border rounded-lg">
                     <span>Current file: <a :href="formData.existing_document_url" target="_blank" class="font-medium text-indigo-600 hover:underline">View Document</a></span>
-                    <button type="button" @click="removeFile('document')" class="text-red-500 hover:text-red-700 font-bold text-lg">&times;</button>
+                    <button type="button" @click="removeFile('document')" class="text-red-500 hover:text-red-700 font-bold text-lg">×</button>
                 </div>
                 <div v-else-if="formData.curriculum_document_file" class="flex items-center justify-between p-2 text-sm text-gray-600 bg-green-50 border border-green-200 rounded-lg">
                     <span class="font-medium text-green-800 truncate">📄 {{ formData.curriculum_document_file.name }}</span>
-                    <button type="button" @click="removeFile('document')" class="text-red-500 hover:text-red-700 font-bold text-lg">&times;</button>
+                    <button type="button" @click="removeFile('document')" class="text-red-500 hover:text-red-700 font-bold text-lg">×</button>
                 </div>
                 <input v-else type="file" id="curriculumDocument" @change="handleFileChange($event, 'document')" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer"/>
             </div>
@@ -147,12 +147,9 @@ const isFormValid = computed(() => {
   )
 })
 
-// --- DATA FETCHING ---
-
-// --- DATA FETCHING ---
+// --- DATA FETCHING (Corrected) ---
 
 const fetchInstituteAndTeachingCenters = async () => {
-  // REMOVED instituteId parameter
   loadingInstituteData.value = true
   const userCid = authStore.user?.cid
 
@@ -163,37 +160,32 @@ const fetchInstituteAndTeachingCenters = async () => {
   }
 
   try {
-    // 1. Fetch the user's institute first to determine its name AND ID.
     const instituteResponse = await apiServices.getMhpcInstituteByCid(userCid)
     const instituteData = instituteResponse.data?.results?.[0] ?? instituteResponse.data ?? {}
-
-    // 2. Extract the TRUE institute ID from the response. This is the crucial fix.
     const actualInstituteId = instituteData.id
 
-    // 3. If we didn't find an institute, we can't proceed.
     if (!actualInstituteId) {
       toast.error('Could not determine your institution.')
       loadingInstituteData.value = false
       return
     }
 
-    // Set form data based on what we found
     formData.value.institute_id = actualInstituteId
     formData.value.institute_name =
       instituteData.name_of_institution || `Institute ID: ${actualInstituteId}`
 
-    // 4. Now, fetch the centers and filter using the correct institute ID.
     const centersResponse = await apiServices.getMhpcTeachingCenterByCid(userCid)
-    const allCenters = centersResponse.data?.results ?? centersResponse.data ?? []
+    const allCentersForInstitute = centersResponse.data?.results ?? centersResponse.data ?? []
 
-    availableTeachingCenters.value = allCenters
-      .filter(
-        (center) => center.is_active && Number(center.institute) === Number(actualInstituteId),
-      )
+    // *** THE FINAL FIX IS HERE ***
+    // The filter now checks the 'tc_review_decision' field, which is guaranteed
+    // to be in the API response, instead of the missing 'is_active' field.
+    availableTeachingCenters.value = allCentersForInstitute
+      .filter(center => center.tc_review_decision === 'Approved')
       .sort((a, b) => a.center_name.localeCompare(b.center_name))
 
     if (availableTeachingCenters.value.length === 0) {
-      toast.warning('No active teaching centers found for this institution.')
+      toast.warning('No approved teaching centers were found for this institution.')
     }
   } catch (error) {
     console.error('Error fetching institution data:', error)
@@ -238,10 +230,8 @@ const initializeForEdit = async (appData) => {
   resetForm()
   if (!appData) return initializeForNew()
 
-  const instituteId = appData.institute?.id || authStore.user?.id
   await Promise.all([fetchInstituteAndTeachingCenters(), fetchProgramMastersData()])
 
-  // Populate form after data is loaded
   formData.value.id = appData.id
   formData.value.teaching_center_id = appData.teaching_center
   formData.value.program_master_id = appData.program_master?.id || appData.program_master
@@ -253,33 +243,27 @@ const initializeForEdit = async (appData) => {
 const initializeForNew = async () => {
   resetForm()
   if (!authStore.user?.id) {
-    // This case is handled by the watcher, but good to have a guard
     toast.info('Waiting for user information...')
     return
   }
   await Promise.all([fetchInstituteAndTeachingCenters(), fetchProgramMastersData()])
 }
 
-// WATCHER: This is the key to solving the race condition.
-// It watches the `applicationToEdit` prop to decide whether to run `initializeForEdit` or `initializeForNew`.
-// It only runs ONCE the data is actually available.
 watch(
   () => props.applicationToEdit,
   (appData) => {
     if (appData) {
       initializeForEdit(appData)
     } else {
-      // For new applications, we must also wait for the user to be loaded
       if (authStore.user?.id) {
         initializeForNew()
       } else {
-        // If the user isn't loaded yet, watch for them to become available
         const unwatch = watch(
           () => authStore.user,
           (newUser) => {
             if (newUser?.id) {
               initializeForNew()
-              unwatch() // Stop watching once we've initialized
+              unwatch()
             }
           },
           { immediate: true },
@@ -288,7 +272,7 @@ watch(
     }
   },
   { immediate: true },
-) // `immediate: true` makes it run on component mount
+)
 
 const handleSubmit = async () => {
   if (!isFormValid.value) {

@@ -383,7 +383,7 @@ const failedVerificationCount = computed(
 )
 
 const formatDate = (dateString) => {
-  if (!dateString) return 'Date TBD' // Changed from 'Date not available' for clarity if date is null
+  if (!dateString) return 'Date TBD'
   try {
     const date = new Date(dateString)
     if (isNaN(date.getTime())) return 'Invalid Date'
@@ -472,19 +472,19 @@ const fetchSchedules = async () => {
   schedules.value = []
   const userCid = authStore.user?.cid || authStore.user?.id
   try {
-    const response = await apiServices.getMhpcInstituteByCid(userCid)
+    // --- FIX APPLIED HERE ---
+    // Changed from `getMhpcInstituteByCid` to the correct function `getMhpcTeachingCenterByCid`
+    // which fetches the list of teaching centers and their schedules.
+    const response = await apiServices.getMhpcTeachingCenterByCid(userCid)
 
     let centersData = []
-    // Adjusted to check response.data first, then response.data.results
     if (response && response.data && Array.isArray(response.data.results)) {
       centersData = response.data.results
     } else if (response && response.data && Array.isArray(response.data)) {
       centersData = response.data
     } else if (response && Array.isArray(response.results)) {
-      // Fallback
       centersData = response.results
     } else if (Array.isArray(response)) {
-      // Fallback
       centersData = response
     } else {
       console.error('Unexpected API response structure for centers:', response)
@@ -497,6 +497,7 @@ const fetchSchedules = async () => {
       const isPendingOrInProgress =
         center.physical_verification_status === 'PENDING_PV' ||
         center.physical_verification_status === 'IN_PROGRESS_PV'
+      // Only show schedules that are explicitly marked to be shown to the user.
       return showToUser && (hasDate || isPendingOrInProgress)
     })
 

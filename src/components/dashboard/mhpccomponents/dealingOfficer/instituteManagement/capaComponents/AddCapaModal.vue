@@ -31,7 +31,7 @@
             <div>
               <label for="teaching-center" class="block text-sm font-medium text-gray-700 mb-1">Teaching Center</label>
               <select id="teaching-center" v-model="capaForm.teaching_center_id" class="form-select w-full" :disabled="!selectedInstituteId">
-                <option :value="null">None (For Institute Directly)</option>
+                <option :value="null">For Institute Only</option>
                 <option v-for="tc in availableTeachingCenters" :key="tc.id" :value="tc.id">{{ tc.center_name }}</option>
               </select>
             </div>
@@ -94,7 +94,7 @@ const selectedInstituteId = ref('');
 
 const availableTeachingCenters = computed(() => {
   if (!selectedInstituteId.value) return [];
-  return props.teachingCenters.filter(tc => tc.institute === selectedInstituteId.value);
+  return props.teachingCenters.filter(tc => tc.institute_details?.id === selectedInstituteId.value);
 });
 
 watch(selectedInstituteId, (newId) => {
@@ -109,12 +109,22 @@ watch(() => props.show, (newVal) => {
   }
 });
 
+
 const submitForm = () => {
   if (!capaForm.value.institute_id) {
       toast.error("Please select an institute.");
       return;
   }
-  emit('save', { ...capaForm.value });
+
+
+  const payload = { ...capaForm.value };
+
+
+  if (!payload.teaching_center_id) {
+    delete payload.teaching_center_id;
+  }
+
+  emit('save', payload);
 };
 
 </script>

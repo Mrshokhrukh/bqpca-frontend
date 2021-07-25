@@ -26,9 +26,8 @@
 
       <div class="w-full mb-6">
         <div class="flex items-center">
-          <template >
-            <div v-for="(step, index) in steps" :key="step.id">
-              <div
+          <template v-for="(step, index) in steps" :key="step.id">
+            <div
               class="flex items-center"
               :class="{ 'cursor-pointer': index < currentStep }"
               @click="setStep(index)"
@@ -52,7 +51,6 @@
               class="flex-auto border-t-2 transition-all duration-500 mx-4"
               :class="currentStep > index ? 'border-indigo-600' : 'border-gray-300'"
             ></div>
-            </div>
           </template>
         </div>
       </div>
@@ -363,7 +361,7 @@ const fetchMasterData = async () => {
         status: 'Approved',
         expand: 'program_master',
       }),
-      apiServices.getMhpcModules(),
+      apiServices.getMhpcModules({ expand: 'module_master' }),
       apiServices.getMhpcTeachingFaculties({ institute: props.currentUserInstituteId }),
     ]);
 

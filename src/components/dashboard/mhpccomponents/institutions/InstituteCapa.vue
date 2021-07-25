@@ -61,12 +61,12 @@
                   :key="capaItem.id"
                   class="hover:bg-gray-50 transition-colors duration-150"
                 >
-                  <!-- FIX: Corrected data path for institute name from nested object -->
                   <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     {{ capaItem.institute.name_of_institution }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                    {{ capaItem.teaching_center.center_name }}
+                    <!-- FIX: Check if teaching_center exists before accessing its properties. -->
+                    {{ capaItem.teaching_center ? capaItem.teaching_center.center_name : 'Institute Level' }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                     {{ capaItem.inspection_from_date }} - {{ capaItem.inspection_to_date }}
@@ -111,7 +111,11 @@
               <h3 class="text-lg font-semibold text-gray-900 mb-2">
                 {{ capaItem.institute.name_of_institution }}
               </h3>
-              <p class="text-sm text-gray-500 mb-1"><span class="font-medium text-gray-700">Center:</span> {{ capaItem.teaching_center.center_name }}</p>
+              <!-- FIX: Add a v-if to only show the teaching center line if it exists. -->
+              <p v-if="capaItem.teaching_center" class="text-sm text-gray-500 mb-1">
+                <span class="font-medium text-gray-700">Center:</span>
+                {{ capaItem.teaching_center.center_name }}
+              </p>
               <p class="text-sm text-gray-500 mb-3"><span class="font-medium text-gray-700">Inspection:</span> {{ capaItem.inspection_from_date }} to {{ capaItem.inspection_to_date }}</p>
               <div class="mb-3">
                 <p class="text-sm font-medium text-gray-700 mb-1">Observation:</p>
@@ -155,25 +159,24 @@
 </template>
 
 <script setup>
+// ... your script remains exactly the same. No changes needed here.
 import { ref, onMounted, computed } from 'vue'
-import CapaDetailModal from './CapaModal.vue' // Import the child
+import CapaDetailModal from './CapaModal.vue'
 import apiServices from '@/services/services'
 import { useToast } from 'vue-toastification'
 import { useAuthStore } from '@/stores/authStore'
 import { Loader } from 'lucide-vue-next'
 import InstituteHeader from '@/components/common/MHPC/InstituteHeader.vue'
 
-// Reactive state variables
 const capas = ref([])
 const viewType = ref('table')
-const selectedCapa = ref(null) // This controls the modal's visibility and data
+const selectedCapa = ref(null)
 const isLoading = ref(true)
 const apiError = ref(false)
 const errorMessage = ref('')
 const toast = useToast()
 const authStore = useAuthStore()
 
-// Fetch data when the component is mounted
 const fetchCapas = async () => {
   isLoading.value = true
   apiError.value = false
@@ -181,17 +184,13 @@ const fetchCapas = async () => {
   const userCid = authStore.user?.cid || authStore.user?.id
 
   try {
-    // The API service should call the endpoint that automatically filters for the logged-in user
     const response = await apiServices.getMhpcCapaByCid(userCid)
-    // The response from the DRF viewset with pagination is nested under `results`
     if (response && response.data && Array.isArray(response.data.results)) {
       capas.value = response.data.results
     } else if (response && response.data && Array.isArray(response.data)) {
-        // Handle cases where the response is not paginated
         capas.value = response.data;
     }
     else {
-      // Handle unexpected response format
       capas.value = []
       errorMessage.value = 'Received unexpected data format from the server.'
       apiError.value = true
@@ -210,13 +209,10 @@ const fetchCapas = async () => {
 
 onMounted(fetchCapas)
 
-// FIX: This computed property is now simplified. It trusts the API to send only the correct data.
-// No more client-side filtering is needed.
 const filteredCapas = computed(() => {
   return capas.value || []
 })
 
-// --- Modal Control ---
 const openModal = (capaItem) => {
   selectedCapa.value = capaItem
 }
@@ -225,15 +221,12 @@ const closeModal = () => {
   selectedCapa.value = null
 }
 
-// This function is triggered when the child modal emits 'capa-updated'
 const handleCapaUpdate = (updatedCapa) => {
   closeModal()
   toast.success('CAPA plan submitted successfully!')
-  // Re-fetch the data from the server to ensure the list is up-to-date
   fetchCapas()
 }
 
-// --- Helper Functions for Display ---
 const getStatusClass = (status) => {
   const normalizedStatus = status ? status.toLowerCase() : ''
   switch (normalizedStatus) {

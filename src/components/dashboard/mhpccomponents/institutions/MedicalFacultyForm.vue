@@ -229,7 +229,7 @@
               <label class="block text-sm font-medium text-gray-700 mb-1">Qualification Type</label>
               <input
                 type="text"
-                :value="edu.additional_info?.qualification_type_display || edu.type || 'N/A'"
+                :value="edu.type || 'N/A'"
                 disabled
                 class="form-input bg-gray-100"
               />
@@ -238,9 +238,7 @@
               <label class="block text-sm font-medium text-gray-700 mb-1">Qualification</label>
               <input
                 type="text"
-                :value="
-                  edu.additional_info?.qualification_name_display || edu.qualification || 'N/A'
-                "
+                :value="edu.qualification || 'N/A'"
                 disabled
                 class="form-input bg-gray-100"
               />
@@ -414,7 +412,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import UploadFile from '@/components/common/FileUpload.vue'
 import apiServices from '@/services/services'
 
@@ -429,7 +427,7 @@ const emit = defineEmits(['update:form', 'show-notification'])
 const isFetchingDetails = ref(false)
 
 const dataEffectivelyFetched = computed(() => {
-  return !!props.form.application_profile_identifier && !!props.form.staff_name
+  return !!props.form.staff_name;
 })
 
 const identifierInputDisabled = computed(() => {
@@ -444,6 +442,44 @@ const updateForm = (key, value) => {
   emit('update:form', { ...props.form, [key]: value })
 }
 
+const mapSourceDataToForm = (sourceData, baseForm) => {
+  const safeSourceData = sourceData || {};
+
+  const mappedEducationDetails = (safeSourceData.user_qualifications || []).map(edu => ({
+    type: edu.qualification_type_display || 'N/A',
+    qualification: edu.qualification_name_display || 'N/A',
+    institute: edu.institute_university_display || 'N/A',
+    year_of_completion: edu.completion_year || 'N/A',
+    additional_info: {
+      personnel_category: edu.personnel_category_name,
+      personnel_sub_category: edu.personnel_sub_category_name,
+      registration_no: edu.registration_no,
+      registration_date: edu.registration_date,
+      expiry_date: edu.expiry_date,
+    }
+  }));
+
+  return {
+    ...baseForm,
+    identifier: safeSourceData.CID || baseForm.identifier,
+    application_profile_identifier: safeSourceData.id || null,
+    staff_name: safeSourceData.full_name || '',
+    registration_type_name: safeSourceData.registration_type_name || '',
+    nationality: safeSourceData.nationality || '',
+    date_of_birth: safeSourceData.date_of_birth || '',
+    village: safeSourceData.village || '',
+    gewog: safeSourceData.gewog || '',
+    dzongkhag: safeSourceData.dzongkhag || '',
+    contact_no: safeSourceData.contact_no || '',
+    email_address: safeSourceData.email_address || '',
+    registration_date: safeSourceData.registration_date || '',
+    expiry_date: safeSourceData.expiry_date || '',
+    education_details: mappedEducationDetails,
+    designation: safeSourceData.designation || baseForm.designation,
+    date_of_joining: safeSourceData.date_of_joining || baseForm.date_of_joining,
+  };
+}
+
 const fetchFacultyByCid = async () => {
   if (!props.form.identifier) {
     emit('show-notification', 'warning', 'Input Required', 'Please enter a CID to search.')
@@ -455,7 +491,8 @@ const fetchFacultyByCid = async () => {
     const results = response?.data?.results || []
 
     if (results.length > 0) {
-      populateFormWithFetchedData(results[0])
+      const newFormState = mapSourceDataToForm(results[0], props.form);
+      emit('update:form', newFormState);
       emit(
         'show-notification',
         'success',
@@ -478,44 +515,6 @@ const fetchFacultyByCid = async () => {
   }
 }
 
-const populateFormWithFetchedData = (facultyData) => {
-  const updatedFormData = {
-    ...props.form,
-    identifier: facultyData.CID || props.form.identifier,
-    application_profile_identifier: facultyData.id || null,
-    staff_name: facultyData.full_name || '',
-    registration_type_name: '',
-    nationality: facultyData.country || '',
-    date_of_birth: facultyData.date_of_birth || '',
-    village: facultyData.village || '',
-    gewog: facultyData.gewog || '',
-    dzongkhag: facultyData.dzongkhag || '',
-    contact_no: facultyData.contact_no || '',
-    email_address: facultyData.email_address || '',
-    registration_date: '',
-    expiry_date: '',
-    education_details: [],
-    cid: facultyData.CID || '',
-    designation: props.form.designation || '',
-    date_of_joining: props.form.date_of_joining || new Date().toISOString().split('T')[0],
-  }
-
-  const isDifferentFacultyInEditMode =
-    props.mode === 'edit' &&
-    props.form.id &&
-    props.form.application_profile_identifier &&
-    props.form.application_profile_identifier !== facultyData.id
-
-  if (props.mode === 'add' || isDifferentFacultyInEditMode) {
-    updatedFormData.cv = null
-    updatedFormData.cv_name = ''
-    updatedFormData.passport_photo = null
-    updatedFormData.passport_photo_name = ''
-  }
-
-  emit('update:form', updatedFormData)
-}
-
 const handleFileUpload = (field, file) => {
   updateForm(field, file)
   if (file) {
@@ -529,6 +528,15 @@ const handleFileRemoval = (field) => {
   updateForm(field, null)
   updateForm(`${field}_name`, '')
 }
+
+onMounted(() => {
+  if (props.mode === 'edit' || props.mode === 'view') {
+    if (props.form && props.form.full_name) {
+      const initialFormState = mapSourceDataToForm(props.form, props.form);
+      emit('update:form', initialFormState);
+    }
+  }
+})
 </script>
 
 <style scoped>
