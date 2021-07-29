@@ -210,7 +210,7 @@ import TeachingCenterApplication from './TeachingCenterApplicationModal.vue'
 import PaymentModal from '@/components/common/PaymentModal.vue'
 import TeachingCenterCertificate from './TeachingCenterCertificate.vue'
 
-// All state variables...
+// --- State Variables ---
 const toast = useToast()
 const authStore = useAuthStore()
 const applications = ref([])
@@ -231,16 +231,19 @@ const teaching_hospital_registration = 100
 const teachingCenterPaymentModalRef = ref(null)
 const selectedApplicationForPayment = ref(null)
 const savedDraft = ref(null)
+const DRAFT_KEY = 'teachingCenterApplicationDraft'
 
-// All computed properties and watchers...
+// --- Computed Properties & Watchers ---
 const dzongkhagOptionsForCenter = computed(() =>
   bhutanDzongkhagsGewogs.map((d) => ({ value: d.dzongkhag, label: d.dzongkhag })),
 )
+
 const gewogOptionsForCenter = computed(() => {
   if (!filterDzongkhag.value) return []
   const selected = bhutanDzongkhagsGewogs.find((d) => d.dzongkhag === filterDzongkhag.value)
   return selected ? selected.gewogs.map((g) => ({ value: g, label: g })) : []
 })
+
 watch(() => filterDzongkhag.value, () => { filterGewog.value = '' })
 
 const filteredApplications = computed(() => {
@@ -260,7 +263,7 @@ const filteredApplications = computed(() => {
   })
 })
 
-// All formatting and class functions...
+// --- Formatting & Class Functions ---
 const statusClass = (status) => {
   const s = status ? status.toLowerCase() : 'unknown'
   if (s === 'approved') return 'bg-green-100 text-green-700 border border-green-200'
@@ -268,6 +271,7 @@ const statusClass = (status) => {
   if (s === 'regretted' || s === 'rejected') return 'bg-red-100 text-red-700 border border-red-200'
   return 'bg-gray-100 text-gray-700 border border-gray-200'
 }
+
 const paymentStatusClass = (status) => {
   const s = status ? status.toLowerCase().replace(/_/g, ' ') : 'not paid'
   if (s === 'paid' || s === 'completed' || s === 'success') return 'bg-green-100 text-green-700 border border-green-200'
@@ -276,15 +280,18 @@ const paymentStatusClass = (status) => {
   if (s === 'not paid') return 'bg-orange-100 text-orange-700 border border-orange-200'
   return 'bg-gray-100 text-gray-700 border border-gray-200'
 }
+
 const formatPaymentStatus = (status) => {
   if (!status) return 'Not Paid'
   return status.replace(/_/g, ' ').split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
 }
+
 const formatDate = (date) => {
   if (!date) return 'N/A'
   return new Date(date).toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: '2-digit' })
 }
 
+// --- Data Fetching Functions ---
 const fetchPreceptorDetails = async (teachingCenterId) => {
   if (!teachingCenterId) return null
   try {
@@ -335,7 +342,7 @@ const fetchApplications = async () => {
   }
 }
 
-// All condition-checking functions (can... functions)
+// --- Condition-Checking Functions ---
 const canMakePayment = (application) => {
   const decision = application.tc_review_decision?.toLowerCase()
   const status = application.payment_status ? application.payment_status.toLowerCase().replace(/ /g, '_') : 'not_paid'
@@ -351,18 +358,42 @@ const canRemovePreceptor = (application) => {
   return application.isPreceptorAdded
 }
 
-// *** THIS IS THE CORRECTED LOGIC ***
-// Certificate visibility is independent of the preceptor.
 const canDownloadCertificate = (application) => {
   const status = application.payment_status ? application.payment_status.toLowerCase() : ''
   return (
     application.tc_review_decision?.toLowerCase() === 'approved' &&
     ['paid', 'completed', 'success'].includes(status)
-    // The check for `application.isPreceptorAdded` has been removed.
   )
 }
 
-// All event handler functions (handle... and open/close modal functions)
+
+// --- New/Fixed Functions for Draft Handling & Modals ---
+const openApplicationFormModal = (loadDraft = false) => {
+  if (loadDraft && savedDraft.value) {
+    selectedApplication.value = savedDraft.value;
+  } else {
+    selectedApplication.value = null;
+  }
+  isApplicationFormModalOpen.value = true;
+};
+
+const discardDraft = () => {
+  if (confirm('Are you sure you want to discard the saved draft?')) {
+    localStorage.removeItem(DRAFT_KEY);
+    savedDraft.value = null;
+    openApplicationFormModal(false);
+  }
+};
+
+const handleDraftSaved = (draftData) => {
+  localStorage.setItem(DRAFT_KEY, JSON.stringify(draftData));
+  savedDraft.value = draftData;
+  toast.info('Your application has been saved as a draft.');
+  closeApplicationFormModal();
+};
+
+
+// --- Event Handlers & Modal Control ---
 const openCertificateModal = (application) => {
   selectedCertificateData.value = {
     id: application.id,
@@ -394,25 +425,101 @@ const openAddPreceptorModal = (application) => {
   isPreceptorModalOpen.value = true
 }
 
+const closePreceptorModal = () => {
+  isPreceptorModalOpen.value = false;
+  selectedApplicationForPreceptor.value = null;
+};
+
 const handlePreceptorSubmitSuccess = async () => {
   toast.success('Clinical Preceptor added successfully. Refreshing list...')
   closePreceptorModal()
   await fetchApplications()
 }
-// ... other handlers like removePreceptor, viewDetails, etc. are unchanged ...
-const closePreceptorModal = () => { isPreceptorModalOpen.value = false; selectedApplicationForPreceptor.value = null; };
-const confirmRemovePreceptor = (application) => { if (confirm(`Are you sure you want to remove the preceptor "${application.preceptorName}" for ${application.center_name}?`)) { removePreceptor(application) } };
-const removePreceptor = async (application) => { if (!application.preceptorId) { toast.error('Preceptor ID not found.'); return; } isLoading.value = true; try { await apiServices.deleteMhpcClinicalPreceptor(application.preceptorId); toast.success('Preceptor removed successfully.'); await fetchApplications(); } catch (error) { toast.error('Failed to remove preceptor.'); } finally { isLoading.value = false; } };
-const viewDetails = (application) => { selectedApplication.value = application; isDetailsModalOpen.value = true; };
-const closeDetailsModal = () => { isDetailsModalOpen.value = false; selectedApplication.value = null; };
-const closeApplicationFormModal = () => { isApplicationFormModalOpen.value = false; };
-const handleApplicationFormSubmitted = () => { closeApplicationFormModal(); fetchApplications(); toast.success('Application submitted successfully!'); };
-const initiateTeachingCenterPayment = (application) => { selectedApplicationForPayment.value = application; if (teachingCenterPaymentModalRef.value) { teachingCenterPaymentModalRef.value.openModal(); } };
-const closeTeachingCenterPaymentModal = () => { if (!isPaymentProcessing.value) { selectedApplicationForPayment.value = null; } };
-const handleTeachingCenterPaymentCompleted = async (paymentData) => { /* ... unchanged payment logic ... */ };
 
+const confirmRemovePreceptor = (application) => {
+  if (confirm(`Are you sure you want to remove the preceptor "${application.preceptorName}" for ${application.center_name}?`)) {
+    removePreceptor(application)
+  }
+};
+
+const removePreceptor = async (application) => {
+  if (!application.preceptorId) {
+    toast.error('Preceptor ID not found.');
+    return;
+  }
+  isLoading.value = true;
+  try {
+    await apiServices.deleteMhpcClinicalPreceptor(application.preceptorId);
+    toast.success('Preceptor removed successfully.');
+    await fetchApplications();
+  } catch (error) {
+    toast.error('Failed to remove preceptor.');
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+const viewDetails = (application) => {
+  selectedApplication.value = application;
+  isDetailsModalOpen.value = true;
+};
+
+const closeDetailsModal = () => {
+  isDetailsModalOpen.value = false;
+  selectedApplication.value = null;
+};
+
+const closeApplicationFormModal = () => {
+  isApplicationFormModalOpen.value = false;
+  selectedApplication.value = null; // Also clear selection on close
+};
+
+const handleApplicationFormSubmitted = () => {
+  closeApplicationFormModal();
+  fetchApplications();
+  localStorage.removeItem(DRAFT_KEY); // Clear the draft on successful submission
+  savedDraft.value = null;
+  toast.success('Application submitted successfully!');
+};
+
+const initiateTeachingCenterPayment = (application) => {
+  selectedApplicationForPayment.value = application;
+  if (teachingCenterPaymentModalRef.value) {
+    teachingCenterPaymentModalRef.value.openModal();
+  }
+};
+
+const closeTeachingCenterPaymentModal = () => {
+  if (!isPaymentProcessing.value) {
+    selectedApplicationForPayment.value = null;
+  }
+};
+
+const handleTeachingCenterPaymentCompleted = async (paymentData) => {
+    if (!selectedApplicationForPayment.value) return;
+    isPaymentProcessing.value = true;
+    try {
+        const payload = { payment_status: 'Paid', payment_id: paymentData.transactionId };
+        await apiServices.patchMhpcTeachingCenter(selectedApplicationForPayment.value.id, payload);
+        toast.success('Payment successful! Your application status has been updated.');
+        await fetchApplications();
+    } catch (error) {
+        console.error('Error updating payment status:', error);
+        toast.error('Payment was successful, but failed to update application status. Please contact support.');
+    } finally {
+        isPaymentProcessing.value = false;
+        closeTeachingCenterPaymentModal();
+    }
+};
+
+
+// --- Lifecycle Hook ---
 onMounted(() => {
-  fetchApplications()
+  fetchApplications();
+  const draft = localStorage.getItem(DRAFT_KEY);
+  if (draft) {
+    savedDraft.value = JSON.parse(draft);
+  }
 })
 </script>
 

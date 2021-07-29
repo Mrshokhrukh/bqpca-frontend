@@ -21,30 +21,7 @@
           <li v-for="(error, index) in validationErrors" :key="`error-${index}`">{{ error }}</li>
         </ul>
       </div>
-      <div
-        v-if="successMessage"
-        class="bg-green-100 border-l-4 border-green-500 text-green-700 p-6 rounded-lg shadow-lg flex items-center space-x-3 transition-all duration-300"
-        role="alert"
-      >
-        <svg
-          class="h-8 w-8 text-green-500"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M5 13l4 4L19 7"
-          />
-        </svg>
-        <div>
-          <p class="font-bold text-lg">Application Submitted Successfully!</p>
-          <p class="text-sm">{{ successMessage }}</p>
-        </div>
-      </div>
+      
     </div>
 
     <form @submit.prevent="handleSubmit" class="space-y-8">
@@ -804,17 +781,19 @@
 
 <script setup>
 import { ref, reactive, onMounted, computed } from 'vue'
+import { useToast } from 'vue-toastification'
 import { useAuthStore } from '@/stores/authStore'
 import { useRouter } from 'vue-router'
 import apiService from '@/services/services'
 
 const authStore = useAuthStore()
 const router = useRouter()
+const toast = useToast()
 
 const loading = ref(false)
 const currentAction = ref('')
 const showConfirmation = ref(false)
-const successMessage = ref('')
+
 const userRegistrations = ref([])
 
 const applicant = reactive({
@@ -1523,7 +1502,7 @@ const resetFormState = () => {
   participantDetailsErrors.value = {}
   approvedCpdErrors.value = {}
 
-  successMessage.value = ''
+  
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
@@ -1543,16 +1522,10 @@ const saveDraft = () => {
       participants: JSON.parse(JSON.stringify(participants.value)),
     }
     localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(draftData))
-    successMessage.value =
-      'Draft saved successfully to your browser. It will be here when you get back.'
-    setTimeout(() => {
-      successMessage.value = ''
-    }, 5000)
+    toast.success('Draft saved successfully to your browser. It will be here when you get back.')
   } catch (error) {
     console.error('Error saving draft to local storage:', error)
-    validationErrors.value = [
-      'Failed to save draft. Your browser might be out of space or in private mode.',
-    ]
+    toast.error('Failed to save draft. Your browser might be out of space or in private mode.')
   }
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
@@ -1575,15 +1548,11 @@ const loadDraft = () => {
       participants.value = draftData.participants || []
 
       calculateTotalHours()
-      successMessage.value =
-        'Loaded saved draft. Please re-select any required files before submitting.'
-      setTimeout(() => {
-        successMessage.value = ''
-      }, 7000)
+      toast.info('Loaded saved draft. Please re-select any required files before submitting.')
     }
   } catch (error) {
     console.error('Error loading draft from local storage:', error)
-    validationErrors.value = ['Could not load saved draft due to an error.']
+    toast.error('Could not load saved draft due to an error.')
   }
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
@@ -1611,34 +1580,32 @@ const confirmSubmit = async () => {
     const fd = prepareFormData(false)
     await apiService.createMhpcCpdTask(fd)
     localStorage.removeItem(DRAFT_STORAGE_KEY)
-    successMessage.value = 'Application submitted successfully! Redirecting to dashboard...'
+    toast.success('Application submitted successfully! Redirecting to dashboard...')
     resetFormState()
     setTimeout(() => {
-      successMessage.value = ''
       router.push('/admin/cme_cpd_provider/health_certification/dashboard')
     }, 3000)
   } catch (error) {
     console.error('Error submitting application:', error)
-    validationErrors.value = ['Submission failed. Please review the errors below.']
+    let errorMessage = 'Submission failed. Please review the errors below.'
     if (error.response?.data) {
       Object.entries(error.response.data).forEach(([key, value]) => {
         if (key === 'detail' && typeof value === 'string') {
-          validationErrors.value.push(value)
+          errorMessage += `\n${value}`
         } else if (Array.isArray(value)) {
-          validationErrors.value.push(`${key}: ${value.join(', ')}`)
+          errorMessage += `\n${key}: ${value.join(', ')}`
         } else if (typeof value === 'object') {
           Object.entries(value).forEach(([subKey, subValue]) => {
-            validationErrors.value.push(
-              `${key}.${subKey}: ${Array.isArray(subValue) ? subValue.join(', ') : subValue}`,
-            )
+            errorMessage += `\n${key}.${subKey}: ${Array.isArray(subValue) ? subValue.join(', ') : subValue}`
           })
         } else {
-          validationErrors.value.push(`${key}: ${value}`)
+          errorMessage += `\n${key}: ${value}`
         }
       })
     } else {
-      validationErrors.value.push('An unexpected error occurred. Please try again.')
+      errorMessage = 'An unexpected error occurred. Please try again.'
     }
+    toast.error(errorMessage)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   } finally {
     loading.value = false

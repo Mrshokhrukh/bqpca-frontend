@@ -60,8 +60,8 @@
               </div>
               <div class="signature-box text-center">
                 <div class="signature-line"></div>
-                <p class="font-semibold">President</p>
-                <p>Medical and Health Professionals Council</p>
+                <p class="font-semibold">Director</p>
+                <p>Bhutan Qualifications and Professionals Certification Authority</p>
               </div>
             </div>
           </div>

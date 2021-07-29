@@ -141,14 +141,14 @@
       </div>
     </div>
 
-    <TeachingHospitalsDetailsModal
+    <!-- <TeachingHospitalsDetailsModal
       :is-open="isModalOpen"
       :hospital-details="selectedApplication"
       @close-modal="closeApplicationModal"
       @approve="triggerApprove"
       @reject="triggerReject"
       @submit-verification="triggerSubmitVerification"
-    />
+    /> -->
 
     <div v-if="confirmModal.show" class="fixed z-30 inset-0 overflow-y-auto">
       <div
@@ -249,7 +249,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import TeachingHospitalsDetailsModal from '../modals/TeachingHospitalsDetailsModal.vue'
+// import TeachingHospitalsDetailsModal from '../modals/TeachingHospitalsDetailsModal.vue'
 import apiServices from '@/services/services.js'
 
 const teachingCenters = ref([])

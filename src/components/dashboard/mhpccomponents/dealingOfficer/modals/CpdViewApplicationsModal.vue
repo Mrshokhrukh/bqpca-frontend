@@ -36,7 +36,7 @@
                       'bg-yellow-50 border-yellow-100':
                         application.application_status === 'SUBMITTED',
                       'bg-green-50 border-green-100': application.application_status === 'APPROVED',
-                      'bg-red-50 border-red-100': application.application_status === 'REJECTED',
+                      'bg-red-50 border-red-100': application.application_status === 'REGRETTED',
                     },
                   ]"
                 >
@@ -64,7 +64,7 @@
                             'bg-green-100 text-green-800':
                               application.application_status === 'APPROVED',
                             'bg-red-100 text-red-800':
-                              application.application_status === 'REJECTED',
+                              application.application_status === 'REGRETTED',
                           },
                         ]"
                       >
@@ -73,7 +73,7 @@
                           :class="{
                             'text-yellow-500': application.application_status === 'SUBMITTED',
                             'text-green-500': application.application_status === 'APPROVED',
-                            'text-red-500': application.application_status === 'REJECTED',
+                            'text-red-500': application.application_status === 'REGRETTED',
                           }"
                         />
                         <span>{{ application.application_status || 'N/A' }}</span>
@@ -93,70 +93,35 @@
                   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div class="space-y-6">
                       <InfoCard icon="User" title="Applicant Information">
-                        <InfoItem label="Full Name" :value="application.full_name" />
-                        <InfoItem label="Registration No." :value="application.registration_no" />
-                        <InfoItem label="CID Number" :value="application.cid_no" />
+                        <EditableInput label="Full Name" v-model="editableApplication.full_name" :is-editing="isEditing" />
+                        <EditableInput label="Registration No." v-model="editableApplication.registration_no" :is-editing="isEditing" />
+                        <EditableInput label="CID Number" v-model="editableApplication.cid_no" :is-editing="isEditing" />
                       </InfoCard>
 
                       <InfoCard icon="MapPin" title="Training Location & Dates">
-                        <InfoItem
-                          label="Proposed Location"
-                          :value="application.proposed_training_location"
-                        />
-                        <InfoItem label="Venue" :value="application.venue" />
-                        <InfoItem label="From Date" :value="formatDate(application.from_date)" />
-                        <InfoItem label="To Date" :value="formatDate(application.to_date)" />
+                        <EditableInput label="Proposed Location" v-model="editableApplication.proposed_training_location" :is-editing="isEditing" />
+                        <EditableInput label="Venue" v-model="editableApplication.venue" :is-editing="isEditing" />
+                        <EditableInput label="From Date" v-model="editableApplication.from_date" :is-editing="isEditing" type="date" />
+                        <EditableInput label="To Date" v-model="editableApplication.to_date" :is-editing="isEditing" type="date" />
                       </InfoCard>
 
                       <InfoCard icon="Briefcase" title="Provider & Justification">
-                        <InfoItem
-                          label="Providing Agency"
-                          :value="application.cpd_providing_agency?.name"
-                        />
-                        <InfoItem
-                          v-if="application.if_others_specify"
-                          label="Other Agency Details"
-                          :value="application.if_others_specify"
-                        />
-                        <InfoItem
-                          label="Reason for Conducting"
-                          :value="application.reason_for_conducting?.name"
-                        />
-                        <InfoItem
-                          label="Reason Details"
-                          :value="application.reason_for_details"
-                          :is-long-text="true"
-                        />
+                        <EditableInput label="Providing Agency" v-model="editableApplication.cpd_providing_agency.name" :is-editing="isEditing" />
+                        <EditableInput v-if="editableApplication.if_others_specify" label="Other Agency Details" v-model="editableApplication.if_others_specify" :is-editing="isEditing" />
+                        <EditableInput label="Reason for Conducting" v-model="editableApplication.reason_for_conducting.name" :is-editing="isEditing" />
+                        <EditableTextarea label="Reason Details" v-model="editableApplication.reason_for_details" :is-editing="isEditing" />
                       </InfoCard>
                     </div>
 
                     <div class="space-y-6">
                       <InfoCard icon="BookOpen" title="CPD Core Details">
-                        <InfoItem
-                          label="Title of CPD"
-                          :value="application.title_of_cpd"
-                          :is-long-text="true"
-                        />
-                        <InfoItem
-                          label="CPD Type"
-                          :value="application.type_of_cpd?.cpd_activity_name"
-                        />
-                        <InfoItem
-                          label="Expected Outcome"
-                          :value="application.expected_outcome"
-                          :is-long-text="true"
-                        />
-                        <InfoItem
-                          label="Relevance to Topic"
-                          :value="application.relevance_to_topic"
-                          :is-long-text="true"
-                        />
+                        <EditableTextarea label="Title of CPD" v-model="editableApplication.title_of_cpd" :is-editing="isEditing" />
+                        <EditableInput label="CPD Type" v-model="editableApplication.type_of_cpd.cpd_activity_name" :is-editing="isEditing" />
+                        <EditableTextarea label="Expected Outcome" v-model="editableApplication.expected_outcome" :is-editing="isEditing" />
+                        <EditableTextarea label="Relevance to Topic" v-model="editableApplication.relevance_to_topic" :is-editing="isEditing" />
                         <div class="grid grid-cols-2 gap-4 pt-2">
-                          <InfoItem
-                            label="Duration"
-                            :value="`${application.duration_in_hours} hours`"
-                          />
-                          <InfoItem label="Credits" :value="application.credit" />
+                          <EditableInput label="Duration" v-model="editableApplication.duration_in_hours" :is-editing="isEditing" type="number" />
+                          <EditableInput label="Credits" v-model="editableApplication.credit" :is-editing="isEditing" type="number" />
                         </div>
                       </InfoCard>
 
@@ -260,10 +225,7 @@
 
                     <div class="space-y-6">
                       <InfoCard icon="Users" title="Target Audience">
-                        <InfoItem
-                          label="Number of Participants"
-                          :value="application.number_of_participants"
-                        />
+                        <EditableInput label="Number of Participants" v-model="editableApplication.number_of_participants" :is-editing="isEditing" type="number" />
                         <hr class="my-4" />
                         <h5 class="text-sm font-semibold text-gray-700 mb-2">Target Categories</h5>
                         <div class="flex flex-wrap gap-2">
@@ -303,15 +265,8 @@
                       </InfoCard>
 
                       <InfoCard icon="ClipboardCheck" title="Review Status">
-                        <InfoItem
-                          label="Last Updated"
-                          :value="formatDateTime(application.status_last_updated)"
-                        />
-                        <InfoItem
-                          label="Remarks"
-                          :value="application.status_remarks"
-                          :is-long-text="true"
-                        />
+                        <EditableInput label="Last Updated" :value="formatDateTime(application.status_last_updated)" :is-editing="false" />
+                        <EditableTextarea label="Remarks" v-model="editableApplication.status_remarks" :is-editing="isEditing" />
                       </InfoCard>
 
                       <div
@@ -326,40 +281,49 @@
                         </h4>
                         <div class="flex flex-col gap-4">
                           <button
-                            v-if="
-                              application.application_status === 'SUBMITTED' && !showApprovalForm
-                            "
+                            v-if="!isEditing"
                             type="button"
-                            class="w-full px-5 py-2.5 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg shadow-sm flex items-center justify-center gap-2"
-                            @click="showApprovalForm = true"
-                          >
-                            <CheckCircle class="h-5 w-5" />
-                            Approve Application
-                          </button>
-
-                          <button
-                            v-if="
-                              application.application_status === 'SUBMITTED' && !showRejectionForm
-                            "
-                            type="button"
-                            class="w-full px-5 py-2.5 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg shadow-sm flex items-center justify-center gap-2"
-                            @click="showRejectionForm = true"
-                          >
-                            <X class="h-5 w-5" />
-                            Reject Application
-                          </button>
-
-                          <button
-                            v-if="
-                              application.application_status === 'APPROVED' && !showCreditEditForm
-                            "
-                            type="button"
-                            class="w-full px-5 py-2.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm flex items-center justify-center gap-2"
-                            @click="showCreditEditForm = true"
+                            class="w-full px-5 py-2.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm flex items-center justify-center gap-2 transition-opacity"
+                            :class="{ 'opacity-50 cursor-not-allowed': application.application_status !== 'SUBMITTED' }"
+                            :disabled="application.application_status !== 'SUBMITTED'"
+                            @click="isEditing = true"
                           >
                             <Pencil class="h-5 w-5" />
-                            Edit Awarded Credits
+                            Edit Application
                           </button>
+                          <button
+                            v-if="isEditing"
+                            type="button"
+                            class="w-full px-5 py-2.5 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg shadow-sm flex items-center justify-center gap-2"
+                            @click="saveChanges"
+                          >
+                            <Save class="h-5 w-5" />
+                            Save Changes
+                          </button>
+
+                          <template v-if="!isEditing">
+                            <button
+                              v-if="application.application_status === 'SUBMITTED' && !showApprovalForm"
+                              type="button"
+                              class="w-full px-5 py-2.5 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg shadow-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                              @click="showApprovalForm = true"
+                              :disabled="isEditing"
+                            >
+                              <CheckCircle class="h-5 w-5" />
+                              Approve Application
+                            </button>
+
+                            <button
+                              v-if="application.application_status === 'SUBMITTED' && !showRejectionForm"
+                              type="button"
+                              class="w-full px-5 py-2.5 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg shadow-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                              @click="showRejectionForm = true"
+                              :disabled="isEditing"
+                            >
+                              <X class="h-5 w-5" />
+                              Reject Application
+                            </button>
+                          </template>
                         </div>
 
                         <div
@@ -489,14 +453,18 @@
 </template>
 
 <script setup>
-import { ref, watch, nextTick, defineAsyncComponent } from 'vue'
+import { ref, watch, nextTick, defineAsyncComponent, reactive } from 'vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 // NEW: Imported Pencil icon
-import { CheckCircle, X, Circle, Link, FileText, Pencil } from 'lucide-vue-next'
+import { CheckCircle, X, Circle, Link, FileText, Pencil, Save } from 'lucide-vue-next'
+
+import { useToast } from 'vue-toastification'
 
 // Lazy load helper components for better performance
 const InfoCard = defineAsyncComponent(() => import('./InfoCard.vue'))
 const InfoItem = defineAsyncComponent(() => import('./InfoItem.vue'))
+const EditableInput = defineAsyncComponent(() => import('./EditableInput.vue'))
+const EditableTextarea = defineAsyncComponent(() => import('./EditableTextarea.vue'))
 
 const props = defineProps({
   application: {
@@ -511,6 +479,10 @@ const props = defineProps({
 
 // MODIFIED: Added 'save' for better practice
 const emit = defineEmits(['close', 'approve', 'reject', 'save'])
+const toast = useToast()
+
+const isEditing = ref(false)
+const editableApplication = reactive({})
 
 const showApprovalForm = ref(false)
 const showRejectionForm = ref(false)
@@ -530,6 +502,8 @@ watch(
   async (newApplication) => {
     if (newApplication) {
       // 1. Reset all form states when a new application is loaded
+      isEditing.value = false
+      Object.assign(editableApplication, JSON.parse(JSON.stringify(newApplication)))
       showApprovalForm.value = false
       showRejectionForm.value = false
       showCreditEditForm.value = false // NEW: Reset edit form visibility
@@ -556,8 +530,17 @@ watch(
   { immediate: true, deep: true },
 )
 
+const saveChanges = () => {
+  isEditing.value = false
+  emit('save', editableApplication)
+  toast.success('Changes saved successfully.')
+}
+
 const approveApplication = () => {
-  if (approvalCredits.value < 0) return
+  if (approvalCredits.value < 0) {
+    toast.error('Credits awarded cannot be negative.')
+    return
+  }
   emit('approve', {
     id: props.application.id,
     status_remarks: approvalMessage.value || 'Application approved.',
@@ -569,6 +552,7 @@ const approveApplication = () => {
 const rejectApplication = () => {
   if (!rejectionMessage.value.trim()) {
     rejectionError.value = 'Please provide a reason for rejection'
+    toast.error('Please provide a reason for rejection.')
     return
   }
   emit('reject', {
@@ -580,11 +564,15 @@ const rejectApplication = () => {
 
 // NEW: Method to handle saving credit changes
 const saveCreditChanges = () => {
-  if (editableCredits.value < 0) return
+  if (editableCredits.value < 0) {
+    toast.error('Awarded credits cannot be negative.')
+    return
+  }
   emit('save', {
     id: props.application.id,
     credit: editableCredits.value,
   })
+  toast.success('Credit changes saved successfully.')
   emit('close')
 }
 

@@ -10,7 +10,6 @@
               d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a1 1 0 011-1h14a1 1 0 110 2H3a1 1 0 01-1-1z"
             ></path>
           </svg>
-          <!-- MODIFIED: Changed label to reflect all institutes -->
           Total Institutes: {{ institutes.length }}
         </span>
         <span class="flex items-center ml-6">
@@ -73,7 +72,6 @@
             </tr>
             <!-- Empty State -->
             <tr v-else-if="institutes.length === 0">
-              <!-- MODIFIED: Changed empty state message -->
               <td colspan="5" class="px-6 py-10 text-center text-sm text-gray-500">
                 No institute applications found.
               </td>
@@ -136,8 +134,8 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useToast } from 'vue-toastification'
-import InstituteRenewalApplicationDetailsModal from '../modals/InstituteRenewalApplicationDetailsModal.vue' // Adjust path if needed
-import apiService from '@/services/services' // Adjust path if needed
+import InstituteRenewalApplicationDetailsModal from '../modals/InstituteRenewalApplicationDetailsModal.vue'
+import apiService from '@/services/services'
 
 const toast = useToast()
 const institutes = ref([])
@@ -154,10 +152,7 @@ const fetchInstitutes = async () => {
   try {
     const response = await apiService.getMhpcInstitutes()
     if (response.data && Array.isArray(response.data.results)) {
-      // MODIFICATION: Removed the complex filter. Now we display ALL institutes.
-      // We still sort them by expiry date, which is useful.
       institutes.value = response.data.results.sort((a, b) => {
-        // Handle cases where valid_till might be null
         if (!a.valid_till) return 1
         if (!b.valid_till) return -1
         return new Date(a.valid_till) - new Date(b.valid_till)
@@ -177,7 +172,16 @@ const fetchInstitutes = async () => {
 }
 
 const openModal = (institute) => {
-  selectedInstitute.value = institute
+  selectedInstitute.value = {
+    id: institute.id,
+    instituteName: institute.name_of_institution,
+    applicantName: institute.full_name,
+    renewalDate: institute.updated_at,
+    expiryDate: institute.valid_till,
+    review_decision: institute.review_decision,
+    remarks: institute.remarks,
+    reason_if_rejected: institute.reason_if_rejected,
+  }
   isModalOpen.value = true
 }
 
@@ -228,7 +232,6 @@ const isExpired = (validTill) => {
   return new Date(validTill) < today
 }
 
-// NEW HELPER FUNCTION: To check if renewal is due within the 90-day window
 const isRenewalDueSoon = (validTill) => {
   if (!validTill) return false
   const today = new Date()
@@ -241,7 +244,6 @@ const getStatusClass = (status, validTill) => {
   if (status === 'Pending') {
     return 'px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800'
   }
-  // MODIFIED: Expanded logic for 'Approved' status
   if (status === 'Approved') {
     if (isExpired(validTill)) {
       return 'px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800'
@@ -249,7 +251,6 @@ const getStatusClass = (status, validTill) => {
     if (isRenewalDueSoon(validTill)) {
       return 'px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800'
     }
-    // NEW: Added a class for 'Active' status (approved and not expiring soon)
     return 'px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800'
   }
   return 'px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800'
@@ -257,16 +258,13 @@ const getStatusClass = (status, validTill) => {
 
 const getStatusText = (status, validTill) => {
   if (status === 'Pending') return 'Pending Renewal'
-  // MODIFIED: Expanded logic for 'Approved' status
   if (status === 'Approved') {
     if (isExpired(validTill)) return 'Expired'
     if (isRenewalDueSoon(validTill)) return 'Renewal Due'
-    // NEW: Added text for 'Active' status
     return 'Active'
   }
-  // Handle other potential statuses from your backend, e.g., 'Rejected'
-  if (status === 'Rejected') return 'Rejected'
-  return status // Fallback
+  if (status === 'Rejected' || status === 'Regretted') return 'Rejected'
+  return status
 }
 
 const getPendingCount = () => {

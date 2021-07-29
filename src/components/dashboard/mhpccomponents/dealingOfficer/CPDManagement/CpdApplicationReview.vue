@@ -1,103 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
-    <Transition name="notification">
-      <div
-        v-if="notification.show"
-        :class="[
-          'fixed right-4 top-4 p-4 rounded-md shadow-lg flex items-center z-50 max-w-md',
-          notification.type === 'success'
-            ? 'bg-green-50 border-l-4 border-green-500'
-            : notification.type === 'error'
-              ? 'bg-red-50 border-l-4 border-red-500'
-              : 'bg-blue-50 border-l-4 border-blue-500',
-        ]"
-      >
-        <div
-          :class="[
-            'flex-shrink-0 w-6 h-6',
-            notification.type === 'success'
-              ? 'text-green-500'
-              : notification.type === 'error'
-                ? 'text-red-500'
-                : 'text-blue-500',
-          ]"
-        >
-          <svg
-            v-if="notification.type === 'success'"
-            class="w-6 h-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M5 13l4 4L19 7"
-            />
-          </svg>
-          <svg
-            v-else-if="notification.type === 'error'"
-            class="w-6 h-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-          <svg v-else class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
-        </div>
-        <div class="ml-3">
-          <h3
-            :class="[
-              'text-sm font-medium',
-              notification.type === 'success'
-                ? 'text-green-800'
-                : notification.type === 'error'
-                  ? 'text-red-800'
-                  : 'text-blue-800',
-            ]"
-          >
-            {{ notification.title }}
-          </h3>
-          <p
-            :class="[
-              'text-sm mt-1',
-              notification.type === 'success'
-                ? 'text-green-700'
-                : notification.type === 'error'
-                  ? 'text-red-700'
-                  : 'text-blue-700',
-            ]"
-          >
-            {{ notification.message }}
-          </p>
-        </div>
-        <button @click="closeNotification" class="ml-4 text-gray-500 hover:text-gray-600">
-          <span class="sr-only">Close</span>
-          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
-      </div>
-    </Transition>
+
 
     <div class="mx-auto">
       <DOPageHeader
@@ -344,6 +247,7 @@ import { ref, computed, onMounted, watch } from 'vue'
 import CpdViewApplicationsModal from '../modals/CpdViewApplicationsModal.vue'
 import apiServices from '@/services/services'
 import DOPageHeader from '@/components/common/MHPC/DOPageHeader.vue'
+import { useToast } from 'vue-toastification'
 
 // --- STATE ---
 const applications = ref([])
@@ -354,13 +258,7 @@ const searchQuery = ref('')
 const statusFilter = ref('')
 const currentPage = ref(1)
 const pageSize = ref(10)
-const notification = ref({
-  show: false,
-  type: 'info',
-  title: '',
-  message: '',
-  timeout: null,
-})
+const toast = useToast()
 // --- NEW: State to control the modal's initial action ---
 const initialAction = ref(null)
 
@@ -379,7 +277,7 @@ const statusFilterOptions = ref([
   { value: '', text: 'All Statuses' },
   { value: 'SUBMITTED', text: 'SUBMITTED' },
   { value: 'APPROVED', text: 'Approved' },
-  { value: 'REJECTED', text: 'Rejected' },
+  { value: 'REGRETTED', text: 'Rejected' },
 ])
 
 const filteredApplications = computed(() => {
@@ -427,29 +325,13 @@ const resetPagination = () => {
 
 watch([searchQuery, statusFilter], resetPagination)
 
-const showNotification = (type, title, message, duration = 5000) => {
-  if (notification.value.timeout) clearTimeout(notification.value.timeout)
-  notification.value = {
-    show: true,
-    type,
-    title,
-    message,
-    timeout: setTimeout(closeNotification, duration),
-  }
-}
-const closeNotification = () => {
-  notification.value.show = false
-  if (notification.value.timeout) {
-    clearTimeout(notification.value.timeout)
-    notification.value.timeout = null
-  }
-}
+
 
 const getStatusColor = (status) =>
   ({
     SUBMITTED: 'bg-yellow-100 text-yellow-800',
     APPROVED: 'bg-green-100 text-green-800',
-    REJECTED: 'bg-red-100 text-red-800',
+    REGRETTED: 'bg-red-100 text-red-800',
     DRAFT: 'bg-gray-100 text-gray-800',
   })[status] || 'bg-gray-100 text-gray-800'
 
@@ -483,15 +365,11 @@ const saveApplication = async (payload) => {
     const formData = new FormData()
     formData.append('credit', payload.credit)
     await apiServices.patchMhpcCpdTask(payload.id, formData)
-    showNotification(
-      'success',
-      'Credits Updated',
-      'The CPD credits have been updated successfully.',
-    )
+    toast.success('The CPD credits have been updated successfully.')
     await fetchApplications()
   } catch (err) {
     console.error('Failed to save application:', err)
-    showNotification('error', 'Update Failed', 'Could not update application credits.')
+    toast.error('Could not update application credits.')
   } finally {
     loading.value = false
     closeViewModal()
@@ -512,15 +390,11 @@ const approveApplication = async (payload) => {
       formData.append(key, patchData[key])
     }
     await apiServices.patchMhpcCpdTask(payload.id, formData)
-    showNotification('success', 'Application Approved', 'The CPD application has been approved.')
+    toast.success('The CPD application has been approved.')
     await fetchApplications()
   } catch (err) {
     console.error('Failed to approve application:', err)
-    showNotification(
-      'error',
-      'Approval Failed',
-      'An error occurred while approving the application.',
-    )
+    toast.error('An error occurred while approving the application.')
   } finally {
     loading.value = false
     closeViewModal()
@@ -531,7 +405,7 @@ const rejectApplication = async (payload) => {
   try {
     loading.value = true
     const patchData = {
-      application_status: 'REJECTED',
+      application_status: 'REGRETTED',
       status_remarks: payload.status_remarks,
       is_cpd_approved: false,
     }
@@ -540,15 +414,11 @@ const rejectApplication = async (payload) => {
       formData.append(key, patchData[key])
     }
     await apiServices.patchMhpcCpdTask(payload.id, formData)
-    showNotification(
-      'success',
-      'Application Regretted',
-      'The CPD application has been marked as regretted.',
-    )
+    toast.success('The CPD application has been marked as regretted.')
     await fetchApplications()
   } catch (err) {
     console.error('Failed to reject application:', err)
-    showNotification('error', 'Action Failed', 'An error occurred while rejecting the application.')
+    toast.error('An error occurred while rejecting the application.')
   } finally {
     loading.value = false
     closeViewModal()
@@ -574,17 +444,4 @@ onMounted(async () => {
 })
 </script>
 
-<style scoped>
-.notification-enter-active,
-.notification-leave-active {
-  transition: all 0.3s ease;
-}
-.notification-enter-from {
-  transform: translateX(100%);
-  opacity: 0;
-}
-.notification-leave-to {
-  transform: translateY(-30px);
-  opacity: 0;
-}
-</style>
+
