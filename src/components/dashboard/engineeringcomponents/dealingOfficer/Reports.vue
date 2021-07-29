@@ -8,7 +8,7 @@ export default {
   <div class="p-6 bg-gray-50 min-h-screen">
     <!-- Header -->
     <div class="flex justify-between items-center mb-8">
-      <h1 class="text-2xl font-bold text-gray-800">ECP Applications & Reports</h1>
+      <h1 class="text-2xl font-bold text-gray-800">EPC Applications & Reports</h1>
       <div class="flex gap-4">
         <!-- Modified Export Button for CSV -->
         <button @click="exportToCSV" class="btn-primary" :disabled="isLoading || !reportData.length || isLoadingExport">
@@ -49,11 +49,6 @@ export default {
           <option value="dpr_applications">DPR Applications</option>
           API function missing */}
           <option value="capa_management">CAPA Management</option>
-          <!-- {/*
-        <option value="institute_renewals">Institute Renewals</option>
-          API function missing */} {/*
-          <option value="teaching_institute_renewals">Teaching Institute Renewals</option>
-          API function missing */} -->
         </optgroup>
 
       </select>
@@ -255,7 +250,7 @@ const headers = {
     { key: 'application_type', label: 'Type', sortable: true },
     { key: 'submission_date', label: 'Submitted', type: 'date', sortable: true },
     { key: 'status', label: 'Status', sortable: true, isStatusColumn: true },
-    { key: 'assigned_officer', label: 'Officer', sortable: true },
+
   ],
   additional_applications: [
     { key: 'application_id', label: 'App ID', sortable: true },
@@ -393,7 +388,7 @@ const apiMethods = {
     transform: (data) => ({
       ...data,
       application_id: data.id ?? 'N/A',
-      original_reg_no: data.application_display?.registration_no ?? 'N/A',
+      original_reg_no: data.result?.application_display?.registration_no ?? 'N/A',
       applicant_name: data.application_display?.full_name ?? 'N/A',
       request_type: data.registration_type_name ?? 'N/A',
       submitted_date: data.created_at ?? null,

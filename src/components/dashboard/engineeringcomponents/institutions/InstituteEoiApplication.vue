@@ -13,7 +13,7 @@
             <div class="grid gap-6 md:grid-cols-2">
               <div>
                 <label for="CID" class="block text-sm font-medium text-gray-700 mb-1 required-label">
-                  License No.
+                  CID.
                 </label>
                 <input type="text" id="CID" v-model="formData.CID"
                   class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2 bg-gray-100"

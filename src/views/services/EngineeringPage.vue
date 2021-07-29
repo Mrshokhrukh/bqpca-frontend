@@ -496,7 +496,6 @@ const handleEngineeringInstitutionRegistration = async () => {
   }
 
   try {
-    // Split institution name into first_name and last_name
     const nameParts = engineeringInstitutionForm.institution_name.split(' ')
     const first_name = nameParts[0]
     const last_name = nameParts.slice(1).join(' ') || ''
@@ -510,10 +509,10 @@ const handleEngineeringInstitutionRegistration = async () => {
       contact_number: engineeringInstitutionForm.contact_number,
       role: 'institutions',
       service_type: serviceType.value,
-      // Send the license number as cid to the backend
+
       cid: engineeringInstitutionForm.license_number || '',
     }
-
+    // ERROR HANDLING TO BE FIXED.
     await apiService.register(payload)
     toast.success('Engineering Institution registration successful! Please login.')
     closeEngineeringInstitutionModal()
