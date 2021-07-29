@@ -74,19 +74,19 @@
                           <span class="w-2/5 font-medium text-gray-500">CID:</span>
                           <span class="w-3/5 text-gray-800">{{
                             transformedApplication.cid || 'N/A'
-                          }}</span>
+                            }}</span>
                         </div>
                         <div class="flex">
                           <span class="w-2/5 font-medium text-gray-500">Full Name:</span>
                           <span class="w-3/5 text-gray-800">{{
                             transformedApplication.fullName || 'N/A'
-                          }}</span>
+                            }}</span>
                         </div>
                         <div class="flex">
                           <span class="w-2/5 font-medium text-gray-500">Contact:</span>
                           <span v-if="!isEditing" class="w-3/5 text-gray-800">{{
                             transformedApplication.contactNo || 'N/A'
-                          }}</span>
+                            }}</span>
                           <input v-else type="text" v-model="editedApplication.contactNo"
                             class="form-input w-3/5 text-sm py-1" />
                         </div>
@@ -94,7 +94,7 @@
                           <span class="w-2/5 font-medium text-gray-500">Email:</span>
                           <span v-if="!isEditing" class="w-3/5 text-gray-800 break-all">{{
                             transformedApplication.emailAddress || 'N/A'
-                          }}</span>
+                            }}</span>
                           <input v-else type="email" v-model="editedApplication.emailAddress"
                             class="form-input w-3/5 text-sm py-1" />
                         </div>
@@ -111,7 +111,7 @@
                           <span class="w-2/5 font-medium text-gray-500">Name:</span>
                           <span v-if="!isEditing" class="w-3/5 text-gray-800">{{
                             transformedApplication.headName || 'N/A'
-                          }}</span>
+                            }}</span>
                           <input v-else type="text" v-model="editedApplication.headName"
                             class="form-input w-3/5 text-sm py-1" />
                         </div>
@@ -119,7 +119,7 @@
                           <span class="w-2/5 font-medium text-gray-500">Phone:</span>
                           <span v-if="!isEditing" class="w-3/5 text-gray-800">{{
                             transformedApplication.headPhone || 'N/A'
-                          }}</span>
+                            }}</span>
                           <input v-else type="text" v-model="editedApplication.headPhone"
                             class="form-input w-3/5 text-sm py-1" />
                         </div>
@@ -127,7 +127,7 @@
                           <span class="w-2/5 font-medium text-gray-500">Email:</span>
                           <span v-if="!isEditing" class="w-3/5 text-gray-800 break-all">{{
                             transformedApplication.headEmail || 'N/A'
-                          }}</span>
+                            }}</span>
                           <input v-else type="email" v-model="editedApplication.headEmail"
                             class="form-input w-3/5 text-sm py-1" />
                         </div>
@@ -147,7 +147,7 @@
                           <span class="w-full sm:w-1/3 font-medium text-gray-500 mb-1 sm:mb-0">DPR Name:</span>
                           <span v-if="!isEditing" class="w-full sm:w-2/3 text-gray-800">{{
                             transformedApplication.dprName || 'N/A'
-                          }}</span>
+                            }}</span>
                           <input v-else type="text" v-model="editedApplication.dprName"
                             class="form-input w-full sm:w-2/3 text-sm py-1" />
                         </div>
@@ -459,24 +459,17 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'save', 'approve', 'regretted']);
 
-// Component State
 const isEditing = ref(false);
 const editedApplication = ref({});
 const errorMessage = ref('');
 const isSaving = ref(false);
 const filesToUpload = ref({});
 const activeTab = ref('vision_mission_strategies');
-
-// File upload state
 const reviewReportFile = ref(null);
-
-// Verification State
 const verificationStatus = ref(false);
 const isSavingVerification = ref(false);
 const verificationMessage = ref('');
 const verificationMessageIsError = ref(false);
-
-// Dialog States
 const isApproveDialogOpen = ref(false);
 const isRejectDialogOpen = ref(false);
 const approvalNotes = ref('');
@@ -548,7 +541,7 @@ watch(
       errorMessage.value = '';
       isSaving.value = false;
       filesToUpload.value = {};
-      reviewReportFile.value = null; // Reset file
+      reviewReportFile.value = null;
       activeTab.value = 'vision_mission_strategies';
       verificationStatus.value = props.application.is_physical_verification || false;
       isSavingVerification.value = false;
@@ -564,13 +557,11 @@ watch(
   }
 );
 
-// File upload handler
 const handleReviewReportUpload = (event) => {
   const file = event.target.files[0];
   if (file) {
-    console.log('File selected:', file.name, file.size); // Debug log
+    console.log('File selected:', file.name, file.size);
     reviewReportFile.value = file;
-    // Also update the filesToUpload object for backward compatibility
     filesToUpload.value.do_dpr_report = file;
   }
 };
@@ -620,7 +611,7 @@ const saveChanges = async () => {
 
     const fieldsToCompare = [
       'contactNo', 'emailAddress', 'headName', 'headPhone', 'headEmail', 'dprName',
-      'reviewSummary', // Add this field
+      'reviewSummary',
       ...tabs.value.map(t => t.id)
     ];
 
@@ -631,7 +622,7 @@ const saveChanges = async () => {
       headPhone: 'head_of_institution_phone_number',
       headEmail: 'head_of_institution_email',
       dprName: 'dpr_name',
-      reviewSummary: 'do_dpr_review_summary', // Add this mapping
+      reviewSummary: 'do_dpr_review_summary',
     };
 
     fieldsToCompare.forEach(key => {
@@ -642,8 +633,6 @@ const saveChanges = async () => {
         }
       }
     });
-
-    // Handle file upload - use the correct field name
     if (reviewReportFile.value) {
       formData.append('do_dpr_report', reviewReportFile.value);
     }
@@ -695,18 +684,12 @@ const confirmApproval = async () => {
 
   try {
     const formData = new FormData();
-
-    // Add approval data
     formData.append('do_dpr_review_decision', 'Approved');
     formData.append('do_dpr_review_summary', approvalNotes.value.trim() || 'Application Approved');
-
-    // Add file if uploaded
     if (reviewReportFile.value) {
       console.log('Uploading file with approval:', reviewReportFile.value.name);
       formData.append('do_dpr_report', reviewReportFile.value);
     }
-
-    // Debug: Log FormData contents
     for (let [key, value] of formData.entries()) {
       console.log('FormData entry:', key, value);
     }
@@ -739,18 +722,12 @@ const confirmRejection = async () => {
 
   try {
     const formData = new FormData();
-
-    // Add rejection data
     formData.append('do_dpr_review_decision', 'Regretted');
     formData.append('do_dpr_reason_if_rejected', rejectionReason.value.trim());
-
-    // Add file if uploaded
     if (reviewReportFile.value) {
       console.log('Uploading file with rejection:', reviewReportFile.value.name);
       formData.append('do_dpr_report', reviewReportFile.value);
     }
-
-    // Debug: Log FormData contents
     for (let [key, value] of formData.entries()) {
       console.log('FormData entry:', key, value);
     }
@@ -759,7 +736,6 @@ const confirmRejection = async () => {
     emit('regretted');
     isRejectDialogOpen.value = false;
 
-    // Reset states
     rejectionReason.value = '';
     reviewReportFile.value = null;
   } catch (error) {

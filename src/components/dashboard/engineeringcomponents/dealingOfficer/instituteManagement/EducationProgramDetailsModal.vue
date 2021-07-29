@@ -27,7 +27,8 @@
                 </p>
               </div>
               <div class="ml-4 flex-shrink-0 flex items-center space-x-4">
-                <button v-if="!isEditing" @click="startEditing" type="button"
+                <button v-if="!isEditing && localProgram.review_decision !== 'Approved'" @click="startEditing"
+                  type="button"
                   class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                   <svg class="h-5 w-5 mr-2 -ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"
                     stroke-width="2">
