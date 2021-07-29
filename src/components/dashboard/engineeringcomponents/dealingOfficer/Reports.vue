@@ -218,7 +218,7 @@ export default {
 import { ref, computed, reactive, onMounted } from 'vue'
 import { useToast } from 'vue-toastification'
 import debounce from 'lodash/debounce'
-import Papa from 'papaparse' // Import papaparse
+import Papa from 'papaparse'
 import apiServices from '@/services/services'
 
 
@@ -234,6 +234,8 @@ const currentPage = ref(1)
 const totalItems = ref(0)
 const sortBy = ref('')
 const sortOrder = ref('asc')
+const registrationTypes = ref([])
+const additionalQualificationTypeId = ref(null)
 
 const filters = reactive({
   search: '',
@@ -350,29 +352,13 @@ const headers = {
     { key: 'due_date', label: 'Due Date', type: 'date', sortable: true },
     { key: 'capa_status', label: 'Status', sortable: true, isStatusColumn: true },
   ],
-  // institute_renewals: [
-  //   { key: 'renewal_id', label: 'Renewal ID', sortable: true },
-  //   { key: 'institute_id', label: 'Institute ID', sortable: true },
-  //   { key: 'institute_name', label: 'Institute Name', sortable: true },
-  //   { key: 'current_expiry', label: 'Current Expiry', type: 'date', sortable: true },
-  //   { key: 'applied_date', label: 'Applied On', type: 'date', sortable: true },
-  //   { key: 'renewal_status', label: 'Status', sortable: true, isStatusColumn: true },
-  // ],
-  // teaching_institute_renewals: [
-  //   { key: 'renewal_id', label: 'Renewal ID', sortable: true },
-  //   { key: 'institute_id', label: 'Institute ID', sortable: true },
-  //   { key: 'institute_name', label: 'Teaching Institute', sortable: true },
-  //   { key: 'current_expiry', label: 'Current Expiry', type: 'date', sortable: true },
-  //   { key: 'applied_date', label: 'Applied On', type: 'date', sortable: true },
-  //   { key: 'renewal_status', label: 'Status', sortable: true, isStatusColumn: true },
-  // ],
+
 
 }
 
-// --- Keep the apiMethods definition object ---
 const apiMethods = {
   new_applications: {
-    fetch: apiServices.getEpcNewApplications, // Corrected
+    fetch: apiServices.getEpcNewApplications,
     transform: (data) => ({
       ...data,
       application_id: data.id ?? 'N/A',
@@ -388,9 +374,9 @@ const apiMethods = {
     transform: (data) => ({
       ...data,
       application_id: data.id ?? 'N/A',
-      original_reg_no: data.result?.application_display?.registration_no ?? 'N/A',
+      original_reg_no: data.application_display?.registration_no ?? 'N/A',
       applicant_name: data.application_display?.full_name ?? 'N/A',
-      request_type: data.registration_type_name ?? 'N/A',
+      request_type: registrationTypes.value.find(rt => rt.id === data.registration_type)?.name ?? 'N/A',
       submitted_date: data.created_at ?? null,
       status: data.application_review_status ?? 'N/A',
     }),
@@ -473,7 +459,7 @@ const apiMethods = {
     }),
   },
   capa_management: {
-    fetch: apiServices.getEpcCapas, // Corrected
+    fetch: apiServices.getEpcCapas,
     transform: (data) => ({
       ...data,
       capa_id: data.id ?? 'N/A',
@@ -484,33 +470,6 @@ const apiMethods = {
       capa_status: data.status_display ?? 'N/A',
     }),
   },
-  institute_renewals: {
-    // No API function identified in services.js
-    fetch: null,
-    transform: (data) => ({
-      ...data,
-      renewal_id: data.id ?? 'N/A',
-      institute_id: data.institute?.institute_code ?? data.institute_id ?? 'N/A',
-      institute_name: data.institute?.name ?? 'N/A',
-      current_expiry: data.institute?.accreditation_expiry_date ?? null,
-      applied_date: data.application_date ?? data.created_at ?? null,
-      renewal_status: data.status ?? 'N/A',
-    }),
-  },
-  teaching_institute_renewals: {
-    // No API function identified in services.js
-    fetch: null,
-    transform: (data) => ({
-      ...data,
-      renewal_id: data.id ?? 'N/A',
-      institute_id: data.teaching_institute?.code ?? data.institute_id ?? 'N/A',
-      institute_name: data.teaching_institute?.name ?? 'N/A',
-      current_expiry: data.teaching_institute?.expiry_date ?? null,
-      applied_date: data.application_date ?? data.created_at ?? null,
-      renewal_status: data.status ?? 'N/A',
-    }),
-  },
-
 }
 
 const activeHeaders = computed(() => headers[activeReport.value] || [])
@@ -566,12 +525,6 @@ const statusOptions = computed(() => {
       { value: 'Closed', label: 'Closed' },
       { value: 'Overdue', label: 'Overdue' },
     ],
-    // institute_renewals: [
-    //   /* Define statuses */
-    // ],
-    // teaching_institute_renewals: [
-    //   /* Define statuses */
-    // ],
 
   }
   return optionsMap[activeReport.value] || []
@@ -640,11 +593,10 @@ const fetchData = async (isExport = false) => {
 
     if (response.data && Array.isArray(response.data.results)) {
       let results = response.data.results;
-
-      if (activeReport.value === 'additional_applications') {
+      if (activeReport.value === 'additional_applications' && additionalQualificationTypeId.value) {
         results = results.filter(
-          (item) => item.registration_type_name === 'additional Qualification'
-        );
+          (item) => item.registration_type === additionalQualificationTypeId.value
+        )
       }
 
       reportData.value = results.map((item, index) => {
@@ -849,39 +801,30 @@ const exportToCSV = async () => {
         let csvValue = ''
 
         if (value === null || value === undefined) {
-          csvValue = '' // Represent null/undefined as empty string in CSV
+          csv
         } else if (header.type === 'date') {
-          // Use the same formatting as the table, handle '-' return value
           const formatted = formatDate(value)
           csvValue = formatted === '-' ? '' : formatted
         } else if (header.type === 'datetime') {
           const formatted = formatDate(value, 'datetime')
           csvValue = formatted === '-' ? '' : formatted
         } else if (header.type === 'currency') {
-          // Export currency as a plain number string for better compatibility
           const num = Number(value)
           csvValue = !isNaN(num) ? num.toString() : ''
 
-          // csvValue = formatted === '-' ? '' : formatted.replace(/^[^\d.,]+/, '').trim(); // Attempt to remove prefix like 'BTN '
         } else if (typeof value === 'object') {
-          // Basic object stringification, might need refinement for complex objects
           csvValue = JSON.stringify(value)
         } else {
-          // Default case: convert to string
           csvValue = String(value)
         }
 
-        return csvValue // Return the processed value for this cell
+        return csvValue
       })
     })
 
-    // 3. Combine Header and Body
     const csvData = [csvHeader, ...csvBody]
 
-    // 4. Use PapaParse to generate CSV string (handles quoting/escaping automatically)
     const csvString = Papa.unparse(csvData)
-
-    // 5. Create Blob and Trigger Download
     const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' })
     const link = document.createElement('a')
     const url = URL.createObjectURL(blob)
@@ -897,14 +840,12 @@ const exportToCSV = async () => {
 
     toast.success('CSV export successful!', { timeout: 3000 })
   } catch (err) {
-    // Error handling is partially done in fetchAllData, catch any other issues here
     console.error('CSV Export process failed:', err)
-    // Avoid duplicate toasts if fetchAllData already showed one
     if (!toast.isActive('export-toast')) {
       toast.error('CSV export failed. Check console for details.', { timeout: 4000 })
     }
   } finally {
-    isLoadingExport.value = false // Ensure loading state is always reset
+    isLoadingExport.value = false
   }
 }
 

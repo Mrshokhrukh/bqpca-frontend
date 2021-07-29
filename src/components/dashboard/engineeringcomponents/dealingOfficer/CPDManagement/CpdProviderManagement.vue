@@ -42,15 +42,7 @@
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Contact Number
                 </th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Gender
-                </th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  CPD Activity Title
-                </th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Venue
-                </th>
+
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions
                 </th>
@@ -73,15 +65,7 @@
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   {{ provider.contact_number }}
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 capitalize">
-                  {{ provider.gender }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {{ provider.cpdActivityTitle || 'N/A' }}
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {{ provider.venue || 'N/A' }}
-                </td>
+
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <div class="flex space-x-3">
                     <button @click="openEditProviderModal(index)"
