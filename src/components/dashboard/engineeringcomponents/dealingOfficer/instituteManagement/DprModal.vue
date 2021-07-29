@@ -247,7 +247,8 @@
                     </div>
 
                     <!-- Review Decision Details (Conditional) -->
-                    <div v-if="overallStatus !== 'Pending'"
+                    <div
+                      v-if="overallStatus === 'Pending' || overallStatus === 'Approved' || overallStatus === 'Regretted'"
                       class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-5">
                       <h4 class="text-base sm:text-lg font-medium text-gray-900 mb-4 flex items-center space-x-2">
                         <MessageSquare class="h-5 w-5 text-gray-500" />
@@ -255,27 +256,28 @@
                       </h4>
                       <div class="space-y-4 text-sm">
                         <div class="flex flex-col">
-                          <span class="w-full font-medium text-gray-500 mb-1">Review Summary:</span>
-                          <p class="text-gray-800 whitespace-pre-wrap">
-                            {{ transformedApplication.reviewSummary || 'N/A' }}
-                          </p>
+                          <span class="w-full font-medium text-gray-500 mb-1">Review Dealing Officer Summary:</span>
+                          <textarea v-if="overallStatus === 'Pending'" v-model="editedApplication.reviewSummary"
+                            rows="4" class="form-input w-full text-sm"
+                            placeholder="Enter summary before decision"></textarea>
+                          <span v-else class="text-gray-800">{{ transformedApplication.reviewSummary || 'N/A' }}</span>
                         </div>
                         <div class="flex items-center">
                           <span class="w-1/3 font-medium text-gray-500">Final Review Report:</span>
-                          <div class="w-2/3">
-                            <a v-if="transformedApplication.reviewReportUpload"
-                              :href="transformedApplication.reviewReportUpload" target="_blank"
-                              class="text-sm text-blue-600 hover:underline inline-flex items-center">View Document
-                              <ExternalLink class="h-3 w-3 ml-1" />
-                            </a>
-                            <span v-else class="text-sm text-gray-500 italic">Not available</span>
-                          </div>
+                          <input v-if="overallStatus === 'Pending'" type="file" @change="handleReviewReportUpload"
+                            accept=".pdf,.doc,.docx" class="file-input w-2/3 text-sm" />
+                          <a v-else-if="transformedApplication.reviewReportUpload"
+                            :href="transformedApplication.reviewReportUpload" target="_blank"
+                            class="text-sm text-blue-600 hover:underline inline-flex items-center">
+                            View Uploaded Report
+                            <ExternalLink class="h-3 w-3 ml-1" />
+                          </a>
+                          <span v-else class="text-sm text-gray-500 italic">Not available</span>
                         </div>
-                        <div v-if="overallStatus === 'Regretted'" class="flex flex-col">
-                          <span class="w-full font-medium text-gray-500 mb-1">Reason for Regret:</span>
-                          <p class="text-gray-800 whitespace-pre-wrap">
-                            {{ transformedApplication.reasonIfRejected || 'N/A' }}
-                          </p>
+                        <!-- File upload status -->
+                        <div v-if="reviewReportFile" class="text-xs text-green-600 flex items-center space-x-2">
+                          <CheckCircle class="h-3 w-3" />
+                          <span>File selected: {{ reviewReportFile.name }}</span>
                         </div>
                       </div>
                     </div>
@@ -346,10 +348,24 @@
                           <textarea id="approval-notes" v-model="approvalNotes" rows="4" class="form-input w-full"
                             placeholder="Enter approval summary..."></textarea>
                         </div>
+                        <!-- File upload in approval dialog -->
+                        <div class="mt-4">
+                          <label for="approval-file" class="block text-sm font-medium text-gray-700 mb-2">
+                            Upload Review Report (Optional)
+                          </label>
+                          <input id="approval-file" type="file" @change="handleReviewReportUpload"
+                            accept=".pdf,.doc,.docx" class="file-input w-full text-sm" />
+                          <div v-if="reviewReportFile" class="mt-2 text-xs text-green-600 flex items-center space-x-2">
+                            <CheckCircle class="h-3 w-3" />
+                            <span>File selected: {{ reviewReportFile.name }}</span>
+                          </div>
+                        </div>
                         <div class="mt-6 flex justify-end space-x-3">
                           <button type="button" class="btn btn-secondary" @click="cancelApproval">Cancel</button>
-                          <button type="button" class="btn btn-success" @click="confirmApproval">
-                            <Check class="w-4 h-4 mr-1.5" />Approve
+                          <button type="button" class="btn btn-success" @click="confirmApproval"
+                            :disabled="isProcessingApproval">
+                            <Check class="w-4 h-4 mr-1.5" />
+                            <span>{{ isProcessingApproval ? 'Processing...' : 'Approve' }}</span>
                           </button>
                         </div>
                       </DialogPanel>
@@ -385,11 +401,24 @@
                             placeholder="Provide a clear reason for rejection..."></textarea>
                           <p v-if="rejectionError" class="mt-1 text-xs text-red-600">{{ rejectionError }}</p>
                         </div>
+                        <!-- File upload in rejection dialog -->
+                        <div class="mt-4">
+                          <label for="rejection-file" class="block text-sm font-medium text-gray-700 mb-2">
+                            Upload Review Report (Optional)
+                          </label>
+                          <input id="rejection-file" type="file" @change="handleReviewReportUpload"
+                            accept=".pdf,.doc,.docx" class="file-input w-full text-sm" />
+                          <div v-if="reviewReportFile" class="mt-2 text-xs text-green-600 flex items-center space-x-2">
+                            <CheckCircle class="h-3 w-3" />
+                            <span>File selected: {{ reviewReportFile.name }}</span>
+                          </div>
+                        </div>
                         <div class="mt-6 flex justify-end space-x-3">
                           <button type="button" class="btn btn-secondary" @click="cancelRejection">Cancel</button>
-                          <button type="button" :disabled="!rejectionReason.trim()" class="btn btn-danger"
-                            @click="confirmRejection">
-                            <XCircle class="w-4 h-4 mr-1.5" />Regret
+                          <button type="button" :disabled="!rejectionReason.trim() || isProcessingRejection"
+                            class="btn btn-danger" @click="confirmRejection">
+                            <XCircle class="w-4 h-4 mr-1.5" />
+                            <span>{{ isProcessingRejection ? 'Processing...' : 'Regret' }}</span>
                           </button>
                         </div>
                       </DialogPanel>
@@ -438,12 +467,14 @@ const isSaving = ref(false);
 const filesToUpload = ref({});
 const activeTab = ref('vision_mission_strategies');
 
+// File upload state
+const reviewReportFile = ref(null);
+
 // Verification State
 const verificationStatus = ref(false);
 const isSavingVerification = ref(false);
 const verificationMessage = ref('');
 const verificationMessageIsError = ref(false);
-
 
 // Dialog States
 const isApproveDialogOpen = ref(false);
@@ -451,6 +482,8 @@ const isRejectDialogOpen = ref(false);
 const approvalNotes = ref('');
 const rejectionReason = ref('');
 const rejectionError = ref('');
+const isProcessingApproval = ref(false);
+const isProcessingRejection = ref(false);
 
 const tabs = ref([
   { id: 'vision_mission_strategies', name: 'Vision & Mission' },
@@ -474,7 +507,6 @@ const tabs = ref([
   { id: 'public_information_system', name: 'Public Info' },
   { id: 'other_details', name: 'Other Details' },
 ]);
-
 
 const transformedApplication = computed(() => {
   if (!props.application) return null;
@@ -516,6 +548,7 @@ watch(
       errorMessage.value = '';
       isSaving.value = false;
       filesToUpload.value = {};
+      reviewReportFile.value = null; // Reset file
       activeTab.value = 'vision_mission_strategies';
       verificationStatus.value = props.application.is_physical_verification || false;
       isSavingVerification.value = false;
@@ -525,10 +558,22 @@ watch(
       approvalNotes.value = '';
       rejectionReason.value = '';
       rejectionError.value = '';
+      isProcessingApproval.value = false;
+      isProcessingRejection.value = false;
     }
   }
 );
 
+// File upload handler
+const handleReviewReportUpload = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    console.log('File selected:', file.name, file.size); // Debug log
+    reviewReportFile.value = file;
+    // Also update the filesToUpload object for backward compatibility
+    filesToUpload.value.do_dpr_report = file;
+  }
+};
 
 const startEditing = () => {
   if (!transformedApplication.value || overallStatus.value !== 'Pending') return;
@@ -563,7 +608,6 @@ const savePhysicalVerification = async () => {
   }
 };
 
-
 const saveChanges = async () => {
   if (!transformedApplication.value?.id) return;
   isSaving.value = true;
@@ -576,6 +620,7 @@ const saveChanges = async () => {
 
     const fieldsToCompare = [
       'contactNo', 'emailAddress', 'headName', 'headPhone', 'headEmail', 'dprName',
+      'reviewSummary', // Add this field
       ...tabs.value.map(t => t.id)
     ];
 
@@ -586,6 +631,7 @@ const saveChanges = async () => {
       headPhone: 'head_of_institution_phone_number',
       headEmail: 'head_of_institution_email',
       dprName: 'dpr_name',
+      reviewSummary: 'do_dpr_review_summary', // Add this mapping
     };
 
     fieldsToCompare.forEach(key => {
@@ -596,6 +642,11 @@ const saveChanges = async () => {
         }
       }
     });
+
+    // Handle file upload - use the correct field name
+    if (reviewReportFile.value) {
+      formData.append('do_dpr_report', reviewReportFile.value);
+    }
 
     if ([...formData.entries()].length === 0) {
       isEditing.value = false;
@@ -619,27 +670,60 @@ const openApproveDialog = () => {
   if (!transformedApplication.value.isPaymentComplete || overallStatus.value !== 'Pending') return;
   isApproveDialogOpen.value = true;
 };
+
 const openRejectDialog = () => {
   if (overallStatus.value !== 'Pending') return;
   isRejectDialogOpen.value = true;
 };
-const cancelApproval = () => (isApproveDialogOpen.value = false);
-const cancelRejection = () => (isRejectDialogOpen.value = false);
+
+const cancelApproval = () => {
+  isApproveDialogOpen.value = false;
+  approvalNotes.value = '';
+  reviewReportFile.value = null;
+};
+
+const cancelRejection = () => {
+  isRejectDialogOpen.value = false;
+  rejectionReason.value = '';
+  rejectionError.value = '';
+  reviewReportFile.value = null;
+};
 
 const confirmApproval = async () => {
   if (!transformedApplication.value?.id) return;
+  isProcessingApproval.value = true;
+
   try {
-    const updateData = {
-      do_dpr_review_decision: 'Approved',
-      do_dpr_review_summary: approvalNotes.value.trim() || 'Application Approved',
-    };
-    await apiService.patchEpcInstitute(transformedApplication.value.id, updateData);
+    const formData = new FormData();
+
+    // Add approval data
+    formData.append('do_dpr_review_decision', 'Approved');
+    formData.append('do_dpr_review_summary', approvalNotes.value.trim() || 'Application Approved');
+
+    // Add file if uploaded
+    if (reviewReportFile.value) {
+      console.log('Uploading file with approval:', reviewReportFile.value.name);
+      formData.append('do_dpr_report', reviewReportFile.value);
+    }
+
+    // Debug: Log FormData contents
+    for (let [key, value] of formData.entries()) {
+      console.log('FormData entry:', key, value);
+    }
+
+    await apiService.patchEpcInstitute(transformedApplication.value.id, formData);
     emit('approve', transformedApplication.value);
     isApproveDialogOpen.value = false;
+
+    // Reset states
+    approvalNotes.value = '';
+    reviewReportFile.value = null;
   } catch (error) {
     console.error('Error approving application:', error);
     errorMessage.value = `Approval failed: ${error.response?.data?.detail || error.message}`;
     cancelApproval();
+  } finally {
+    isProcessingApproval.value = false;
   }
 };
 
@@ -651,17 +735,38 @@ const confirmRejection = async () => {
   }
   if (!transformedApplication.value?.id) return;
 
+  isProcessingRejection.value = true;
+
   try {
-    const updateData = {
-      do_dpr_review_decision: 'Regretted',
-      reason_if_rejected: rejectionReason.value.trim(),
-    };
-    await apiService.patchEpcInstitute(transformedApplication.value.id, updateData);
+    const formData = new FormData();
+
+    // Add rejection data
+    formData.append('do_dpr_review_decision', 'Regretted');
+    formData.append('do_dpr_reason_if_rejected', rejectionReason.value.trim());
+
+    // Add file if uploaded
+    if (reviewReportFile.value) {
+      console.log('Uploading file with rejection:', reviewReportFile.value.name);
+      formData.append('do_dpr_report', reviewReportFile.value);
+    }
+
+    // Debug: Log FormData contents
+    for (let [key, value] of formData.entries()) {
+      console.log('FormData entry:', key, value);
+    }
+
+    await apiService.patchEpcInstitute(transformedApplication.value.id, formData);
     emit('regretted');
     isRejectDialogOpen.value = false;
+
+    // Reset states
+    rejectionReason.value = '';
+    reviewReportFile.value = null;
   } catch (error) {
     console.error('Error rejecting application:', error);
     rejectionError.value = `Rejection failed: ${error.response?.data?.detail || error.message}`;
+  } finally {
+    isProcessingRejection.value = false;
   }
 };
 
