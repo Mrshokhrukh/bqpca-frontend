@@ -1,112 +1,171 @@
 <template>
+  <!-- Main Modal -->
   <Teleport to="body">
     <div
       v-if="isOpen"
-      class="fixed z-50 inset-0 overflow-y-auto"
-      aria-labelledby="modal-title"
-      role="dialog"
-      aria-modal="true"
+      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50"
+      @click="close"
     >
       <div
-        class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0"
+        v-if="applicationDetails"
+        class="bg-white rounded-xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto"
+        @click.stop
       >
-        <div
-          class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
-          aria-hidden="true"
-          @click="closeModal"
-        ></div>
-        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true"></span>
-        <div
-          class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
-        >
-          <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-            <div class="sm:flex sm:items-start">
-              <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
-                  Institute Renewal Details
-                </h3>
-                <div class="mt-2">
-                  <p class="text-sm text-gray-500">
-                    Review and approve renewal for {{ applicationDetails.instituteName }}.
-                  </p>
-                </div>
-              </div>
+        <!-- Header -->
+        <div class="p-6 border-b border-gray-100">
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
+              <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
             </div>
-            <div class="mt-5">
-              <dl class="divide-y divide-gray-200">
-                <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-                  <dt class="text-sm font-medium text-gray-500">Institute Name</dt>
-                  <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                    {{ applicationDetails.instituteName }}
-                  </dd>
-                </div>
-                <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-                  <dt class="text-sm font-medium text-gray-500">Applicant Name</dt>
-                  <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                    {{ applicationDetails.applicantName }}
-                  </dd>
-                </div>
-                <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-                  <dt class="text-sm font-medium text-gray-500">Last Updated</dt>
-                  <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                    {{ formatDate(applicationDetails.renewalDate) }}
-                  </dd>
-                </div>
-                <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-                  <dt class="text-sm font-medium text-gray-500">Current Expiry Date</dt>
-                  <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                    {{ formatDate(applicationDetails.expiryDate) }}
-                  </dd>
-                </div>
-              </dl>
-            </div>
-            <!-- Dealing Officer Actions -->
-            <div class="mt-6 pt-4 border-t">
-              <h4 class="text-lg font-medium text-gray-800 mb-3">Dealing Officer Action</h4>
-              <div class="space-y-4">
-                <div>
-                  <label for="decision" class="block text-sm font-medium text-gray-700"
-                    >Decision</label
-                  >
-                  <select
-                    id="decision"
-                    v-model="formData.decision"
-                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
-                  >
-                    <option value="Pending">Keep Pending</option>
-                    <option value="Approved">Approve Renewal</option>
-                    <option value="Regretted">Reject Renewal</option>
-                  </select>
-                </div>
-                <div>
-                  <label for="remarks" class="block text-sm font-medium text-gray-700"
-                    >Remarks</label
-                  >
-                  <textarea
-                    id="remarks"
-                    v-model="formData.remarks"
-                    rows="3"
-                    class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-                    placeholder="Provide justification for the decision..."
-                  ></textarea>
-                </div>
-              </div>
+            <div>
+              <h2 class="text-lg font-semibold text-gray-900">Institute Renewal</h2>
+              <p class="text-sm text-gray-500">{{ applicationDetails.instituteName }}</p>
             </div>
           </div>
-          <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+        </div>
+
+        <!-- Content -->
+        <div class="p-6 space-y-4">
+          <div class="space-y-3">
+            <div class="flex justify-between py-2">
+              <span class="text-sm text-gray-600">Applicant</span>
+              <span class="text-sm font-medium text-gray-900">{{ applicationDetails.applicantName }}</span>
+            </div>
+            <div class="flex justify-between py-2">
+              <span class="text-sm text-gray-600">Submitted</span>
+              <span class="text-sm font-medium text-gray-900">{{ formatDate(applicationDetails.lastUpdated) }}</span>
+            </div>
+            <div class="flex justify-between py-2">
+              <span class="text-sm text-gray-600">Current Expiry</span>
+              <span class="text-sm font-medium text-gray-900">{{ formatDate(applicationDetails.expiryDate) }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="p-6 border-t border-gray-100 flex space-x-3">
+          <button
+            @click="showApproveDialog = true"
+            :disabled="isSubmitting"
+            class="flex-1 bg-green-600 text-white py-2.5 px-4 rounded-lg font-medium hover:bg-green-700 transition-colors disabled:bg-gray-300"
+          >
+            {{ isSubmitting ? 'Processing...' : 'Approve' }}
+          </button>
+          <button
+            @click="showRejectDialog = true"
+            :disabled="isSubmitting"
+            class="flex-1 bg-red-600 text-white py-2.5 px-4 rounded-lg font-medium hover:bg-red-700 transition-colors disabled:bg-gray-300"
+          >
+            {{ isSubmitting ? 'Processing...' : 'Reject' }}
+          </button>
+          <button
+            @click="close"
+            :disabled="isSubmitting"
+            class="px-4 py-2.5 text-gray-700 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  </Teleport>
+
+  <!-- Approve Dialog -->
+  <Teleport to="body">
+    <div
+      v-if="showApproveDialog"
+      class="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black bg-opacity-50"
+      @click="showApproveDialog = false"
+    >
+      <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full" @click.stop>
+        <div class="p-6">
+          <div class="flex items-center space-x-3 mb-4">
+            <div class="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center">
+              <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900">Approve Renewal</h3>
+          </div>
+
+          <p class="text-sm text-gray-600 mb-4">
+            Add a message for the approval (optional):
+          </p>
+
+          <textarea
+            v-model="approveMessage"
+            rows="3"
+            class="w-full p-3 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"
+            placeholder="Your approval message..."
+          ></textarea>
+
+          <div class="flex space-x-3 mt-6">
             <button
-              @click="handleUpdate"
-              type="button"
-              class="mt-3 w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+              @click="handleApprove"
+              :disabled="isSubmitting"
+              class="flex-1 bg-green-600 text-white py-2.5 px-4 rounded-lg font-medium hover:bg-green-700 transition-colors disabled:bg-gray-300"
             >
-              Update Status
+              {{ isSubmitting ? 'Approving...' : 'Confirm Approval' }}
             </button>
             <button
-              type="button"
-              class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-              @click="closeModal"
+              @click="showApproveDialog = false"
+              :disabled="isSubmitting"
+              class="px-4 py-2.5 text-gray-700 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition-colors"
             >
-              Close
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Teleport>
+
+  <!-- Reject Dialog -->
+  <Teleport to="body">
+    <div
+      v-if="showRejectDialog"
+      class="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black bg-opacity-50"
+      @click="showRejectDialog = false"
+    >
+      <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full" @click.stop>
+        <div class="p-6">
+          <div class="flex items-center space-x-3 mb-4">
+            <div class="w-10 h-10 bg-red-50 rounded-lg flex items-center justify-center">
+              <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900">Reject Renewal</h3>
+          </div>
+
+          <p class="text-sm text-gray-600 mb-4">
+            Please provide a reason for rejection:
+          </p>
+
+          <textarea
+            v-model="rejectMessage"
+            rows="3"
+            class="w-full p-3 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none"
+            placeholder="Reason for rejection..."
+            required
+          ></textarea>
+
+          <div class="flex space-x-3 mt-6">
+            <button
+              @click="handleReject"
+              :disabled="isSubmitting || !rejectMessage.trim()"
+              class="flex-1 bg-red-600 text-white py-2.5 px-4 rounded-lg font-medium hover:bg-red-700 transition-colors disabled:bg-gray-300"
+            >
+              {{ isSubmitting ? 'Rejecting...' : 'Confirm Rejection' }}
+            </button>
+            <button
+              @click="showRejectDialog = false"
+              :disabled="isSubmitting"
+              class="px-4 py-2.5 text-gray-700 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+            >
+              Cancel
             </button>
           </div>
         </div>
@@ -124,63 +183,97 @@ const props = defineProps({
   isOpen: Boolean,
   applicationDetails: {
     type: Object,
-    default: () => ({}),
+    default: null,
   },
 })
 
 const emit = defineEmits(['close-modal', 'application-updated'])
 const toast = useToast()
 
-const formData = ref({
-  decision: 'Pending',
-  remarks: '',
-})
+const isSubmitting = ref(false)
+const showApproveDialog = ref(false)
+const showRejectDialog = ref(false)
+const approveMessage = ref('')
+const rejectMessage = ref('')
 
+// Reset form when modal opens with new details
 watch(
   () => props.applicationDetails,
   (newDetails) => {
     if (newDetails) {
-      formData.value.decision = newDetails.review_decision || 'Pending'
-      formData.value.remarks = newDetails.remarks || newDetails.reason_if_rejected || ''
+      approveMessage.value = newDetails.officerRemarks || ''
+      rejectMessage.value = newDetails.officerRemarks || ''
+    } else {
+      approveMessage.value = ''
+      rejectMessage.value = ''
     }
   },
   { immediate: true, deep: true },
 )
 
-const handleUpdate = async () => {
-  if (!props.applicationDetails || !props.applicationDetails.id) {
-    toast.error('Application details are missing.')
-    return
+// Reset dialogs when main modal closes
+watch(
+  () => props.isOpen,
+  (isOpen) => {
+    if (!isOpen) {
+      showApproveDialog.value = false
+      showRejectDialog.value = false
+    }
   }
+)
 
-  const payload = {
-    review_decision: formData.value.decision,
-  }
-
-  if (formData.value.decision === 'Regretted') {
-    payload.reason_if_rejected = formData.value.remarks
-  } else {
-    payload.remarks = formData.value.remarks
-  }
-
+const handleApprove = async () => {
+  if (isSubmitting.value) return
+  isSubmitting.value = true
   try {
-    await apiService.patchMhpcInstitute(props.applicationDetails.id, payload)
-    toast.success('Application updated successfully!')
+    await apiService.approveInstituteRenewal(
+      props.applicationDetails.instituteCID,
+      props.applicationDetails.renewalId,
+      { remarks: approveMessage.value },
+    )
+    toast.success('Renewal application approved successfully!')
+    showApproveDialog.value = false
     emit('application-updated')
-    closeModal()
   } catch (error) {
-    console.error('Error updating application:', error)
-    toast.error('Failed to update application.')
+    console.error('Error approving application:', error)
+    toast.error(error.response?.data?.detail || 'Failed to approve application.')
+  } finally {
+    isSubmitting.value = false
   }
 }
 
-const closeModal = () => {
+const handleReject = async () => {
+  if (isSubmitting.value) return
+  if (!rejectMessage.value.trim()) {
+    toast.error('Please provide a reason for rejection.')
+    return
+  }
+  isSubmitting.value = true
+  try {
+    await apiService.rejectInstituteRenewal(
+      props.applicationDetails.instituteCID,
+      props.applicationDetails.renewalId,
+      { remarks: rejectMessage.value },
+    )
+    toast.warning('Renewal application has been rejected.')
+    showRejectDialog.value = false
+    emit('application-updated')
+  } catch (error) {
+    console.error('Error rejecting application:', error)
+    toast.error(error.response?.data?.detail || 'Failed to reject application.')
+  } finally {
+    isSubmitting.value = false
+  }
+}
+
+const close = () => {
+  if (isSubmitting.value) return
   emit('close-modal')
 }
 
 const formatDate = (date) => {
   if (!date) return 'N/A'
-  return new Date(date).toLocaleDateString('en-US', {
+  return new Date(date).toLocaleDateString('en-GB', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',

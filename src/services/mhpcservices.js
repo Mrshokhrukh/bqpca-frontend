@@ -667,6 +667,60 @@ export default {
   deleteMhpcInstitute(id) {
     return apiClient.delete(`/mhpc/mhpc-institutes/${id}/`)
   },
+  // -----------------------------------------------------------------------------
+  // --- CORRECTED: INSTITUTE RENEWAL FUNCTIONS ---
+  // -----------------------------------------------------------------------------
+
+  /**
+   
+   * @param {string} instituteCID
+   * @param {FormData} formData
+   * @returns {Promise}
+   */
+  createInstituteRenewal(instituteCID, formData) {
+    return apiClient.post(`/mhpc/mhpc-institutes/${instituteCID}/renewals/`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
+
+  /**
+   * Confirms payment for a specific renewal.
+   * @param {string} instituteCID
+   * @param {number} renewalId
+   * @param {object} paymentData
+   * @returns {Promise}
+   */
+  confirmInstituteRenewalPayment(instituteCID, renewalId, paymentData) {
+    return apiClient.post(
+      `/mhpc/mhpc-institutes/${instituteCID}/renewals/${renewalId}/confirm-payment/`,
+      paymentData
+    );
+  },
+
+  /**
+   * Approves an institute renewal application (Dealing Officer action).
+   * @param {string} instituteCID
+   * @param {number} renewalId
+   * @param {object} data
+   * @returns {Promise}
+   */
+  approveInstituteRenewal(instituteCID, renewalId, data) {
+    return apiClient.post(`/mhpc/mhpc-institutes/${instituteCID}/renewals/${renewalId}/approve/`, data);
+  },
+
+  /**
+   * Rejects an institute renewal application (Dealing Officer action).
+   * @param {string} instituteCID
+   * @param {number} renewalId
+   * @param {object} data
+   * @returns {Promise}
+   */
+  rejectInstituteRenewal(instituteCID, renewalId, data) {
+    return apiClient.post(`/mhpc/mhpc-institutes/${instituteCID}/renewals/${renewalId}/reject/`, data);
+  },
+
   //MHPC COUrses api
   getMhpcCourseDetails() {
     return apiClient.get('/mhpc/mhpc-course-details/')
