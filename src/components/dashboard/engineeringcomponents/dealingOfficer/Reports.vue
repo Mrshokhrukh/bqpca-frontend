@@ -249,7 +249,7 @@ const headers = {
   new_applications: [
     { key: 'application_id', label: 'App ID', sortable: true, backendSortKey: 'id' },
     { key: 'applicant_name', label: 'Applicant Name', sortable: true },
-    { key: 'application_type', label: 'Type', sortable: true },
+    { key: 'reg_number', label: 'Register number', sortable: true },
     { key: 'submission_date', label: 'Submitted', type: 'date', sortable: true },
     { key: 'status', label: 'Status', sortable: true, isStatusColumn: true },
 
@@ -362,7 +362,7 @@ const apiMethods = {
       ...data,
       application_id: data.id ?? 'N/A',
       applicant_name: data.full_name ?? data.applicant?.full_name ?? 'N/A',
-      application_type: data.registration_type_name ?? 'N/A',
+      reg_number: data.registration_no ?? 'N/A',
       submission_date: data.created_at ?? data.submitted_on ?? null,
       status: data.is_active ?? data.current_step ?? 'N/A',
       assigned_officer: data.officer?.name ?? 'Unassigned',
