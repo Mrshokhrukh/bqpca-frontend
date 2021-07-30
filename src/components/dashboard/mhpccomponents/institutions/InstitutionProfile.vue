@@ -54,14 +54,23 @@
           <div v-if="activeTab === 'overview'">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div class="lg:col-span-2 bg-white p-8 rounded-2xl shadow-lg space-y-6">
-                <h3 class="text-2xl font-bold text-gray-900">Institute Details</h3>
+                <div class="flex justify-between items-center">
+                  <h3 class="text-2xl font-bold text-gray-900">Institute Details</h3>
+                  <button
+                    v-if="institute.application_status?.toLowerCase().includes('approved')"
+                    @click="openCertificateModal"
+                    class="btn btn-primary"
+                  >
+                    View Certificate
+                  </button>
+                </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <InfoItem label="Head of Institution" :value="institute.head_of_institution_name" />
                   <InfoItem label="Head's Email" :value="institute.head_of_institution_email" is-email />
                   <InfoItem label="Head's Phone" :value="institute.head_of_institution_phone_number" />
                   <InfoItem label="Website" :value="institute.website" is-link />
                   <InfoItem label="Address" :value="fullAddress" class="md:col-span-2" />
-                  <InfoItem label="Status" :value="institute.application_status_display" :value-class="getStatusClass(institute.application_status)" />
+                  <InfoItem label="Status" :value="institute.application_status" :value-class="getStatusClass(institute.application_status)" />
                   <InfoItem label="Validity" :value="`${formatDate(institute.valid_since)} to ${formatDate(institute.valid_till)}`" />
                 </div>
               </div>
@@ -169,6 +178,55 @@
         </div>
       </div>
     </div>
+
+    <!-- Certificate Modal -->
+    <teleport to="body">
+      <transition name="modal-certificate-fade">
+        <div
+          v-if="showCertificateModal"
+          class="fixed inset-0 z-[60] bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4"
+          @click.self="closeCertificateModal"
+        >
+          <div class="bg-white rounded-lg shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col">
+            <div class="flex justify-between items-center p-4 border-b border-gray-200">
+              <h3 class="text-lg font-semibold">Institute Certificate of Recognition</h3>
+              <button @click="closeCertificateModal" class="p-2 rounded-full hover:bg-gray-200">
+                <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  ></path>
+                </svg>
+              </button>
+            </div>
+            <div class="overflow-y-auto flex-1">
+              <TeachingCenterCertificate
+                v-if="selectedCertificateData"
+                ref="certificateComponentRef"
+                :center-data="selectedCertificateData"
+                cert-type="medical-institute"
+              />
+            </div>
+            <div class="p-4 bg-gray-100 border-t border-gray-200 flex justify-end space-x-4">
+              <button
+                @click="closeCertificateModal"
+                class="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400"
+              >
+                Close
+              </button>
+              <button
+                @click="downloadCertificate"
+                class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              >
+                Download as PDF
+              </button>
+            </div>
+          </div>
+        </div>
+      </transition>
+    </teleport>
   </div>
 </template>
 
@@ -182,6 +240,7 @@ import { storeToRefs } from 'pinia'
 import InstituteHeader from '@/components/common/MHPC/InstituteHeader.vue'
 import InfoItem from '@/components/common/MHPC/InfoItem.vue'
 import DocumentLink from '@/components/common/MHPC/DocumentLink.vue'
+import TeachingCenterCertificate from './TeachingCenterCertificate.vue'
 import {
   Building2,
   GraduationCap,
@@ -205,6 +264,10 @@ const capas = ref([])
 const isLoading = ref(true)
 const errorMessage = ref('')
 const activeTab = ref('overview')
+
+const showCertificateModal = ref(false)
+const selectedCertificateData = ref(null)
+const certificateComponentRef = ref(null)
 
 const tabs = [
   { name: 'overview', label: 'Overview', icon: Home },
@@ -290,6 +353,31 @@ const fetchProfileData = async () => {
   }
 }
 
+const openCertificateModal = () => {
+  if (!institute.value) return
+  selectedCertificateData.value = {
+    institute_name: institute.value.name_of_institution,
+    valid_since: institute.value.valid_since,
+    last_renewal_date: null, // This data is not available in the institute profile
+    valid_till: institute.value.valid_till,
+    target_category: programs.value.map((p) => p.specific_program_title).join(', ') || 'N/A',
+  }
+  showCertificateModal.value = true
+}
+
+const closeCertificateModal = () => {
+  showCertificateModal.value = false
+  selectedCertificateData.value = null
+}
+
+const downloadCertificate = () => {
+  if (certificateComponentRef.value) {
+    certificateComponentRef.value.exportToPDF()
+  } else {
+    toast.error('Could not generate PDF. Certificate component not ready.')
+  }
+}
+
 onMounted(() => {
   fetchProfileData()
 })
@@ -301,5 +389,29 @@ onMounted(() => {
 }
 .btn-primary {
   @apply border-transparent bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500;
+}
+
+/* Certificate Modal Transition */
+.modal-certificate-fade-enter-active,
+.modal-certificate-fade-leave-active {
+  transition: opacity 0.3s ease-in-out;
+}
+
+.modal-certificate-fade-enter-from,
+.modal-certificate-fade-leave-to {
+  opacity: 0;
+}
+
+.modal-certificate-fade-enter-active .bg-white,
+.modal-certificate-fade-leave-active .bg-white {
+  transition:
+    opacity 0.3s ease-in-out,
+    transform 0.3s ease-in-out;
+}
+
+.modal-certificate-fade-enter-from .bg-white,
+.modal-certificate-fade-leave-to .bg-white {
+  opacity: 0;
+  transform: scale(0.95) translateY(-20px);
 }
 </style>
