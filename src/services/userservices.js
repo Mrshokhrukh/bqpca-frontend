@@ -57,26 +57,6 @@ export default {
     return apiClient.get(`/masters/fetch-rub-details/${cid}/${stUid}/`)
   },
 
-  // Work Address Management
-  getWorkAddresses() {
-    return apiClient.get('/users/work-addresses/')
-  },
-  getWorkAddress(id) {
-    return apiClient.get(`/users/work-addresses/${id}/`)
-  },
-  createWorkAddress(data) {
-    return apiClient.post('/users/work-addresses/', data)
-  },
-  updateWorkAddress(id, data) {
-    return apiClient.put(`/users/work-addresses/${id}/`, data)
-  },
-  patchWorkAddress(id, data) {
-    return apiClient.patch(`/users/work-addresses/${id}/`, data)
-  },
-  deleteWorkAddress(id) {
-    return apiClient.delete(`/users/work-addresses/${id}/`)
-  },
-
   // NDI Authentication
   finalizeNdiLogin(data) {
     return apiClient.post('/users/ndi/finalize-login/', data)

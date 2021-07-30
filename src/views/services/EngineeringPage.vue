@@ -496,7 +496,6 @@ const handleEngineeringInstitutionRegistration = async () => {
   }
 
   try {
-    // Split institution name into first_name and last_name
     const nameParts = engineeringInstitutionForm.institution_name.split(' ')
     const first_name = nameParts[0]
     const last_name = nameParts.slice(1).join(' ') || ''
@@ -510,7 +509,6 @@ const handleEngineeringInstitutionRegistration = async () => {
       contact_number: engineeringInstitutionForm.contact_number,
       role: 'institutions',
       service_type: serviceType.value,
-      // Send the license number as cid to the backend
       cid: engineeringInstitutionForm.license_number || '',
     }
 
@@ -518,10 +516,30 @@ const handleEngineeringInstitutionRegistration = async () => {
     toast.success('Engineering Institution registration successful! Please login.')
     closeEngineeringInstitutionModal()
   } catch (error) {
-    toast.error(
-      error.response?.data?.message ||
-      'Engineering Institution registration failed. Please try again.',
-    )
+    let errorMessage = 'Engineering Institution registration failed. Please try again.'
+    if (error.response && error.response.data) {
+      const errors = error.response.data
+      if (typeof errors === 'object') {
+        if (errors.cid) {
+          errorMessage = Array.isArray(errors.cid)
+            ? errors.cid.join(', ')
+            : String(errors.cid)
+        } else if (errors.email) {
+          errorMessage = Array.isArray(errors.email)
+            ? errors.email.join(', ')
+            : String(errors.email)
+        } else if (errors.detail) {
+          errorMessage = errors.detail
+        } else {
+          errorMessage = Object.entries(errors)
+            .map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(', ') : value}`)
+            .join('; ')
+        }
+      } else if (typeof errors === 'string') {
+        errorMessage = errors
+      }
+    }
+    toast.error(errorMessage)
   }
 }
 </script>

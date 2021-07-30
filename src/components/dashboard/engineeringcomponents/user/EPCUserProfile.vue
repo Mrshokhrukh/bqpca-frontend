@@ -1,16 +1,16 @@
 <template>
   <div class="w-full mx-auto py-10 px-4 sm:px-6 lg:px-8 bg-gray-50 min-h-screen">
-    <!-- Header Section -->
     <div
       class="mb-8 flex flex-col md:flex-row items-center md:items-start gap-8 p-6 bg-white/70 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/80">
       <div class="relative">
         <div
           class="h-36 w-36 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center overflow-hidden border-4 border-white shadow-xl">
-          <img v-if="previewUrl || authStore.user?.passport_photo" :src="previewUrl || authStore.user?.passport_photo"
-            alt="Profile photo" class="h-full w-full object-cover" />
+          <img v-if="previewUrl || authStore.user?.passport_photo || authStore.user?.profile_photo_url"
+            :src="previewUrl || authStore.user?.passport_photo || authStore.user?.profile_photo_url" alt="Profile photo"
+            class="h-full w-full object-cover" />
           <span v-else class="text-5xl font-thin text-gray-500">{{
             getInitials(authStore.fullName)
-            }}</span>
+          }}</span>
         </div>
         <label for="photo-upload"
           class="absolute bottom-1 right-1 bg-blue-600 rounded-full p-3 text-white cursor-pointer shadow-md hover:bg-blue-700 transition transform hover:scale-110">
@@ -46,7 +46,6 @@
       </div>
     </div>
 
-    <!-- Navigation Tabs -->
     <div class="mb-8">
       <nav class="flex space-x-2 bg-gray-200/80 p-1.5 rounded-lg">
         <button @click="isEditing = false"
@@ -68,7 +67,6 @@
       </nav>
     </div>
 
-    <!-- Mobile Edit Button -->
     <div class="md:hidden mb-6 flex justify-end">
       <button @click="isEditing = !isEditing"
         class="inline-flex items-center px-6 py-3 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-transform transform hover:scale-105">
@@ -77,7 +75,6 @@
       </button>
     </div>
 
-    <!-- View Mode: Display Information -->
     <div v-if="!isEditing"
       class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/80 overflow-hidden">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8 p-8">
@@ -87,9 +84,7 @@
           </h3>
           <dl class="space-y-5">
             <div class="flex flex-col">
-              <dt class="text-sm font-medium text-gray-500">
-                CID No./Identity/Work Permit No.
-              </dt>
+              <dt class="text-sm font-medium text-gray-500">CID No./Identity/Work Permit No.</dt>
               <dd class="mt-1 text-gray-900 font-medium text-lg">
                 {{ authStore.user?.cid || 'Not provided' }}
               </dd>
@@ -148,7 +143,7 @@
                   </svg>
                   <span class="font-medium text-gray-800">{{
                     authStore.user?.contact_number || 'No contact number'
-                    }}</span>
+                  }}</span>
                 </div>
                 <div class="flex items-center space-x-3 text-lg">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24"
@@ -158,7 +153,7 @@
                   </svg>
                   <span class="font-medium text-gray-800">{{
                     authStore.user?.email || 'No email address'
-                    }}</span>
+                  }}</span>
                 </div>
               </dd>
             </div>
@@ -169,16 +164,15 @@
         <h3 class="text-xl font-semibold text-gray-800 mb-4">Work Information</h3>
         <dl>
           <div class="flex flex-col">
-            <dt class="text-sm font-medium text-gray-500">Work Address [Practice]</dt>
+            <dt class="text-sm font-medium text-gray-500">Work Address</dt>
             <dd class="mt-1 text-gray-900 font-medium text-lg">
-              {{ authStore.user?.work_address?.name || 'Not specified' }}
+              {{ authStore.user?.work_address || 'Not specified' }}
             </dd>
           </div>
         </dl>
       </div>
     </div>
 
-    <!-- Edit Mode: Update Form -->
     <div v-else class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200/80 overflow-hidden">
       <form @submit.prevent="saveProfile" class="p-8">
         <h3 class="text-2xl font-bold text-gray-900 mb-8">Update Your Information</h3>
@@ -233,16 +227,10 @@
               </label>
             </div>
           </div>
-
           <div>
-            <label for="workAddress" class="block text-sm font-medium text-gray-700">Work Address [Practice]</label>
-            <select id="workAddress" name="workAddress" v-model="profileForm.workAddress"
-              class="mt-1 block w-full px-4 py-3 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-lg">
-              <option :value="null">Not specified</option>
-              <option v-for="address in workAddresses" :key="address.id" :value="address.id">
-                {{ address.name }}
-              </option>
-            </select>
+            <label for="workAddress" class="block text-sm font-medium text-gray-700">Work Address</label>
+            <input type="text" id="workAddress" name="workAddress" v-model="profileForm.workAddress"
+              class="mt-1 block w-full px-4 py-3 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-lg" />
           </div>
         </div>
 
@@ -262,132 +250,107 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
-import { useAuthStore } from '@/stores/authStore';
-import apiService from '@/services/services';
-import { useToast } from 'vue-toastification';
+import { ref } from 'vue'
+import { useAuthStore } from '@/stores/authStore'
+import apiService from '@/services/services'
+import { useToast } from 'vue-toastification'
 
-const authStore = useAuthStore();
-const toast = useToast();
-const isEditing = ref(false);
-const previewUrl = ref(null);
-const workAddresses = ref([]);
+const authStore = useAuthStore()
+const toast = useToast()
+const isEditing = ref(false)
+const previewUrl = ref(null)
 
 const profileForm = ref({
-  contactNumber: '',
-  emailAddress: '',
+  contactNumber: authStore.user?.contact_number || '',
+  emailAddress: authStore.user?.email || '',
   passportPhoto: null,
-  workAddress: null,
-});
-
-const initializeForm = () => {
-  if (authStore.user) {
-    profileForm.value = {
-      contactNumber: authStore.user.contact_number || '',
-      emailAddress: authStore.user.email || '',
-      passportPhoto: null,
-      workAddress: authStore.user.work_address?.id || null,
-    };
-  }
-};
-
-const fetchWorkAddresses = async () => {
-  try {
-    const response = await apiService.getWorkAddresses();
-    workAddresses.value = response.data.results || [];
-  } catch (error) {
-    console.error('Failed to fetch work addresses:', error);
-    toast.error('Could not load work addresses.');
-  }
-};
-
-onMounted(() => {
-  initializeForm();
-  fetchWorkAddresses();
-});
-
-watch(() => authStore.user, (newUser) => {
-  if (newUser) {
-    initializeForm();
-  }
-}, { deep: true });
+  workAddress: authStore.user?.work_address || '',
+})
 
 const formatDate = (dateString) => {
-  if (!dateString) return '';
+  if (!dateString) return ''
   return new Date(dateString).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
-    day: 'numeric',
-  });
-};
+    day: 'numeric'
+  })
+}
 
 const getInitials = (name) => {
-  if (!name) return '';
+  if (!name) return ''
   return name
     .split(' ')
     .map((part) => part.charAt(0))
     .join('')
-    .toUpperCase();
-};
+    .toUpperCase()
+}
 
 const handleFileUpload = (event) => {
-  const file = event.target.files[0];
+  const file = event.target.files[0]
   if (file) {
-    profileForm.value.passportPhoto = file;
-    previewUrl.value = URL.createObjectURL(file);
+    profileForm.value.passportPhoto = file
+    previewUrl.value = URL.createObjectURL(file)
   }
-};
+}
 
 const saveProfile = async () => {
-  if (!profileForm.value.contactNumber || !profileForm.value.emailAddress) {
-    toast.error('Contact Number and Email Address are required.');
-    return;
-  }
-  if (!isValidEmail(profileForm.value.emailAddress)) {
-    toast.error('Please enter a valid email address.');
-    return;
-  }
-
   try {
-    const formData = new FormData();
-    formData.append('contact_number', profileForm.value.contactNumber);
-    formData.append('email', profileForm.value.emailAddress);
-    formData.append('work_address', profileForm.value.workAddress || '');
-
-    if (profileForm.value.passportPhoto) {
-      formData.append('passport_photo', profileForm.value.passportPhoto);
+    if (!profileForm.value.contactNumber || !profileForm.value.emailAddress) {
+      toast.error('Contact Number and Email Address are required.')
+      return
     }
-    const response = await apiService.updateUser(authStore.user.id, formData);
 
-    authStore.user = response.data;
+    if (!isValidEmail(profileForm.value.emailAddress)) {
+      toast.error('Please enter a valid email address.')
+      return
+    }
+    const formData = new FormData()
+    formData.append('contact_number', profileForm.value.contactNumber)
+    formData.append('email', profileForm.value.emailAddress)
+    if (profileForm.value.passportPhoto) {
+      formData.append('passport_photo', profileForm.value.passportPhoto)
+    }
+    formData.append('work_address', profileForm.value.workAddress || '') // Use free text
+    const response = await apiService.updateProfile(authStore.userId, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
 
-    localStorage.setItem('user', JSON.stringify(response.data));
+    authStore.user = response.data
+    localStorage.setItem('user', JSON.stringify(response.data))
+    if (response.data.passport_photo) {
+      previewUrl.value = response.data.passport_photo
+    } else {
+      previewUrl.value = null
+    }
 
-
-    toast.success('Profile updated successfully!');
-    isEditing.value = false;
-    previewUrl.value = null;
-
+    toast.success('Profile updated successfully!')
+    isEditing.value = false
   } catch (error) {
-    console.error('Error updating profile:', error);
-    const errorMessage = error.response?.data?.message || 'Failed to update profile.';
-    toast.error(errorMessage);
+    console.error('Error updating profile:', error)
+    toast.error(error.response?.data?.message || 'Failed to update profile.')
   }
-};
+}
 
 const cancelEdit = () => {
-  initializeForm();
-  if (previewUrl.value) {
-    URL.revokeObjectURL(previewUrl.value);
-    previewUrl.value = null;
+  profileForm.value = {
+    contactNumber: authStore.user?.contact_number || '',
+    emailAddress: authStore.user?.email || '',
+    passportPhoto: null,
+    workAddress: authStore.user?.work_address || ''
   }
-  isEditing.value = false;
-};
+
+  if (previewUrl.value) {
+    URL.revokeObjectURL(previewUrl.value)
+    previewUrl.value = null
+  }
+
+  isEditing.value = false
+}
 
 const isValidEmail = (email) => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-};
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  return emailRegex.test(email)
+}
 </script>
-
-<style scoped></style>

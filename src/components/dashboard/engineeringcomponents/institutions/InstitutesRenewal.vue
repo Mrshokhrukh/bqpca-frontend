@@ -413,7 +413,6 @@ const handlePaymentCompleted = async (paymentData) => {
   isLoading.value = true;
 
   try {
-    // The payment initiation and institute update logic remains the same
     const paymentInitiationFormData = new FormData()
     paymentInitiationFormData.append('refNo', paymentId)
     paymentInitiationFormData.append('serviceCode', 'registration_fee_for_engineering_institute')
