@@ -302,6 +302,7 @@ const apiError = ref(false)
 const errorMessage = ref('')
 const showRenewalModal = ref(false)
 const showCertificatePopup = ref(false)
+const renewalIsSubmitted = ref(false)
 const paymentModalRef = ref(null)
 
 const authStore = useAuthStore()
@@ -317,8 +318,6 @@ const formatDateSafely = (dateString) => {
 }
 
 // --- Computed Properties ---
-const latestRenewal = computed(() => instituteData.value?.latest_renewal)
-
 const formattedActiveDate = computed(() => formatDateSafely(instituteData.value?.valid_since))
 const formattedExpirationDate = computed(() => formatDateSafely(instituteData.value?.valid_till))
 
@@ -341,31 +340,46 @@ const isActive = computed(
 )
 
 const isPaymentRequired = computed(() => {
-    return latestRenewal.value?.status === 'APPROVED' && latestRenewal.value?.payment_status === 'PENDING';
-});
+  if (!instituteData.value || !isActive.value) {
+    return false
+  }
+  const paidStatuses = ['Paid', 'Completed', 'processing_payment', 'SUCCESS']
+  return (
+    instituteData.value.application_status.includes('Approved') &&
+    !paidStatuses.some((status) => instituteData.value.payment_status?.includes(status))
+  )
+})
 
 const showRenewButton = computed(() => {
-  if (!instituteData.value) return false;
-  const isExpired = !isActive.value;
-  const isRenewalPending = latestRenewal.value?.status === 'PENDING';
-  return isExpired && !isRenewalPending && !isPaymentRequired.value;
-});
+  if (!instituteData.value) {
+    return false
+  }
+  // The button should only appear if the registration is expired.
+  const isExpired = !isActive.value
 
+  // The button should be hidden if a renewal is already in progress (either pending review or awaiting payment).
+  const isRenewalInProgress = renewalIsSubmitted.value || isPaymentRequired.value
+
+  // Show the button ONLY if it's expired AND a renewal process is not already active.
+  return isExpired && !isRenewalInProgress
+})
 
 const renewalStatusDisplayText = computed(() => {
-  return latestRenewal.value?.get_status_display || 'Not Started'
+  if (renewalIsSubmitted.value) return 'Pending'
+  return instituteData.value?.do_dpr_review_decision || 'Not Started'
 })
 
 const paymentStatusDisplayText = computed(() => {
-    return latestRenewal.value?.get_payment_status_display || 'N/A';
-});
+  if (isPaymentRequired.value) return 'Pending Payment'
+  return instituteData.value?.payment_status || 'N/A'
+})
 
 const mainStatusText = computed(() => {
   if (isPaymentRequired.value) return 'Approved - Pending Payment'
   if (instituteData.value?.application_status.includes('Approved') && !isActive.value)
     return 'Registration Expired'
   if (isActive.value) return 'Active Registration'
-  if (latestRenewal.value?.status === 'PENDING') return 'Renewal In Progress'
+  if (renewalIsSubmitted.value) return 'Renewal In Progress'
   return instituteData.value?.application_status || 'Status Unknown'
 })
 
@@ -376,7 +390,7 @@ const expirationWarningTitle = computed(() => {
 
 const statusIndicatorClass = computed(() => {
   if (isPaymentRequired.value) return 'bg-yellow-500 animate-pulse'
-  if (latestRenewal.value?.status === 'PENDING') return 'bg-blue-500 animate-pulse'
+  if (renewalIsSubmitted.value) return 'bg-blue-500 animate-pulse'
   if (!isActive.value) return 'bg-red-500'
   if (daysUntilExpiration.value <= 30) return 'bg-orange-500'
   return 'bg-green-500'
@@ -386,7 +400,7 @@ const statusTextColorClass = computed(() => {
   if (isPaymentRequired.value) return 'text-yellow-600'
   if (!isActive.value && instituteData.value?.application_status.includes('Approved'))
     return 'text-red-600'
-  if (latestRenewal.value?.status === 'PENDING') return 'text-blue-600'
+  if (renewalIsSubmitted.value) return 'text-blue-600'
   return 'text-green-600'
 })
 
@@ -416,6 +430,7 @@ const paymentStatusColorClass = computed(() => getDecisionColor(paymentStatusDis
 const fetchInstituteData = async () => {
   isLoading.value = true
   apiError.value = false
+  renewalIsSubmitted.value = false
   try {
     const response = await apiServices.getMhpcInstitutes()
     if (response?.data?.results?.length > 0) {
@@ -438,7 +453,7 @@ const fetchInstituteData = async () => {
 }
 
 const handleRenewalSuccess = () => {
-  fetchInstituteData();
+  renewalIsSubmitted.value = true
 }
 
 const openCertificatePopup = () => {
@@ -502,12 +517,12 @@ const handlePaymentCompleted = async (paymentData) => {
 
     const updateBackendFormData = new FormData()
     updateBackendFormData.append('payment_id', paymentId)
-    updateBackendFormData.append('payment_status', 'COMPLETED')
+    updateBackendFormData.append('payment_status', 'processing_payment')
 
     await apiServices.patchMhpcInstitute(instituteData.value.id, updateBackendFormData)
 
     instituteData.value.payment_id = paymentId
-    instituteData.value.payment_status = 'COMPLETED'
+    instituteData.value.payment_status = 'processing_payment'
 
     toast.success(
       `Payment initiated (Ref: ${paymentId.substring(0, 8)}...). Your status will update shortly.`,

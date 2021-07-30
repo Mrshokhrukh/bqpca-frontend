@@ -667,9 +667,6 @@ export default {
   deleteMhpcInstitute(id) {
     return apiClient.delete(`/mhpc/mhpc-institutes/${id}/`)
   },
-  createInstituteRenewal(instituteId, data) {
-    return apiClient.post(`/mhpc/mhpc-institutes/${instituteId}/renewals/`, data)
-  },
   //MHPC COUrses api
   getMhpcCourseDetails() {
     return apiClient.get('/mhpc/mhpc-course-details/')
