@@ -300,6 +300,9 @@ export default {
       institute_reports: mhpcDashboard,
       teaching_hospital_reports: mhpcDashboard,
       cogs_reports: mhpcDashboard,
+      faculty_management: mhpcDashboard,
+      preceptor_management: mhpcDashboard,
+      faculty_program_assignment: mhpcDashboard,
     },
   },
   chief: {

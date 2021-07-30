@@ -19,6 +19,9 @@
             :qualification="dashboardState.primaryQualifications[0]"
             @view-certificate="handleViewCertificate"
           />
+
+          <CogsStatusCard v-if="cogsApplication" :application="cogsApplication" />
+
           <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
             <StatCard
               title="CPD Credits"
@@ -27,7 +30,6 @@
               :total="50"
               type="progress"
             />
-            <CogsStatusCard :expiry-date="licenseExpiryDate" :status="licenseStatus" />
             <ActivityFeed title="Recent Activities" :activities="recentActivities" />
           </div>
           <ApplicationHistoryCard
@@ -66,10 +68,12 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useAuthStore } from '@/stores/authStore'
 import { useDashboardStore } from '@/stores/mhpcUserDahboardStore'
 import { storeToRefs } from 'pinia'
+import apiService from '@/services/services'
 
 import ProfileHeader from './dashBoardComponents/ProfileHeaders.vue'
 import StatCard from './dashBoardComponents/StatCards.vue'
-import CogsStatusCard from './dashBoardComponents/CogsStatusCards.vue'
+// IMPORTANT: Make sure this now points to the new detailed card component
+import CogsStatusCard from './dashBoardComponents/CogsStatusCard.vue'
 import ApplicationHistoryCard from './dashBoardComponents/ApplicationHistoryCards.vue'
 import ActivityFeed from './dashBoardComponents/ActivityFeeds.vue'
 import DeadlinesList from './dashBoardComponents/DeadlinesLists.vue'
@@ -97,16 +101,17 @@ const {
   showCertificateModal,
 } = storeToRefs(dashboardStore)
 
-// Reactive variable to track DPR enablement
+// State for the COGS data. The modal state is no longer needed.
+const cogsApplication = ref(null)
+
 const isDprEnabled = ref(false)
 
 const dashboardState = computed(() => {
+  // ... (no changes in this computed property)
   if (isLoading.value) return { isLoading: true }
-
   const hasNoApplications = !applications.value?.length
   const hasApplicationsButNoQualifications =
     !hasNoApplications && applications.value.every((app) => !app.user_qualifications?.length)
-
   if (hasNoApplications || hasApplicationsButNoQualifications) {
     return {
       isFirstState: true,
@@ -115,42 +120,38 @@ const dashboardState = computed(() => {
         : 'Your application is registered. Please add your qualifications to proceed with the review process.',
     }
   }
-
   const primaryQualifications = applications.value
     .flatMap((app) => app.user_qualifications || [])
     .filter((q) => q.is_primary_qualification && q.endorsement_decision === 'Approved')
-
   if (primaryQualifications.length) {
-    return {
-      isApproved: true,
-      primaryQualifications,
-    }
+    return { isApproved: true, primaryQualifications }
   }
-
   const qualificationInfo = applications.value.reduce((acc, app) => {
     const primaryQual = app.user_qualifications?.find(
       (q) => q.is_primary_qualification && q.endorsement_decision !== 'Approved',
     )
     return acc || (primaryQual ? { application: app, qualification: primaryQual } : null)
   }, null)
-
-  return {
-    isPending: true,
-    qualificationInfo,
-  }
+  return { isPending: true, qualificationInfo }
 })
 
 const fetchDashboardData = async () => {
   if (!user.value?.cid) return
   try {
+    // Fetch all the original data
     await dashboardStore.fetchAllData(user.value.cid)
+
+    // Fetch COGS data to be displayed in the card
+    const response = await apiService.getMhpcCogs()
+    if (response.data.results && response.data.results.length > 0) {
+      cogsApplication.value = response.data.results[0]
+    }
   } catch (error) {
     console.error('Error fetching dashboard data:', error)
   }
 }
 
 const showRejectedApplications = () => dashboardStore.setSelectedApplications('Rejected')
-
 const closeApplicationsModal = () => dashboardStore.clearSelectedApplications()
 
 const visitApplication = (app) => {
@@ -163,28 +164,16 @@ const visitApplication = (app) => {
   }
 }
 
-// In UserMhpcDashboard.vue <script setup>
-
+// Logic for the Certificate modal (remains unchanged and correct)
 const handleViewCertificate = (qualification) => {
-  // 1. Check if we received a valid qualification with a parent application ID.
   if (!qualification || !qualification.application) {
-    console.error('View Certificate failed: Invalid qualification data received.', qualification)
     return
   }
-
-  // 2. Find the full application object using the ID from the qualification.
-  // The modal needs the full application object (which has user details etc.),
-  // not just the qualification object.
   const applicationForModal = applications.value.find((app) => app.id === qualification.application)
-
   if (!applicationForModal) {
-    console.error('Could not find the parent application for the selected qualification.')
     return
   }
-
-  // 3. Set the state to show the modal, using the correct Pinia ref syntax.
-  // Your reference component shows the modal expects the data in a `{ results: [...] }` wrapper.
-  selectedApplication.value = { results: [applicationForModal] }
+  selectedApplication.value = applicationForModal
   showCertificateModal.value = true
 }
 

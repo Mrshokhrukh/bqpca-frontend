@@ -953,10 +953,24 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/module_management`,
           },
           {
+            name: 'Faculty Management',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/faculty_management`,
+          },
+          {
+            name: 'Preceptor Management',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/preceptor_management`,
+          },
+          {
             name: 'Program Management',
             route: (serviceType) =>
               `/admin/dealing_officer/${serviceType}/education_program_management`,
           },
+          {
+            name: 'Faculty Program Assignment',
+            route: (serviceType) =>
+              `/admin/dealing_officer/${serviceType}/faculty_program_assignment`,
+          },
+
           // {
           //   name: 'Reports',
           //   route: (serviceType) => `/admin/dealing_officer/${serviceType}/institute_report`,
