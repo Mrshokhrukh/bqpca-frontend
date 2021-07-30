@@ -273,7 +273,7 @@ async function handlePhotoSubmit({ cpdTask, photo, description }) {
       formDataToSend.append('photo_description', description)
     }
 
-    await apiService.uploadCpdTaskAttendancePhoto(formDataToSend)
+    await apiService.uploadAttendancePhoto(formDataToSend)
     showMessage('Attendance photo uploaded successfully!', 'success')
     if (attendancePhotoFormRef.value?.resetForm) {
       attendancePhotoFormRef.value.resetForm(false)

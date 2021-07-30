@@ -863,6 +863,10 @@ export default {
       headers: {},
     })
   },
+
+  uploadAttendancePhoto(id) {
+    return apiClient.post(`/mhpc/mhpc-cpd-tasks/${id}/upload-attendance-photo/`)
+  },
   // --- Complaint Management Endpoints ---
   getComplaints(params = {}) {
     return apiClient.get('/mhpc/complaints/', { params })
