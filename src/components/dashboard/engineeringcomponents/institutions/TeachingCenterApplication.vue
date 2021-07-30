@@ -473,7 +473,7 @@ const fetchDraftData = async () => {
     }
     const response = await apiServices.getEpcTeachingCenters(filterParams)
     const drafts = response.data?.results || response.data || []
-    console.log('API Response:', JSON.stringify(response.data, null, 2)) // Debug log
+    console.log('API Response:', JSON.stringify(response.data, null, 2))
     const latestDraft = drafts.find(draft => draft.is_draft === true)
 
     if (latestDraft) {
@@ -492,7 +492,7 @@ const fetchDraftData = async () => {
         city_gewog: latestDraft.city_gewog || '',
         state_dzongkhag: latestDraft.state_dzongkhag || '',
         target_category: latestDraft.target_category || '',
-        tc_attachments: null, // Reset; user must re-upload
+        tc_attachments: null,
         tc_report: latestDraft.tc_report || null,
         remarks: latestDraft.remarks || '',
         tc_remarks: latestDraft.tc_remarks || '',
@@ -510,7 +510,6 @@ const fetchDraftData = async () => {
     } else {
       console.log('No valid drafts found for institute_id:', formData.value.institute_id)
       isEditingDraft.value = false
-      // Only reset teaching center fields, preserve institute fields
       formData.value = {
         ...formData.value,
         id: null,
@@ -536,7 +535,6 @@ const fetchDraftData = async () => {
     console.error('Error fetching draft data:', error)
     showToastNotification('Failed to load draft data. Please try again.')
     isEditingDraft.value = false
-    // Only reset teaching center fields, preserve institute fields
     formData.value = {
       ...formData.value,
       id: null,
@@ -565,32 +563,25 @@ onMounted(async () => {
     const institutesResponse = await apiServices.getEpcInstitutes()
     const institutesArray = institutesResponse.data?.results || institutesResponse.data || []
 
-    if (!Array.isArray(institutesArray)) {
-      console.error('Error fetching institute options: Expected an array but received:', institutesArray)
-      instituteOptions.value = []
-      showToastNotification('Failed to load institute options: Unexpected data format.')
-    } else {
-      instituteOptions.value = institutesArray.map((institute) => ({
-        value: institute.id,
-        label: institute.name_of_institution,
-        data: institute,
-      }))
-      const userInstitute = institutesArray.find(
-        (institute) => institute.CID === authStore.user?.cid
-      )
-      if (userInstitute) {
-        formData.value.institute_id = userInstitute.id
-        formData.value.country = userInstitute.country || 'Bhutan'
-        formData.value.dzongkhag = userInstitute.dzongkhag || ''
-        formData.value.cityGewog = userInstitute.gewog || ''
-        formData.value.addressLocation = userInstitute.address || userInstitute.location || ''
-        formData.value.contactNo = userInstitute.contact_no || ''
-        formData.value.emailAddress = userInstitute.email_address || ''
-        console.log('Set institute_id:', formData.value.institute_id)
-        await fetchDraftData()
-      } else {
-        console.warn('No institute found for user CID:', authStore.user?.cid)
-      }
+    const filteredInstitutes = institutesArray.filter(
+      (institute) => institute.CID === authStore.user?.cid
+    )
+
+    instituteOptions.value = filteredInstitutes.map((institute) => ({
+      value: institute.id,
+      label: institute.name_of_institution,
+      data: institute,
+    }))
+    if (filteredInstitutes.length === 1) {
+      const userInstitute = filteredInstitutes[0]
+      formData.value.institute_id = userInstitute.id
+      formData.value.country = userInstitute.country || 'Bhutan'
+      formData.value.dzongkhag = userInstitute.dzongkhag || ''
+      formData.value.cityGewog = userInstitute.gewog || ''
+      formData.value.addressLocation = userInstitute.address || userInstitute.location || ''
+      formData.value.contactNo = userInstitute.contact_no || ''
+      formData.value.emailAddress = userInstitute.email_address || ''
+      await fetchDraftData()
     }
   } catch (error) {
     console.error('Error fetching institute options:', error.response || error.message || error)
@@ -600,7 +591,6 @@ onMounted(async () => {
     isLoadingOptions.value = false
   }
 })
-
 watch(
   () => formData.value.institute_id,
   async (newValue, oldValue) => {
@@ -637,7 +627,6 @@ const handleAttachmentChange = (event) => {
 }
 
 const resetForm = () => {
-  // Preserve institute-related fields
   const preservedData = {
     institute_id: formData.value.institute_id,
     country: formData.value.country,
