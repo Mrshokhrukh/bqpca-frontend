@@ -33,8 +33,8 @@
             <div class="flex space-x-4 overflow-x-auto">
               <button v-for="(tab, index) in tabs" :key="index" @click="activeTab = index"
                 class="py-3 px-2 text-sm font-medium whitespace-nowrap border-b-2 focus:outline-none" :class="activeTab === index
-                    ? 'border-blue-600 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  ? 'border-blue-600 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                   ">
                 {{ tab }}
               </button>
@@ -58,7 +58,7 @@
                     <div class="bg-white p-3 rounded shadow-sm border border-gray-100">
                       <label class="block text-xs font-medium text-gray-500">CID</label>
                       <div class="mt-1 text-sm font-medium text-gray-900">
-                        {{ instituteDetails.cid || 'Not available' }}
+                        {{ instituteDetails.CID || 'Not available' }}
                       </div>
                     </div>
                     <div class="bg-white p-3 rounded shadow-sm border border-gray-100">
@@ -224,8 +224,8 @@
                     <label class="block text-xs font-medium text-gray-500">Is Active</label>
                     <div class="mt-1">
                       <span class="px-2 py-1 text-xs font-medium rounded-full" :class="instituteDetails.is_active
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-gray-100 text-gray-800'
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-gray-100 text-gray-800'
                         ">
                         {{ instituteDetails.is_active ? 'Yes' : 'No' }}
                       </span>
@@ -241,8 +241,8 @@
                     <label class="block text-xs font-medium text-gray-500">Payment Status</label>
                     <div class="mt-1">
                       <span class="px-2 py-1 text-xs font-medium rounded-full" :class="instituteDetails.is_payment_complete
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-yellow-100 text-yellow-800'
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-yellow-100 text-yellow-800'
                         ">
                         {{ instituteDetails.is_payment_complete ? 'Completed' : 'Pending' }}
                       </span>
@@ -343,7 +343,7 @@
                     </a>
                   </div>
 
-                  <div class="bg-white p-3 rounded shadow-sm border border-gray-100 flex justify-between items-center">
+                  <!-- <div class="bg-white p-3 rounded shadow-sm border border-gray-100 flex justify-between items-center">
                     <div>
                       <label class="block text-xs font-medium text-gray-500">EOI Documents</label>
                       <div class="mt-1 text-sm font-medium text-gray-900">
@@ -365,11 +365,11 @@
                       </svg>
                       View
                     </a>
-                  </div>
+                  </div> -->
 
                   <div class="bg-white p-3 rounded shadow-sm border border-gray-100 flex justify-between items-center">
                     <div>
-                      <label class="block text-xs font-medium text-gray-500">DPR Report</label>
+                      <label class="block text-xs font-medium text-gray-500">DPR Dealing Officer Report</label>
                       <div class="mt-1 text-sm font-medium text-gray-900">
                         {{ instituteDetails.do_dpr_report ? 'Available' : 'Not available' }}
                       </div>
@@ -386,7 +386,7 @@
                     </a>
                   </div>
 
-                  <div class="bg-white p-3 rounded shadow-sm border border-gray-100 flex justify-between items-center">
+                  <!-- <div class="bg-white p-3 rounded shadow-sm border border-gray-100 flex justify-between items-center">
                     <div>
                       <label class="block text-xs font-medium text-gray-500">DPR Review Report</label>
                       <div class="mt-1 text-sm font-medium text-gray-900">
@@ -404,7 +404,7 @@
                       </svg>
                       View
                     </a>
-                  </div>
+                  </div> -->
                 </div>
               </div>
             </div>

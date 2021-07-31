@@ -9,7 +9,6 @@
       <select id="view-type" v-model="viewType"
         class="border border-gray-300 rounded-md px-4 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
         <option value="table">Table</option>
-        <option value="cards">Cards</option>
       </select>
     </div>
 
@@ -44,10 +43,11 @@
           <tr v-for="capaItem in filteredCapas" :key="capaItem.id"
             class="transition-colors duration-200 hover:bg-gray-100">
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-              {{ capaItem.teaching_center.institute.name_of_institution }}
+              {{ capaItem.teaching_center?.institute?.name_of_institution || capaItem.institute?.name_of_institution ||
+                '-' }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-              {{ capaItem.teaching_center.center_name }}
+              {{ capaItem.teaching_center?.center_name || '-' }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
               {{ capaItem.inspection_from_date }} - {{ capaItem.inspection_to_date }}
@@ -125,12 +125,12 @@ const fetchCapas = async () => {
     console.log(capas.value)
   } catch (error) {
     console.error('Error fetching CAPA data:', error)
-    toast.error('Failed to fetch CAPA data.') // Error toast
+    toast.error('Failed to fetch CAPA data.')
   }
 }
 
 onMounted(() => {
-  // console.log("AuthStore User:", authStore.user); // Optional, for debugging
+
   fetchCapas()
 })
 
@@ -138,12 +138,12 @@ const filteredCapas = computed(() => {
   if (!authStore.user || !authStore.user.cid) {
     return []
   }
-  // Now that teaching_center and institute are nested, access CID correctly.
   return capas.value.filter(
-    (capaItem) => capaItem.teaching_center?.institute?.CID === authStore.user.cid,
+    (capaItem) =>
+      (capaItem.teaching_center?.institute?.CID === authStore.user.cid) ||
+      (capaItem.institute?.CID === authStore.user.cid)
   )
 })
-
 const openModal = (capaItem) => {
   selectedCapa.value = capaItem
 }
@@ -155,11 +155,10 @@ const closeModal = () => {
 const updateCapa = (updatedCapa) => {
   const index = capas.value.findIndex((capaItem) => capaItem.id === updatedCapa.id)
   if (index !== -1) {
-    // Use Vue.set (or in Vue 3, direct assignment is fine) for reactivity:
-    capas.value[index] = updatedCapa // More concise and reactive in Vue 3
+    capas.value[index] = updatedCapa // Vue 3 reactivity
+    toast.success('CAPA remarks submitted successfully!')
   }
   closeModal()
-  toast.success('CAPA remarks submitted successfully!')
 }
 
 const truncateText = (text, maxLength) => {
@@ -168,7 +167,6 @@ const truncateText = (text, maxLength) => {
   }
   return text
 }
-
 const getStatusClass = (status) => {
   return (
     {
@@ -178,7 +176,6 @@ const getStatusClass = (status) => {
     }[status] || 'bg-gray-100 text-gray-800'
   ) // Use object lookup for conciseness
 }
-
 const getStatusText = (status) => {
   return (
     {

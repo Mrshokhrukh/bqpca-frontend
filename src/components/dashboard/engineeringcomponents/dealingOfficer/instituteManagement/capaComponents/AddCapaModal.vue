@@ -5,10 +5,8 @@
     <div v-if="show" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog"
       aria-modal="true">
       <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-        <!-- Background overlay -->
         <div class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity" @click="$emit('close')"></div>
 
-        <!-- Modal panel -->
         <div
           class="inline-block align-bottom bg-gray-50 rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-5xl sm:w-full">
           <!-- Header -->
@@ -49,26 +47,21 @@
                     </legend>
                     <div class="space-y-4">
                       <div>
-                        <label class="block text-sm font-medium text-gray-700">Institute <span
-                            class="text-red-500">*</span></label>
+                        <label class="block text-sm font-medium text-gray-700">Institute</label>
                         <select v-model="capaForm.institute"
-                          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2"
-                          required>
-                          <option v-if="isLoadingInstitutes" disabled value="">Loading institutes...</option>
-                          <option v-else value="" disabled>Select an Institute</option>
+                          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2">
+                          <option value=""> Select an Institute</option>
                           <option v-for="inst in institutes" :key="inst.id" :value="inst.id">{{ inst.name_of_institution
-                          }}</option>
+                            }}</option>n>
                         </select>
                         <div v-if="instituteError" class="text-red-500 text-xs mt-1">{{ instituteError }}</div>
                       </div>
 
                       <div>
-                        <label class="block text-sm font-medium text-gray-700">Facility <span
-                            class="text-red-500">*</span></label>
+                        <label class="block text-sm font-medium text-gray-700">Facility</label>
                         <select v-model="capaForm.teaching_center" @change="updateAutoFields"
                           :disabled="isLoadingFacilities || !capaForm.institute"
-                          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed p-2"
-                          required>
+                          class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed p-2">
                           <option v-if="isLoadingFacilities" disabled value="">Loading facilities...</option>
                           <option v-else-if="!capaForm.institute" disabled value="">Select institute first</option>
                           <option v-else value="" disabled>Select a Facility</option>
@@ -238,11 +231,13 @@ const fetchInstitutes = async () => {
   try {
     const response = await apiService.getEpcInstitutes()
     const data = response.data.results || response.data || []
-    institutes.value = data.map((item) => ({
-      id: item.id || item.institute_id,
-      name_of_institution: item.name_of_institution || item.name || item.institute_name,
-    }))
-    instituteError.value = institutes.value.length ? '' : 'No institutes registered in the system'
+    institutes.value = data
+      .filter(item => item.do_dpr_review_decision === 'Approved')
+      .map((item) => ({
+        id: item.id || item.institute_id,
+        name_of_institution: item.name_of_institution || item.name || item.institute_name,
+      }))
+    instituteError.value = institutes.value.length ? '' : 'No institutes with Approved DPR'
     nextTick(() => {
       updateFilteredTeachingCenters()
     })
@@ -410,7 +405,14 @@ const updateImplementationTimeline = () => {
 }
 
 const submitForm = async () => {
-  const requiredFields = ['institute', 'teaching_center', 'inspection_from_date', 'inspection_to_date', 'observation_description', 'root_cause', 'capa', 'status'];
+  const requiredFields = [
+    'inspection_from_date',
+    'inspection_to_date',
+    'observation_description',
+    'root_cause',
+    'capa',
+    'status'
+  ];
   const missingFields = requiredFields.filter((field) => !capaForm.value[field]);
 
   if (missingFields.length > 0) {
@@ -434,8 +436,16 @@ const submitForm = async () => {
 }
 
 const addAnother = async () => {
-  const requiredFields = ['institute', 'teaching_center', 'inspection_from_date', 'inspection_to_date', 'observation_description', 'root_cause', 'capa', 'status'];
+  const requiredFields = [
+    'inspection_from_date',
+    'inspection_to_date',
+    'observation_description',
+    'root_cause',
+    'capa',
+    'status'
+  ];
   const missingFields = requiredFields.filter((field) => !capaForm.value[field]);
+
   if (missingFields.length > 0) {
     alert(`Please fill in all required fields before adding another: ${missingFields.join(', ')}`);
     return;

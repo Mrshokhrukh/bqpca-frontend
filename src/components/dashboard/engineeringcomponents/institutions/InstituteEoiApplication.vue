@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-50 py-8">
+  <div v-if="showForm" class="min-h-screen bg-gray-50 py-8">
     <div class="mx-auto px-4">
       <div class="bg-white rounded-lg shadow-lg p-6 md:p-8">
         <h1 class="text-3xl font-bold text-gray-900 mb-6 text-center">
@@ -270,6 +270,12 @@
       </div>
     </div>
   </div>
+  <div v-else class="min-h-screen flex items-center justify-center">
+    <div class="bg-white rounded-lg shadow-lg p-8 text-center">
+      <h2 class="text-2xl font-bold text-green-700 mb-4">Application Already Approved</h2>
+      <p class="text-gray-700">You have already submitted and your application is approved. You cannot submit again.</p>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -283,6 +289,9 @@ import { countryData } from '@/constants/countries.js'
 const router = useRouter()
 const toast = useToast()
 const authStore = useAuthStore()
+
+const showForm = ref(true)
+const existingApplication = ref(null)
 
 const todayDate = computed(() => {
   const today = new Date()
@@ -415,7 +424,6 @@ const validateForm = () => {
   return true
 }
 
-// Form Submission
 const handleSubmit = async () => {
   if (!authStore.user || !authStore.user.cid) {
     toast.error('User authentication error. Please log in again.', { timeout: 5000 })
@@ -527,40 +535,62 @@ const clearDraft = () => {
   localStorage.removeItem('epcEoiFormDraft')
 }
 
-onMounted(() => {
+onMounted(async () => {
   if (authStore.user?.cid) {
-    formData.value.CID = authStore.user.cid
+    formData.value.CID = authStore.user.cid;
+
+    try {
+      const response = await apiService.getEpcInstitutes();
+      const applications = response.data.results;
+      if (!Array.isArray(applications)) {
+        throw new Error("API response did not contain a 'results' array.");
+      }
+      const userApplication = applications.find(
+        (app) => app.CID === authStore.user.cid
+      );
+      if (userApplication) {
+        existingApplication.value = userApplication;
+        if (userApplication.review_decision && userApplication.review_decision.toLowerCase() === 'approved') {
+          showForm.value = false;
+          toast.info('Your application has already been approved.');
+        } else {
+          showForm.value = true;
+        }
+      } else {
+        showForm.value = true;
+      }
+    } catch (err) {
+      console.error('Error fetching EOI applications:', err);
+      toast.error('Could not check your application status. Please try again later.');
+      showForm.value = true;
+    }
   } else {
-    console.error('User CID not found in auth store on mount.')
-    toast.error('Could not retrieve user information. Please log in again.', { timeout: 5000 })
+    console.error('User CID not found in auth store on mount.');
+    toast.error('Could not retrieve user information. Please log in again.', { timeout: 5000 });
   }
 
-  const savedDraft = localStorage.getItem('epcEoiFormDraft')
+  const savedDraft = localStorage.getItem('epcEoiFormDraft');
   if (savedDraft) {
     try {
-      const parsedDraft = JSON.parse(savedDraft)
+      const parsedDraft = JSON.parse(savedDraft);
       Object.keys(parsedDraft).forEach((key) => {
         if (key !== 'CID' && Object.prototype.hasOwnProperty.call(formData.value, key)) {
           if (
-            ![
-              'supporting_documents',
-              'institute_eoi_supporting_documents',
-              'do_dpr_report',
-            ].includes(key)
+            !['supporting_documents', 'institute_eoi_supporting_documents', 'do_dpr_report'].includes(key)
           ) {
-            formData.value[key] = parsedDraft[key]
+            formData.value[key] = parsedDraft[key];
           } else {
-            formData.value[key] = null
+            formData.value[key] = null;
           }
         }
-      })
-      toast.info('Draft loaded. Please re-select any required files.')
+      });
+      toast.info('Draft loaded. Please re-select any required files.');
     } catch (error) {
-      console.error('Error loading draft:', error)
-      clearDraft()
+      console.error('Error loading draft:', error);
+      clearDraft();
     }
   }
-})
+});
 </script>
 
 <style scoped>

@@ -462,8 +462,8 @@ const reviewForm = ref({
   tc_review_decision: 'Pending',
   tc_reason_if_rejected: '',
   tc_remarks: '',
-  valid_from: '', // New field for valid_from
-  valid_till: '', // Controlled programmatically
+  valid_from: '',
+  valid_till: '',
 })
 
 const alert = ref({
@@ -493,33 +493,32 @@ const isReviewFinalized = computed(() => {
   )
 })
 
-// Compute Valid From (based on updated_at)
 const validFromDisplay = computed(() => {
   if (!selectedCenter.value?.updated_at) {
     return 'N/A'
   }
   try {
     const date = new Date(selectedCenter.value.updated_at)
-    return date.toISOString().split('T')[0] // Format as YYYY-MM-DD
+    return date.toISOString().split('T')[0]
   } catch (error) {
     console.error('Error parsing updated_at:', error)
-    return new Date().toISOString().split('T')[0] // Fallback to current date
+    return new Date().toISOString().split('T')[0]
   }
 })
 
-// Compute Valid Till (based on review decision and updated_at)
+
 const validTillDisplay = computed(() => {
   if (reviewForm.value.tc_review_decision === 'Approved' && selectedCenter.value?.updated_at) {
     try {
       const updatedAt = new Date(selectedCenter.value.updated_at)
       updatedAt.setFullYear(updatedAt.getFullYear() + 1)
-      return updatedAt.toISOString().split('T')[0] // One year from updated_at
+      return updatedAt.toISOString().split('T')[0]
     } catch (error) {
       console.error('Error computing valid_till:', error)
       return ''
     }
   }
-  return '' // Empty for Regretted or Pending
+  return ''
 })
 
 onMounted(async () => {
@@ -719,9 +718,19 @@ const confirmReject = async () => {
   }
 }
 
+
 const saveReview = async () => {
   if (!selectedCenter.value?.id) {
     showAlert('error', 'Cannot save review: Missing Teaching Center ID.')
+    return
+  }
+
+
+  if (
+    reviewForm.value.tc_review_decision === 'Approved' &&
+    !selectedCenter.value.is_payment_complete
+  ) {
+    showAlert('error', 'Cannot approve: Payment is not complete.')
     return
   }
 
@@ -787,6 +796,7 @@ const saveReview = async () => {
     loading.value = false
   }
 }
+
 
 const showAlert = (type, message) => {
   alert.value = { show: true, type, message }

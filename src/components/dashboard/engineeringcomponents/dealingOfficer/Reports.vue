@@ -10,14 +10,12 @@ export default {
     <div class="flex justify-between items-center mb-8">
       <h1 class="text-2xl font-bold text-gray-800">EPC Applications & Reports</h1>
       <div class="flex gap-4">
-        <!-- Modified Export Button for CSV -->
         <button @click="exportToCSV" class="btn-primary" :disabled="isLoading || !reportData.length || isLoadingExport">
           <span v-if="isLoadingExport" class="mr-2">
             <i class="fas fa-spinner fa-spin"></i>
           </span>
           📄 Export CSV
         </button>
-        <!-- Removed Excel/PDF Buttons -->
       </div>
     </div>
 
@@ -56,7 +54,8 @@ export default {
 
     <!-- Filters -->
     <div v-if="activeReport"
-      class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6 p-4 bg-white rounded-lg shadow-sm border border-gray-200">
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 p-4 bg-white rounded-lg shadow-sm border border-gray-200">
+
       <!-- Global Search -->
       <div>
         <label for="global-search" class="filter-label">Global Search</label>
@@ -67,7 +66,8 @@ export default {
       <!-- Date Range -->
       <div>
         <label class="filter-label">Date Range (Created/Submitted)</label>
-        <div class="flex gap-2">
+        <!-- Use a nested grid to safely contain the two date inputs -->
+        <div class="grid grid-cols-2 gap-2">
           <input v-model="filters.startDate" type="date" class="filter-input" @change="fetchData()"
             :max="filters.endDate || undefined" />
           <input v-model="filters.endDate" type="date" class="filter-input" @change="fetchData()"
@@ -87,9 +87,10 @@ export default {
           </option>
         </select>
       </div>
+
       <!-- Clear Filters Button -->
       <div class="flex items-end">
-        <button @click="clearFilters" class="btn-secondary w-full">Clear Filters</button>
+        <button @click="clearFilters" class="btn-secondary w-full h-[42px]">Clear Filters</button>
       </div>
     </div>
 
@@ -244,12 +245,11 @@ const filters = reactive({
   status: '',
 })
 
-// --- Keep the headers definition object ---
 const headers = {
   new_applications: [
     { key: 'application_id', label: 'App ID', sortable: true, backendSortKey: 'id' },
     { key: 'applicant_name', label: 'Applicant Name', sortable: true },
-    { key: 'application_type', label: 'Type', sortable: true },
+    { key: 'reg_number', label: 'Register number', sortable: true },
     { key: 'submission_date', label: 'Submitted', type: 'date', sortable: true },
     { key: 'status', label: 'Status', sortable: true, isStatusColumn: true },
 
@@ -258,7 +258,6 @@ const headers = {
     { key: 'application_id', label: 'App ID', sortable: true },
     { key: 'original_reg_no', label: 'Original Reg #', sortable: true },
     { key: 'applicant_name', label: 'Applicant Name', sortable: true },
-    { key: 'request_type', label: 'Request', sortable: true },
     { key: 'submitted_date', label: 'Submitted', type: 'date', sortable: true },
     { key: 'status', label: 'Status', sortable: true, isStatusColumn: true },
   ],
@@ -363,7 +362,7 @@ const apiMethods = {
       ...data,
       application_id: data.id ?? 'N/A',
       applicant_name: data.full_name ?? data.applicant?.full_name ?? 'N/A',
-      application_type: data.registration_type_name ?? 'N/A',
+      reg_number: data.registration_no ?? 'N/A',
       submission_date: data.created_at ?? data.submitted_on ?? null,
       status: data.is_active ?? data.current_step ?? 'N/A',
       assigned_officer: data.officer?.name ?? 'Unassigned',
@@ -659,8 +658,8 @@ const handleReportTypeChange = () => {
   totalItems.value = 0
   error.value = null
   isLoading.value = false
-  isLoadingExport.value = false /
-    fetchData()
+  isLoadingExport.value = false
+  fetchData()
 }
 
 const clearFilters = () => {
@@ -944,13 +943,26 @@ const statusBadge = (status) => {
   return `${base} bg-gray-100 text-gray-700 border-gray-200`
 }
 
-onMounted(() => {
+onMounted(async () => {
   console.log('ECP Reports Dashboard Mounted. Please select a report type.')
-})
+  try {
+    const response = await apiServices.getEpcMastersRegistrationTypes();
+    if (response.data && Array.isArray(response.data.results)) {
+      registrationTypes.value = response.data.results;
+      const additionalQualificationType = registrationTypes.value.find(
+        (type) => type.name === 'Additional Qualification'
+      );
+      if (additionalQualificationType) {
+        additionalQualificationTypeId.value = additionalQualificationType.id;
+      }
+    }
+  } catch (error) {
+    console.error('Failed to fetch registration types:', error);
+    toast.error('Failed to load necessary configuration data.');
+  }
+});
 </script>
-
 <style scoped>
-/* --- Keep existing styles --- */
 .filter-label {
   display: block;
   font-size: 0.875rem;
