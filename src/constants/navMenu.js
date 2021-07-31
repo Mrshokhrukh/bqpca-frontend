@@ -1682,6 +1682,11 @@ const serviceSpecificMenuItems = {
         icon: getIconComponent('History'),
         route: (serviceType) => `/admin/user/${serviceType}/appeal`,
       },
+      {
+        name: 'Institutional Quality Assurance Report',
+        icon: getIconComponent('History'),
+        route: (serviceType) => `/admin/user/${serviceType}/iqar`,
+      },
 
       // {
       //   name: 'Profile',

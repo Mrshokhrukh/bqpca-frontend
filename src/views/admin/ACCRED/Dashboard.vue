@@ -89,6 +89,7 @@ import CreateInstituteProfile from '@/components/dashboard/accredcomponent/users
 import SubmitIsarReport from '@/components/dashboard/accredcomponent/users/SubmitIsarReport.vue';
 import TrackIsarReports from '@/components/dashboard/accredcomponent/users/TrackIsarReports.vue';
 import TrackAccreditation from '@/components/dashboard/accredcomponent/users/TrackAccreditation.vue';
+import QualityAssuranceReport from '@/components/dashboard/accredcomponent/users/QualityAssuranceReport.vue'
 
 // Import Dealing Officer Components
 import AccreDealingdashboard from '@/components/dashboard/accredcomponent/dealingOfficer/AccreDealingdashboard.vue'
@@ -271,6 +272,8 @@ const userComponent = computed(() => {
       return TrackIsarReports
     case path.endsWith('/accreditation/track_accreditation'):
       return TrackAccreditation
+    case path.endsWith('/accreditation/iqar'):
+      return QualityAssuranceReport
     default:
       return null
   }

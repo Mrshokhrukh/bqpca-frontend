@@ -156,6 +156,7 @@ export default {
       submit_isar_report: accredDashboard,
       track_isar_reports: accredDashboard,
       track_accreditation: accredDashboard,
+      iqar: accredDashboard,
     },
     engineering_certification: {
       dashboard: engineeringDashboard,
