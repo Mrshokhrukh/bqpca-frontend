@@ -35,7 +35,8 @@
                     {
                       'bg-yellow-50 border-yellow-100':
                         application.application_status === 'SUBMITTED',
-                      'bg-green-50 border-green-100': application.application_status === 'APPROVED',
+                      'bg-green-50 border-green-100':
+                        application.application_status === 'APPROVED',
                       'bg-red-50 border-red-100': application.application_status === 'REGRETTED',
                     },
                   ]"
@@ -93,35 +94,108 @@
                   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div class="space-y-6">
                       <InfoCard icon="User" title="Applicant Information">
-                        <EditableInput label="Full Name" v-model="editableApplication.full_name" :is-editing="isEditing" />
-                        <EditableInput label="Registration No." v-model="editableApplication.registration_no" :is-editing="isEditing" />
-                        <EditableInput label="CID Number" v-model="editableApplication.cid_no" :is-editing="isEditing" />
+                        <EditableInput
+                          label="Full Name"
+                          v-model="editableApplication.full_name"
+                          :is-editing="isEditing"
+                        />
+                        <EditableInput
+                          label="Registration No."
+                          v-model="editableApplication.registration_no"
+                          :is-editing="isEditing"
+                        />
+                        <EditableInput
+                          label="CID Number"
+                          v-model="editableApplication.cid_no"
+                          :is-editing="isEditing"
+                        />
                       </InfoCard>
 
                       <InfoCard icon="MapPin" title="Training Location & Dates">
-                        <EditableInput label="Proposed Location" v-model="editableApplication.proposed_training_location" :is-editing="isEditing" />
-                        <EditableInput label="Venue" v-model="editableApplication.venue" :is-editing="isEditing" />
-                        <EditableInput label="From Date" v-model="editableApplication.from_date" :is-editing="isEditing" type="date" />
-                        <EditableInput label="To Date" v-model="editableApplication.to_date" :is-editing="isEditing" type="date" />
+                        <EditableInput
+                          label="Proposed Location"
+                          v-model="editableApplication.proposed_training_location"
+                          :is-editing="isEditing"
+                        />
+                        <EditableInput
+                          label="Venue"
+                          v-model="editableApplication.venue"
+                          :is-editing="isEditing"
+                        />
+                        <EditableInput
+                          label="From Date"
+                          v-model="editableApplication.from_date"
+                          :is-editing="isEditing"
+                          type="date"
+                        />
+                        <EditableInput
+                          label="To Date"
+                          v-model="editableApplication.to_date"
+                          :is-editing="isEditing"
+                          type="date"
+                        />
                       </InfoCard>
 
                       <InfoCard icon="Briefcase" title="Provider & Justification">
-                        <EditableInput label="Providing Agency" v-model="editableApplication.cpd_providing_agency.name" :is-editing="isEditing" />
-                        <EditableInput v-if="editableApplication.if_others_specify" label="Other Agency Details" v-model="editableApplication.if_others_specify" :is-editing="isEditing" />
-                        <EditableInput label="Reason for Conducting" v-model="editableApplication.reason_for_conducting.name" :is-editing="isEditing" />
-                        <EditableTextarea label="Reason Details" v-model="editableApplication.reason_for_details" :is-editing="isEditing" />
+                        <EditableInput
+                          label="Providing Agency"
+                          v-model="editableApplication.cpd_providing_agency.name"
+                          :is-editing="isEditing"
+                        />
+                        <EditableInput
+                          v-if="editableApplication.if_others_specify"
+                          label="Other Agency Details"
+                          v-model="editableApplication.if_others_specify"
+                          :is-editing="isEditing"
+                        />
+                        <EditableInput
+                          label="Reason for Conducting"
+                          v-model="editableApplication.reason_for_conducting.name"
+                          :is-editing="isEditing"
+                        />
+                        <EditableTextarea
+                          label="Reason Details"
+                          v-model="editableApplication.reason_for_details"
+                          :is-editing="isEditing"
+                        />
                       </InfoCard>
                     </div>
 
                     <div class="space-y-6">
                       <InfoCard icon="BookOpen" title="CPD Core Details">
-                        <EditableTextarea label="Title of CPD" v-model="editableApplication.title_of_cpd" :is-editing="isEditing" />
-                        <EditableInput label="CPD Type" v-model="editableApplication.type_of_cpd.cpd_activity_name" :is-editing="isEditing" />
-                        <EditableTextarea label="Expected Outcome" v-model="editableApplication.expected_outcome" :is-editing="isEditing" />
-                        <EditableTextarea label="Relevance to Topic" v-model="editableApplication.relevance_to_topic" :is-editing="isEditing" />
+                        <EditableTextarea
+                          label="Title of CPD"
+                          v-model="editableApplication.title_of_cpd"
+                          :is-editing="isEditing"
+                        />
+                        <EditableInput
+                          label="CPD Type"
+                          v-model="editableApplication.type_of_cpd.cpd_activity_name"
+                          :is-editing="isEditing"
+                        />
+                        <EditableTextarea
+                          label="Expected Outcome"
+                          v-model="editableApplication.expected_outcome"
+                          :is-editing="isEditing"
+                        />
+                        <EditableTextarea
+                          label="Relevance to Topic"
+                          v-model="editableApplication.relevance_to_topic"
+                          :is-editing="isEditing"
+                        />
                         <div class="grid grid-cols-2 gap-4 pt-2">
-                          <EditableInput label="Duration" v-model="editableApplication.duration_in_hours" :is-editing="isEditing" type="number" />
-                          <EditableInput label="Credits" v-model="editableApplication.credit" :is-editing="isEditing" type="number" />
+                          <EditableInput
+                            label="Duration"
+                            v-model="editableApplication.duration_in_hours"
+                            :is-editing="isEditing"
+                            type="number"
+                          />
+                          <EditableInput
+                            label="Credits"
+                            v-model="editableApplication.credit"
+                            :is-editing="isEditing"
+                            type="number"
+                          />
                         </div>
                       </InfoCard>
 
@@ -220,14 +294,45 @@
                             No documents attached.
                           </p>
                         </div>
+
+                        <div v-if="application.attendance_sheet_attachment">
+                          <hr class="my-4" />
+                          <h5 class="text-sm font-semibold text-gray-700 mb-2">
+                            Attendance Sheet
+                          </h5>
+                          <div
+                            class="relative group w-48 h-auto cursor-pointer rounded-lg overflow-hidden shadow-md border"
+                            @click="openImageViewer(application.attendance_sheet_attachment)"
+                          >
+                            <img
+                              :src="application.attendance_sheet_attachment"
+                              alt="Attendance Sheet Thumbnail"
+                              class="w-full object-cover"
+                            />
+                            <div
+                              class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 flex items-center justify-center"
+                            >
+                              <Eye
+                                class="h-8 w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                              />
+                            </div>
+                          </div>
+                        </div>
                       </InfoCard>
                     </div>
 
                     <div class="space-y-6">
                       <InfoCard icon="Users" title="Target Audience">
-                        <EditableInput label="Number of Participants" v-model="editableApplication.number_of_participants" :is-editing="isEditing" type="number" />
+                        <EditableInput
+                          label="Number of Participants"
+                          v-model="editableApplication.number_of_participants"
+                          :is-editing="isEditing"
+                          type="number"
+                        />
                         <hr class="my-4" />
-                        <h5 class="text-sm font-semibold text-gray-700 mb-2">Target Categories</h5>
+                        <h5 class="text-sm font-semibold text-gray-700 mb-2">
+                          Target Categories
+                        </h5>
                         <div class="flex flex-wrap gap-2">
                           <span
                             v-for="cat in application.target_participant_categories"
@@ -265,8 +370,16 @@
                       </InfoCard>
 
                       <InfoCard icon="ClipboardCheck" title="Review Status">
-                        <EditableInput label="Last Updated" :value="formatDateTime(application.status_last_updated)" :is-editing="false" />
-                        <EditableTextarea label="Remarks" v-model="editableApplication.status_remarks" :is-editing="isEditing" />
+                        <EditableInput
+                          label="Last Updated"
+                          :value="formatDateTime(application.status_last_updated)"
+                          :is-editing="false"
+                        />
+                        <EditableTextarea
+                          label="Remarks"
+                          v-model="editableApplication.status_remarks"
+                          :is-editing="isEditing"
+                        />
                       </InfoCard>
 
                       <div
@@ -284,7 +397,10 @@
                             v-if="!isEditing"
                             type="button"
                             class="w-full px-5 py-2.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm flex items-center justify-center gap-2 transition-opacity"
-                            :class="{ 'opacity-50 cursor-not-allowed': application.application_status !== 'SUBMITTED' }"
+                            :class="{
+                              'opacity-50 cursor-not-allowed':
+                                application.application_status !== 'SUBMITTED',
+                            }"
                             :disabled="application.application_status !== 'SUBMITTED'"
                             @click="isEditing = true"
                           >
@@ -303,7 +419,9 @@
 
                           <template v-if="!isEditing">
                             <button
-                              v-if="application.application_status === 'SUBMITTED' && !showApprovalForm"
+                              v-if="
+                                application.application_status === 'SUBMITTED' && !showApprovalForm
+                              "
                               type="button"
                               class="w-full px-5 py-2.5 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg shadow-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                               @click="showApprovalForm = true"
@@ -314,7 +432,9 @@
                             </button>
 
                             <button
-                              v-if="application.application_status === 'SUBMITTED' && !showRejectionForm"
+                              v-if="
+                                application.application_status === 'SUBMITTED' && !showRejectionForm
+                              "
                               type="button"
                               class="w-full px-5 py-2.5 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg shadow-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                               @click="showRejectionForm = true"
@@ -444,6 +564,53 @@
                   </button>
                 </div>
               </div>
+
+              <TransitionRoot appear :show="isImageViewerOpen" as="template">
+                <Dialog as="div" @close="closeImageViewer" class="relative z-[60]">
+                  <TransitionChild
+                    as="template"
+                    enter="duration-300 ease-out"
+                    enter-from="opacity-0"
+                    enter-to="opacity-100"
+                    leave="duration-200 ease-in"
+                    leave-from="opacity-100"
+                    leave-to="opacity-0"
+                  >
+                    <div class="fixed inset-0 bg-black/90" />
+                  </TransitionChild>
+
+                  <div class="fixed inset-0 overflow-y-auto">
+                    <div class="flex min-h-full items-center justify-center p-4 text-center">
+                      <TransitionChild
+                        as="template"
+                        enter="duration-300 ease-out"
+                        enter-from="opacity-0 scale-95"
+                        enter-to="opacity-100 scale-100"
+                        leave="duration-200 ease-in"
+                        leave-from="opacity-100 scale-100"
+                        leave-to="opacity-0 scale-95"
+                      >
+                        <DialogPanel
+                          class="relative w-full max-w-5xl max-h-[90vh] transform transition-all"
+                        >
+                          <button
+                            type="button"
+                            class="absolute -top-12 sm:-top-4 sm:-right-12 z-10 p-2 text-white bg-gray-800/50 rounded-full hover:bg-gray-800/80 focus:outline-none transition-colors"
+                            @click="closeImageViewer"
+                          >
+                            <X class="h-6 w-6" />
+                          </button>
+                          <img
+                            :src="viewerImageUrl"
+                            alt="Full size attendance sheet"
+                            class="w-auto h-auto max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
+                          />
+                        </DialogPanel>
+                      </TransitionChild>
+                    </div>
+                  </div>
+                </Dialog>
+              </TransitionRoot>
             </DialogPanel>
           </TransitionChild>
         </div>
@@ -455,14 +622,11 @@
 <script setup>
 import { ref, watch, nextTick, defineAsyncComponent, reactive } from 'vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
-// NEW: Imported Pencil icon
-import { CheckCircle, X, Circle, Link, FileText, Pencil, Save } from 'lucide-vue-next'
-
+import { CheckCircle, X, Circle, Link, FileText, Pencil, Save, Eye } from 'lucide-vue-next'
 import { useToast } from 'vue-toastification'
 
 // Lazy load helper components for better performance
 const InfoCard = defineAsyncComponent(() => import('./InfoCard.vue'))
-const InfoItem = defineAsyncComponent(() => import('./InfoItem.vue'))
 const EditableInput = defineAsyncComponent(() => import('./EditableInput.vue'))
 const EditableTextarea = defineAsyncComponent(() => import('./EditableTextarea.vue'))
 
@@ -477,7 +641,6 @@ const props = defineProps({
   },
 })
 
-// MODIFIED: Added 'save' for better practice
 const emit = defineEmits(['close', 'approve', 'reject', 'save'])
 const toast = useToast()
 
@@ -492,11 +655,24 @@ const rejectionError = ref('')
 const approvalCredits = ref(0)
 const reviewActionCard = ref(null) // Template ref for scrolling
 
-// NEW: State for the credit editing form
 const showCreditEditForm = ref(false)
 const editableCredits = ref(0)
 
-// MODIFIED: Watcher now resets and initializes state for the new form
+// State for the image viewer
+const isImageViewerOpen = ref(false)
+const viewerImageUrl = ref('')
+
+// Methods to control the image viewer
+const openImageViewer = (url) => {
+  viewerImageUrl.value = url
+  isImageViewerOpen.value = true
+}
+
+const closeImageViewer = () => {
+  isImageViewerOpen.value = false
+  viewerImageUrl.value = ''
+}
+
 watch(
   () => props.application,
   async (newApplication) => {
@@ -506,12 +682,15 @@ watch(
       Object.assign(editableApplication, JSON.parse(JSON.stringify(newApplication)))
       showApprovalForm.value = false
       showRejectionForm.value = false
-      showCreditEditForm.value = false // NEW: Reset edit form visibility
+      showCreditEditForm.value = false
       approvalMessage.value = ''
       rejectionMessage.value = ''
       rejectionError.value = ''
       approvalCredits.value = newApplication.credit || 0
-      editableCredits.value = newApplication.credit || 0 // NEW: Initialize editable credits
+      editableCredits.value = newApplication.credit || 0
+
+      // Reset image viewer state on new application load
+      closeImageViewer()
 
       // 2. Check for an initial action from the parent component
       if (props.initialAction === 'approve') {
@@ -529,6 +708,8 @@ watch(
   },
   { immediate: true, deep: true },
 )
+
+
 
 const saveChanges = () => {
   isEditing.value = false
@@ -562,7 +743,6 @@ const rejectApplication = () => {
   emit('close')
 }
 
-// NEW: Method to handle saving credit changes
 const saveCreditChanges = () => {
   if (editableCredits.value < 0) {
     toast.error('Awarded credits cannot be negative.')
@@ -574,15 +754,6 @@ const saveCreditChanges = () => {
   })
   toast.success('Credit changes saved successfully.')
   emit('close')
-}
-
-const formatDate = (dateString) => {
-  if (!dateString) return 'N/A'
-  return new Date(dateString).toLocaleDateString('en-GB', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  })
 }
 
 const formatDateTime = (dateString) => {

@@ -189,7 +189,7 @@ const fetchEligibleProfessionals = async () => {
   isLoadingProfessionals.value = true
   initialLoadDone.value = false
   try {
-    const response = await apiServices.getMhpcNewApplications()
+    const response = await apiServices.getMhpcApprovedApplicationList()
     const rawProfessionals = response.data?.results || response.data || []
 
     if (!Array.isArray(rawProfessionals)) {
@@ -250,10 +250,6 @@ const submitPreceptor = async () => {
   }
 
   isSubmitting.value = true
-  // **FIX:** The backend likely expects the ID of the professional's record/application.
-  // 'selectedProfessionalSystemId' now correctly holds this ID (e.g., 10).
-  // Assuming this ID can be sent as the 'user'. If the backend strictly requires a Django User ID
-  // that is not present in this API response, the backend API will need to be adjusted to include it.
   const preceptorData = {
     teaching_center: props.applicationId,
     application: selectedProfessionalSystemId.value,

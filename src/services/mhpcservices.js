@@ -500,6 +500,9 @@ export default {
   getMhpcFullApplicationListByCid(cid) {
     return apiClient.get(`/mhpc/mhpc-new-application/?cid=${cid}`)
   },
+  getMhpcApprovedApplicationList() {
+    return apiClient.get(`/mhpc/mhpc-new-application/qualification-endorsement/?endorsement_decision=APPROVED`)
+  },
 
   /**
    * Uploads a file for a specific application by a Dealing Officer.
@@ -918,8 +921,12 @@ export default {
     })
   },
 
-  uploadAttendancePhoto(id) {
-    return apiClient.post(`/mhpc/mhpc-cpd-tasks/${id}/upload-attendance-photo/`)
+  uploadAttendancePhoto(id, formData) {
+    return apiClient.post(`/mhpc/mhpc-cpd-tasks/${id}/upload-attendance-photo/`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
   },
   // --- Complaint Management Endpoints ---
   getComplaints(params = {}) {
