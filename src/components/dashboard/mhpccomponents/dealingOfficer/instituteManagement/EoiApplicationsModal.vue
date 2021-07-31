@@ -241,20 +241,10 @@
                           </div>
                           <div class="p-4 bg-gray-50 rounded-lg">
                             <p class="text-sm font-medium text-gray-500">Program Type</p>
-                            <template v-if="!isEditing">
-                              <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
-                                <Hash class="h-4 w-4 text-gray-400" />
-                                <span>{{ application.program_type?.program_name || 'N/A' }}</span>
-                              </p>
-                            </template>
-                            <template v-else>
-                              <input
-                                type="text"
-                                v-model="editableApplication.type_of_programme"
-                                class="mt-2 w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
-                                placeholder="Program Type Name"
-                              />
-                            </template>
+                            <p class="text-sm text-gray-900 mt-2 flex items-center space-x-2">
+                              <Hash class="h-4 w-4 text-gray-400" />
+                              <span>{{ application.program_type?.program_name || 'N/A' }}</span>
+                            </p>
                           </div>
                           <div class="p-4 bg-gray-50 rounded-lg">
                             <p class="text-sm font-medium text-gray-500">Date Submitted</p>
@@ -265,50 +255,18 @@
                           </div>
                           <div class="p-4 bg-gray-50 rounded-lg md:col-span-2">
                             <p class="text-sm font-medium text-gray-500">Supporting Documents</p>
-                            <template v-if="!isEditing">
-                              <p class="text-sm text-gray-900 mt-2">
-                                <a
-                                  v-if="application.institute_eoi_supporting_documents"
-                                  :href="application.institute_eoi_supporting_documents"
-                                  target="_blank"
-                                  class="text-blue-600 hover:underline flex items-center space-x-2"
-                                >
-                                  <FileText class="h-4 w-4" />
-                                  <span>View Document</span>
-                                </a>
-                                <span v-else class="text-gray-500">No document uploaded</span>
-                              </p>
-                            </template>
-                            <template v-else>
-                              <div class="mt-2">
-                                <input
-                                  type="file"
-                                  ref="fileInputRef"
-                                  @change="handleFileChange"
-                                  accept=".pdf"
-                                  class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                                />
-                                <p v-if="fileName" class="text-sm text-gray-600 mt-2">
-                                  Selected: {{ fileName }}
-                                </p>
-                                <p
-                                  v-else-if="
-                                    application.institute_eoi_supporting_documents &&
-                                    editableApplication &&
-                                    !selectedFile
-                                  "
-                                  class="text-sm text-gray-600 mt-2"
-                                >
-                                  Current:
-                                  <a
-                                    :href="application.institute_eoi_supporting_documents"
-                                    target="_blank"
-                                    class="text-blue-600 hover:underline"
-                                    >Existing Document</a
-                                  >
-                                </p>
-                              </div>
-                            </template>
+                            <p class="text-sm text-gray-900 mt-2">
+                              <a
+                                v-if="application.institute_eoi_supporting_documents"
+                                :href="application.institute_eoi_supporting_documents"
+                                target="_blank"
+                                class="text-blue-600 hover:underline flex items-center space-x-2"
+                              >
+                                <FileText class="h-4 w-4" />
+                                <span>View Document</span>
+                              </a>
+                              <span v-else class="text-gray-500">No document uploaded</span>
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -809,7 +767,7 @@ const startEditing = () => {
     return
   }
   editableApplication.value = JSON.parse(JSON.stringify(props.application))
-  editableApplication.value.type_of_programme = props.application.program_type?.program_name || ''
+  // editableApplication.value.type_of_programme = props.application.program_type?.program_name || ''
   delete editableApplication.value.program_type
   selectedFile.value = null
   fileName.value = ''
@@ -844,7 +802,7 @@ const saveChanges = async () => {
       'village',
       'dzongkhag',
       'website',
-      'type_of_programme',
+      // 'type_of_programme',
       'head_of_institution_name',
       'head_of_institution_gender',
       'head_of_institution_phone_number',
@@ -918,7 +876,7 @@ const startEditingPhysicalVerification = () => {
       console.error(
         'Error parsing physical verification date:',
         props.application.physical_verification_date,
-        e,
+        e
       )
       pvDate = null // Fallback to null if parsing fails
     }
@@ -1220,7 +1178,7 @@ watch(
       errorMessage.value = '' // Clear error if CID becomes available
     }
   },
-  { deep: true },
+  { deep: true }
 )
 
 watch(
@@ -1253,7 +1211,7 @@ watch(
         errorMessage.value = ''
       }
     }
-  },
+  }
 )
 </script>
 

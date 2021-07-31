@@ -1,106 +1,151 @@
 <template>
-  <div class="mx-auto p-6">
-    <!-- Header -->
+  <div class="mx-auto p-4 sm:p-6 lg:p-8">
     <div class="mb-8">
-      <h2 class="text-3xl font-bold text-gray-900">Program Applications</h2>
-      <p class="text-gray-600">Review and manage education program applications</p>
+      <h2 class="text-3xl font-bold text-gray-800">Program Applications</h2>
+      <p class="mt-1 text-base text-gray-500">Review and manage education program applications.</p>
     </div>
 
-    <!-- Loading / Error / No Data -->
-    <div v-if="loading || loadingTeachingCenters" class="flex justify-center items-center py-8">
+    <div v-if="loading || loadingTeachingCenters" class="flex justify-center items-center py-12">
       <div
-        class="w-8 h-8 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"
+        class="w-8 h-8 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin"
       ></div>
-      <span class="ml-3 text-gray-600">Loading...</span>
+      <span class="ml-4 text-lg text-gray-500">Loading Applications...</span>
     </div>
-    <div v-else-if="error" class="p-4 bg-red-50 border-l-4 border-red-400 rounded-r-md">
-      <p class="text-red-800">{{ error }}</p>
+    <div
+      v-else-if="error"
+      class="p-5 bg-red-50 border-l-4 border-red-500 rounded-r-lg shadow-md"
+    >
+      <h3 class="font-bold text-red-800">An Error Occurred</h3>
+      <p class="text-red-700 mt-1">{{ error }}</p>
     </div>
     <div
       v-else-if="applications.length === 0"
-      class="p-4 bg-gray-50 border-l-4 border-gray-400 rounded-r-md"
+      class="text-center py-16 px-6 bg-white rounded-xl shadow-md"
     >
-      <p class="text-gray-800">No applications found.</p>
+      <svg
+        class="mx-auto h-12 w-12 text-gray-400"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        aria-hidden="true"
+      >
+        <path
+          vector-effect="non-scaling-stroke"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"
+        />
+      </svg>
+      <h3 class="mt-4 text-lg font-semibold text-gray-800">No Applications Found</h3>
+      <p class="mt-1 text-sm text-gray-500">There are currently no program applications to display.</p>
     </div>
 
-    <!-- Applications Table -->
-    <div v-else class="overflow-x-auto bg-white rounded-xl shadow-lg">
-      <table class="min-w-full border border-gray-200">
-        <thead>
-          <tr class="bg-gray-100">
-            <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">ID</th>
-            <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">
-              Institute
-            </th>
-            <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">
-              Program Name
-            </th>
-            <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">
-              Program Title
-            </th>
-            <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">
-              Teaching Center
-            </th>
-            <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">Status</th>
-            <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">
-              Submission Date
-            </th>
-            <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="app in applications" :key="app.id" class="hover:bg-gray-50">
-            <td class="py-3 px-4 border-b text-gray-800">{{ app.id }}</td>
-            <td class="py-3 px-4 border-b text-gray-800">
-              {{ app.institute_details?.name_of_institution || 'N/A' }}
-            </td>
-            <td class="py-3 px-4 border-b text-gray-800">
-              {{ app.program_master?.program_name || 'N/A' }}
-            </td>
-            <td class="py-3 px-4 border-b text-gray-800">
-              {{ app.specific_program_title || 'N/A' }}
-            </td>
-            <td class="py-3 px-4 border-b text-gray-800">
-              {{ getTeachingCenterName(app.teaching_center) || 'N/A' }}
-            </td>
-            <td class="py-3 px-4 border-b">
-              <span
-                :class="{
-                  'px-2 py-1 rounded-full text-xs font-medium': true,
-                  'bg-blue-100 text-blue-800': app.status === 'Pending',
-                  'bg-green-100 text-green-800': app.status === 'Approved',
-                  'bg-red-100 text-red-800': app.status === 'Rejected',
-                }"
-              >
-                {{ app.status || 'Unknown' }}
-              </span>
-            </td>
-            <td class="py-3 px-4 border-b text-gray-800">{{ formatDate(app.created_at) }}</td>
-            <td class="py-3 px-4 border-b text-gray-800 whitespace-nowrap">
-              <button
-                @click.stop="openViewModal(app)"
-                class="text-blue-600 hover:text-blue-800 font-medium text-sm"
-                title="View Application"
-              >
-                View
-              </button>
-              <!-- DELETE BUTTON ADDED HERE -->
-              <button
-                @click.stop="promptDelete(app)"
-                class="ml-2 text-red-600 hover:text-red-800 font-medium text-sm"
-                title="Delete Application"
-              >
-                Delete
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <div v-else class="flex flex-col">
+      <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+        <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+          <div class="shadow-lg border-b border-gray-200 sm:rounded-lg overflow-hidden">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th
+                    scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Institute
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Program
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Teaching Center
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Status
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Submission Date
+                  </th>
+                  <th scope="col" class="relative px-6 py-3">
+                    <span class="sr-only">Actions</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <tr
+                  v-for="app in applications"
+                  :key="app.id"
+                  class="hover:bg-gray-50 transition-colors duration-150"
+                >
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-gray-900">
+                      {{ app.institute_details?.name_of_institution || 'N/A' }}
+                    </div>
+                    <div class="text-sm text-gray-500">ID: {{ app.id }}</div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="text-sm font-medium text-gray-900">
+                      {{ app.program_master?.program_name || 'N/A' }}
+                    </div>
+                    <div class="text-sm text-gray-500 truncate" :title="app.specific_program_title">
+                      {{ app.specific_program_title || 'N/A' }}
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                    {{ getTeachingCenterName(app.teaching_center) || 'N/A' }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-center">
+                    <span
+                      class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
+                      :class="{
+                        'bg-blue-100 text-blue-800': app.status === 'Pending',
+                        'bg-green-100 text-green-800': app.status === 'Approved',
+                        'bg-red-100 text-red-800': app.status === 'Rejected',
+                        'bg-gray-100 text-gray-800': !['Pending', 'Approved', 'Rejected'].includes(app.status),
+                      }"
+                    >
+                      {{ app.status || 'Unknown' }}
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {{ formatDate(app.created_at) }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <button
+                      @click.stop="openViewModal(app)"
+                      class="text-blue-600 hover:text-blue-900"
+                      title="View Application"
+                    >
+                      View
+                    </button>
+                    <button
+                      @click.stop="promptDelete(app)"
+                      class="ml-4 text-red-600 hover:text-red-900"
+                      title="Delete Application"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- View Modal -->
     <EducationProgramDetailsModal
       v-if="isViewModalOpen && selectedApplication"
       :isVisible="isViewModalOpen"
@@ -114,7 +159,6 @@
       @delete="promptDelete"
     />
 
-    <!-- Confirm Dialog -->
     <ConfirmDialog
       v-if="isConfirmModalOpen && actionContext"
       :isVisible="isConfirmModalOpen"
@@ -124,7 +168,7 @@
       :confirmButtonClass="confirmDialog.confirmButtonClass"
       :showRemarks="actionContext.type === 'approve' || actionContext.type === 'reject'"
       :remarks="actionContext.remarks"
-      @update:remarks="val => actionContext.remarks = val"
+      @update:remarks="(val) => (actionContext.remarks = val)"
       @confirm="executeAction"
       @cancel="closeConfirmModal"
     />

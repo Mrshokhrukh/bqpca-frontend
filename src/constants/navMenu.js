@@ -936,7 +936,7 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/teaching_hospitals`,
           },
           {
-            name: 'Education Programs',
+            name: 'Education Program Applications',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/education_programs`,
           },
           {
@@ -949,10 +949,6 @@ const serviceSpecificMenuItems = {
               `/admin/dealing_officer/${serviceType}/teaching_hospital_renewals`,
           },
           {
-            name: 'Module Management',
-            route: (serviceType) => `/admin/dealing_officer/${serviceType}/module_management`,
-          },
-          {
             name: 'Faculty Management',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/faculty_management`,
           },
@@ -961,7 +957,11 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/preceptor_management`,
           },
           {
-            name: 'Program Management',
+            name: 'Module Masters',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/module_management`,
+          },
+          {
+            name: 'Program Masters',
             route: (serviceType) =>
               `/admin/dealing_officer/${serviceType}/education_program_management`,
           },

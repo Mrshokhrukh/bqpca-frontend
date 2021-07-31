@@ -53,9 +53,6 @@ const openAddDefinitionModal = () => {
   }
 }
 
-//   }
-// }
-
 const handleChildError = (errorMessage) => {
   pageError.value = errorMessage
   // Automatically clear the error message after 7 seconds
