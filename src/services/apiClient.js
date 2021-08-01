@@ -1,5 +1,6 @@
 // src/services/apiClient.js
 import axios from 'axios'
+import { useAuthStore } from '@/stores/authStore' // <-- IMPORT YOUR AUTH STORE
 
 const apiClient = axios.create({
   baseURL:
@@ -16,7 +17,9 @@ let refreshTokenPromise = null
 
 apiClient.interceptors.request.use(
   async (config) => {
-    const token = localStorage.getItem('accessToken')
+    // ✅ CHANGED: Get the token from the Pinia store directly
+    const authStore = useAuthStore()
+    const token = authStore.accessToken // Or authStore.token, depending on your store's state property
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
@@ -39,6 +42,7 @@ apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config
+    const authStore = useAuthStore() // Use the store here as well
 
     if (
       (error.response?.status === 401 || error.response?.status === 403) &&
@@ -48,10 +52,10 @@ apiClient.interceptors.response.use(
       originalRequest._retry = true
 
       try {
-        // Use existing refresh token promise if it exists
         if (!refreshTokenPromise) {
+          // Use the refresh token from the store
           refreshTokenPromise = axios.post(`${apiClient.defaults.baseURL}/users/token/refresh/`, {
-            refresh: localStorage.getItem('refreshToken'),
+            refresh: authStore.refreshToken,
           })
         }
 
@@ -59,17 +63,19 @@ apiClient.interceptors.response.use(
         refreshTokenPromise = null
 
         const newAccessToken = response.data.access
-        localStorage.setItem('accessToken', newAccessToken)
+        // ✅ CHANGED: Update the token via a store action/mutation
+        // This ensures localStorage and the state are updated together.
+        authStore.setNewAccessToken(newAccessToken) // Assuming you have a method like this
+
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`
 
         return apiClient(originalRequest)
       } catch (refreshError) {
         refreshTokenPromise = null
-        // Clear tokens and redirect to login
-        localStorage.removeItem('accessToken')
-        localStorage.removeItem('refreshToken')
-        localStorage.removeItem('user')
-        window.location.href = '/login'
+        // ✅ CHANGED: Use a store action to handle logout
+        // This clears state and localStorage consistently.
+        authStore.logout()
+        window.location.href = '/login' // Redirect after logout
         return Promise.reject(refreshError)
       }
     }

@@ -796,6 +796,36 @@ export default {
     return apiClient.delete(`/mhpc/mhpc-teaching-centers/${id}/`)
   },
 
+  // --- NEW: Teaching Center Renewal Services (Corrected) ---
+
+  // Used by Institute Owner to submit a renewal
+  createTeachingCenterRenewal(centerId, formData) {
+    return apiClient.post(`/mhpc/mhpc-teaching-centers/${centerId}/renewals/`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
+
+  // Used by Dealing Officer to get all renewals
+  getAllTeachingCenterRenewals() {
+    return apiClient.get('/mhpc/mhpc-all-tc-renewals/');
+  },
+
+  // Used by Dealing Officer to approve a renewal
+  approveTeachingCenterRenewal(renewalId, data) {
+    return apiClient.post(`/mhpc/mhpc-all-tc-renewals/${renewalId}/approve/`, data);
+  },
+
+  // Used by Dealing Officer to reject a renewal
+  rejectTeachingCenterRenewal(renewalId, data) {
+    return apiClient.post(`/mhpc/mhpc-all-tc-renewals/${renewalId}/reject/`, data);
+  },
+
+  // Used after payment is completed
+  confirmRenewalPayment(renewalId, data) {
+    return apiClient.post(`/mhpc/mhpc-all-tc-renewals/${renewalId}/confirm-payment/`, data);
+  },
+
+
   // MHPC CPD Records
   getMhpcCpdRecords() {
     return apiClient.get('/mhpc/mhpc-cpd-records/')

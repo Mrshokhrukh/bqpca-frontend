@@ -143,6 +143,12 @@ export const useAuthStore = defineStore('auth', () => {
     window.location.href = '/'
   }
 
+  const setNewAccessToken = (token) => {
+    console.log('Setting new access token in store.')
+    accessToken.value = token
+    localStorage.setItem('accessToken', token)
+  }
+
   const refreshAccessToken = async () => {
     try {
       const response = await apiService.refreshToken(refreshToken.value)
@@ -216,5 +222,6 @@ export const useAuthStore = defineStore('auth', () => {
     initializeAuth,
     refreshAccessToken,
     updateUserAfterFetch,
+    setNewAccessToken,
   }
 })
