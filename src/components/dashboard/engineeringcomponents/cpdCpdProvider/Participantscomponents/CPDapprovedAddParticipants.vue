@@ -62,7 +62,7 @@ const route = useRoute();
 const toast = useToast();
 
 const allCpdTasks = ref([]);
-const participants = ref([]); // This holds all valid participants fetched from the API
+const participants = ref([]);
 const currentProviderCid = ref(null);
 const preselectedTaskId = ref(null);
 
@@ -95,7 +95,6 @@ const cpdTasksForSelection = computed(() => {
   return filtered;
 });
 
-// A computed property to quickly look up participants by their registration number
 const participantRegNoSet = computed(() => {
   return new Set(participants.value.map(p => p.registration_no || p.reg_no));
 });
@@ -119,7 +118,7 @@ async function fetchData() {
   try {
     const [tasksResponse, participantsResponse] = await Promise.all([
       apiService.getEpcCpdTasks(),
-      apiService.getEpcFullApplicationListByCid(''), // This fetches all valid participants
+      apiService.getEpcFullApplicationListByCid(''),
     ]);
     allCpdTasks.value = tasksResponse.data?.results || tasksResponse.data || [];
     participants.value = participantsResponse.data?.results || participantsResponse.data || [];
@@ -154,7 +153,6 @@ async function handleSingleSubmit(submissionData) {
   }
 }
 
-// --- NEW "ALL OR NOTHING" LOGIC FOR `handleBulkSubmit` ---
 async function handleBulkSubmit({ cpdTask, file }) {
   isBulkUploading.value = true;
   clearMessage();
@@ -171,31 +169,23 @@ async function handleBulkSubmit({ cpdTask, file }) {
         isBulkUploading.value = false;
         return;
       }
-
-      // --- STAGE 1: VALIDATION ---
-      // We check every row before submitting anything.
       for (const participant of participantsToUpload) {
         const regNo = participant.participant_reg_no?.trim();
 
         if (!regNo) {
           validationErrors.push({ participant_reg_no: 'Empty Row', error: 'Registration number was missing.' });
         } else if (!participantRegNoSet.value.has(regNo)) {
-          // Use our Set for a fast check to see if the participant exists
           validationErrors.push({ participant_reg_no: regNo, error: 'This registration number does not exist in the system.' });
         }
       }
 
-      // --- DECISION POINT ---
-      // If there are any validation errors, STOP and show the errors. Do not submit.
       if (validationErrors.length > 0) {
         bulkUploadErrorList.value = validationErrors;
         showMessage(`Upload cancelled. ${validationErrors.length} error(s) found in your file.`, 'error');
         isBulkUploading.value = false;
-        return; // Stop the entire process
+        return;
       }
 
-      // --- STAGE 2: SUBMISSION ---
-      // This part only runs if validation was 100% successful.
       showMessage(`Validation successful. Now uploading ${participantsToUpload.length} participants...`, 'info');
 
       const submissionPromises = participantsToUpload.map(participant => {
@@ -207,18 +197,16 @@ async function handleBulkSubmit({ cpdTask, file }) {
       });
 
       try {
-        // Wait for all the individual API calls to complete
+
         await Promise.all(submissionPromises);
 
-        // If we get here, everything succeeded
         showMessage(`${participantsToUpload.length} participants were uploaded successfully!`, 'success');
         if (bulkUploadFormRef.value) {
           bulkUploadFormRef.value.resetForm(false);
         }
 
       } catch (error) {
-        // This catch block would only trigger if there's a network error
-        // or a server error *after* validation passed, which is rare.
+
         showMessage('An unexpected error occurred during the submission phase. Some participants may not have been added.', 'error');
       } finally {
         isBulkUploading.value = false;
@@ -231,7 +219,6 @@ async function handleBulkSubmit({ cpdTask, file }) {
   });
 }
 
-// handlePhotoSubmit remains unchanged
 async function handlePhotoSubmit({ cpdTask, photo, description }) { /* ... */ }
 
 function cancel() {

@@ -800,24 +800,18 @@ const fetchParticipantsData = async () => {
 }
 
 const getParticipantName = (participant) => {
-  // For CPD task participants, we only have participant_reg_no
-  // We need to look up the actual user data from the participants list
   if (participant.participant_reg_no && !participant.first_name && !participant.full_name) {
-    // Try to find the user data from the participants list
     const userData = findUserByRegNo(participant.participant_reg_no)
     if (userData) {
       return getParticipantName(userData)
     }
-    // If not found in loaded data, return a formatted version
     return `User ${participant.participant_reg_no}`
   }
 
-  // Check if this is from the application list (getEpcFullApplicationListByCid)
   if (participant.full_name) {
     return participant.full_name
   }
 
-  // Handle first_name + last_name combination
   if (participant.first_name || participant.last_name) {
     const firstName = participant.first_name || ''
     const middleName = participant.middle_name ? ` ${participant.middle_name}` : ''
@@ -825,26 +819,21 @@ const getParticipantName = (participant) => {
     return `${firstName}${middleName} ${lastName}`.trim()
   }
 
-  // Check if participant has a nested user object
   if (participant.user) {
     return getParticipantName(participant.user)
   }
 
-  // Fallback to other possible name fields
   return participant.name || participant.participant_name || participant.username || 'Unknown Name'
 }
 
 const getParticipantRegNo = (participant) => {
-  // Check nested objects first
   if (participant.user && participant.user.cid) {
     return participant.user.cid
   }
 
-  // Check direct fields - for CPD task participants, participant_reg_no is the main field
   return participant.participant_reg_no || participant.cid || participant.registration_no || participant.reg_no || participant.registrationNo || 'N/A'
 }
 
-// Helper function to find user data by registration number
 const findUserByRegNo = (regNo) => {
   return allParticipants.value.find(p =>
     p.cid === regNo ||
@@ -859,7 +848,6 @@ const getMethodologyName = (methodologyId) => {
   return methodologyMap[methodologyId] || `Unknown Methodology (ID: ${methodologyId})`
 }
 
-// Resource person functions (ADD THESE after the participant functions)
 const startEditingResource = (resource) => {
   editingResource.value = resource.id
   resourceCredits.value[resource.id] = getResourceCredits(resource) || 0
@@ -876,7 +864,7 @@ const saveResource = (resource) => {
     resourceCredits.value[resource.id] = 0
   }
 
-  // Find the participant record for this resource person
+
   const resourceParticipant = findResourceAsParticipant(resource)
 
   if (resourceParticipant) {
@@ -892,13 +880,11 @@ const saveResource = (resource) => {
 }
 
 const getResourceCredits = (resource) => {
-  // Find this resource person in the participants list and get their credits
   const resourceParticipant = findResourceAsParticipant(resource)
   return resourceParticipant?.cpd_credits || 0
 }
 
 const findResourceAsParticipant = (resource) => {
-  // Find the resource person in the participants array by matching registration number
   const resourceRegNo = resource.resource_person_reg_no
   return props.application.participants?.find(participant =>
     getParticipantRegNo(participant) === resourceRegNo
