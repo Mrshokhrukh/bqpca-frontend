@@ -445,13 +445,15 @@ const handlePaymentCompleted = async (paymentData) => {
   }
   isLoading.value = true
   try {
+    // FIX: The API call now sends the correct renewal ID and payment data.
+    // The service function expects (renewalId, paymentData).
     await apiServices.confirmInstituteRenewalPayment(
-      instituteData.value.CID,
-      latestRenewal.value.id,
-      { payment_id: paymentData.paymentHash },
+      latestRenewal.value.id, // Pass the correct renewal ID (e.g., 2)
+      { payment_id: paymentData.paymentHash } // Pass the payment data object
     )
+
     toast.success('Payment confirmed! Your certificate has been renewed successfully.')
-    await fetchInstituteData() // Await the fetch to ensure data is updated before continuing
+    await fetchInstituteData() // Await the fetch to ensure data is updated
   } catch (error) {
     console.error('Payment confirmation error:', error)
     toast.error('An error occurred while confirming your payment. Please contact support.')

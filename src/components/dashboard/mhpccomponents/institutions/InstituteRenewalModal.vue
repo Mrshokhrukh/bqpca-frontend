@@ -109,7 +109,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useToast } from 'vue-toastification'
-import apiServices from '@/services/services'
+import apiServices from '@/services/services' // Assuming this is your API service file
 import { Loader } from 'lucide-vue-next'
 
 const props = defineProps({
@@ -132,7 +132,9 @@ const fileError = ref('')
 const formatDateSafely = (dateString) => {
   if (!dateString) return 'N/A'
   const date = new Date(dateString)
-  return isNaN(date.getTime()) ? 'Invalid Date' : date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+  return isNaN(date.getTime())
+    ? 'Invalid Date'
+    : date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
 }
 
 const handleFileChange = (event) => {
@@ -143,11 +145,12 @@ const handleFileChange = (event) => {
     fileName.value = ''
     return
   }
-  if (file.size > 5 * 1024 * 1024) { // 5MB limit
+  if (file.size > 5 * 1024 * 1024) {
+    // 5MB limit
     fileError.value = 'File is too large. Maximum size is 5MB.'
     renewalFile.value = null
     fileName.value = ''
-    event.target.value = '' 
+    event.target.value = ''
     return
   }
   renewalFile.value = file
@@ -164,15 +167,17 @@ const handleSubmit = async () => {
 
   const formData = new FormData()
 
+  // --- CHANGE 1: Add the institute's primary key to the payload ---
+  // The backend now expects the 'institute' ID in the body of the request.
+  formData.append('institute', props.institute.id)
+
   formData.append('renewal_document', renewalFile.value)
-
-
   formData.append('user_remarks', remarks.value)
 
-
   try {
-
-    await apiServices.createInstituteRenewal(props.institute.CID, formData)
+    // --- CHANGE 2: Call the new API function without the CID parameter ---
+    // The API service should be updated to post to the simple '/mhpc-institute-renewals/' URL.
+    await apiServices.createInstituteRenewal(formData)
 
     toast.success('Renewal application submitted successfully!')
     emit('renewal-submitted')

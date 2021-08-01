@@ -1,5 +1,4 @@
 <template>
-  <!-- Main Modal -->
   <Teleport to="body">
     <div
       v-if="isOpen"
@@ -11,7 +10,6 @@
         class="bg-white rounded-xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto"
         @click.stop
       >
-        <!-- Header -->
         <div class="p-6 border-b border-gray-100">
           <div class="flex items-center space-x-3">
             <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
@@ -26,7 +24,6 @@
           </div>
         </div>
 
-        <!-- Content -->
         <div class="p-6 space-y-4">
           <div class="space-y-3">
             <div class="flex justify-between py-2">
@@ -44,7 +41,6 @@
           </div>
         </div>
 
-        <!-- Actions -->
         <div class="p-6 border-t border-gray-100 flex space-x-3">
           <button
             @click="showApproveDialog = true"
@@ -72,11 +68,10 @@
     </div>
   </Teleport>
 
-  <!-- Approve Dialog -->
   <Teleport to="body">
     <div
       v-if="showApproveDialog"
-      class="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black bg-opacity-50"
+      class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black bg-opacity-50"
       @click="showApproveDialog = false"
     >
       <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full" @click.stop>
@@ -122,11 +117,10 @@
     </div>
   </Teleport>
 
-  <!-- Reject Dialog -->
   <Teleport to="body">
     <div
       v-if="showRejectDialog"
-      class="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black bg-opacity-50"
+      class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black bg-opacity-50"
       @click="showRejectDialog = false"
     >
       <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full" @click.stop>
@@ -226,8 +220,8 @@ const handleApprove = async () => {
   if (isSubmitting.value) return
   isSubmitting.value = true
   try {
+    // FIX: Removed the instituteCID parameter as it's no longer needed in the URL.
     await apiService.approveInstituteRenewal(
-      props.applicationDetails.instituteCID,
       props.applicationDetails.renewalId,
       { remarks: approveMessage.value },
     )
@@ -250,8 +244,8 @@ const handleReject = async () => {
   }
   isSubmitting.value = true
   try {
+    // FIX: Removed the instituteCID parameter as it's no longer needed in the URL.
     await apiService.rejectInstituteRenewal(
-      props.applicationDetails.instituteCID,
       props.applicationDetails.renewalId,
       { remarks: rejectMessage.value },
     )

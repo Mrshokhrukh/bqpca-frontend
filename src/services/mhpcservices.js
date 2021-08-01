@@ -674,54 +674,27 @@ export default {
   // --- CORRECTED: INSTITUTE RENEWAL FUNCTIONS ---
   // -----------------------------------------------------------------------------
 
-  /**
-   
-   * @param {string} instituteCID
-   * @param {FormData} formData
-   * @returns {Promise}
-   */
-  createInstituteRenewal(instituteCID, formData) {
-    return apiClient.post(`/mhpc/mhpc-institutes/${instituteCID}/renewals/`, formData, {
+  createInstituteRenewal(formData) {
+    return apiClient.post('/mhpc/mhpc-institute-renewals/', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     });
   },
 
-  /**
-   * Confirms payment for a specific renewal.
-   * @param {string} instituteCID
-   * @param {number} renewalId
-   * @param {object} paymentData
-   * @returns {Promise}
-   */
-  confirmInstituteRenewalPayment(instituteCID, renewalId, paymentData) {
+  confirmInstituteRenewalPayment(renewalId, paymentData) {
     return apiClient.post(
-      `/mhpc/mhpc-institutes/${instituteCID}/renewals/${renewalId}/confirm-payment/`,
+      `/mhpc/mhpc-institute-renewals/${renewalId}/confirm-payment/`,
       paymentData
     );
   },
 
-  /**
-   * Approves an institute renewal application (Dealing Officer action).
-   * @param {string} instituteCID
-   * @param {number} renewalId
-   * @param {object} data
-   * @returns {Promise}
-   */
-  approveInstituteRenewal(instituteCID, renewalId, data) {
-    return apiClient.post(`/mhpc/mhpc-institutes/${instituteCID}/renewals/${renewalId}/approve/`, data);
+  approveInstituteRenewal(renewalId, data) {
+    return apiClient.post(`/mhpc/mhpc-institute-renewals/${renewalId}/approve/`, data);
   },
 
-  /**
-   * Rejects an institute renewal application (Dealing Officer action).
-   * @param {string} instituteCID
-   * @param {number} renewalId
-   * @param {object} data
-   * @returns {Promise}
-   */
-  rejectInstituteRenewal(instituteCID, renewalId, data) {
-    return apiClient.post(`/mhpc/mhpc-institutes/${instituteCID}/renewals/${renewalId}/reject/`, data);
+  rejectInstituteRenewal(renewalId, data) {
+    return apiClient.post(`/mhpc/mhpc-institute-renewals/${renewalId}/reject/`, data);
   },
 
   //MHPC COUrses api

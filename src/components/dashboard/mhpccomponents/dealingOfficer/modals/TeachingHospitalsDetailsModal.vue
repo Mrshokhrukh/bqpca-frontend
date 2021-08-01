@@ -121,18 +121,18 @@
                           >
                             Qualification
                           </th>
-                          <th
+                          <!-- <th
                             scope="col"
                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                           >
                             Officer Decision
-                          </th>
-                          <th
+                          </th> -->
+                          <!-- <th
                             scope="col"
                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                           >
                             Actions
-                          </th>
+                          </th> -->
                         </tr>
                       </thead>
                       <tbody class="bg-white divide-y divide-gray-200">
@@ -146,22 +146,22 @@
                           <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             {{ preceptor.qualification }}
                           </td>
-                          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <!-- <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             <span
                               :class="getDecisionStatusClass(preceptor.officer_decision)"
                               class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
                             >
                               {{ formattedStatus(preceptor.officer_decision) }}
                             </span>
-                          </td>
-                          <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                          </td> -->
+                          <!-- <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             <button
                               @click="openPreceptorReviewModal(preceptor)"
                               class="text-indigo-600 hover:text-indigo-900"
                             >
                               Review
                             </button>
-                          </td>
+                          </td> -->
                         </tr>
                       </tbody>
                     </table>
@@ -576,7 +576,7 @@
       </div>
     </div>
 
-    <div v-if="isPreceptorReviewModalOpen" class="fixed z-30 inset-0 overflow-y-auto">
+    <!-- <div v-if="isPreceptorReviewModalOpen" class="fixed z-30 inset-0 overflow-y-auto">
       <div
         class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0"
       >
@@ -642,7 +642,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -696,7 +696,7 @@ const localVerificationData = ref({
 const rejectionReason = ref('')
 const actionAttempt = ref(null) // Tracks if user clicked 'Reject' to show the reason box
 
-const isPreceptorReviewModalOpen = ref(false)
+// const isPreceptorReviewModalOpen = ref(false)
 const selectedPreceptor = ref(null)
 const preceptorReviewData = ref({
   officer_decision: '',
@@ -752,41 +752,41 @@ const statusBadgeClass = computed(() => {
 })
 
 // --- Preceptor Review Methods ---
-function openPreceptorReviewModal(preceptor) {
-  selectedPreceptor.value = { ...preceptor }
-  preceptorReviewData.value.officer_decision = preceptor.officer_decision || 'Pending'
-  preceptorReviewData.value.officer_remarks = preceptor.officer_remarks || ''
-  isPreceptorReviewModalOpen.value = true
-}
+// function openPreceptorReviewModal(preceptor) {
+//   selectedPreceptor.value = { ...preceptor }
+//   preceptorReviewData.value.officer_decision = preceptor.officer_decision || 'Pending'
+//   preceptorReviewData.value.officer_remarks = preceptor.officer_remarks || ''
+//   isPreceptorReviewModalOpen.value = true
+// }
 
-function closePreceptorReviewModal() {
-  isPreceptorReviewModalOpen.value = false
-  selectedPreceptor.value = null
-}
+// function closePreceptorReviewModal() {
+//   isPreceptorReviewModalOpen.value = false
+//   selectedPreceptor.value = null
+// }
 
-async function submitPreceptorReview() {
-  if (!selectedPreceptor.value) return
+// async function submitPreceptorReview() {
+//   if (!selectedPreceptor.value) return
 
-  try {
-    const response = await apiServices.reviewClinicalPreceptor(
-      selectedPreceptor.value.id,
-      preceptorReviewData.value
-    )
+//   try {
+//     const response = await apiServices.reviewClinicalPreceptor(
+//       selectedPreceptor.value.id,
+//       preceptorReviewData.value
+//     )
 
-    const index = props.hospitalDetails.clinical_preceptors.findIndex(
-      (p) => p.id === selectedPreceptor.value.id
-    )
-    if (index !== -1) {
-      props.hospitalDetails.clinical_preceptors[index] = response.data
-    }
+//     const index = props.hospitalDetails.clinical_preceptors.findIndex(
+//       (p) => p.id === selectedPreceptor.value.id
+//     )
+//     if (index !== -1) {
+//       props.hospitalDetails.clinical_preceptors[index] = response.data
+//     }
 
-    closePreceptorReviewModal()
-    toast.success('Preceptor review updated successfully!')
-  } catch (error) {
-    console.error('Failed to update preceptor review:', error)
-    toast.error('Failed to update preceptor review. Please try again.')
-  }
-}
+//     closePreceptorReviewModal()
+//     toast.success('Preceptor review updated successfully!')
+//   } catch (error) {
+//     console.error('Failed to update preceptor review:', error)
+//     toast.error('Failed to update preceptor review. Please try again.')
+//   }
+// }
 
 // --- Main Modal Event Handlers ---
 const submitVerificationHandler = () => {
