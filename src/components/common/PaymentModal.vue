@@ -286,6 +286,7 @@ const slider = ref(null)
 const sliderThumb = ref(null)
 const errorMessage = ref('')
 
+// --- All your other functions (checkMobile, startSlide, etc.) remain the same ---
 const checkMobile = () => {
   isMobile.value = window.innerWidth < 768
 }
@@ -298,27 +299,20 @@ const startSlide = (event) => {
 
 const updateSlide = (event) => {
   if (!isSliding.value || !isMobile.value) return
-
-  // Prevents text selection while dragging
   event.preventDefault()
-
   const currentX = event.type === 'mousemove' ? event.clientX : event.touches[0].clientX
   const diff = currentX - startX.value
-  const newPosition = Math.max(0, Math.min(maxSlideWidth.value, slidePosition.value + diff))
-
+  const newPosition = Math.max(0, Math.min(maxSlideWidth.value, diff))
   slidePosition.value = newPosition
   slideProgress.value = (newPosition / maxSlideWidth.value) * 100
-  startX.value = currentX
-
   if (slideProgress.value >= 100) {
-    endSlide() // Prevent further sliding
+    endSlide()
     initiatePayment()
   }
 }
 
 const endSlide = () => {
   if (!isSliding.value || !isMobile.value) return
-
   isSliding.value = false
   if (slideProgress.value < 100) {
     resetSlide()
@@ -328,7 +322,6 @@ const endSlide = () => {
 const resetSlide = () => {
   slidePosition.value = 0
   slideProgress.value = 0
-  isSliding.value = false
 }
 
 // --- MODIFIED FUNCTION ---
@@ -355,16 +348,12 @@ const initiatePayment = async () => {
     if (props.closeOnSuccess) {
       closeModal()
     }
-
   } catch (error) {
-    // On failure/rejection, we display the error message inside the modal.
-    // Therefore, we should NOT close it automatically.
     errorMessage.value = 'Failed to initiate payment. Please try again.'
     toast.error(errorMessage.value)
     console.error('Payment initiation error:', error)
-    resetSlide(); // Reset slider so the user can try again.
+    resetSlide()
   } finally {
-    // This runs regardless of success or failure.
     isProcessing.value = false
   }
 }
@@ -374,14 +363,13 @@ const openModal = () => {
   errorMessage.value = ''
   resetSlide()
   document.body.style.overflow = 'hidden'
-  // Use nextTick to ensure the DOM is updated before calculating width
   nextTick(() => {
     updateMaxSlideWidth()
   })
 }
 
 const closeModal = () => {
-  if (isProcessing.value) return // Prevent closing during processing
+  if (isProcessing.value) return
   isVisible.value = false
   resetSlide()
   document.body.style.overflow = ''
@@ -392,8 +380,6 @@ const updateMaxSlideWidth = () => {
   if (!isMobile.value || !slider.value || !sliderThumb.value) return
   const sliderWidth = slider.value.offsetWidth
   const thumbWidth = sliderThumb.value.offsetWidth
-  // The thumb sits inside the slider, so subtract its width and any padding/border.
-  // Using 8px as a safe margin for left/right inset (inset-y-1 left-1 -> 4px each side).
   maxSlideWidth.value = sliderWidth - thumbWidth - 8
 }
 
@@ -411,8 +397,8 @@ onUnmounted(() => {
 
 defineExpose({
   openModal,
-  closeModal
-});
+  closeModal,
+})
 </script>
 
 <style scoped>

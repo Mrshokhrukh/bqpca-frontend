@@ -500,6 +500,9 @@ export default {
   getMhpcFullApplicationListByCid(cid) {
     return apiClient.get(`/mhpc/mhpc-new-application/?cid=${cid}`)
   },
+  getMhpcApprovedApplicationList() {
+    return apiClient.get(`/mhpc/mhpc-new-application/qualification-endorsement/?endorsement_decision=APPROVED`)
+  },
 
   /**
    * Uploads a file for a specific application by a Dealing Officer.
@@ -671,54 +674,27 @@ export default {
   // --- CORRECTED: INSTITUTE RENEWAL FUNCTIONS ---
   // -----------------------------------------------------------------------------
 
-  /**
-   
-   * @param {string} instituteCID
-   * @param {FormData} formData
-   * @returns {Promise}
-   */
-  createInstituteRenewal(instituteCID, formData) {
-    return apiClient.post(`/mhpc/mhpc-institutes/${instituteCID}/renewals/`, formData, {
+  createInstituteRenewal(formData) {
+    return apiClient.post('/mhpc/mhpc-institute-renewals/', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     });
   },
 
-  /**
-   * Confirms payment for a specific renewal.
-   * @param {string} instituteCID
-   * @param {number} renewalId
-   * @param {object} paymentData
-   * @returns {Promise}
-   */
-  confirmInstituteRenewalPayment(instituteCID, renewalId, paymentData) {
+  confirmInstituteRenewalPayment(renewalId, paymentData) {
     return apiClient.post(
-      `/mhpc/mhpc-institutes/${instituteCID}/renewals/${renewalId}/confirm-payment/`,
+      `/mhpc/mhpc-institute-renewals/${renewalId}/confirm-payment/`,
       paymentData
     );
   },
 
-  /**
-   * Approves an institute renewal application (Dealing Officer action).
-   * @param {string} instituteCID
-   * @param {number} renewalId
-   * @param {object} data
-   * @returns {Promise}
-   */
-  approveInstituteRenewal(instituteCID, renewalId, data) {
-    return apiClient.post(`/mhpc/mhpc-institutes/${instituteCID}/renewals/${renewalId}/approve/`, data);
+  approveInstituteRenewal(renewalId, data) {
+    return apiClient.post(`/mhpc/mhpc-institute-renewals/${renewalId}/approve/`, data);
   },
 
-  /**
-   * Rejects an institute renewal application (Dealing Officer action).
-   * @param {string} instituteCID
-   * @param {number} renewalId
-   * @param {object} data
-   * @returns {Promise}
-   */
-  rejectInstituteRenewal(instituteCID, renewalId, data) {
-    return apiClient.post(`/mhpc/mhpc-institutes/${instituteCID}/renewals/${renewalId}/reject/`, data);
+  rejectInstituteRenewal(renewalId, data) {
+    return apiClient.post(`/mhpc/mhpc-institute-renewals/${renewalId}/reject/`, data);
   },
 
   //MHPC COUrses api
@@ -820,6 +796,36 @@ export default {
     return apiClient.delete(`/mhpc/mhpc-teaching-centers/${id}/`)
   },
 
+  // --- NEW: Teaching Center Renewal Services (Corrected) ---
+
+  // Used by Institute Owner to submit a renewal
+  createTeachingCenterRenewal(centerId, formData) {
+    return apiClient.post(`/mhpc/mhpc-teaching-centers/${centerId}/renewals/`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
+
+  // Used by Dealing Officer to get all renewals
+  getAllTeachingCenterRenewals() {
+    return apiClient.get('/mhpc/mhpc-all-tc-renewals/');
+  },
+
+  // Used by Dealing Officer to approve a renewal
+  approveTeachingCenterRenewal(renewalId, data) {
+    return apiClient.post(`/mhpc/mhpc-all-tc-renewals/${renewalId}/approve/`, data);
+  },
+
+  // Used by Dealing Officer to reject a renewal
+  rejectTeachingCenterRenewal(renewalId, data) {
+    return apiClient.post(`/mhpc/mhpc-all-tc-renewals/${renewalId}/reject/`, data);
+  },
+
+  // Used after payment is completed
+  confirmRenewalPayment(renewalId, data) {
+    return apiClient.post(`/mhpc/mhpc-all-tc-renewals/${renewalId}/confirm-payment/`, data);
+  },
+
+
   // MHPC CPD Records
   getMhpcCpdRecords() {
     return apiClient.get('/mhpc/mhpc-cpd-records/')
@@ -918,8 +924,12 @@ export default {
     })
   },
 
-  uploadAttendancePhoto(id) {
-    return apiClient.post(`/mhpc/mhpc-cpd-tasks/${id}/upload-attendance-photo/`)
+  uploadAttendancePhoto(id, formData) {
+    return apiClient.post(`/mhpc/mhpc-cpd-tasks/${id}/upload-attendance-photo/`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
   },
   // --- Complaint Management Endpoints ---
   getComplaints(params = {}) {

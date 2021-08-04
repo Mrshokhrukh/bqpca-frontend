@@ -108,51 +108,164 @@
       <table class="min-w-full border-collapse border border-gray-200">
         <thead class="bg-gradient-to-r from-indigo-50 to-purple-50">
           <tr>
-            <th class="px-4 py-3 md:px-6 md:py-3 border-b border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Hospital Name</th>
-            <th class="px-4 py-3 md:px-6 md:py-3 border-b border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Location</th>
-            <th class="px-4 py-3 md:px-6 md:py-3 border-b border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
-            <th class="px-4 py-3 md:px-6 md:py-3 border-b border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Payment Status</th>
-            <th class="px-4 py-3 md:px-6 md:py-3 border-b border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Clinical Preceptor</th>
-            <th class="px-4 py-3 md:px-6 md:py-3 border-b border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Valid Till</th>
-            <th class="px-4 py-3 md:px-6 md:py-3 border-b border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+            <th
+              class="px-4 py-3 md:px-6 md:py-3 border-b border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+            >
+              Hospital Name
+            </th>
+            <th
+              class="px-4 py-3 md:px-6 md:py-3 border-b border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+            >
+              Location
+            </th>
+            <th
+              class="px-4 py-3 md:px-6 md:py-3 border-b border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+            >
+              Status
+            </th>
+            <th
+              class="px-4 py-3 md:px-6 md:py-3 border-b border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+            >
+              Payment Status
+            </th>
+            <th
+              class="px-4 py-3 md:px-6 md:py-3 border-b border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+            >
+              Clinical Preceptor
+            </th>
+            <th
+              class="px-4 py-3 md:px-6 md:py-3 border-b border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+            >
+              Valid Till
+            </th>
+            <th
+              class="px-4 py-3 md:px-6 md:py-3 border-b border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+            >
+              Actions
+            </th>
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
           <tr v-if="isLoading && applications.length">
             <td colspan="7" class="text-center py-8 relative">
               <div class="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center">
-                <svg class="animate-spin h-8 w-8 text-indigo-600 mx-auto" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg>
+                <svg
+                  class="animate-spin h-8 w-8 text-indigo-600 mx-auto"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="4"
+                  ></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+                </svg>
               </div>
             </td>
           </tr>
-          <tr v-for="application in filteredApplications" :key="application.id" class="hover:bg-gray-50/50 transition-colors duration-150">
-            <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ application.center_name }}</td>
+          <tr
+            v-for="application in filteredApplications"
+            :key="application.id"
+            class="hover:bg-gray-50/50 transition-colors duration-150"
+          >
+            <td
+              class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm font-medium text-gray-900"
+            >
+              {{ application.center_name }}
+            </td>
             <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-600">
               {{ application.center_location }}
-              <span class="text-gray-400">({{ application.state_dzongkhag }}, {{ application.city_gewog }})</span>
+              <span class="text-gray-400"
+                >({{ application.state_dzongkhag }}, {{ application.city_gewog }})</span
+              >
             </td>
             <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm">
-              <span :class="statusClass(application.tc_review_decision)" class="px-2.5 py-1 rounded-full text-xs font-semibold leading-tight">{{ application.tc_review_decision || 'Unknown' }}</span>
+              <span
+                :class="statusClass(application.tc_review_decision)"
+                class="px-2.5 py-1 rounded-full text-xs font-semibold leading-tight"
+                >{{ application.tc_review_decision || 'Unknown' }}</span
+              >
             </td>
             <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm">
-              <span :class="paymentStatusClass(application.payment_status)" class="px-2.5 py-1 rounded-full text-xs font-semibold leading-tight">{{ formatPaymentStatus(application.payment_status) }}</span>
+              <span
+                :class="paymentStatusClass(application.payment_status)"
+                class="px-2.5 py-1 rounded-full text-xs font-semibold leading-tight"
+                >{{ formatPaymentStatus(application.payment_status) }}</span
+              >
             </td>
-            <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-600">{{ application.preceptorName || 'N/A' }}</td>
-            <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-600">{{ formatDate(application.valid_till) }}</td>
+            <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-600">
+              {{ application.preceptorName || 'N/A' }}
+            </td>
+            <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-600">
+              {{ formatDate(application.valid_till) }}
+            </td>
             <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-700 space-x-2">
-              <button v-if="canMakePayment(application)" @click="initiateTeachingCenterPayment(application)" class="px-3 py-1.5 bg-yellow-500 text-white rounded-md shadow-sm hover:bg-yellow-600 text-xs font-medium transition-colors" :disabled="isPaymentProcessing || isLoading">Make Payment</button>
-              <button v-if="canAddPreceptor(application) && !application.isPreceptorAdded" @click="openAddPreceptorModal(application)" class="px-3 py-1.5 bg-green-500 text-white rounded-md shadow-sm hover:bg-green-600 text-xs font-medium transition-colors" :disabled="isLoading">Add Clinical Preceptor</button>
-              <button v-if="application.isPreceptorAdded && canRemovePreceptor(application)" @click="confirmRemovePreceptor(application)" class="px-3 py-1.5 bg-red-500 text-white rounded-md shadow-sm hover:bg-red-600 text-xs font-medium transition-colors" :disabled="isLoading">Remove Preceptor</button>
-              <button v-if="canDownloadCertificate(application)" @click="openCertificateModal(application)" class="px-3 py-1.5 bg-indigo-500 text-white rounded-md shadow-sm hover:bg-indigo-600 text-xs font-medium transition-colors">View Certificate</button>
-              <button @click="viewDetails(application)" class="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-md shadow-sm hover:bg-blue-200 text-xs font-medium transition-colors">View Details</button>
+              <button
+                v-if="canMakePayment(application)"
+                @click="initiateTeachingCenterPayment(application)"
+                class="px-3 py-1.5 bg-yellow-500 text-white rounded-md shadow-sm hover:bg-yellow-600 text-xs font-medium transition-colors"
+                :disabled="isPaymentProcessing || isLoading"
+              >
+                Make Payment
+              </button>
+              <button
+                v-if="canAddPreceptor(application) && !application.isPreceptorAdded"
+                @click="openAddPreceptorModal(application)"
+                class="px-3 py-1.5 bg-green-500 text-white rounded-md shadow-sm hover:bg-green-600 text-xs font-medium transition-colors"
+                :disabled="isLoading"
+              >
+                Add Clinical Preceptor
+              </button>
+              <button
+                v-if="application.isPreceptorAdded && canRemovePreceptor(application)"
+                @click="confirmRemovePreceptor(application)"
+                class="px-3 py-1.5 bg-red-500 text-white rounded-md shadow-sm hover:bg-red-600 text-xs font-medium transition-colors"
+                :disabled="isLoading"
+              >
+                Remove Preceptor
+              </button>
+              <button
+                v-if="canDownloadCertificate(application)"
+                @click="openCertificateModal(application)"
+                class="px-3 py-1.5 bg-indigo-500 text-white rounded-md shadow-sm hover:bg-indigo-600 text-xs font-medium transition-colors"
+              >
+                View Certificate
+              </button>
+              <button
+                @click="viewDetails(application)"
+                class="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-md shadow-sm hover:bg-blue-200 text-xs font-medium transition-colors"
+              >
+                View Details
+              </button>
             </td>
           </tr>
           <tr v-if="!isLoading && filteredApplications.length === 0">
             <td colspan="7" class="px-6 py-10 text-center text-gray-500 text-sm">
               <div class="flex flex-col items-center">
-                <svg class="w-12 h-12 text-gray-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path></svg>
+                <svg
+                  class="w-12 h-12 text-gray-300 mb-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.5"
+                    d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"
+                  ></path>
+                </svg>
                 No applications found.
-                <span v-if="searchQuery || filterDzongkhag || filterGewog" class="text-xs text-gray-400 mt-1">Try adjusting your filters or search.</span>
+                <span
+                  v-if="searchQuery || filterDzongkhag || filterGewog"
+                  class="text-xs text-gray-400 mt-1"
+                  >Try adjusting your filters or search.</span
+                >
               </div>
             </td>
           </tr>
@@ -162,29 +275,253 @@
 
     <!-- All Modals are here -->
     <teleport to="body">
+      <transition name="modal-details-fade">
+        <div
+          v-if="isDetailsModalOpen"
+          class="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+          @click.self="closeDetailsModal"
+        >
+          <div
+            v-if="selectedApplication"
+            class="bg-gray-50 rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden"
+          >
+            <div class="flex justify-between items-center p-5 bg-white border-b border-gray-200">
+              <div>
+                <h3 class="text-xl font-bold text-gray-800">
+                  {{ selectedApplication.center_name }}
+                </h3>
+                <p class="text-sm text-gray-500">Application Details</p>
+              </div>
+              <button
+                @click="closeDetailsModal"
+                class="p-2 rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+              >
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  ></path>
+                </svg>
+              </button>
+            </div>
+
+            <div class="p-6 overflow-y-auto space-y-6">
+              <div class="p-4 bg-white rounded-lg border border-gray-200">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                  <div class="flex items-start space-x-3">
+                    <MapPinIcon class="w-5 h-5 mt-0.5 text-indigo-500 flex-shrink-0" />
+                    <div>
+                      <label class="text-xs font-semibold text-gray-500 uppercase">Location</label>
+                      <p class="text-sm text-gray-800 font-medium">
+                        {{ selectedApplication.center_location }},
+                        {{ selectedApplication.city_gewog }},
+                        {{ selectedApplication.state_dzongkhag }}
+                      </p>
+                    </div>
+                  </div>
+                  <div class="flex items-start space-x-3">
+                    <BuildingOffice2Icon class="w-5 h-5 mt-0.5 text-indigo-500 flex-shrink-0" />
+                    <div>
+                      <label class="text-xs font-semibold text-gray-500 uppercase"
+                        >Parent Institution</label
+                      >
+                      <p class="text-sm text-gray-800 font-medium">
+                        {{ selectedApplication.institute_details?.name_of_institution || 'N/A' }}
+                      </p>
+                    </div>
+                  </div>
+                  <div class="flex items-start space-x-3">
+                    <UserCircleIcon class="w-5 h-5 mt-0.5 text-indigo-500 flex-shrink-0" />
+                    <div>
+                      <label class="text-xs font-semibold text-gray-500 uppercase"
+                        >Clinical Preceptor</label
+                      >
+                      <p class="text-sm text-gray-800 font-medium">
+                        {{ selectedApplication.preceptorName || 'Not Added Yet' }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h4 class="text-base font-semibold text-gray-700 mb-3">Status & History</h4>
+                <div class="p-4 bg-white rounded-lg border border-gray-200 space-y-4">
+                  <div class="flex flex-wrap gap-4">
+                    <div class="flex-1 min-w-[150px]">
+                      <label class="text-xs font-semibold text-gray-500 uppercase"
+                        >Application Status</label
+                      >
+                      <p>
+                        <span
+                          :class="statusClass(selectedApplication.tc_review_decision)"
+                          class="px-2.5 py-1 rounded-full text-xs font-semibold leading-tight"
+                          >{{ selectedApplication.tc_review_decision_display || 'Unknown' }}</span
+                        >
+                      </p>
+                    </div>
+                    <div class="flex-1 min-w-[150px]">
+                      <label class="text-xs font-semibold text-gray-500 uppercase"
+                        >Payment Status</label
+                      >
+                      <p>
+                        <span
+                          :class="paymentStatusClass(selectedApplication.payment_status)"
+                          class="px-2.5 py-1 rounded-full text-xs font-semibold leading-tight"
+                          >{{ formatPaymentStatus(selectedApplication.payment_status) }}</span
+                        >
+                      </p>
+                    </div>
+                    <div class="flex-1 min-w-[150px]">
+                      <label class="text-xs font-semibold text-gray-500 uppercase">Validity</label>
+                      <p
+                        v-if="selectedApplication.valid_till"
+                        class="text-sm font-medium text-green-700"
+                      >
+                        Valid until {{ formatDate(selectedApplication.valid_till) }}
+                      </p>
+                      <p v-else class="text-sm font-medium text-gray-500">Not Yet Valid</p>
+                    </div>
+                  </div>
+
+                  <div class="border-t border-gray-200 pt-4 mt-4">
+                    <ol class="relative border-l border-gray-300 dark:border-gray-700 ml-2">
+                      <li class="mb-6 ml-6">
+                        <span
+                          class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -left-3 ring-8 ring-white"
+                          ><ClockIcon class="w-4 h-4 text-blue-600"
+                        /></span>
+                        <h3 class="flex items-center mb-1 text-sm font-semibold text-gray-900">
+                          Application Submitted
+                        </h3>
+                        <time class="block mb-2 text-xs font-normal leading-none text-gray-500">{{
+                          formatDate(selectedApplication.created_at)
+                        }}</time>
+                      </li>
+                      <li v-if="selectedApplication.tc_reviewed_at" class="mb-6 ml-6">
+                        <span
+                          class="absolute flex items-center justify-center w-6 h-6 bg-indigo-100 rounded-full -left-3 ring-8 ring-white"
+                          ><InformationCircleIcon class="w-4 h-4 text-indigo-600"
+                        /></span>
+                        <h3 class="text-sm font-semibold text-gray-900">Reviewed</h3>
+                        <time class="block mb-2 text-xs font-normal leading-none text-gray-500"
+                          >on {{ formatDate(selectedApplication.tc_reviewed_at) }} by
+                          {{ selectedApplication.tc_reviewed_by_name || 'Admin' }}</time
+                        >
+                      </li>
+                      <li v-if="selectedApplication.tc_review_decision === 'Approved'" class="ml-6">
+                        <span
+                          class="absolute flex items-center justify-center w-6 h-6 bg-green-100 rounded-full -left-3 ring-8 ring-white"
+                          ><CheckCircleIcon class="w-4 h-4 text-green-600"
+                        /></span>
+                        <h3 class="text-sm font-semibold text-gray-900">Approved & Active</h3>
+                        <p v-if="selectedApplication.valid_since" class="text-xs text-gray-500">
+                          Effective from {{ formatDate(selectedApplication.valid_since) }}
+                        </p>
+                      </li>
+                      <li
+                        v-if="
+                          ['Regretted', 'Rejected'].includes(selectedApplication.tc_review_decision)
+                        "
+                        class="ml-6"
+                      >
+                        <span
+                          class="absolute flex items-center justify-center w-6 h-6 bg-red-100 rounded-full -left-3 ring-8 ring-white"
+                          ><XCircleIcon class="w-4 h-4 text-red-600"
+                        /></span>
+                        <h3 class="text-sm font-semibold text-gray-900">
+                          {{ selectedApplication.tc_review_decision }}
+                        </h3>
+                        <p
+                          v-if="selectedApplication.tc_reason_if_rejected"
+                          class="text-xs text-red-600"
+                        >
+                          Reason: {{ selectedApplication.tc_reason_if_rejected }}
+                        </p>
+                      </li>
+                    </ol>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-4 bg-white border-t border-gray-200 flex justify-end">
+              <button
+                @click="closeDetailsModal"
+                class="px-5 py-2.5 bg-indigo-600 text-white rounded-lg shadow-sm hover:bg-indigo-700 transition-colors text-sm font-medium"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </transition>
+    </teleport>
+
+    <teleport to="body">
       <transition name="modal-fade">
-        <div v-if="isPreceptorModalOpen" class="fixed inset-0 z-[60] bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center p-4" @click.self="closePreceptorModal">
-          <ClinicalPreceptorModal :application-id="selectedApplicationForPreceptor?.id" @close="closePreceptorModal" @submit-success="handlePreceptorSubmitSuccess" />
+        <div
+          v-if="isPreceptorModalOpen"
+          class="fixed inset-0 z-[60] bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center p-4"
+          @click.self="closePreceptorModal"
+        >
+          <ClinicalPreceptorModal
+            :application-id="selectedApplicationForPreceptor?.id"
+            @close="closePreceptorModal"
+            @submit-success="handlePreceptorSubmitSuccess"
+          />
         </div>
       </transition>
     </teleport>
 
     <teleport to="body">
       <transition name="modal-certificate-fade">
-        <div v-if="showCertificateModal" class="fixed inset-0 z-[60] bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4" @click.self="closeCertificateModal">
+        <div
+          v-if="showCertificateModal"
+          class="fixed inset-0 z-[60] bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4"
+          @click.self="closeCertificateModal"
+        >
           <div class="bg-white rounded-lg shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col">
             <div class="flex justify-between items-center p-4 border-b border-gray-200">
               <h3 class="text-lg font-semibold">Teaching Hospital Certificate</h3>
               <button @click="closeCertificateModal" class="p-2 rounded-full hover:bg-gray-200">
-                <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                <svg
+                  class="w-6 h-6 text-gray-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  ></path>
+                </svg>
               </button>
             </div>
             <div class="overflow-y-auto flex-1">
-              <TeachingCenterCertificate v-if="selectedCertificateData" ref="certificateComponentRef" :center-data="selectedCertificateData" />
+              <TeachingCenterCertificate
+                v-if="selectedCertificateData"
+                ref="certificateComponentRef"
+                :center-data="selectedCertificateData"
+              />
             </div>
             <div class="p-4 bg-gray-100 border-t border-gray-200 flex justify-end space-x-4">
-              <button @click="closeCertificateModal" class="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400">Close</button>
-              <button @click="downloadCertificate" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Download as PDF</button>
+              <button
+                @click="closeCertificateModal"
+                class="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400"
+              >
+                Close
+              </button>
+              <button
+                @click="downloadCertificate"
+                class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              >
+                Download as PDF
+              </button>
             </div>
           </div>
         </div>
@@ -192,15 +529,38 @@
     </teleport>
 
     <!-- Other modals remain unchanged -->
-    <TeachingCenterApplication :is-open="isApplicationFormModalOpen" :draft-data="selectedApplication" @close="closeApplicationFormModal" @form-submitted="handleApplicationFormSubmitted" @draft-saved="handleDraftSaved" />
-    <PaymentModal ref="teachingCenterPaymentModalRef" :amount="teaching_hospital_registration" @payment-completed="handleTeachingCenterPaymentCompleted" @close="closeTeachingCenterPaymentModal" />
-
+    <TeachingCenterApplication
+      :is-open="isApplicationFormModalOpen"
+      :draft-data="selectedApplication"
+      @close="closeApplicationFormModal"
+      @form-submitted="handleApplicationFormSubmitted"
+      @draft-saved="handleDraftSaved"
+    />
+    <PaymentModal
+      ref="teachingCenterPaymentModalRef"
+      :amount="teaching_hospital_registration"
+      @payment-completed="handleTeachingCenterPaymentCompleted"
+      @close="closeTeachingCenterPaymentModal"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
-import { MagnifyingGlassIcon, ChevronDownIcon, PlusIcon } from '@heroicons/vue/24/outline'
+import {
+  MagnifyingGlassIcon,
+  ChevronDownIcon,
+  PlusIcon,
+  // Add these new icons for the modal
+  MapPinIcon,
+  BuildingOffice2Icon,
+  CalendarDaysIcon,
+  UserCircleIcon,
+  ClockIcon,
+  CheckCircleIcon,
+  XCircleIcon,
+  InformationCircleIcon,
+} from '@heroicons/vue/24/outline'
 import apiServices from '@/services/services'
 import { bhutanDzongkhagsGewogs } from '@/constants/dzongkhags'
 import { useAuthStore } from '@/stores/authStore'
@@ -235,7 +595,7 @@ const DRAFT_KEY = 'teachingCenterApplicationDraft'
 
 // --- Computed Properties & Watchers ---
 const dzongkhagOptionsForCenter = computed(() =>
-  bhutanDzongkhagsGewogs.map((d) => ({ value: d.dzongkhag, label: d.dzongkhag })),
+  bhutanDzongkhagsGewogs.map((d) => ({ value: d.dzongkhag, label: d.dzongkhag }))
 )
 
 const gewogOptionsForCenter = computed(() => {
@@ -244,7 +604,12 @@ const gewogOptionsForCenter = computed(() => {
   return selected ? selected.gewogs.map((g) => ({ value: g, label: g })) : []
 })
 
-watch(() => filterDzongkhag.value, () => { filterGewog.value = '' })
+watch(
+  () => filterDzongkhag.value,
+  () => {
+    filterGewog.value = ''
+  }
+)
 
 const filteredApplications = computed(() => {
   if (!Array.isArray(applications.value)) return []
@@ -274,8 +639,10 @@ const statusClass = (status) => {
 
 const paymentStatusClass = (status) => {
   const s = status ? status.toLowerCase().replace(/_/g, ' ') : 'not paid'
-  if (s === 'paid' || s === 'completed' || s === 'success') return 'bg-green-100 text-green-700 border border-green-200'
-  if (s === 'pending payment' || s === 'processing payment' || s === 'awaiting payment') return 'bg-yellow-100 text-yellow-700 border border-yellow-200'
+  if (s === 'paid' || s === 'completed' || s === 'success')
+    return 'bg-green-100 text-green-700 border border-green-200'
+  if (s === 'pending payment' || s === 'processing payment' || s === 'awaiting payment')
+    return 'bg-yellow-100 text-yellow-700 border border-yellow-200'
   if (s === 'failed') return 'bg-red-100 text-red-700 border border-red-200'
   if (s === 'not paid') return 'bg-orange-100 text-orange-700 border border-orange-200'
   return 'bg-gray-100 text-gray-700 border border-gray-200'
@@ -283,12 +650,20 @@ const paymentStatusClass = (status) => {
 
 const formatPaymentStatus = (status) => {
   if (!status) return 'Not Paid'
-  return status.replace(/_/g, ' ').split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
+  return status
+    .replace(/_/g, ' ')
+    .split(' ')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ')
 }
 
 const formatDate = (date) => {
   if (!date) return 'N/A'
-  return new Date(date).toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: '2-digit' })
+  return new Date(date).toLocaleDateString('en-GB', {
+    year: 'numeric',
+    month: 'short',
+    day: '2-digit',
+  })
 }
 
 // --- Data Fetching Functions ---
@@ -345,13 +720,21 @@ const fetchApplications = async () => {
 // --- Condition-Checking Functions ---
 const canMakePayment = (application) => {
   const decision = application.tc_review_decision?.toLowerCase()
-  const status = application.payment_status ? application.payment_status.toLowerCase().replace(/ /g, '_') : 'not_paid'
-  return decision === 'approved' && ['not_paid', 'failed', 'pending_payment', 'awaiting_payment'].includes(status)
+  const status = application.payment_status
+    ? application.payment_status.toLowerCase().replace(/ /g, '_')
+    : 'not_paid'
+  return (
+    decision === 'approved' &&
+    ['not_paid', 'failed', 'pending_payment', 'awaiting_payment'].includes(status)
+  )
 }
 
 const canAddPreceptor = (application) => {
   const status = application.payment_status ? application.payment_status.toLowerCase() : ''
-  return application.tc_review_decision?.toLowerCase() === 'approved' && ['paid', 'completed', 'success'].includes(status)
+  return (
+    application.tc_review_decision?.toLowerCase() === 'approved' &&
+    ['paid', 'completed', 'success'].includes(status)
+  )
 }
 
 const canRemovePreceptor = (application) => {
@@ -366,42 +749,45 @@ const canDownloadCertificate = (application) => {
   )
 }
 
-
 // --- New/Fixed Functions for Draft Handling & Modals ---
 const openApplicationFormModal = (loadDraft = false) => {
   if (loadDraft && savedDraft.value) {
-    selectedApplication.value = savedDraft.value;
+    selectedApplication.value = savedDraft.value
   } else {
-    selectedApplication.value = null;
+    selectedApplication.value = null
   }
-  isApplicationFormModalOpen.value = true;
-};
+  isApplicationFormModalOpen.value = true
+}
 
 const discardDraft = () => {
   if (confirm('Are you sure you want to discard the saved draft?')) {
-    localStorage.removeItem(DRAFT_KEY);
-    savedDraft.value = null;
-    openApplicationFormModal(false);
+    localStorage.removeItem(DRAFT_KEY)
+    savedDraft.value = null
+    openApplicationFormModal(false)
   }
-};
+}
 
 const handleDraftSaved = (draftData) => {
-  localStorage.setItem(DRAFT_KEY, JSON.stringify(draftData));
-  savedDraft.value = draftData;
-  toast.info('Your application has been saved as a draft.');
-  closeApplicationFormModal();
-};
-
+  localStorage.setItem(DRAFT_KEY, JSON.stringify(draftData))
+  savedDraft.value = draftData
+  toast.info('Your application has been saved as a draft.')
+  closeApplicationFormModal()
+}
 
 // --- Event Handlers & Modal Control ---
 const openCertificateModal = (application) => {
   selectedCertificateData.value = {
     id: application.id,
     center_name: application.center_name,
-    valid_since: application.physical_verification_date || application.valid_since || new Date().toISOString(),
+    valid_since:
+      application.physical_verification_date || application.valid_since || new Date().toISOString(),
     valid_till: application.valid_till,
     institute_name: application.institute_details?.name_of_institution || 'N/A',
-    location: `${application.center_location || ''}, ${application.city_gewog || ''}, ${application.state_dzongkhag || ''}`.replace(/, $/, '').replace(/^, /, ''),
+    location: `${application.center_location || ''}, ${application.city_gewog || ''}, ${
+      application.state_dzongkhag || ''
+    }`
+      .replace(/, $/, '')
+      .replace(/^, /, ''),
     issue_date: application.physical_verification_date || new Date().toISOString(),
   }
   showCertificateModal.value = true
@@ -426,9 +812,9 @@ const openAddPreceptorModal = (application) => {
 }
 
 const closePreceptorModal = () => {
-  isPreceptorModalOpen.value = false;
-  selectedApplicationForPreceptor.value = null;
-};
+  isPreceptorModalOpen.value = false
+  selectedApplicationForPreceptor.value = null
+}
 
 const handlePreceptorSubmitSuccess = async () => {
   toast.success('Clinical Preceptor added successfully. Refreshing list...')
@@ -437,88 +823,93 @@ const handlePreceptorSubmitSuccess = async () => {
 }
 
 const confirmRemovePreceptor = (application) => {
-  if (confirm(`Are you sure you want to remove the preceptor "${application.preceptorName}" for ${application.center_name}?`)) {
+  if (
+    confirm(
+      `Are you sure you want to remove the preceptor "${application.preceptorName}" for ${application.center_name}?`
+    )
+  ) {
     removePreceptor(application)
   }
-};
+}
 
 const removePreceptor = async (application) => {
   if (!application.preceptorId) {
-    toast.error('Preceptor ID not found.');
-    return;
+    toast.error('Preceptor ID not found.')
+    return
   }
-  isLoading.value = true;
+  isLoading.value = true
   try {
-    await apiServices.deleteMhpcClinicalPreceptor(application.preceptorId);
-    toast.success('Preceptor removed successfully.');
-    await fetchApplications();
+    await apiServices.deleteMhpcClinicalPreceptor(application.preceptorId)
+    toast.success('Preceptor removed successfully.')
+    await fetchApplications()
   } catch (error) {
-    toast.error('Failed to remove preceptor.');
+    toast.error('Failed to remove preceptor.')
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
-};
+}
 
 const viewDetails = (application) => {
-  selectedApplication.value = application;
-  isDetailsModalOpen.value = true;
-};
+  selectedApplication.value = application
+  isDetailsModalOpen.value = true
+}
 
 const closeDetailsModal = () => {
-  isDetailsModalOpen.value = false;
-  selectedApplication.value = null;
-};
+  isDetailsModalOpen.value = false
+  selectedApplication.value = null
+}
 
 const closeApplicationFormModal = () => {
-  isApplicationFormModalOpen.value = false;
-  selectedApplication.value = null; // Also clear selection on close
-};
+  isApplicationFormModalOpen.value = false
+  selectedApplication.value = null // Also clear selection on close
+}
 
 const handleApplicationFormSubmitted = () => {
-  closeApplicationFormModal();
-  fetchApplications();
-  localStorage.removeItem(DRAFT_KEY); // Clear the draft on successful submission
-  savedDraft.value = null;
-  toast.success('Application submitted successfully!');
-};
+  closeApplicationFormModal()
+  fetchApplications()
+  localStorage.removeItem(DRAFT_KEY) // Clear the draft on successful submission
+  savedDraft.value = null
+  toast.success('Application submitted successfully!')
+}
 
 const initiateTeachingCenterPayment = (application) => {
-  selectedApplicationForPayment.value = application;
+  selectedApplicationForPayment.value = application
   if (teachingCenterPaymentModalRef.value) {
-    teachingCenterPaymentModalRef.value.openModal();
+    teachingCenterPaymentModalRef.value.openModal()
   }
-};
+}
 
 const closeTeachingCenterPaymentModal = () => {
   if (!isPaymentProcessing.value) {
-    selectedApplicationForPayment.value = null;
+    selectedApplicationForPayment.value = null
   }
-};
+}
 
 const handleTeachingCenterPaymentCompleted = async (paymentData) => {
-    if (!selectedApplicationForPayment.value) return;
-    isPaymentProcessing.value = true;
-    try {
-        const payload = { payment_status: 'Paid', payment_id: paymentData.transactionId };
-        await apiServices.patchMhpcTeachingCenter(selectedApplicationForPayment.value.id, payload);
-        toast.success('Payment successful! Your application status has been updated.');
-        await fetchApplications();
-    } catch (error) {
-        console.error('Error updating payment status:', error);
-        toast.error('Payment was successful, but failed to update application status. Please contact support.');
-    } finally {
-        isPaymentProcessing.value = false;
-        closeTeachingCenterPaymentModal();
-    }
-};
-
+  if (!selectedApplicationForPayment.value) return
+  isPaymentProcessing.value = true
+  try {
+    const payload = { payment_status: 'paid', payment_id: paymentData.transactionId }
+    await apiServices.patchMhpcTeachingCenter(selectedApplicationForPayment.value.id, payload)
+    toast.success('Payment successful! Your application status has been updated.')
+    await fetchApplications()
+  } catch (error) {
+    console.error('Error updating payment status:', error)
+    toast.error(
+      'Payment was successful, but failed to update application status. Please contact support.'
+    )
+  } finally {
+    isPaymentProcessing.value = false
+    closeTeachingCenterPaymentModal()
+  }
+}
 
 // --- Lifecycle Hook ---
 onMounted(() => {
-  fetchApplications();
-  const draft = localStorage.getItem(DRAFT_KEY);
+  fetchApplications()
+  const draft = localStorage.getItem(DRAFT_KEY)
   if (draft) {
-    savedDraft.value = JSON.parse(draft);
+    savedDraft.value = JSON.parse(draft)
   }
 })
 </script>
@@ -559,9 +950,7 @@ input[type='text']:focus {
 
 .modal-details-fade-enter-active .bg-white,
 .modal-details-fade-leave-active .bg-white {
-  transition:
-    opacity 0.3s ease-in-out,
-    transform 0.3s ease-in-out;
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
 }
 
 .modal-details-fade-enter-from .bg-white,
@@ -583,9 +972,7 @@ input[type='text']:focus {
 
 .modal-certificate-fade-enter-active .bg-white,
 .modal-certificate-fade-leave-active .bg-white {
-  transition:
-    opacity 0.3s ease-in-out,
-    transform 0.3s ease-in-out;
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
 }
 
 .modal-certificate-fade-enter-from .bg-white,
