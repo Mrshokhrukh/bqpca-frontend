@@ -1,5 +1,5 @@
 <template>
-  <div v-if="relevantApplications.length > 0" class="bg-white rounded-xl shadow-lg p-6">
+  <div v-if="!isLoading && relevantApplications.length > 0" class="bg-white rounded-xl shadow-lg p-6">
     <div class="flex items-center justify-between">
       <h2 class="text-xl font-bold text-gray-800">{{ title }}</h2>
       <div class="text-sm text-gray-500">
@@ -26,11 +26,16 @@
     <div class="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
       <div v-for="(count, status) in statusCounts" :key="status" :class="statusCardClasses(status)"
         class="p-4 rounded-lg shadow-sm flex flex-col items-center justify-center">
-        <div class="text-2xl font-bold" :class="statusTextClasses(status)">{{ count || 0 }}</div>
+        <div class="text-2xl font-bold" :class="statusTextClasses(status)">{{ count }}</div>
         <div class="text-sm text-gray-600 mt-1">{{ status }}</div>
       </div>
     </div>
   </div>
+
+  <div v-else-if="isLoading" class="bg-white rounded-xl shadow-lg p-6 text-center text-gray-500">
+    <p>Loading statistics...</p>
+  </div>
+
   <div v-else class="bg-white rounded-xl shadow-lg p-6 text-center text-gray-500">
     <div class="flex items-center justify-center mb-4">
       <div class="bg-gray-100 p-3 rounded-full">
@@ -53,11 +58,6 @@ import {
   DocumentTextIcon,
 } from '@heroicons/vue/24/outline'
 
-const authStore = useAuthStore()
-const applications = ref([])
-const isLoading = ref(false)
-const apiError = ref(false)
-
 const props = defineProps({
   title: {
     type: String,
@@ -68,84 +68,114 @@ const props = defineProps({
     default: 'TrophyIcon',
   },
   progress: {
-    // Keep for backward compatibility
     type: Number,
     required: false,
   },
   total: {
-    // Keep for backward compatibility
     type: Number,
     default: null,
   },
   type: {
-    // Keep for backward compatibility
     type: String,
     default: 'progress',
   },
 })
 
-const fetchApplications = async () => {
+const authStore = useAuthStore()
+const selfSubmittedApps = ref([])
+const participantRecords = ref([])
+const isLoading = ref(false)
+const apiError = ref(false)
+
+const fetchAllData = async () => {
   isLoading.value = true
   apiError.value = false
-
   try {
-    // Using EPC CPD Records API instead of MHPC
-    const response = await apiService.getEpcCpdRecords()
-    if (Array.isArray(response.data.results)) {
-      applications.value = response.data.results
-    } else if (Array.isArray(response.data)) {
-      applications.value = response.data
-    } else {
-      applications.value = []
-      console.error('API did not return an array:', response.data)
-      apiError.value = true
-    }
+    const [selfSubmittedResponse, participantResponse] = await Promise.all([
+      apiService.getEpcCpdRecords(),
+      apiService.getEpcCpdTaskParticipants(),
+    ])
+    selfSubmittedApps.value = selfSubmittedResponse.data?.results || selfSubmittedResponse.data || []
+    participantRecords.value = participantResponse.data?.results || participantResponse.data || []
+
   } catch (error) {
-    console.error('Error fetching EPC CPD applications:', error)
-    applications.value = []
+    console.error('Error fetching EPC CPD data:', error)
     apiError.value = true
+    selfSubmittedApps.value = []
+    participantRecords.value = []
   } finally {
     isLoading.value = false
   }
 }
 
-onMounted(fetchApplications)
+onMounted(fetchAllData)
+const userRegistrationNo = computed(() => {
+  if (!authStore.user || !authStore.user.cid) return null;
+  const userApps = selfSubmittedApps.value.filter(app => app.cid_no === authStore.user.cid);
+  return userApps.find(app => app.registration_no_details?.registration_no)?.registration_no_details.registration_no || null;
+});
 
-const relevantApplications = computed(() => {
+const allUserApplications = computed(() => {
   if (!authStore.user || !authStore.user.cid) {
     return []
   }
-  return applications.value.filter((app) => app.cid_no === authStore.user.cid)
-})
+  const unifiedSelfSubmitted = selfSubmittedApps.value
+    .filter(app => app.cid_no === authStore.user.cid)
+    .map(app => ({
+      id: `self-${app.id}`,
+      status: app.review_status || 'Pending',
+      credits: app.cpd_credit || 0
+    }));
+
+  let unifiedParticipantRecords = [];
+  if (userRegistrationNo.value) {
+    unifiedParticipantRecords = participantRecords.value
+      .filter(p => p.participant_reg_no === userRegistrationNo.value)
+      .map(p => ({
+        id: `participant-${p.id}`,
+        status: p.review_status || 'Pending',
+        credits: p.cpd_credits || 0
+      }));
+  }
+
+  return [...unifiedSelfSubmitted, ...unifiedParticipantRecords];
+});
+
+const relevantApplications = computed(() => allUserApplications.value)
 
 const totalCpdCredits = computed(() => {
-  return relevantApplications.value.reduce((total, app) => total + (app.cpd_credit || 0), 0)
+  return relevantApplications.value.reduce((total, app) => total + app.credits, 0)
 })
 
 const progressPercentage = computed(() => {
-  const percentage = (totalCpdCredits.value / 50) * 100
+  const target = 50;
+  if (target === 0) return 0;
+  const percentage = (totalCpdCredits.value / target) * 100
   return Math.min(percentage, 100)
 })
 
 const statusCounts = computed(() => {
-  const counts = {}
+  const counts = { Approved: 0, Pending: 0, Rejected: 0 };
   for (const app of relevantApplications.value) {
-    const status = app.review_status || 'Pending'
-    counts[status] = (counts[status] || 0) + 1
+    let status = app.status;
+    if (status === 'Regretted') {
+      status = 'Rejected';
+    }
+    if (counts.hasOwnProperty(status)) {
+      counts[status]++;
+    }
   }
-  return counts
+  return counts;
 })
 
-// Helper functions for dynamic classes
 const statusCardClasses = (status) => {
   switch (status) {
     case 'Approved':
-      return 'bg-green-100 border border-green-200'
+      return 'bg-green-50 border border-green-200'
     case 'Pending':
-      return 'bg-yellow-100 border border-yellow-200'
-    case 'Regretted':
+      return 'bg-yellow-50 border border-yellow-200'
     case 'Rejected':
-      return 'bg-red-100 border border-red-200'
+      return 'bg-red-50 border border-red-200'
     default:
       return 'bg-gray-100 border border-gray-200'
   }
@@ -157,7 +187,6 @@ const statusTextClasses = (status) => {
       return 'text-green-600'
     case 'Pending':
       return 'text-yellow-600'
-    case 'Regretted':
     case 'Rejected':
       return 'text-red-600'
     default:
@@ -167,16 +196,15 @@ const statusTextClasses = (status) => {
 
 const resolveIcon = (iconName) => {
   const icons = {
-    AcademicCapIcon: AcademicCapIcon,
-    TrophyIcon: TrophyIcon,
-    ChartBarIcon: ChartBarIcon,
-    DocumentTextIcon: DocumentTextIcon,
+    AcademicCapIcon,
+    TrophyIcon,
+    ChartBarIcon,
+    DocumentTextIcon,
     Award: TrophyIcon,
     Document: DocumentTextIcon,
     Chart: ChartBarIcon,
     Academic: AcademicCapIcon,
   }
-
   return icons[iconName] || TrophyIcon
 }
 </script>

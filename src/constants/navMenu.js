@@ -816,7 +816,7 @@ const serviceSpecificMenuItems = {
             name: 'PersonnelSubCategory',
             route: (serviceType) => `/admin/admin/${serviceType}/MastersPersonnelSubCategory`,
           },
-           {
+          {
             name: 'Qualification Types',
             route: (serviceType) => `/admin/admin/${serviceType}/qualification_types`,
           },
@@ -824,7 +824,6 @@ const serviceSpecificMenuItems = {
             name: 'Qualifications',
             route: (serviceType) => `/admin/admin/${serviceType}/qualifications`,
           },
-
         ],
       },
       {
@@ -1088,7 +1087,7 @@ const serviceSpecificMenuItems = {
       {
         name: 'Teaching Hospital',
         icon: getIconComponent('GraduationCap'),
-        children:[
+        children: [
           {
             name: 'Teaching Hospital Management',
             icon: getIconComponent('Building2'),
@@ -1104,7 +1103,7 @@ const serviceSpecificMenuItems = {
             icon: getIconComponent('Heart'),
             route: (serviceType) => `/admin/institutions/${serviceType}/site_visit_schedule`,
           },
-        ]
+        ],
       },
     ],
     legal_officer: [
@@ -1260,10 +1259,10 @@ const serviceSpecificMenuItems = {
             name: 'New Applications',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/application_lists`,
           },
-          // {
-          //   name: 'Additional Applications',
-          //   route: (serviceType) => `/admin/dealing_officer/${serviceType}/additional_application`,
-          // },
+          {
+            name: 'Additional Applications',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/additional_application`,
+          },
           {
             name: 'Renewal Applications',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/renewal_lists`,
@@ -1426,7 +1425,6 @@ const serviceSpecificMenuItems = {
             name: 'Qualifications',
             route: (serviceType) => `/admin/admin/${serviceType}/qualifications`,
           },
-
         ],
       },
       {
@@ -1695,7 +1693,8 @@ const serviceSpecificMenuItems = {
       {
         name: 'Manage Accreditation Schedule',
         icon: getIconComponent('LayoutDashboard'),
-        route: (serviceType) => `/admin/dealing_officer/${serviceType}/manage_accreditation_schedule`, // Corrected "dealing_Officer"
+        route: (serviceType) =>
+          `/admin/dealing_officer/${serviceType}/manage_accreditation_schedule`, // Corrected "dealing_Officer"
       },
       {
         name: 'Accreditation Applications',
@@ -1703,14 +1702,12 @@ const serviceSpecificMenuItems = {
         children: [
           {
             name: 'Initial Accreditation Application',
-            route: (serviceType) =>
-              `/admin/dealing_officer/${serviceType}/initial_accreditations`,
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/initial_accreditations`,
           },
 
           {
             name: 'ISAR Report',
-            route: (serviceType) =>
-              `/admin/dealing_officer/${serviceType}/isar_reports`,
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/isar_reports`,
           },
           // {
           //   name: 'Assign Assessor',
@@ -1899,7 +1896,6 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/admin/${serviceType}/source_of_funding`,
           },
         ],
-
       },
     ],
     assessor: [
