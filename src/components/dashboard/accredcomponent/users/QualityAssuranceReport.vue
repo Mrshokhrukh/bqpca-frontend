@@ -197,7 +197,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import { toast } from 'vue3-toastify';
+import { useToast } from 'vue-toastification';
 import apiService from '@/services/services';
 
 // --- STATE MANAGEMENT ---
@@ -215,6 +215,7 @@ const selectedReport = ref(null);
 
 const implementationPlanItems = ref([]);
 const progressReportData = ref({});
+const toast = useToast();
 
 // --- COMPUTED PROPERTIES ---
 const accreditedApplications = computed(() => {

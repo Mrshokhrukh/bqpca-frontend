@@ -1,4 +1,4 @@
-'''<template>
+<template>
   <div class="assignments-display">
     <header class="page-header">
       <h1>Faculty Assignment Matrix</h1>
@@ -104,13 +104,13 @@
         </div>
         <div class="remarks-section">
           <h3 class="remarks-header">Dealing Officer's Remarks</h3>
-          <textarea 
-            v-model="group.remarks" 
+          <textarea
+            v-model="group.remarks"
             placeholder="Enter remarks for this program distribution..."
             class="remarks-textarea"
           ></textarea>
-          <button 
-            @click="saveRemarks(group.programOfferedId, group.remarks)" 
+          <button
+            @click="saveRemarks(group.programOfferedId, group.remarks)"
             class="save-remarks-button"
             :disabled="group.isSaving"
           >
@@ -131,7 +131,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import apiServices from '@/services/services';
-import { useToast } from 'vue-toast-notification';
+import { useToast } from 'vue-toastification';
 
 const toast = useToast();
 
@@ -186,20 +186,20 @@ const processedAssignments = computed(() => {
       item.program.toLowerCase().includes(lowerCaseSearch)
     );
   }
-  
+
   flattened.sort((a, b) => {
     let valA = a[sortKey.value];
     let valB = b[sortKey.value];
-    
+
     if (typeof valA === 'string') {
         valA = valA.toLowerCase();
         valB = valB.toLowerCase();
     }
-    
+
     let result = 0;
     if (valA < valB) result = -1;
     else if (valA > valB) result = 1;
-    
+
     return sortOrder.value === 'asc' ? result : -result;
   });
 
@@ -268,7 +268,7 @@ onMounted(fetchData);
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --border-radius: 0.75rem;
-  
+
   padding: 2rem;
   font-family: 'Inter', system-ui, sans-serif;
   background-color: var(--color-background);
@@ -527,4 +527,3 @@ onMounted(fetchData);
   background-color: #3730a3;
 }
 </style>
-''
