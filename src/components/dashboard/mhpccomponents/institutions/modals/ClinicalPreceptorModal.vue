@@ -152,7 +152,6 @@ import { ref, computed, onMounted } from 'vue'
 import apiServices from '@/services/services' // Ensure this path is correct
 import { useToast } from 'vue-toastification'
 
-// SCRIPT IS UNCHANGED
 const props = defineProps({
   applicationId: {
     // This is the ID of the teaching center
@@ -163,7 +162,7 @@ const props = defineProps({
 const emit = defineEmits(['close', 'submit-success'])
 const toast = useToast()
 
-const selectedProfessionalSystemId = ref('') // Will store the professional's application ID (e.g., 10)
+const selectedProfessionalSystemId = ref('')
 const isLoadingProfessionals = ref(false)
 const initialLoadDone = ref(false)
 const formAttempted = ref(false)
@@ -196,25 +195,41 @@ const fetchEligibleProfessionals = async () => {
       console.warn('Fetched professionals data is not an array:', rawProfessionals)
       eligibleProfessionalsList.value = []
     } else {
-      // **FIX:** Correctly parse the provided API response structure
-      eligibleProfessionalsList.value = rawProfessionals.map((prof) => {
-        // Find the primary qualification from the nested 'user_qualifications' array
-        const primaryQualification = prof.user_qualifications?.find(
-          (q) => q.is_primary_qualification
-        )
+      // **MODIFIED LOGIC:** Filter professionals based on qualifications and endorsement status.
+      const filteredProfessionals = rawProfessionals
+        .filter((prof) => {
+          // 1. The professional must have a non-empty 'user_qualifications' array.
+          const hasQualifications =
+            Array.isArray(prof.user_qualifications) && prof.user_qualifications.length > 0
+          if (!hasQualifications) {
+            return false
+          }
+          // 2. At least one of their qualifications must have an 'endorsement_decision' of 'Approved'.
+          const hasApprovedQualification = prof.user_qualifications.some(
+            (q) => q.endorsement_decision === 'Approved'
+          )
+          return hasApprovedQualification
+        })
+        .map((prof) => {
+          // Find the primary approved qualification to display its name.
+          // If no primary is approved, fall back to the first approved one found.
+          const approvedQualification =
+            prof.user_qualifications.find(
+              (q) => q.is_primary_qualification && q.endorsement_decision === 'Approved'
+            ) || prof.user_qualifications.find((q) => q.endorsement_decision === 'Approved')
 
-        return {
-          // Use the top-level 'id' as the unique identifier for the dropdown value
-          system_id: prof.id,
-          application_id: prof.id,
-          registration_no: prof.registration_no || 'N/A',
-          cid: prof.cid_no || 'N/A',
-          full_name: prof.full_name || 'Unknown Professional',
-          // Get the qualification name from the nested primary qualification object
-          qualification_string_for_display:
-            primaryQualification?.qualification_name_display || 'N/A',
-        }
-      })
+          return {
+            system_id: prof.id,
+            application_id: prof.id,
+            registration_no: prof.registration_no || 'N/A',
+            cid: prof.cid_no || 'N/A',
+            full_name: prof.full_name || 'Unknown Professional',
+            qualification_string_for_display:
+              approvedQualification?.qualification_name_display || 'N/A',
+          }
+        })
+
+      eligibleProfessionalsList.value = filteredProfessionals
     }
   } catch (error) {
     console.error('Error fetching professionals list:', error.response?.data || error.message)
@@ -262,10 +277,7 @@ const submitPreceptor = async () => {
     resetFormFields()
     close() // Close modal on success
   } catch (error) {
-    // Log the full error for better debugging
     console.error('Error submitting preceptor:', error.response?.data || error.message)
-
-    // Provide more specific feedback if possible, e.g., from the error response
     const errorMessage =
       error.response?.data?.detail || 'Failed to add clinical preceptor due to a server error.'
     toast.error(errorMessage)
@@ -274,7 +286,6 @@ const submitPreceptor = async () => {
   }
 }
 </script>
-
 <style scoped>
 select:disabled,
 input:read-only {

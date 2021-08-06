@@ -16,7 +16,6 @@
             type="button"
             class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
           >
-            <!-- Close icon -->
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
           </button>
         </div>
@@ -28,7 +27,6 @@
 
         <!-- Modal body -->
         <div v-else-if="preceptor" class="p-6 space-y-6">
-          <!-- ... (Preceptor details grid remains the same) ... -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <div>
               <p class="font-semibold text-gray-500">Preceptor Name</p>
@@ -52,17 +50,16 @@
             </div>
             <div class="col-span-1 md:col-span-2">
               <p class="font-semibold text-gray-500">Teaching Center</p>
-              <p class="text-gray-800">{{ preceptor.teaching_center_details?.center_name || 'N/A' }}</p>
+              <!-- *** FIX: Handles both possible data structures for consistency *** -->
+              <p class="text-gray-800">{{ preceptor.teaching_center || preceptor.teaching_center_details?.center_name || 'N/A' }}</p>
             </div>
           </div>
 
           <!-- Officer Remarks -->
           <div class="border-t pt-4">
             <label for="remarks" class="block mb-2 text-sm font-medium text-gray-900">
-              <!-- Change: Label text is now dynamic -->
               {{ hasExistingRemarks ? "Dealing Officer's Remarks" : "Dealing Officer's Remarks (Optional)" }}
             </label>
-            <!-- Change: A single textarea is now used. It becomes disabled and styled differently when remarks exist. -->
             <textarea
               id="remarks"
               v-model="remarks"
@@ -78,12 +75,11 @@
           </div>
         </div>
 
-        <!-- Modal footer -->
+        <!-- Modal footer (no changes) -->
         <div v-if="!isLoading && preceptor" class="flex items-center justify-end p-6 space-x-2 border-t border-gray-200 rounded-b">
           <button @click="close" type="button" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10">
             Close
           </button>
-          <!-- Change: The save button is now hidden with v-if if remarks exist -->
           <button
             v-if="!hasExistingRemarks"
             @click="saveRemarks"

@@ -20,19 +20,16 @@
               <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Preceptor Name</th>
               <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Registration No.</th>
               <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Teaching Center</th>
-              <!-- Change: Added new header for Officer's Remarks -->
               <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Officer's Remarks</th>
               <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
             <!-- Loading State -->
-            <!-- Change: Updated colspan from 4 to 5 -->
             <tr v-if="isLoading">
               <td colspan="5" class="px-6 py-10 text-center text-sm text-gray-500">Loading clinical preceptors...</td>
             </tr>
             <!-- Empty State -->
-            <!-- Change: Updated colspan from 4 to 5 -->
             <tr v-else-if="preceptors.length === 0">
               <td colspan="5" class="px-6 py-10 text-center text-sm text-gray-500">No clinical preceptors found.</td>
             </tr>
@@ -43,10 +40,13 @@
                 <div class="text-xs text-gray-500">CID: {{ preceptor.cid }}</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ preceptor.reg_no || 'N/A' }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ preceptor.teaching_center_details?.center_name || 'N/A' }}</td>
 
-              <!-- Change: Added new data cell for remarks with truncation and tooltip -->
+              <!-- *** FIX: Use the correct field for teaching_center *** -->
+              <!-- The API returns a string 'teaching_center', not 'teaching_center_details.center_name' -->
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ preceptor.teaching_center || 'N/A' }}</td>
+
               <td class="px-6 py-4 whitespace-normal text-sm text-gray-500">
+                <!-- This part is correct and will work once the backend API sends 'officer_remarks' in the list response -->
                 <div
                   v-if="preceptor.officer_remarks"
                   class="max-w-xs truncate"
@@ -81,6 +81,7 @@
     </div>
 
     <!-- Modal for Viewing Details and Adding Remarks -->
+    <!-- This part remains unchanged -->
     <ClinicalPreceptorDetailsModal
       :is-open="isModalOpen"
       :preceptor="selectedPreceptor"
@@ -94,7 +95,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useToast } from 'vue-toastification'
-// The modal component import seems to have a typo, ensuring it matches standard naming
 import ClinicalPreceptorDetailsModal from '../modals/ClinicalPreceptorReviewModal.vue'
 import apiService from '@/services/services'
 
@@ -113,7 +113,8 @@ const fetchPreceptors = async () => {
   isLoading.value = true
   try {
     const response = await apiService.getMhpcClinicalPreceptors()
-    // Assuming the list endpoint includes 'officer_remarks' in its response
+    // *** IMPORTANT ***
+    // This code assumes your backend has been updated to include 'officer_remarks' in this API response.
     if (response.data && Array.isArray(response.data.results)) {
       preceptors.value = response.data.results.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
     } else {
@@ -138,6 +139,14 @@ const openDetailsModal = async (preceptorId) => {
   try {
     const response = await apiService.getMhpcClinicalPreceptor(preceptorId)
     selectedPreceptor.value = response.data
+
+    // In the modal, you correctly show 'teaching_center_details.center_name'. This implies
+    // the DETAIL endpoint returns a different structure. Let's fix that too.
+    // If the detail endpoint returns `teaching_center_details` but the list returns `teaching_center`, we harmonize it.
+    if (selectedPreceptor.value && !selectedPreceptor.value.teaching_center && selectedPreceptor.value.teaching_center_details) {
+      selectedPreceptor.value.teaching_center = selectedPreceptor.value.teaching_center_details.center_name;
+    }
+
   } catch (error)
  {
     console.error(`Failed to fetch details for preceptor ${preceptorId}:`, error)
@@ -155,7 +164,8 @@ const closeDetailsModal = () => {
 
 const handlePreceptorUpdate = () => {
   closeDetailsModal()
-  // Refresh the list to show the newly added remark in the table
+  // Refresh the list to show the newly added remark in the table.
+  // This will work correctly once the API list includes the remarks field.
   fetchPreceptors()
 }
 
