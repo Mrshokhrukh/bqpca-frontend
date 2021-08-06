@@ -1,4 +1,4 @@
-<template>
+'''<template>
   <div class="assignments-display">
     <header class="page-header">
       <h1>Faculty Assignment Matrix</h1>
@@ -19,7 +19,7 @@
     <div v-else-if="error" class="state-card error-state">
       <h2>⚠️ An Error Occurred</h2>
       <p>{{ error }}</p>
-      <button @click="fetchAssignments" class="retry-button">Try Again</button>
+      <button @click="fetchData" class="retry-button">Try Again</button>
     </div>
 
     <div v-else-if="Object.keys(groupedAssignments).length > 0" class="groups-container">
@@ -67,7 +67,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="item in group" :key="item.id">
+              <tr v-for="item in group.assignments" :key="item.id">
                 <td>
                   <div class="cell-content">
                     <div class="module-name">{{ item.moduleName }}</div>
@@ -102,6 +102,21 @@
             </tbody>
           </table>
         </div>
+        <div class="remarks-section">
+          <h3 class="remarks-header">Dealing Officer's Remarks</h3>
+          <textarea 
+            v-model="group.remarks" 
+            placeholder="Enter remarks for this program distribution..."
+            class="remarks-textarea"
+          ></textarea>
+          <button 
+            @click="saveRemarks(group.programOfferedId, group.remarks)" 
+            class="save-remarks-button"
+            :disabled="group.isSaving"
+          >
+            {{ group.isSaving ? 'Saving...' : 'Save Remarks' }}
+          </button>
+        </div>
       </div>
     </div>
 
@@ -115,41 +130,45 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-// Ensure this path is correct for your project
 import apiServices from '@/services/services';
+import { useToast } from 'vue-toast-notification';
 
-// --- STATE MANAGEMENT ---
+const toast = useToast();
+
 const rawAssignments = ref([]);
+const programsOffered = ref([]);
 const loading = ref(true);
 const error = ref(null);
 const searchTerm = ref('');
-const sortKey = ref('facultyName'); // Default sort key
-const sortOrder = ref('asc'); // Default sort order
+const sortKey = ref('facultyName');
+const sortOrder = ref('asc');
 
-// --- DATA FETCHING ---
-const fetchAssignments = async () => {
+const fetchData = async () => {
   loading.value = true;
   error.value = null;
   try {
-    const response = await apiServices.getMhpcFacultyAssignments();
-    rawAssignments.value = response.data.results;
+    const [assignmentsResponse, programsResponse] = await Promise.all([
+      apiServices.getMhpcFacultyAssignments(),
+      apiServices.getMhpcProgramOffered()
+    ]);
+    rawAssignments.value = assignmentsResponse.data.results;
+    programsOffered.value = programsResponse.data.results;
   } catch (err) {
-    console.error('Failed to fetch assignments:', err);
-    error.value = 'Could not retrieve assignment data. Please check your connection and try again.';
+    console.error('Failed to fetch data:', err);
+    error.value = 'Could not retrieve data. Please check your connection and try again.';
   } finally {
     loading.value = false;
   }
 };
 
-// --- DATA TRANSFORMATION & COMPUTED PROPERTIES ---
 const processedAssignments = computed(() => {
   if (!rawAssignments.value) return [];
 
-  // 1. Flatten Data
   let flattened = rawAssignments.value.map(item => ({
     id: item.id,
     institute: item.module?.semester?.program_offered?.institute?.name_of_institution || 'Unknown Institute',
     program: item.module?.semester?.program_offered?.program_master?.program_name || 'N/A',
+    programOfferedId: item.module?.semester?.program_offered?.id,
     semester: item.module?.semester?.semester_number || 'N/A',
     moduleName: item.module?.module_master?.module_name || 'N/A',
     moduleCode: item.module?.module_master?.module_code || 'N/A',
@@ -159,7 +178,6 @@ const processedAssignments = computed(() => {
     studentCount: item.module?.student_count ?? 0,
   }));
 
-  // 2. Filter by Search Term
   if (searchTerm.value) {
     const lowerCaseSearch = searchTerm.value.toLowerCase();
     flattened = flattened.filter(item =>
@@ -169,12 +187,10 @@ const processedAssignments = computed(() => {
     );
   }
   
-  // 3. Sort the data
   flattened.sort((a, b) => {
     let valA = a[sortKey.value];
     let valB = b[sortKey.value];
     
-    // Handle numeric vs string sorting
     if (typeof valA === 'string') {
         valA = valA.toLowerCase();
         valB = valB.toLowerCase();
@@ -191,17 +207,24 @@ const processedAssignments = computed(() => {
 });
 
 const groupedAssignments = computed(() => {
-  return processedAssignments.value.reduce((groups, item) => {
+  const groups = processedAssignments.value.reduce((acc, item) => {
     const groupName = item.institute;
-    if (!groups[groupName]) {
-      groups[groupName] = [];
+    if (!acc[groupName]) {
+      const program = programsOffered.value.find(p => p.id === item.programOfferedId);
+      acc[groupName] = {
+        assignments: [],
+        programOfferedId: item.programOfferedId,
+        remarks: ref(program?.distribution_remarks || ''),
+        isSaving: ref(false)
+      };
     }
-    groups[groupName].push(item);
-    return groups;
+    acc[groupName].assignments.push(item);
+    return acc;
   }, {});
+
+  return groups;
 });
 
-// --- METHODS ---
 const sortBy = (key) => {
   if (sortKey.value === key) {
     sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc';
@@ -211,8 +234,23 @@ const sortBy = (key) => {
   }
 };
 
-// --- LIFECYCLE HOOK ---
-onMounted(fetchAssignments);
+const saveRemarks = async (programOfferedId, remarks) => {
+  const group = Object.values(groupedAssignments.value).find(g => g.programOfferedId === programOfferedId);
+  if (!group) return;
+
+  group.isSaving = true;
+  try {
+    await apiServices.patchMhpcProgramOffered(programOfferedId, { distribution_remarks: remarks });
+    toast.success('Remarks saved successfully!', { position: 'top-right' });
+  } catch (err) {
+    console.error('Failed to save remarks:', err);
+    toast.error('Failed to save remarks.', { position: 'top-right' });
+  } finally {
+    group.isSaving = false;
+  }
+};
+
+onMounted(fetchData);
 </script>
 
 <style scoped>
@@ -411,6 +449,52 @@ onMounted(fetchAssignments);
   text-align: center;
 }
 
+/* --- REMARKS SECTION --- */
+.remarks-section {
+  padding: 1.5rem;
+  border-top: 1px solid var(--color-border);
+  background-color: #fcfcfd;
+}
+.remarks-header {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+.remarks-textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 12px;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-border);
+  font-size: 1rem;
+  transition: box-shadow 0.2s, border-color 0.2s;
+  background-color: var(--color-surface);
+  resize: vertical;
+}
+.remarks-textarea:focus {
+  outline: none;
+  border-color: var(--color-brand);
+  box-shadow: 0 0 0 3px rgba(67, 56, 202, 0.2);
+}
+.save-remarks-button {
+  margin-top: 1rem;
+  padding: 10px 20px;
+  border: none;
+  background-color: var(--color-brand);
+  color: white;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s, opacity 0.2s;
+}
+.save-remarks-button:hover {
+  background-color: #3730a3;
+}
+.save-remarks-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* --- STATE CARDS --- */
 .state-card {
   text-align: center;
@@ -443,3 +527,4 @@ onMounted(fetchAssignments);
   background-color: #3730a3;
 }
 </style>
+''
