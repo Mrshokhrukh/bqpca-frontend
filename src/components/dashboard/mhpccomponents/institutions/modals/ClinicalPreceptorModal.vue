@@ -1,9 +1,9 @@
 <template>
   <div
-    class="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl transform transition-all sm:my-8 sm:align-middle"
+    class="bg-white rounded-lg shadow-xl p-6 w-full max-w-3xl transform transition-all sm:my-8 sm:align-middle flex flex-col max-h-[90vh]"
   >
-    <div class="flex justify-between items-center pb-3 border-b border-gray-200">
-      <h3 class="text-xl font-semibold text-gray-800">Add Clinical Preceptor</h3>
+    <div class="flex-shrink-0 flex justify-between items-center pb-3 border-b border-gray-200">
+      <h3 class="text-xl font-semibold text-gray-800">Add Clinical Preceptors</h3>
       <button
         @click="close"
         class="p-1 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors"
@@ -19,99 +19,66 @@
       </button>
     </div>
 
-    <form @submit.prevent="submitPreceptor" class="mt-6 space-y-6">
-      <div>
-        <label for="professional" class="block text-sm font-medium text-gray-700 mb-1">
-          Professional (Reg No.) <span class="text-red-500">*</span>
-        </label>
-        <select
-          v-model="selectedProfessionalSystemId"
-          id="professional"
-          name="professional"
-          class="mt-1 block w-full px-3 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm appearance-none bg-white"
-          :class="{ 'border-red-500': !selectedProfessionalSystemId && formAttempted }"
-          required
-          :disabled="
-            isLoadingProfessionals ||
-            (eligibleProfessionalsList.length === 0 && !isLoadingProfessionals)
-          "
-        >
-          <option disabled value="">-- Select Professional --</option>
-          <option v-if="isLoadingProfessionals" value="" disabled>Loading professionals...</option>
-          <option
-            v-for="prof in eligibleProfessionalsList"
-            :key="prof.system_id"
-            :value="prof.system_id"
-          >
-            {{ prof.registration_no }} - {{ prof.full_name }}
-          </option>
-          <option
-            v-if="
-              !isLoadingProfessionals && eligibleProfessionalsList.length === 0 && initialLoadDone
-            "
-            value=""
-            disabled
-          >
-            No eligible professionals found.
-          </option>
-        </select>
-        <p v-if="!selectedProfessionalSystemId && formAttempted" class="mt-1 text-xs text-red-500">
-          Professional selection is required.
-        </p>
-      </div>
-
-      <div
-        v-if="selectedProfessionalDetails"
-        class="space-y-4 p-4 border border-gray-200 rounded-md bg-gray-50"
-      >
-        <h4 class="text-sm font-semibold text-gray-700">Selected Professional Details:</h4>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label for="cidDisplay" class="block text-xs font-medium text-gray-500">CID</label>
-            <input
-              type="text"
-              id="cidDisplay"
-              :value="displayCid"
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm bg-gray-100 sm:text-sm cursor-not-allowed"
-              readonly
-            />
-          </div>
-          <div>
-            <label for="nameDisplay" class="block text-xs font-medium text-gray-500">Name</label>
-            <input
-              type="text"
-              id="nameDisplay"
-              :value="displayName"
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm bg-gray-100 sm:text-sm cursor-not-allowed"
-              readonly
-            />
-          </div>
-        </div>
-        <div class="mt-4">
-          <label for="qualificationDisplay" class="block text-xs font-medium text-gray-500"
-            >Qualification</label
-          >
+    <form @submit.prevent="submitPreceptors" class="mt-6 flex-grow flex flex-col overflow-hidden">
+      <div class="flex-grow overflow-y-auto pr-2 space-y-6">
+        <div>
+          <label for="searchProfessional" class="block text-sm font-medium text-gray-700 mb-1">
+            Search & Select Professionals <span class="text-red-500">*</span>
+          </label>
           <input
             type="text"
-            id="qualificationDisplay"
-            :value="displayQualification"
-            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm bg-gray-100 sm:text-sm cursor-not-allowed"
-            readonly
+            v-model="searchQuery"
+            id="searchProfessional"
+            placeholder="Search by name or registration number..."
+            class="mt-1 block w-full px-3 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           />
         </div>
-      </div>
-      <div
-        v-else-if="
-          selectedProfessionalSystemId &&
-          !isLoadingProfessionals &&
-          eligibleProfessionalsList.length > 0
-        "
-        class="text-sm text-gray-500 italic"
-      >
-        Loading professional details...
+
+        <div
+          class="border border-gray-300 rounded-lg max-h-64 overflow-y-auto"
+          :class="{ 'border-red-500': selectedProfessionalSystemIds.length === 0 && formAttempted }"
+        >
+          <div v-if="isLoadingProfessionals" class="text-center p-4 text-gray-500">
+            Loading professionals...
+          </div>
+          <div v-else-if="filteredProfessionals.length > 0">
+            <label
+              v-for="prof in filteredProfessionals"
+              :key="prof.system_id"
+              class="flex items-center p-3 border-b border-gray-200 last:border-b-0 hover:bg-gray-50 cursor-pointer"
+            >
+              <input
+                type="checkbox"
+                :value="prof.system_id"
+                v-model="selectedProfessionalSystemIds"
+                class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+              />
+              <span class="ml-3 text-sm text-gray-800">
+                <span class="font-medium">{{ prof.full_name }}</span> -
+                <span class="text-gray-600">{{ prof.registration_no }}</span>
+                <span class="block text-xs text-gray-500">{{ prof.qualification }}</span>
+              </span>
+            </label>
+          </div>
+          <div v-else class="text-center p-4 text-gray-500 text-sm">
+            No eligible professionals found matching your search.
+          </div>
+        </div>
+        <p v-if="selectedProfessionalSystemIds.length === 0 && formAttempted" class="mt-1 text-xs text-red-500">
+          At least one professional must be selected.
+        </p>
+
+        <div v-if="selectedProfessionalsDetails.length > 0">
+          <h4 class="text-sm font-semibold text-gray-700 mb-2">Selected Professionals:</h4>
+          <div class="space-y-2 max-h-40 overflow-y-auto bg-gray-50 p-3 rounded-md border">
+            <div v-for="prof in selectedProfessionalsDetails" :key="prof.system_id" class="text-sm text-gray-800 p-1.5 bg-white rounded border border-gray-200">
+              {{ prof.full_name }} ({{ prof.registration_no }})
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="pt-4 flex justify-end space-x-3 border-t border-gray-200">
+      <div class="flex-shrink-0 pt-6 mt-4 flex justify-end space-x-3 border-t border-gray-200">
         <button
           type="button"
           @click="close"
@@ -121,7 +88,7 @@
         </button>
         <button
           type="submit"
-          :disabled="isSubmitting || isLoadingProfessionals"
+          :disabled="isSubmitting || isLoadingProfessionals || selectedProfessionalSystemIds.length === 0"
           class="px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg shadow-md hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105 flex items-center"
         >
           <svg
@@ -140,7 +107,7 @@
             ></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
           </svg>
-          {{ isSubmitting ? 'Submitting...' : 'Add Preceptor' }}
+          {{ isSubmitting ? 'Submitting...' : `Add ${selectedProfessionalSystemIds.length} Preceptor(s)` }}
         </button>
       </div>
     </form>
@@ -149,87 +116,67 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import apiServices from '@/services/services' // Ensure this path is correct
+import apiServices from '@/services/services'
 import { useToast } from 'vue-toastification'
 
 const props = defineProps({
   applicationId: {
-    // This is the ID of the teaching center
     type: [String, Number],
     required: true,
+  },
+  existingPreceptorIds: {
+    type: Array,
+    default: () => [],
   },
 })
 const emit = defineEmits(['close', 'submit-success'])
 const toast = useToast()
 
-const selectedProfessionalSystemId = ref('')
+const selectedProfessionalSystemIds = ref([])
 const isLoadingProfessionals = ref(false)
 const initialLoadDone = ref(false)
 const formAttempted = ref(false)
 const isSubmitting = ref(false)
-
+const searchQuery = ref('')
 const eligibleProfessionalsList = ref([])
 
-const selectedProfessionalDetails = computed(() => {
-  if (!selectedProfessionalSystemId.value) return null
-  return eligibleProfessionalsList.value.find(
-    (p) => p.system_id === selectedProfessionalSystemId.value
+const filteredProfessionals = computed(() => {
+  if (!searchQuery.value) {
+    return eligibleProfessionalsList.value
+  }
+  const lowerCaseQuery = searchQuery.value.toLowerCase()
+  return eligibleProfessionalsList.value.filter(prof => 
+    prof.full_name.toLowerCase().includes(lowerCaseQuery) ||
+    prof.registration_no.toLowerCase().includes(lowerCaseQuery)
   )
 })
 
-// Computed properties to display details of the selected professional
-const displayCid = computed(() => selectedProfessionalDetails.value?.cid || 'N/A')
-const displayName = computed(() => selectedProfessionalDetails.value?.full_name || 'N/A')
-const displayQualification = computed(
-  () => selectedProfessionalDetails.value?.qualification_string_for_display || 'N/A'
-)
+const selectedProfessionalsDetails = computed(() => {
+  if (selectedProfessionalSystemIds.value.length === 0) return []
+  return eligibleProfessionalsList.value.filter(p =>
+    selectedProfessionalSystemIds.value.includes(p.system_id)
+  )
+})
 
 const fetchEligibleProfessionals = async () => {
   isLoadingProfessionals.value = true
   initialLoadDone.value = false
   try {
-    const response = await apiServices.getMhpcApprovedApplicationList()
-    const rawProfessionals = response.data?.results || response.data || []
+    const response = await apiServices.getEligiblePreceptors()
+    const rawProfessionals = response.data || []
 
     if (!Array.isArray(rawProfessionals)) {
-      console.warn('Fetched professionals data is not an array:', rawProfessionals)
       eligibleProfessionalsList.value = []
     } else {
-      // **MODIFIED LOGIC:** Filter professionals based on qualifications and endorsement status.
-      const filteredProfessionals = rawProfessionals
-        .filter((prof) => {
-          // 1. The professional must have a non-empty 'user_qualifications' array.
-          const hasQualifications =
-            Array.isArray(prof.user_qualifications) && prof.user_qualifications.length > 0
-          if (!hasQualifications) {
-            return false
-          }
-          // 2. At least one of their qualifications must have an 'endorsement_decision' of 'Approved'.
-          const hasApprovedQualification = prof.user_qualifications.some(
-            (q) => q.endorsement_decision === 'Approved'
-          )
-          return hasApprovedQualification
-        })
-        .map((prof) => {
-          // Find the primary approved qualification to display its name.
-          // If no primary is approved, fall back to the first approved one found.
-          const approvedQualification =
-            prof.user_qualifications.find(
-              (q) => q.is_primary_qualification && q.endorsement_decision === 'Approved'
-            ) || prof.user_qualifications.find((q) => q.endorsement_decision === 'Approved')
-
-          return {
-            system_id: prof.id,
-            application_id: prof.id,
-            registration_no: prof.registration_no || 'N/A',
-            cid: prof.cid_no || 'N/A',
-            full_name: prof.full_name || 'Unknown Professional',
-            qualification_string_for_display:
-              approvedQualification?.qualification_name_display || 'N/A',
-          }
-        })
-
-      eligibleProfessionalsList.value = filteredProfessionals
+      eligibleProfessionalsList.value = rawProfessionals
+        .filter(prof => !props.existingPreceptorIds.includes(prof.id))
+        .map((prof) => ({
+          system_id: prof.id,
+          registration_no: prof.registration_no || 'N/A',
+          cid_no: prof.cid_no || 'N/A',
+          full_name: prof.full_name || 'Unknown Professional',
+          qualification: prof.qualification || 'N/A',
+        }))
     }
   } catch (error) {
     console.error('Error fetching professionals list:', error.response?.data || error.message)
@@ -239,7 +186,7 @@ const fetchEligibleProfessionals = async () => {
     isLoadingProfessionals.value = false
     initialLoadDone.value = true
     if (eligibleProfessionalsList.value.length === 0) {
-      toast.info('No eligible professionals were found.')
+      toast.info('No new eligible professionals were found to add.')
     }
   }
 }
@@ -248,8 +195,9 @@ onMounted(() => {
   fetchEligibleProfessionals()
 })
 
-const resetFormFields = () => {
-  selectedProfessionalSystemId.value = ''
+const resetForm = () => {
+  selectedProfessionalSystemIds.value = []
+  searchQuery.value = ''
   formAttempted.value = false
 }
 
@@ -257,48 +205,47 @@ const close = () => {
   emit('close')
 }
 
-const submitPreceptor = async () => {
+const submitPreceptors = async () => {
   formAttempted.value = true
-  if (!selectedProfessionalSystemId.value) {
-    toast.error('Please select an eligible professional.')
+  if (selectedProfessionalSystemIds.value.length === 0) {
+    toast.error('Please select at least one eligible professional.')
     return
   }
 
   isSubmitting.value = true
-  const preceptorData = {
-    teaching_center: props.applicationId,
-    application: selectedProfessionalSystemId.value,
+  const preceptorPromises = selectedProfessionalSystemIds.value.map(profId => {
+    const preceptorData = {
+      teaching_center: props.applicationId,
+      application: profId,
+    }
+    return apiServices.createMhpcClinicalPreceptor(preceptorData)
+  })
+
+  const results = await Promise.allSettled(preceptorPromises)
+  
+  const successes = results.filter(r => r.status === 'fulfilled')
+  const failures = results.filter(r => r.status === 'rejected')
+
+  if (successes.length > 0) {
+    toast.success(`Successfully added ${successes.length} clinical preceptor(s).`)
+    emit('submit-success')
+    resetForm()
+    close()
   }
 
-  try {
-    await apiServices.createMhpcClinicalPreceptor(preceptorData)
-    toast.success(`Clinical Preceptor "${displayName.value}" added successfully.`)
-    emit('submit-success', preceptorData)
-    resetFormFields()
-    close() // Close modal on success
-  } catch (error) {
-    console.error('Error submitting preceptor:', error.response?.data || error.message)
-    const errorMessage =
-      error.response?.data?.detail || 'Failed to add clinical preceptor due to a server error.'
-    toast.error(errorMessage)
-  } finally {
-    isSubmitting.value = false
+  if (failures.length > 0) {
+    toast.error(`Failed to add ${failures.length} preceptor(s). Please check the console for details.`)
+    console.error("Failed preceptor submissions:", failures.map(f => f.reason))
   }
+
+  isSubmitting.value = false
 }
 </script>
+
 <style scoped>
 select:disabled,
 input:read-only {
   background-color: #f3f4f6;
   cursor: not-allowed;
-}
-.space-y-6 > div:not(:first-child) {
-  margin-top: 1.5rem;
-}
-.space-y-4 > div:not(:first-child) {
-  margin-top: 1rem;
-}
-.grid.gap-4 {
-  gap: 1rem;
 }
 </style>

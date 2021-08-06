@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-gray-50">
-    <div class="mx-auto py-10 px-4 sm:px-6 lg:px-8 max-w-7xl">
+    <div class="mx-auto py-10 px-4 sm:px-6 lg:px-8">
       <!-- Header Section -->
       <InstituteHeader
         :title="institute?.name_of_institution || 'Institute Profile'"
@@ -56,15 +56,36 @@
               <div class="lg:col-span-2 bg-white p-8 rounded-2xl shadow-lg space-y-6">
                 <div class="flex justify-between items-center">
                   <h3 class="text-2xl font-bold text-gray-900">Institute Details</h3>
-                  <button
-                    v-if="institute.application_status?.toLowerCase().includes('approved')"
-                    @click="openCertificateModal"
-                    class="btn btn-primary"
-                  >
-                    View Certificate
-                  </button>
+                  <div class="flex items-center space-x-3">
+                    <!-- EDIT / SAVE / CANCEL BUTTONS -->
+                    <button
+                      v-if="!isEditing"
+                      @click="startEditing"
+                      class="btn btn-secondary flex items-center"
+                    >
+                      <Pencil class="h-4 w-4 mr-2" />
+                      Edit
+                    </button>
+                    <template v-else>
+                      <button @click="cancelEdit" class="btn btn-secondary bg-gray-200 hover:bg-gray-300">Cancel</button>
+                      <button @click="saveChanges" class="btn btn-primary flex items-center" :disabled="isSaving">
+                        <Loader v-if="isSaving" class="animate-spin h-4 w-4 mr-2" />
+                        <Save v-else class="h-4 w-4 mr-2" />
+                        Save Changes
+                      </button>
+                    </template>
+                    <button
+                      v-if="institute.application_status?.toLowerCase().includes('approved')"
+                      @click="openCertificateModal"
+                      class="btn btn-primary"
+                    >
+                      View Certificate
+                    </button>
+                  </div>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                <!-- VIEW MODE -->
+                <div v-if="!isEditing" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <InfoItem label="Head of Institution" :value="institute.head_of_institution_name" />
                   <InfoItem label="Head's Email" :value="institute.head_of_institution_email" is-email />
                   <InfoItem label="Head's Phone" :value="institute.head_of_institution_phone_number" />
@@ -73,7 +94,49 @@
                   <InfoItem label="Status" :value="institute.application_status" :value-class="getStatusClass(institute.application_status)" />
                   <InfoItem label="Validity" :value="`${formatDate(institute.valid_since)} to ${formatDate(institute.valid_till)}`" />
                 </div>
+                
+                <!-- EDIT MODE -->
+                <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <!-- Editable Fields -->
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700">Head of Institution</label>
+                    <input v-model="editableInstitute.head_of_institution_name" type="text" class="form-input" />
+                  </div>
+                   <div>
+                    <label class="block text-sm font-medium text-gray-700">Head's Email</label>
+                    <input v-model="editableInstitute.head_of_institution_email" type="email" class="form-input" />
+                  </div>
+                   <div>
+                    <label class="block text-sm font-medium text-gray-700">Head's Phone</label>
+                    <input v-model="editableInstitute.head_of_institution_phone_number" type="text" class="form-input" />
+                  </div>
+                   <div>
+                    <label class="block text-sm font-medium text-gray-700">Website</label>
+                    <input v-model="editableInstitute.website" type="url" class="form-input" />
+                  </div>
+                  <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700">Address</label>
+                    <input v-model="editableInstitute.address" type="text" class="form-input" />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700">Village</label>
+                    <input v-model="editableInstitute.village" type="text" class="form-input" />
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700">Gewog</label>
+                    <input v-model="editableInstitute.gewog" type="text" class="form-input" />
+                  </div>
+                  <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700">Dzongkhag</label>
+                    <input v-model="editableInstitute.dzongkhag" type="text" class="form-input" />
+                  </div>
+                  <!-- Non-Editable Fields for context -->
+                   <InfoItem label="Status" :value="institute.application_status" :value-class="getStatusClass(institute.application_status)" />
+                   <InfoItem label="Validity" :value="`${formatDate(institute.valid_since)} to ${formatDate(institute.valid_till)}`" />
+                </div>
               </div>
+
+              <!-- Right-side stat cards -->
               <div class="space-y-6">
                 <div class="bg-white p-6 rounded-2xl shadow-lg text-center">
                   <Users class="mx-auto h-10 w-10 text-indigo-500" />
@@ -94,6 +157,7 @@
             </div>
           </div>
 
+          <!-- Other tabs remain the same -->
           <!-- Education Programs Tab -->
           <div v-if="activeTab === 'programs'" class="bg-white p-8 rounded-2xl shadow-lg">
              <h3 class="text-2xl font-bold text-gray-900 mb-6">Education Programs</h3>
@@ -106,7 +170,6 @@
              </div>
              <p v-else class="text-gray-500">No education programs found for this institute.</p>
           </div>
-
           <!-- Teaching Centers Tab -->
           <div v-if="activeTab === 'centers'" class="bg-white p-8 rounded-2xl shadow-lg">
             <h3 class="text-2xl font-bold text-gray-900 mb-6">Teaching Centers</h3>
@@ -122,7 +185,6 @@
             </div>
             <p v-else class="text-gray-500">No teaching centers found for this institute.</p>
           </div>
-
           <!-- Faculty Tab -->
           <div v-if="activeTab === 'faculty'" class="bg-white p-8 rounded-2xl shadow-lg">
             <h3 class="text-2xl font-bold text-gray-900 mb-6">Faculty & Staff</h3>
@@ -148,7 +210,6 @@
             </div>
             <p v-else class="text-gray-500">No faculty or staff data found for this institute.</p>
           </div>
-
           <!-- CAPA Tab -->
           <div v-if="activeTab === 'capa'" class="bg-white p-8 rounded-2xl shadow-lg">
             <h3 class="text-2xl font-bold text-gray-900 mb-6">CAPA Reports</h3>
@@ -165,7 +226,6 @@
             </div>
             <p v-else class="text-gray-500">No CAPA reports found for this institute.</p>
           </div>
-
           <!-- Documents Tab -->
           <div v-if="activeTab === 'documents'" class="bg-white p-8 rounded-2xl shadow-lg">
             <h3 class="text-2xl font-bold text-gray-900 mb-6">Documents</h3>
@@ -249,6 +309,8 @@ import {
   ClipboardCheck,
   FileText,
   Loader,
+  Pencil,
+  Save,
 } from 'lucide-vue-next'
 
 const route = useRoute()
@@ -264,6 +326,11 @@ const capas = ref([])
 const isLoading = ref(true)
 const errorMessage = ref('')
 const activeTab = ref('overview')
+
+// State for editing functionality
+const isEditing = ref(false)
+const isSaving = ref(false)
+const editableInstitute = ref(null)
 
 const showCertificateModal = ref(false)
 const selectedCertificateData = ref(null)
@@ -315,7 +382,6 @@ const fetchProfileData = async () => {
       throw new Error('User CID not found. Please log in again.')
     }
 
-    // 1. Fetch main institute data
     const instituteResponse = await apiServices.getMhpcInstituteByCid(userCid)
     if (!instituteResponse.data?.results?.length) {
       throw new Error('Institute profile not found.')
@@ -323,7 +389,6 @@ const fetchProfileData = async () => {
     institute.value = instituteResponse.data.results[0]
     const instituteId = institute.value.id
 
-    // 2. Fetch related data in parallel
     const [
       programsResponse,
       centersResponse,
@@ -332,15 +397,14 @@ const fetchProfileData = async () => {
     ] = await Promise.all([
       apiServices.getMhpcProgramsOffered({ institute: instituteId }),
       apiServices.getMhpcTeachingCenterByCid(userCid),
-      apiServices.getMhpcTeachingFaculties(), // No institute filter available in API
-      apiServices.getMhpcCapas(), // Filtered by user on backend
+      apiServices.getMhpcTeachingFaculties(),
+      apiServices.getMhpcCapas(),
     ])
 
     programs.value = programsResponse.data?.results || []
     teachingCenters.value = centersResponse.data?.results || []
     capas.value = capaResponse.data?.results || []
     
-    // Client-side filter for faculty as API doesn't support it
     const allFaculty = facultyResponse.data?.results || []
     faculty.value = allFaculty.filter(f => f.institute === instituteId)
 
@@ -353,12 +417,71 @@ const fetchProfileData = async () => {
   }
 }
 
+const startEditing = () => {
+  editableInstitute.value = JSON.parse(JSON.stringify(institute.value))
+  isEditing.value = true
+}
+
+const cancelEdit = () => {
+  editableInstitute.value = null
+  isEditing.value = false
+}
+
+// ===================================================================
+// === CORRECTED saveChanges FUNCTION ================================
+// ===================================================================
+const saveChanges = async () => {
+  if (!editableInstitute.value) return;
+  isSaving.value = true;
+
+  // 1. CREATE A CLEAN PAYLOAD OBJECT
+  // Only include the fields that are actually editable on the form. This prevents
+  // sending read-only or nested object data back to the server, which can cause errors.
+  const payload = {
+    head_of_institution_name: editableInstitute.value.head_of_institution_name,
+    head_of_institution_email: editableInstitute.value.head_of_institution_email,
+    head_of_institution_phone_number: editableInstitute.value.head_of_institution_phone_number,
+    website: editableInstitute.value.website,
+    address: editableInstitute.value.address,
+    village: editableInstitute.value.village,
+    gewog: editableInstitute.value.gewog,
+    dzongkhag: editableInstitute.value.dzongkhag,
+  };
+
+  try {
+    // 2. SEND THE CLEAN PAYLOAD, not the entire editableInstitute object
+    const response = await apiServices.patchMhpcInstitute(
+      institute.value.id,
+      payload
+    );
+    
+    // 3. Update the main institute data with the successfully saved data from the server
+    institute.value = { ...response.data };
+    
+    toast.success('Institute profile updated successfully!');
+    isEditing.value = false;
+    editableInstitute.value = null;
+
+  } catch (error) {
+    console.error('Error updating institute profile:', error.response);
+    const errorMsg = error.response?.data?.detail || 
+                     (typeof error.response?.data === 'object' ? JSON.stringify(error.response.data) : null) || 
+                     'Failed to save changes. Please try again.';
+    toast.error(errorMsg);
+  } finally {
+    isSaving.value = false;
+  }
+};
+// ===================================================================
+// === END OF CORRECTED FUNCTION =====================================
+// ===================================================================
+
 const openCertificateModal = () => {
   if (!institute.value) return
   selectedCertificateData.value = {
     institute_name: institute.value.name_of_institution,
     valid_since: institute.value.valid_since,
-    last_renewal_date: null, // This data is not available in the institute profile
+    last_renewal_date: null,
     valid_till: institute.value.valid_till,
     target_category: programs.value.map((p) => p.specific_program_title).join(', ') || 'N/A',
   }
@@ -390,25 +513,29 @@ onMounted(() => {
 .btn-primary {
   @apply border-transparent bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500;
 }
+.btn-secondary {
+    @apply border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-indigo-500;
+}
+
+.form-input {
+    @apply mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm;
+}
 
 /* Certificate Modal Transition */
 .modal-certificate-fade-enter-active,
 .modal-certificate-fade-leave-active {
   transition: opacity 0.3s ease-in-out;
 }
-
 .modal-certificate-fade-enter-from,
 .modal-certificate-fade-leave-to {
   opacity: 0;
 }
-
 .modal-certificate-fade-enter-active .bg-white,
 .modal-certificate-fade-leave-active .bg-white {
   transition:
     opacity 0.3s ease-in-out,
     transform 0.3s ease-in-out;
 }
-
 .modal-certificate-fade-enter-from .bg-white,
 .modal-certificate-fade-leave-to .bg-white {
   opacity: 0;

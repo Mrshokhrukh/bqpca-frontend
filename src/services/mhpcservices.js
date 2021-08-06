@@ -1104,6 +1104,10 @@ export default {
   deleteMhpcClinicalPreceptor(id) {
     return apiClient.delete(`/mhpc/mhpc-clinical-preceptors/${id}/`)
   },
+  getEligiblePreceptors() {
+    return apiClient.get('/mhpc/preceptor-lookups/eligible-professionals/');
+  },
+
 
   reviewClinicalPreceptor(id, data) {
     return apiClient.patch(`/mhpc/mhpc-clinical-preceptors/${id}/review/`, data)
