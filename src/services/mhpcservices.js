@@ -796,9 +796,10 @@ export default {
     return apiClient.delete(`/mhpc/mhpc-teaching-centers/${id}/`)
   },
 
-  // --- NEW: Teaching Center Renewal Services (Corrected) ---
+  confirmInitialCenterPayment(centerId, paymentData) {
 
-  // Used by Institute Owner to submit a renewal
+    return apiClient.post(`/mhpc/mhpc-teaching-centers/${centerId}/confirm-initial-payment/`, paymentData);
+},
   createTeachingCenterRenewal(centerId, formData) {
     return apiClient.post(`/mhpc/mhpc-teaching-centers/${centerId}/renewals/`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
@@ -820,12 +821,9 @@ export default {
     return apiClient.post(`/mhpc/mhpc-all-tc-renewals/${renewalId}/reject/`, data);
   },
 
-  // Used after payment is completed
-  confirmRenewalPayment(renewalId, data) {
-    return apiClient.post(`/mhpc/mhpc-all-tc-renewals/${renewalId}/confirm-payment/`, data);
+  confirmRenewalPayment(teachingCenterId, renewalId, paymentData) {
+    return apiClient.post(`/mhpc/mhpc-teaching-centers/${teachingCenterId}/renewals/${renewalId}/confirm-payment/`, paymentData);
   },
-
-
   // MHPC CPD Records
   getMhpcCpdRecords() {
     return apiClient.get('/mhpc/mhpc-cpd-records/')
@@ -1043,6 +1041,10 @@ export default {
   },
   deleteMhpcProgramOffered(id) {
     return apiClient.delete(`/mhpc/mhpc-program-offered/${id}/`)
+  },
+  recordMhpcProgramPayment(programId, paymentData) {
+
+    return apiClient.post(`/mhpc/mhpc-program-offered/${programId}/record-payment/`, paymentData);
   },
 
   // --- MHPC Semester Endpoints ---
