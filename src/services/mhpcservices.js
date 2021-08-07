@@ -541,8 +541,8 @@ export default {
   },
 
   // MHPC Renewals Endpoints
-  getMhpcRenewals() {
-    return apiClient.get('/mhpc/mhpc-renewals/')
+  getMhpcRenewals(params = {}) {
+    return apiClient.get('/mhpc/mhpc-renewals/', { params })
   },
   createMhpcRenewal(data) {
     return apiClient.post('/mhpc/mhpc-renewals/', data)

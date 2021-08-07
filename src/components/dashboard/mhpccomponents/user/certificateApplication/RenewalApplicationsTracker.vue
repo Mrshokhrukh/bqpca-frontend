@@ -111,6 +111,7 @@
 </template>
 
 <script setup>
+import { defineProps, defineEmits } from 'vue'
 import { IdCard, Calendar, Clock, CreditCard, XCircle, ShieldCheck } from 'lucide-vue-next'
 import dayjs from 'dayjs'
 

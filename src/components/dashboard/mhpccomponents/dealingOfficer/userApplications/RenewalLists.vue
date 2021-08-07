@@ -219,7 +219,7 @@ const fetchAllData = async () => {
     const qMap = {}
     const qualifications = qualResponse?.data?.results ?? []
     qualifications.forEach((qual) => {
-      qMap[qual.id] = qual // Assuming 'qual.id' matches `renewal.user_qualification_id`
+      qMap[qual.id] = qual // Assuming 'qual.id' matches `renewal.user_qualification`
     })
     qualificationsMap.value = qMap
   } catch (error) {
@@ -236,7 +236,7 @@ onMounted(fetchAllData)
 const combinedData = computed(() => {
   return renewals.value
     .map((renewal) => {
-      const qualification = qualificationsMap.value[renewal.user_qualification_id] || {}
+      const qualification = qualificationsMap.value[renewal.user_qualification] || {}
 
       // ADDED: Check if the applicant is a counselor.
       // Adjust 'Counselor' if the category name is different in your system.
@@ -250,7 +250,7 @@ const combinedData = computed(() => {
         proposed_expiry_date: renewal.proposed_expiry_date,
         application_date: renewal.created_at,
         qualification_id: qualification.id,
-        full_name: qualification.application?.full_name || 'N/A',
+        full_name: qualification.applicant_name || 'N/A',
         cid_no: qualification.application?.cid_no || 'N/A',
         registration_no: qualification.registration_no || 'N/A',
         original_expiry_date: qualification.expiry_date,
