@@ -190,9 +190,6 @@
       </div>
     </div>
 
-    <!-- Modals (Confirmation, Add, Edit, View) -->
-    <!-- ... (all modal components remain unchanged) ... -->
-
   </div>
 </template>
 
