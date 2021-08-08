@@ -8,6 +8,7 @@
       class="bg-gray-50 p-6 md:p-8 rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col"
       @click.stop
     >
+      <!-- Header -->
       <div class="flex justify-between items-start mb-4">
         <div>
           <h2 class="text-2xl font-bold text-gray-800">Configure Education Program</h2>
@@ -24,6 +25,7 @@
         </button>
       </div>
 
+      <!-- Stepper -->
       <div class="w-full mb-6">
         <div class="flex items-center">
           <template v-for="(step, index) in steps" :key="step.id">
@@ -55,21 +57,23 @@
         </div>
       </div>
 
+      <!-- Form Content -->
       <div class="flex-grow overflow-y-auto -mr-4 pr-4 space-y-6">
         <div v-if="isLoadingMasters" class="flex flex-col items-center justify-center h-64">
           <LoaderCircle class="animate-spin w-12 h-12 text-indigo-600 mb-4" />
           <p class="text-gray-600">Loading configuration data...</p>
         </div>
 
+        <!-- Step 1: Select Program -->
         <div v-show="!isLoadingMasters && currentStep === 0">
           <h3 class="text-lg font-semibold text-gray-700 mb-2">Step 1: Select Program</h3>
           <p class="text-sm text-gray-500 mb-4">
-            Choose an approved program offering to configure. This will be the foundation for the
+            Choose an active program offering to configure. This will be the foundation for the
             semesters and modules you add.
           </p>
           <div class="p-4 bg-white border rounded-lg">
             <label for="approvedProgramOffered" class="block text-sm font-medium text-gray-700 mb-1"
-              >Approved Program Offering</label
+              >Active Program Offering</label
             >
             <select
               id="approvedProgramOffered"
@@ -81,8 +85,8 @@
               <option disabled value="">
                 {{
                   approvedProgramsOffered.length === 0
-                    ? 'No approved programs found'
-                    : 'Select an Approved Program'
+                    ? 'No active programs found'
+                    : 'Select an Active Program'
                 }}
               </option>
               <option
@@ -100,11 +104,12 @@
               v-if="!isLoadingMasters && approvedProgramsOffered.length === 0"
               class="text-xs text-red-500 mt-2"
             >
-              No 'Approved' programs found for this institute. New configurations cannot be added.
+              No 'ACTIVE' programs found for this institute. New configurations cannot be added.
             </p>
           </div>
         </div>
 
+        <!-- Step 2: Define Semesters -->
         <div v-show="!isLoadingMasters && currentStep === 1">
           <h3 class="text-lg font-semibold text-gray-700 mb-2">Step 2: Define Semesters</h3>
           <p class="text-sm text-gray-500 mb-4">
@@ -118,6 +123,21 @@
               class="flex items-center space-x-3 p-3 bg-gray-50 rounded-md border"
             >
               <span class="text-gray-500 font-semibold">{{ semIndex + 1 }}</span>
+              <!-- ======================================================= -->
+              <!-- === START: MODIFICATION 1 - Add Semester Number Input === -->
+              <!-- ======================================================= -->
+              <input
+                type="number"
+                v-model.number="semester.semesterNumber"
+                placeholder="No."
+                title="Semester Number (e.g., 1, 2, 3)"
+                required
+                min="1"
+                class="w-20 p-2 border border-gray-300 rounded-md shadow-sm sm:text-sm"
+              />
+              <!-- ======================================================= -->
+              <!-- === END: MODIFICATION 1 =============================== -->
+              <!-- ======================================================= -->
               <input
                 type="text"
                 v-model="semester.name"
@@ -137,6 +157,7 @@
               <button
                 type="button"
                 @click="removeSemester(semIndex)"
+                v-if="formData.semesters.length > 1"
                 class="p-2 text-red-500 hover:bg-red-100 rounded-full"
               >
                 <Trash2 class="h-4 w-4" />
@@ -152,11 +173,11 @@
           </div>
         </div>
 
+        <!-- Step 3: Assign Modules & Faculty -->
         <div v-show="!isLoadingMasters && currentStep === 2">
           <h3 class="text-lg font-semibold text-gray-700 mb-2">Step 3: Assign Modules & Faculty</h3>
           <p class="text-sm text-gray-500 mb-4">
-            For each semester, add the required modules, assign a faculty member, and specify the
-            number of students.
+            For each semester, add modules, assign faculty members, and specify student counts.
           </p>
           <div class="space-y-3">
             <div
@@ -166,7 +187,7 @@
             >
               <div class="p-4 bg-gray-50 border-b">
                 <h4 class="font-semibold text-gray-800">
-                  Semester: {{ semester.name || `Semester ${semIndex + 1}` }} ({{
+                  Semester {{ semester.semesterNumber }}: {{ semester.name || `Semester ${semIndex + 1}` }} ({{
                     semester.academicYear
                   }})
                 </h4>
@@ -174,7 +195,7 @@
               <div class="p-4 space-y-4">
                 <div
                   v-for="(moduleItem, modIndex) in semester.modules"
-                  :key="modIndex"
+                  :key="moduleItem.uuid"
                   class="grid grid-cols-1 md:grid-cols-3 gap-4 p-3 border border-dashed rounded-md relative"
                 >
                   <button
@@ -205,27 +226,41 @@
                       </option>
                     </select>
                   </div>
-                  <div>
+                  <div class="flex flex-col">
                     <label class="block text-xs font-medium text-gray-600 mb-1"
                       >Faculty <span class="text-red-500">*</span></label
                     >
-                    <select
-                      v-model="moduleItem.facultyId"
-                      required
-                      class="w-full p-2 border border-gray-300 rounded-md shadow-sm sm:text-xs"
-                      :disabled="allFacultiesMaster.length === 0"
-                    >
-                      <option disabled value="">
-                        {{ allFacultiesMaster.length === 0 ? 'No faculty' : 'Select Faculty' }}
-                      </option>
-                      <option
-                        v-for="faculty in allFacultiesMaster"
-                        :key="faculty.id"
-                        :value="faculty.id"
-                      >
-                        {{ faculty.faculty_name }}
-                      </option>
-                    </select>
+                    <div class="flex-grow bg-white border border-gray-300 rounded-md shadow-sm flex flex-col">
+                      <div class="p-2 border-b">
+                        <input
+                          type="text"
+                          v-model="moduleItem.facultySearch"
+                          placeholder="Search faculty..."
+                          class="w-full p-1.5 border border-gray-200 rounded-md sm:text-xs"
+                        />
+                      </div>
+                      <div class="overflow-y-auto h-24 p-2 space-y-1">
+                        <p v-if="getFilteredFaculty(moduleItem).length === 0" class="text-xs text-gray-500 text-center py-2">No match found.</p>
+                        <label
+                          v-for="faculty in getFilteredFaculty(moduleItem)"
+                          :key="faculty.id"
+                          class="flex items-center space-x-2 p-1.5 rounded hover:bg-indigo-50 cursor-pointer"
+                        >
+                          <input
+                            type="checkbox"
+                            :value="faculty.id"
+                            v-model="moduleItem.facultyIds"
+                            class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                          />
+                          <span class="text-xs text-gray-700">{{ faculty.faculty_name }}</span>
+                        </label>
+                      </div>
+                      <div class="p-1 border-t text-center">
+                         <button type="button" @click="toggleSelectAllFaculty(moduleItem)" class="text-xs text-indigo-600 hover:underline">
+                            {{ areAllFilteredSelected(moduleItem) ? 'Deselect All' : 'Select All' }}
+                        </button>
+                      </div>
+                    </div>
                   </div>
                   <div>
                     <label class="block text-xs font-medium text-gray-600 mb-1"
@@ -253,6 +288,7 @@
         </div>
       </div>
 
+      <!-- Footer / Actions -->
       <div class="flex justify-between items-center pt-6 mt-4 border-t border-gray-200">
         <button
           type="button"
@@ -293,28 +329,61 @@ import { useAuthStore } from '@/stores/authStore';
 import { Check, X, Plus, Trash2, LoaderCircle } from 'lucide-vue-next';
 import { useToast } from 'vue-toastification';
 
+// Props and Emits
 const props = defineProps({
   isOpen: Boolean,
   currentUserInstituteId: [String, Number, null],
   currentInstituteName: [String, null],
 });
 const emit = defineEmits(['close', 'program-configured']);
-const toast = useToast();
 
+// Composables
+const toast = useToast();
+const authStore = useAuthStore();
+
+// State
 const isLoadingMasters = ref(false);
 const isSubmitting = ref(false);
 const approvedProgramsOffered = ref([]);
 const moduleMastersForDropdown = ref([]);
 const allFacultiesMaster = ref([]);
-
-const authStore = useAuthStore();
 const currentStep = ref(0);
 const steps = [
   { id: 1, name: 'Program' },
   { id: 2, name: 'Semesters' },
-  { id: 3, name: 'Modules' },
+  { id: 3, name: 'Modules & Faculty' },
 ];
 
+// --- DATA STRUCTURES & HELPERS ---
+const createNewModule = () => ({
+  uuid: crypto.randomUUID(),
+  moduleMasterId: '',
+  facultyIds: [],
+  numberOfStudents: 10,
+  facultySearch: '',
+});
+
+// ==========================================================
+// === START: MODIFICATION 2 - Update createNewSemester() ===
+// ==========================================================
+const createNewSemester = () => ({
+  name: '',
+  academicYear: new Date().getFullYear(),
+  semesterNumber: 1, // Add this line with a default value
+  modules: [createNewModule()],
+});
+// ==========================================================
+// === END: MODIFICATION 2 ================================
+// ==========================================================
+
+const initialFormData = () => ({
+  selectedProgramOfferedId: '',
+  semesters: [],
+});
+
+const formData = ref(initialFormData());
+
+// --- STEPPER LOGIC ---
 const getStepClass = index => {
   if (currentStep.value > index) return 'bg-green-600 text-white';
   if (currentStep.value === index) return 'bg-indigo-600 text-white scale-110';
@@ -322,13 +391,22 @@ const getStepClass = index => {
 };
 
 const nextStep = () => {
-  if (currentStep.value < steps.length - 1) currentStep.value++;
+  if (isStepValid(currentStep.value) && currentStep.value < steps.length - 1) {
+    if (currentStep.value === 0 && formData.value.semesters.length === 0) {
+      addSemester();
+    }
+    currentStep.value++;
+  } else if (!isStepValid(currentStep.value)) {
+    toast.warning('Please complete the current step before proceeding.');
+  }
 };
 const prevStep = () => {
   if (currentStep.value > 0) currentStep.value--;
 };
 const setStep = index => {
-  if (isStepValid(index - 1)) currentStep.value = index;
+  if (index < currentStep.value) {
+    currentStep.value = index;
+  }
 };
 
 const isStepValid = stepIndex => {
@@ -336,21 +414,31 @@ const isStepValid = stepIndex => {
     case 0:
       return !!formData.value.selectedProgramOfferedId;
     case 1:
+      // ==========================================================
+      // === START: MODIFICATION 4 - Update Validation Logic    ===
+      // ==========================================================
       return (
         formData.value.semesters.length > 0 &&
-        formData.value.semesters.every(s => s.name && s.academicYear)
+        formData.value.semesters.every(s => s.name && s.academicYear >= 2000 && s.semesterNumber > 0)
       );
+      // ==========================================================
+      // === END: MODIFICATION 4 ================================
+      // ==========================================================
     case 2:
+      if (formData.value.semesters.length === 0) return false;
       return formData.value.semesters.every(
         s =>
           s.modules.length > 0 &&
-          s.modules.every(m => m.moduleMasterId && m.facultyId && m.numberOfStudents > 0)
+          s.modules.every(
+            m => m.moduleMasterId && m.facultyIds.length > 0 && m.numberOfStudents > 0
+          )
       );
     default:
-      return true;
+      return false;
   }
 };
 
+// --- DATA FETCHING ---
 const fetchMasterData = async () => {
   if (!props.currentUserInstituteId) return;
   isLoadingMasters.value = true;
@@ -358,29 +446,18 @@ const fetchMasterData = async () => {
     const [programsRes, modulesRes, facultiesRes] = await Promise.all([
       apiServices.getMhpcProgramsOffered({
         institute: props.currentUserInstituteId,
-        status: 'Approved',
-        expand: 'program_master',
+        status: 'ACTIVE',
       }),
-      apiServices.getMhpcModules({ expand: 'module_master' }),
+      apiServices.getMhpcModuleMasters(),
       apiServices.getMhpcTeachingFaculties({ institute: props.currentUserInstituteId }),
     ]);
 
     approvedProgramsOffered.value = (programsRes.data.results || []).sort((a, b) =>
       (a.program_master?.program_name || '').localeCompare(b.program_master?.program_name || '')
     );
-
-    const rawModules = modulesRes.data.results || [];
-    const uniqueMasters = new Map();
-    rawModules.forEach(moduleInstance => {
-      const master = moduleInstance.module_master;
-      if (master && !uniqueMasters.has(master.id)) {
-        uniqueMasters.set(master.id, master);
-      }
-    });
-    moduleMastersForDropdown.value = Array.from(uniqueMasters.values()).sort((a, b) =>
+    moduleMastersForDropdown.value = (modulesRes.data.results || []).sort((a, b) =>
       (a.module_name || '').localeCompare(b.module_name || '')
     );
-
     allFacultiesMaster.value = (facultiesRes.data.results || []).sort((a, b) =>
       (a.faculty_name || '').localeCompare(b.faculty_name || '')
     );
@@ -392,9 +469,6 @@ const fetchMasterData = async () => {
   }
 };
 
-onMounted(() => {
-  if (props.isOpen) fetchMasterData();
-});
 watch(
   () => props.isOpen,
   newVal => {
@@ -405,20 +479,21 @@ watch(
   }
 );
 
-const initialFormData = () => ({ selectedProgramOfferedId: '', semesters: [] });
-const formData = ref(initialFormData());
+// --- FORM MANIPULATION ---
+const addSemester = () => {
+  formData.value.semesters.push(createNewSemester());
+};
+const removeSemester = semIndex => {
+  if (formData.value.semesters.length > 1) {
+    formData.value.semesters.splice(semIndex, 1);
+  } else {
+    toast.error('The program must have at least one semester.');
+  }
+};
 
-const createNewModule = () => ({ moduleMasterId: '', facultyId: '', numberOfStudents: 10 });
-const createNewSemester = () => ({
-  name: '',
-  academicYear: new Date().getFullYear(),
-  modules: [createNewModule()],
-});
-
-const addSemester = () => formData.value.semesters.push(createNewSemester());
-const removeSemester = semIndex => formData.value.semesters.splice(semIndex, 1);
-
-const addModule = semIndex => formData.value.semesters[semIndex]?.modules.push(createNewModule());
+const addModule = semIndex => {
+  formData.value.semesters[semIndex]?.modules.push(createNewModule());
+};
 const removeModule = (semIndex, modIndex) => {
   if (formData.value.semesters[semIndex]?.modules.length > 1) {
     formData.value.semesters[semIndex].modules.splice(modIndex, 1);
@@ -427,6 +502,36 @@ const removeModule = (semIndex, modIndex) => {
   }
 };
 
+// --- FACULTY SELECTOR LOGIC ---
+const getFilteredFaculty = (moduleItem) => {
+  if (!moduleItem.facultySearch) {
+    return allFacultiesMaster.value;
+  }
+  const searchTerm = moduleItem.facultySearch.toLowerCase();
+  return allFacultiesMaster.value.filter(faculty =>
+    faculty.faculty_name.toLowerCase().includes(searchTerm)
+  );
+};
+
+const areAllFilteredSelected = (moduleItem) => {
+    const filtered = getFilteredFaculty(moduleItem);
+    if (filtered.length === 0) return false;
+    return filtered.every(f => moduleItem.facultyIds.includes(f.id));
+}
+
+const toggleSelectAllFaculty = (moduleItem) => {
+    const filteredFaculty = getFilteredFaculty(moduleItem);
+    const filteredIds = filteredFaculty.map(f => f.id);
+
+    if (areAllFilteredSelected(moduleItem)) {
+        moduleItem.facultyIds = moduleItem.facultyIds.filter(id => !filteredIds.includes(id));
+    } else {
+        const idsToAdd = filteredIds.filter(id => !moduleItem.facultyIds.includes(id));
+        moduleItem.facultyIds.push(...idsToAdd);
+    }
+}
+
+// --- MODAL & SUBMISSION LOGIC ---
 const closeModal = () => emit('close');
 const resetForm = () => {
   formData.value = initialFormData();
@@ -438,29 +543,41 @@ const handleSubmit = async () => {
     toast.error('Please ensure all fields are filled correctly before saving.');
     return;
   }
-
   isSubmitting.value = true;
   try {
+    // ==========================================================
+    // === START: MODIFICATION 3 - Update handleSubmit Payload ===
+    // ==========================================================
     const payload = {
+      program_offered_id: formData.value.selectedProgramOfferedId,
       semesters: formData.value.semesters.map(semester => ({
         name: semester.name,
-        academicYear: semester.academicYear,
+        academic_year: semester.academicYear,
+        semester_number: semester.semesterNumber, // <-- ADD THIS LINE
         modules: semester.modules.map(moduleItem => ({
-          moduleMasterId: moduleItem.moduleMasterId,
-          facultyId: moduleItem.facultyId,
-          numberOfStudents: moduleItem.numberOfStudents,
+          module_master_id: moduleItem.moduleMasterId,
+          faculty_ids: moduleItem.facultyIds,
+          student_count: moduleItem.numberOfStudents,
         })),
       })),
     };
-
-    await apiServices.configureProgramForOffered(formData.value.selectedProgramOfferedId, payload);
+    // ==========================================================
+    // === END: MODIFICATION 3 ================================
+    // ==========================================================
+    await apiServices.bulkCreateModuleFacultyAssignments(payload);
 
     toast.success('Program configuration saved successfully!');
     emit('program-configured', { id: formData.value.selectedProgramOfferedId });
     closeModal();
+
   } catch (error) {
     console.error('Error saving program configuration:', error);
-    toast.error(`Failed to save program configuration: ${error.message}`);
+    const errorMessage =
+      error.response?.data?.error ||
+      JSON.stringify(error.response?.data) ||
+      error.message ||
+      'An unknown error occurred.';
+    toast.error(`Failed to save: ${errorMessage}`);
   } finally {
     isSubmitting.value = false;
   }
@@ -468,18 +585,19 @@ const handleSubmit = async () => {
 </script>
 
 <style scoped>
+/* Custom scrollbar for better aesthetics in faculty list */
 .overflow-y-auto::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 .overflow-y-auto::-webkit-scrollbar-track {
   background: #f1f1f1;
   border-radius: 10px;
 }
 .overflow-y-auto::-webkit-scrollbar-thumb {
-  background: #a8a8a8;
+  background: #c5c5c5;
   border-radius: 10px;
 }
 .overflow-y-auto::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: #a8a8a8;
 }
 </style>

@@ -2,13 +2,22 @@
   <div class="assignments-display">
     <header class="page-header">
       <h1>Faculty Assignment Matrix</h1>
-      <p>An interactive matrix of faculty assignments, grouped by institution.</p>
+      <p>An interactive matrix of all faculty assignments, grouped by institution.</p>
     </header>
 
     <div class="controls-wrapper">
       <div class="search-input-container">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="search-icon"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
         <input type="text" v-model="searchTerm" placeholder="Search modules, faculty, programs..." class="search-input"/>
+      </div>
+      <div class="filter-container">
+        <label for="institute-filter" class="filter-label">Filter by Institute:</label>
+        <select id="institute-filter" v-model="selectedInstitute" class="filter-select">
+          <option value="">All Institutes</option>
+          <option v-for="institute in allInstitutes" :key="institute.id" :value="institute.name_of_institution">
+            {{ institute.name_of_institution }}
+          </option>
+        </select>
       </div>
     </div>
 
@@ -34,36 +43,18 @@
               <tr>
                 <th @click="sortBy('moduleName')" class="sortable">
                   <span>Module</span>
-                  <span class="sort-icon-container">
-                    <svg v-if="sortKey !== 'moduleName'" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>
-                    <svg v-if="sortKey === 'moduleName' && sortOrder === 'asc'" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-                    <svg v-if="sortKey === 'moduleName' && sortOrder === 'desc'" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
-                  </span>
                 </th>
                 <th @click="sortBy('program')" class="sortable">
                   <span>Program</span>
-                   <span class="sort-icon-container">
-                    <svg v-if="sortKey !== 'program'" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>
-                    <svg v-if="sortKey === 'program' && sortOrder === 'asc'" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-                    <svg v-if="sortKey === 'program' && sortOrder === 'desc'" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
-                  </span>
                 </th>
                 <th @click="sortBy('facultyName')" class="sortable">
                   <span>Faculty</span>
-                   <span class="sort-icon-container">
-                    <svg v-if="sortKey !== 'facultyName'" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>
-                    <svg v-if="sortKey === 'facultyName' && sortOrder === 'asc'" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-                    <svg v-if="sortKey === 'facultyName' && sortOrder === 'desc'" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
-                  </span>
                 </th>
                 <th @click="sortBy('studentCount')" class="sortable text-center">
                   <span>Students</span>
-                   <span class="sort-icon-container">
-                    <svg v-if="sortKey !== 'studentCount'" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>
-                    <svg v-if="sortKey === 'studentCount' && sortOrder === 'asc'" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-                    <svg v-if="sortKey === 'studentCount' && sortOrder === 'desc'" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
-                  </span>
                 </th>
+                <!-- REMARKS HEADER -->
+                <th class="remarks-header-cell">Dealing Officer Remarks</th>
               </tr>
             </thead>
             <tbody>
@@ -98,24 +89,21 @@
                     <span>{{ item.studentCount }}</span>
                   </div>
                 </td>
+                <!-- REMARKS CELL WITH EDITABLE TEXTAREA -->
+                <td class="remarks-cell">
+                  <textarea
+                    v-model="item.remarks"
+                    placeholder="Add a remark..."
+                    class="remarks-input"
+                    rows="2"
+                    :disabled="item.isSavingRemarks"
+                    @blur="saveRemark(item)"
+                  ></textarea>
+                  <span v-if="item.isSavingRemarks" class="saving-indicator">Saving...</span>
+                </td>
               </tr>
             </tbody>
           </table>
-        </div>
-        <div class="remarks-section">
-          <h3 class="remarks-header">Dealing Officer's Remarks</h3>
-          <textarea
-            v-model="group.remarks"
-            placeholder="Enter remarks for this program distribution..."
-            class="remarks-textarea"
-          ></textarea>
-          <button
-            @click="saveRemarks(group.programOfferedId, group.remarks)"
-            class="save-remarks-button"
-            :disabled="group.isSaving"
-          >
-            {{ group.isSaving ? 'Saving...' : 'Save Remarks' }}
-          </button>
         </div>
       </div>
     </div>
@@ -136,23 +124,28 @@ import { useToast } from 'vue-toastification';
 const toast = useToast();
 
 const rawAssignments = ref([]);
-const programsOffered = ref([]);
+const allInstitutes = ref([]);
 const loading = ref(true);
 const error = ref(null);
 const searchTerm = ref('');
+const selectedInstitute = ref('');
 const sortKey = ref('facultyName');
 const sortOrder = ref('asc');
+
+// This map stores the original remark for each assignment to check if it has changed
+const originalRemarks = new Map();
 
 const fetchData = async () => {
   loading.value = true;
   error.value = null;
   try {
-    const [assignmentsResponse, programsResponse] = await Promise.all([
+    // Note: Removed programsResponse as it's no longer needed for group remarks
+    const [assignmentsResponse, institutesResponse] = await Promise.all([
       apiServices.getMhpcFacultyAssignments(),
-      apiServices.getMhpcProgramOffered()
+      apiServices.getMhpcInstitutes()
     ]);
-    rawAssignments.value = assignmentsResponse.data.results;
-    programsOffered.value = programsResponse.data.results;
+    rawAssignments.value = assignmentsResponse.data.results || [];
+    allInstitutes.value = institutesResponse.data.results || [];
   } catch (err) {
     console.error('Failed to fetch data:', err);
     error.value = 'Could not retrieve data. Please check your connection and try again.';
@@ -164,20 +157,35 @@ const fetchData = async () => {
 const processedAssignments = computed(() => {
   if (!rawAssignments.value) return [];
 
-  let flattened = rawAssignments.value.map(item => ({
-    id: item.id,
-    institute: item.module?.semester?.program_offered?.institute?.name_of_institution || 'Unknown Institute',
-    program: item.module?.semester?.program_offered?.program_master?.program_name || 'N/A',
-    programOfferedId: item.module?.semester?.program_offered?.id,
-    semester: item.module?.semester?.semester_number || 'N/A',
-    moduleName: item.module?.module_master?.module_name || 'N/A',
-    moduleCode: item.module?.module_master?.module_code || 'N/A',
-    facultyName: item.faculty?.faculty_name || 'Unassigned',
-    facultyDesignation: item.faculty?.designation || 'N/A',
-    isPrimary: item.is_primary_instructor,
-    studentCount: item.module?.student_count ?? 0,
-  }));
+  let flattened = rawAssignments.value.map(item => {
+    const processedItem = {
+      id: item.id,
+      institute: item.module?.semester?.program_offered?.institute?.name_of_institution || 'Unknown Institute',
+      program: item.module?.semester?.program_offered?.program_master?.program_name || 'N/A',
+      semester: item.module?.semester?.semester_number || 'N/A',
+      moduleName: item.module?.module_master?.module_name || 'N/A',
+      moduleCode: item.module?.module_master?.module_code || 'N/A',
+      facultyName: item.faculty?.faculty_name || 'Unassigned',
+      facultyDesignation: item.faculty?.designation || 'N/A',
+      isPrimary: item.is_primary_instructor,
+      studentCount: item.module?.student_count ?? 0,
+      // Add the remarks field and a state for the saving indicator
+      remarks: item.remarks || '',
+      isSavingRemarks: false,
+    };
 
+    // Store the initial remark value to check for changes later
+    if (!originalRemarks.has(processedItem.id)) {
+      originalRemarks.set(processedItem.id, processedItem.remarks);
+    }
+
+    return processedItem;
+  });
+
+  // Filter logic
+  if (selectedInstitute.value) {
+    flattened = flattened.filter(item => item.institute === selectedInstitute.value);
+  }
   if (searchTerm.value) {
     const lowerCaseSearch = searchTerm.value.toLowerCase();
     flattened = flattened.filter(item =>
@@ -187,19 +195,17 @@ const processedAssignments = computed(() => {
     );
   }
 
+  // Sort logic
   flattened.sort((a, b) => {
     let valA = a[sortKey.value];
     let valB = b[sortKey.value];
-
     if (typeof valA === 'string') {
         valA = valA.toLowerCase();
         valB = valB.toLowerCase();
     }
-
     let result = 0;
     if (valA < valB) result = -1;
     else if (valA > valB) result = 1;
-
     return sortOrder.value === 'asc' ? result : -result;
   });
 
@@ -207,22 +213,14 @@ const processedAssignments = computed(() => {
 });
 
 const groupedAssignments = computed(() => {
-  const groups = processedAssignments.value.reduce((acc, item) => {
+  return processedAssignments.value.reduce((acc, item) => {
     const groupName = item.institute;
     if (!acc[groupName]) {
-      const program = programsOffered.value.find(p => p.id === item.programOfferedId);
-      acc[groupName] = {
-        assignments: [],
-        programOfferedId: item.programOfferedId,
-        remarks: ref(program?.distribution_remarks || ''),
-        isSaving: ref(false)
-      };
+      acc[groupName] = { assignments: [] };
     }
     acc[groupName].assignments.push(item);
     return acc;
   }, {});
-
-  return groups;
 });
 
 const sortBy = (key) => {
@@ -234,19 +232,32 @@ const sortBy = (key) => {
   }
 };
 
-const saveRemarks = async (programOfferedId, remarks) => {
-  const group = Object.values(groupedAssignments.value).find(g => g.programOfferedId === programOfferedId);
-  if (!group) return;
+/**
+ * Saves the remark for an individual faculty assignment.
+ * Triggered on blur from the textarea.
+ */
+const saveRemark = async (item) => {
+  // Only save if the remark has actually changed
+  if (item.remarks === originalRemarks.get(item.id)) {
+    return;
+  }
 
-  group.isSaving = true;
+  item.isSavingRemarks = true;
   try {
-    await apiServices.patchMhpcProgramOffered(programOfferedId, { distribution_remarks: remarks });
-    toast.success('Remarks saved successfully!', { position: 'top-right' });
+    // This API service function must be created to PATCH a single assignment
+    await apiServices.patchMhpcFacultyAssignment(item.id, { remarks: item.remarks });
+
+    // Update the 'original' value so we don't re-save unnecessarily
+    originalRemarks.set(item.id, item.remarks);
+
+    toast.success(`Remark for "${item.moduleName}" saved.`, { timeout: 2500 });
   } catch (err) {
-    console.error('Failed to save remarks:', err);
-    toast.error('Failed to save remarks.', { position: 'top-right' });
+    console.error('Failed to save remark:', err);
+    toast.error('Could not save the remark. Changes have been reverted.');
+    // Revert to original value on error to keep UI consistent with backend
+    item.remarks = originalRemarks.get(item.id);
   } finally {
-    group.isSaving = false;
+    item.isSavingRemarks = false;
   }
 };
 
@@ -254,7 +265,7 @@ onMounted(fetchData);
 </script>
 
 <style scoped>
-/* --- THEME & FONT --- */
+/* Paste your existing styles here, then add the new styles below */
 .assignments-display {
   --color-brand: #4338ca;
   --color-brand-light: #eef2ff;
@@ -275,7 +286,6 @@ onMounted(fetchData);
   color: var(--color-text-primary);
 }
 
-/* --- HEADER --- */
 .page-header {
   margin-bottom: 2rem;
 }
@@ -289,10 +299,36 @@ onMounted(fetchData);
   font-size: 1.1rem;
 }
 
-/* --- CONTROLS --- */
 .controls-wrapper {
   margin-bottom: 2rem;
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
 }
+.filter-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.filter-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+.filter-select {
+  padding: 10px 14px;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-border);
+  font-size: 1rem;
+  background-color: var(--color-surface);
+  min-width: 250px;
+}
+.filter-select:focus {
+  outline: none;
+  border-color: var(--color-brand);
+  box-shadow: 0 0 0 3px rgba(67, 56, 202, 0.2);
+}
+
 .search-input-container {
   position: relative;
 }
@@ -320,7 +356,6 @@ onMounted(fetchData);
   box-shadow: 0 0 0 3px rgba(67, 56, 202, 0.2);
 }
 
-/* --- GROUPING & CARDS --- */
 .groups-container {
   display: grid;
   gap: 2rem;
@@ -338,6 +373,7 @@ onMounted(fetchData);
   gap: 0.75rem;
   padding: 1rem 1.5rem;
   border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-brand-light);
 }
 .institute-header .header-icon {
   color: var(--color-brand);
@@ -345,9 +381,9 @@ onMounted(fetchData);
 .institute-header h2 {
   font-size: 1.25rem;
   font-weight: 600;
+  color: var(--color-brand);
 }
 
-/* --- TABLE --- */
 .table-wrapper {
   overflow-x: auto;
 }
@@ -381,18 +417,6 @@ onMounted(fetchData);
   align-items: center;
   gap: 0.5rem;
 }
-.sort-icon-container {
-  color: var(--color-text-tertiary);
-}
-.assignments-table th.sortable:hover .sort-icon-container {
-  color: var(--color-text-secondary);
-}
-.sort-icon-container svg {
-  transition: transform 0.2s;
-}
-.assignments-table th.sortable:hover .sort-icon-container svg {
-  transform: scale(1.1);
-}
 .assignments-table tbody tr:last-child td {
   border-bottom: none;
 }
@@ -400,10 +424,9 @@ onMounted(fetchData);
   transition: background-color 0.15s ease-in-out;
 }
 .assignments-table tbody tr:hover {
-  background-color: var(--color-brand-light);
+  background-color: #f7f7f8;
 }
 
-/* --- CELL STYLES --- */
 .cell-content {
   display: flex;
   flex-direction: column;
@@ -425,8 +448,8 @@ onMounted(fetchData);
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-  background-color: var(--color-brand-light);
-  color: var(--color-brand);
+  background-color: #dcfce7;
+  color: #166534;
   font-weight: 500;
   padding: 3px 8px;
   border-radius: 999px;
@@ -442,60 +465,13 @@ onMounted(fetchData);
   color: var(--color-text-secondary);
 }
 .student-count-cell span {
-  min-width: 2ch; /* Ensures alignment */
+  min-width: 2ch;
   text-align: left;
 }
 .text-center {
   text-align: center;
 }
 
-/* --- REMARKS SECTION --- */
-.remarks-section {
-  padding: 1.5rem;
-  border-top: 1px solid var(--color-border);
-  background-color: #fcfcfd;
-}
-.remarks-header {
-  font-size: 1rem;
-  font-weight: 600;
-  margin-bottom: 0.75rem;
-}
-.remarks-textarea {
-  width: 100%;
-  min-height: 100px;
-  padding: 12px;
-  border-radius: 0.5rem;
-  border: 1px solid var(--color-border);
-  font-size: 1rem;
-  transition: box-shadow 0.2s, border-color 0.2s;
-  background-color: var(--color-surface);
-  resize: vertical;
-}
-.remarks-textarea:focus {
-  outline: none;
-  border-color: var(--color-brand);
-  box-shadow: 0 0 0 3px rgba(67, 56, 202, 0.2);
-}
-.save-remarks-button {
-  margin-top: 1rem;
-  padding: 10px 20px;
-  border: none;
-  background-color: var(--color-brand);
-  color: white;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  font-weight: 500;
-  transition: background-color 0.2s, opacity 0.2s;
-}
-.save-remarks-button:hover {
-  background-color: #3730a3;
-}
-.save-remarks-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* --- STATE CARDS --- */
 .state-card {
   text-align: center;
   padding: 4rem 2rem;
@@ -525,5 +501,60 @@ onMounted(fetchData);
 }
 .retry-button:hover {
   background-color: #3730a3;
+}
+
+/* --- NEW STYLES FOR IN-ROW REMARKS --- */
+.remarks-header-cell {
+  min-width: 250px;
+  text-align: left;
+}
+
+.remarks-cell {
+  vertical-align: top;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  position: relative;
+  white-space: normal;
+}
+
+.remarks-input {
+  width: 100%;
+  border: 1px solid transparent;
+  background-color: transparent;
+  padding: 8px;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  resize: vertical;
+  transition: all 0.2s ease-in-out;
+  min-height: 50px;
+}
+
+.remarks-input:hover {
+  border-color: var(--color-border);
+  background-color: var(--color-surface);
+}
+
+.remarks-input:focus {
+  outline: none;
+  border-color: var(--color-brand);
+  background-color: var(--color-surface);
+  box-shadow: 0 0 0 3px rgba(67, 56, 202, 0.1);
+}
+
+.remarks-input:disabled {
+  opacity: 0.7;
+  cursor: wait;
+  background-color: #f7f7f8;
+}
+
+.saving-indicator {
+  position: absolute;
+  bottom: 12px;
+  right: 20px;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  font-style: italic;
+  pointer-events: none; /* Make sure it doesn't interfere with clicks */
 }
 </style>

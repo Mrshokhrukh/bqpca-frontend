@@ -797,34 +797,46 @@ export default {
   },
 
   confirmInitialCenterPayment(centerId, paymentData) {
+    return apiClient.post(
+      `/mhpc/mhpc-teaching-centers/${centerId}/confirm-initial-payment/`,
+      paymentData,
+    )
+  },
 
-    return apiClient.post(`/mhpc/mhpc-teaching-centers/${centerId}/confirm-initial-payment/`, paymentData);
-},
+
   createTeachingCenterRenewal(centerId, formData) {
     return apiClient.post(`/mhpc/mhpc-teaching-centers/${centerId}/renewals/`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
-    });
+    })
   },
 
-  // Used by Dealing Officer to get all renewals
-  getAllTeachingCenterRenewals() {
-    return apiClient.get('/mhpc/mhpc-all-tc-renewals/');
+
+  confirmTeachingCenterRenewalPayment(centerId, renewalId, paymentData) {
+    if (!centerId || !renewalId) {
+      return Promise.reject(
+        new Error('Center ID and Renewal ID are required for payment confirmation.'),
+      )
+    }
+    return apiClient.post(
+      `/mhpc/mhpc-teaching-centers/${centerId}/renewals/${renewalId}/confirm-payment/`,
+      paymentData,
+    )
   },
 
-  // Used by Dealing Officer to approve a renewal
+
+  getAllTeachingCenterRenewals(params = {}) {
+    return apiClient.get('/mhpc/admin-renewals/', { params })
+  },
+
+
   approveTeachingCenterRenewal(renewalId, data) {
-    return apiClient.post(`/mhpc/mhpc-all-tc-renewals/${renewalId}/approve/`, data);
+    return apiClient.post(`/mhpc/admin-renewals/${renewalId}/approve/`, data)
   },
 
-  // Used by Dealing Officer to reject a renewal
   rejectTeachingCenterRenewal(renewalId, data) {
-    return apiClient.post(`/mhpc/mhpc-all-tc-renewals/${renewalId}/reject/`, data);
+    return apiClient.post(`/mhpc/admin-renewals/${renewalId}/reject/`, data)
   },
 
-  confirmRenewalPayment(teachingCenterId, renewalId, paymentData) {
-    return apiClient.post(`/mhpc/mhpc-teaching-centers/${teachingCenterId}/renewals/${renewalId}/confirm-payment/`, paymentData);
-  },
-  // MHPC CPD Records
   getMhpcCpdRecords() {
     return apiClient.get('/mhpc/mhpc-cpd-records/')
   },
@@ -999,6 +1011,29 @@ export default {
   deleteMhpcModule(id) {
     return apiClient.delete(`/mhpc/mhpc-module/${id}/`)
   },
+  getMhpcModuleMasters() {
+
+    return apiClient.get('/mhpc/mhpc-module-masters/')
+  },
+  bulkCreateModuleFacultyAssignments(payload) {
+    // This correctly calls /mhpc/mhpc-faculty-assignment/bulk-configure/
+    return apiClient.post('/mhpc/mhpc-faculty-assignment/bulk-configure/', payload);
+  },
+  /**
+   * (NEW FUNCTION TO ADD)
+   * Used by the dealing officer to update a single faculty assignment.
+   * This is perfect for adding/editing remarks.
+   * Calls the standard 'partial_update' (PATCH) endpoint for the ViewSet.
+   * @param {number} assignmentId - The ID of the specific assignment to update.
+   * @param {object} data - The fields to update, e.g., { remarks: "This is a new remark." }
+   * @returns {Promise}
+   */
+  patchMhpcFacultyAssignment(assignmentId, data) {
+    // The URL targets a specific assignment ID, e.g., /mhpc/mhpc-faculty-assignment/123/
+    return apiClient.patch(`/mhpc/mhpc-faculty-assignment/${assignmentId}/`, data);
+  },
+  
+
 
   // --- MHPC Program Master Endpoints ---
   getMhpcProgramMasters() {

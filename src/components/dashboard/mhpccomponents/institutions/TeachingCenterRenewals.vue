@@ -783,16 +783,18 @@ const handlePaymentCompleted = async (paymentData) => {
 
   try {
     if (isForRenewal) {
-    const renewalId = selectedCenter.value.latest_renewal.id;
-    const teachingCenterId = selectedCenter.value.id; 
+      // =================== THIS IS THE FIX ===================
+      const renewalId = selectedCenter.value.latest_renewal.id;
+      const centerId = selectedCenter.value.id; // Get the center ID
 
-    await apiServices.confirmRenewalPayment(teachingCenterId, renewalId, payload);
+      // ✅ FIXED: Calling the new API service function with BOTH IDs
+      await apiServices.confirmTeachingCenterRenewalPayment(centerId, renewalId, payload);
+      // ========================================================
 
-    toast.success(
+      toast.success(
         `Renewal payment confirmed (Ref: ${paymentId.substring(0, 8)}...). Status will update shortly.`,
-    );
+      );
     } else {
-      // FIXED: Calling the new, dedicated endpoint for initial payment
       await apiServices.confirmInitialCenterPayment(selectedCenter.value.id, payload);
       toast.success(
         `Initial payment confirmed (Ref: ${paymentId.substring(0, 8)}...). Status will update shortly.`,
