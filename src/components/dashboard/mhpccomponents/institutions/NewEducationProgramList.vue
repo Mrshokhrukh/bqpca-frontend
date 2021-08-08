@@ -264,7 +264,7 @@ const handleNewProgramPaymentCompleted = async (paymentData) => {
   }
 
   const user = authStore.user;
-  if (!user || !user.contact_number || !user.email || !user.cid || !user.id) {
+  if (!user || !user.email || !user.cid || !user.id) {
     toast.error('Missing user information. Please log in again or update your profile.');
     return;
   }
@@ -285,7 +285,7 @@ const handleNewProgramPaymentCompleted = async (paymentData) => {
     // Use the dynamic paymentAmount from the component's state
     paymentGatewayFormData.append('totalPayableAmount', paymentAmount.value);
     paymentGatewayFormData.append('description', 'MHPC New Education Program Registration');
-    paymentGatewayFormData.append('mobileNo', user.contact_number);
+    paymentGatewayFormData.append('mobileNo', user?.contact_number || '17890123');
     paymentGatewayFormData.append('payerEmail', user.email);
     paymentGatewayFormData.append('user', user.id);
     paymentGatewayFormData.append('payableAmount', paymentAmount.value);
