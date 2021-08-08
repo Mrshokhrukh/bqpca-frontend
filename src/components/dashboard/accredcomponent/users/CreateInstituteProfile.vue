@@ -1,6 +1,3 @@
-
-
-```vue
 <template>
   <div class="min-h-screen bg-gray-100 p-8">
     <div class="mx-auto">
@@ -47,11 +44,11 @@
             <h2 class="section-heading">Basic Information</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div class="form-group">
-                <label for="name" class="form-label">Institute Name</label>
+                <label for="name" class="form-label">Name</label>
                 <input type="text" id="name" v-model="formData.name" :disabled="!isEditing" class="form-input" required>
               </div>
               <div class="form-group">
-                <label for="type" class="form-label">Institute Type</label>
+                <label for="type" class="form-label">Type</label>
                 <select id="type" v-model="formData.type" :disabled="!isEditing" class="form-input" required>
                   <option value="">Select type</option>
                   <option v-for="typeObj in instituteTypes" :key="typeObj.id" :value="typeObj.id">{{ typeObj.name }}
@@ -59,7 +56,7 @@
                 </select>
               </div>
               <div class="form-group">
-                <label for="year_established" class="form-label">Year Established</label>
+                <label for="year_established" class="form-label">Year Of Establishment</label>
                 <input type="number" id="year_established" v-model="formData.year_established" min="1900"
                   :max="new Date().getFullYear()" :disabled="!isEditing" class="form-input" required>
               </div>
@@ -138,28 +135,32 @@
             </div>
           </div>
 
+          <!-- === MODIFIED SECTION: "Details of IQA Focal Person" === -->
           <div class="form-section">
-            <h2 class="section-heading">Contact Information</h2>
+            <h2 class="section-heading">Details of IQA Focal Person</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div class="form-group"><label for="telephone" class="form-label">Telephone</label><input type="tel"
-                  id="telephone" v-model="formData.telephone" :disabled="!isEditing" class="form-input" required></div>
-              <div class="form-group"><label for="email" class="form-label">Email</label><input type="email" id="email"
-                  v-model="formData.email" :disabled="!isEditing" class="form-input" required></div>
-              <div class="form-group"><label for="focal_person" class="form-label">Focal Person for IQA</label><input
-                  type="text" id="focal_person" v-model="formData.focal_person" :disabled="!isEditing" class="form-input"
-                  required></div>
-              <div class="form-group"><label for="focal_person_contact" class="form-label">Focal Person
-                  Contact</label><input type="tel" id="focal_person_contact" v-model="formData.focal_person_contact"
-                  :disabled="!isEditing" class="form-input" required maxlength="15"></div>
+              <div class="form-group">
+                <label for="focal_person" class="form-label">Name</label>
+                <input type="text" id="focal_person" v-model="formData.focal_person" :disabled="!isEditing" class="form-input" required>
+              </div>
+              <div class="form-group">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" id="email" v-model="formData.email" :disabled="!isEditing" class="form-input" required>
+              </div>
+              <div class="form-group">
+                <label for="telephone" class="form-label">Telephone/Phone Number</label>
+                <input type="tel" id="telephone" v-model="formData.telephone" :disabled="!isEditing" class="form-input" required>
+              </div>
             </div>
           </div>
+          <!-- === END OF MODIFIED SECTION === -->
 
           <div class="form-section">
             <h2 class="section-heading">Head of Institute</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div class="form-group"><label for="head_name" class="form-label">Name</label><input type="text"
                   id="head_name" v-model="formData.head_name" :disabled="!isEditing" class="form-input" required></div>
-              <div class="form-group"><label for="head_position" class="form-label">Position</label><input type="text"
+              <div class="form-group"><label for="head_position" class="form-label">Designation</label><input type="text"
                   id="head_position" v-model="formData.head_position" :disabled="!isEditing" class="form-input" required>
               </div>
               <div class="form-group"><label for="head_email" class="form-label">Email</label><input type="email"
@@ -176,11 +177,11 @@
               <div class="form-group"><label for="departments" class="form-label">Number of Departments</label><input
                   type="number" id="departments" v-model="formData.departments" min="0" class="form-input"
                   :disabled="!isEditing"></div>
-              <div class="form-group"><label for="programs_total" class="form-label">Total Number of Programs</label><input
+              <div class="form-group"><label for="programs_total" class="form-label">Total Number of Programmes</label><input
                   type="number" id="programs_total" v-model="formData.programs_total" min="0" class="form-input"
                   :disabled="!isEditing"></div>
             </div>
-            <h3 class="subsection-heading">Program Breakdown</h3>
+            <h3 class="subsection-heading">Programmes Breakdown</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
               <div class="form-group"><label for="programs_ug" class="form-label">Undergraduate</label><input type="number"
                   id="programs_ug" v-model="formData.programs_ug" min="0" class="form-input" :disabled="!isEditing"></div>
@@ -194,12 +195,12 @@
                   :disabled="!isEditing"></div>
             </div>
             <div class="form-group mb-8">
-              <label for="new_programs" class="form-label">New Programs Introduced (Last 5 Years)</label>
+              <label for="new_programs" class="form-label">New Programmes Introduced (Last 5 Years)</label>
               <textarea id="new_programs" v-model="formData.new_programs" rows="3" class="form-input"
-                placeholder="List new programs with introduction years" :disabled="!isEditing"></textarea>
+                placeholder="List new programmes with the year of commencement" :disabled="!isEditing"></textarea>
             </div>
             <div class="form-group mb-8">
-              <label for="programs_with_electives" class="form-label">Number of Programs with Electives</label>
+              <label for="programs_with_electives" class="form-label">Number of Programmes with Electives</label>
               <input type="number" id="programs_with_electives" v-model="formData.programs_with_electives" min="0"
                 class="form-input" :disabled="!isEditing">
               <div
@@ -254,13 +255,13 @@
               <div class="form-group"><label for="contract_faculty_total" class="form-label">Contract Total</label><input
                   type="number" id="contract_faculty_total" v-model="contractFacultyTotal" class="form-input-readonly"
                   readonly></div>
-              <div class="form-group"><label for="visiting_faculty_female" class="form-label">Visiting (Female)</label><input
+              <div class="form-group"><label for="visiting_faculty_female" class="form-label">Visiting/Adjunct(Female)</label><input
                   type="number" id="visiting_faculty_female" v-model="formData.visiting_faculty_female" min="0"
                   class="form-input" :disabled="!isEditing"></div>
-              <div class="form-group"><label for="visiting_faculty_male" class="form-label">Visiting (Male)</label><input
+              <div class="form-group"><label for="visiting_faculty_male" class="form-label">Visiting/Adjunct (Male)</label><input
                   type="number" id="visiting_faculty_male" v-model="formData.visiting_faculty_male" min="0"
                   class="form-input" :disabled="!isEditing"></div>
-              <div class="form-group"><label for="visiting_faculty_total" class="form-label">Visiting Total</label><input
+              <div class="form-group"><label for="visiting_faculty_total" class="form-label">Visiting/Adjunct Total</label><input
                   type="number" id="visiting_faculty_total" v-model="visitingFacultyTotal" class="form-input-readonly"
                   readonly></div>
             </div>
@@ -269,10 +270,10 @@
               <div class="form-group"><label for="faculty_doctoral" class="form-label">Doctoral Degree</label><input
                   type="number" id="faculty_doctoral" v-model="formData.faculty_doctoral" min="0" class="form-input"
                   :disabled="!isEditing"></div>
-              <div class="form-group"><label for="faculty_masters" class="form-label">Masters Degree</label><input
+              <div class="form-group"><label for="faculty_masters" class="form-label">Master's Degree</label><input
                   type="number" id="faculty_masters" v-model="formData.faculty_masters" min="0" class="form-input"
                   :disabled="!isEditing"></div>
-              <div class="form-group"><label for="faculty_bachelors" class="form-label">Bachelors Degree</label><input
+              <div class="form-group"><label for="faculty_bachelors" class="form-label">Bachelor's Degree</label><input
                   type="number" id="faculty_bachelors" v-model="formData.faculty_bachelors" min="0" class="form-input"
                   :disabled="!isEditing"></div>
             </div>
@@ -505,7 +506,6 @@ const formData = ref({
   telephone: '',
   email: '',
   focal_person: '',
-  focal_person_contact: '',
   head_name: '',
   head_position: '',
   head_email: '',
@@ -756,4 +756,3 @@ onMounted(async () => {
   await loadProfile();
 });
 </script>
-```

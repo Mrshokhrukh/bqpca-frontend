@@ -3,7 +3,7 @@
     <div class="mx-auto p-6">
       <!-- Dashboard Header -->
       <header class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900">HEQC Officer Dashboard</h1>
+        <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
         <p class="text-gray-600 mt-1">System-wide statistics and recent activity.</p>
       </header>
 
@@ -169,7 +169,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import apiService from '@/services/services'; 
+import apiService from '@/services/services';
 
 // --- Reactive State ---
 const loading = ref(true);
