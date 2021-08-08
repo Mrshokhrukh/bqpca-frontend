@@ -1,53 +1,63 @@
 <template>
-  <div v-if="showModal" class="fixed z-[60] inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog"
-    aria-modal="true">
-    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-      <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" @click="closeModal">
-      </div>
+  <div
+    v-if="showModal"
+    class="fixed z-[60] inset-0 overflow-y-auto"
+    aria-labelledby="modal-title"
+    role="dialog"
+    aria-modal="true"
+  >
+    <div
+      class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0"
+    >
+      <div
+        class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+        aria-hidden="true"
+        @click="closeModal"
+      ></div>
       <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true"></span>
 
-      <!-- Certificate Container -->
       <div
-        class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
-        <!-- Certificate Content -->
+        class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full"
+      >
         <div id="certificate-content" class="bg-white px-8 pt-8 pb-6 relative min-h-[842px]">
-          <!-- A4 proportions -->
-          <!-- Watermark -->
-          <div class="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none">
+          <div
+            class="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none"
+          >
             <img src="@/assets/engineering-logo.png" alt="Watermark" class="w-2/3 max-w-xl" />
           </div>
 
-          <!-- Header Section -->
           <div class="flex justify-between items-start mb-8">
-            <!-- Left Logo -->
             <div class="text-center w-32">
               <img src="@/assets/rgob.png" alt="RGOB Logo" class="h-24 mx-auto" />
               <p class="mt-2 text-sm font-semibold">BQPCA</p>
             </div>
 
-            <!-- Center Title -->
             <div class="text-center flex-1 px-8">
+              <h3 class="text-xl font-medium text-gray-900 leading-tight mb-4">
+                དཔལ་ལྡན་འབྲུག་གཞུང་།<br />
+                བཟོ་རིག་ཁྱད་རིག་ཚོགས་སྡེ།<br />
+                འབྲུག་ཤེས་ཚད་དང་ཁྱད་རིག་ངོ་སྦྱོར་དབང་འཛིན།<br />
+                ཐིམ་ཕུག : འབྲུག།
+              </h3>
               <h3 class="text-lg font-medium text-gray-900 leading-7">
                 Royal Government of Bhutan<br />
-                Engineering Professional Council of Bhutan<br />
-                Bhutan Qualifications and Professionals Certification<br />
-                Authority<br />
+                Engineering Professionals Council<br />
+                Bhutan Qualifications and Professionals Certification Authority<br />
                 Thimphu : Bhutan
               </h3>
-              <h2 class="text-2xl font-bold text-blue-900 mt-6">CERTIFICATE OF REGISTRATION</h2>
+
+              <h2 class="text-3xl font-bold text-blue-900 mt-6">ཐོ་བཀོད་ལག་ཁྱེར།</h2>
+              <h2 class="text-2xl font-bold text-blue-900 mt-1">CERTIFICATE OF REGISTRATION</h2>
             </div>
 
-            <!-- Right Logo -->
             <div class="text-center w-32">
               <img src="@/assets/engineering-logo.png" alt="EPC Logo" class="h-24 mx-auto" />
               <p class="mt-2 text-sm font-semibold">EPC</p>
             </div>
           </div>
 
-          <!-- Main Content -->
           <div class="mt-8 relative">
             <div v-if="application">
-              <!-- Certificate Details Grid -->
               <div class="grid grid-cols-[200px_1fr] gap-y-4 text-sm px-12">
                 <div class="font-semibold">Name:</div>
                 <div>{{ application.full_name }}</div>
@@ -85,13 +95,15 @@
                 </div>
               </div>
 
-              <!-- Passport Photo -->
               <div class="absolute top-0 right-12">
-                <img v-if="application.passport_photo" :src="application.passport_photo" alt="Passport Photo"
-                  class="h-32 w-32 object-cover rounded-md border-2 border-gray-300 shadow-sm" />
+                <img
+                  v-if="application.passport_photo"
+                  :src="application.passport_photo"
+                  alt="Passport Photo"
+                  class="h-32 w-32 object-cover rounded-md border-2 border-gray-300 shadow-sm"
+                />
               </div>
 
-              <!-- Certificate Text -->
               <div class="mt-8 px-12 space-y-4 text-sm">
                 <p>
                   Valid till the expiry date until and unless suspend/revoked or de-registered by
@@ -104,56 +116,56 @@
                 </p>
               </div>
 
-              <!-- Footer Section -->
               <div class="mt-12 px-12 flex justify-between items-end">
-
                 <div v-if="eSignature">
                   <img :src="eSignature.signature" alt="Signature" class="h-16" />
                   <div class="mt-2 text-sm">
                     <p class="font-medium">{{ eSignature.name }}</p>
                     <p>{{ eSignature.designation }}</p>
-                    <p class="mt-1">
-                      Dated: {{ formatDate(eSignature.updated_at) }}
-                    </p>
+                    <p class="mt-1">Dated: {{ formatDate(eSignature.updated_at) }}</p>
                   </div>
                 </div>
 
-                <!-- QR Code -->
                 <div class="text-center">
-                  <vue-qrcode :value="qrCodeData" :options="{
-                    width: 100,
-                    margin: 1,
-                    color: {
-                      dark: '#000000',
-                      light: '#ffffff',
-                    },
-                  }" class="border-4 border-gray-200 rounded-md p-2" />
+                  <vue-qrcode
+                    :value="qrCodeData"
+                    :options="{
+                      width: 100,
+                      margin: 1,
+                      color: {
+                        dark: '#000000',
+                        light: '#ffffff',
+                      },
+                    }"
+                    class="border-4 border-gray-200 rounded-md p-2"
+                  />
                   <p class="mt-2 text-xs text-gray-600">Scan to verify</p>
                 </div>
               </div>
 
-              <!-- Disclaimer -->
               <p class="mt-8 text-sm text-gray-600 text-center px-12">
                 The information contained in this certificate reflects the information held by the
                 Engineering Council of Bhutan as at the above dated.
               </p>
             </div>
 
-            <!-- Loading State -->
             <p v-else class="text-sm text-gray-500 text-center">Loading certificate details...</p>
           </div>
         </div>
 
-        <!-- Modal Footer -->
         <div class="bg-gray-50 px-6 py-4 flex justify-end space-x-2">
-          <button type="button"
+          <button
+            type="button"
             class="inline-flex justify-center rounded-md border border-transparent px-4 py-2 bg-green-600 text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
-            @click="downloadCertificate">
+            @click="downloadCertificate"
+          >
             Download
           </button>
-          <button type="button"
+          <button
+            type="button"
             class="inline-flex justify-center rounded-md border border-transparent px-4 py-2 bg-blue-600 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
-            @click="closeModal">
+            @click="closeModal"
+          >
             Close
           </button>
         </div>
@@ -193,7 +205,6 @@ onMounted(async () => {
     console.error('Failed to fetch e-signature:', error)
   }
 })
-
 
 const closeModal = () => {
   emit('close')

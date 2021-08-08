@@ -23,11 +23,16 @@
               <p class="mt-2 text-sm font-semibold">BQPCA</p>
             </div>
             <div class="text-center flex-1 px-8">
+              <h3 class="text-xl font-medium text-gray-900 leading-tight mb-4">
+                དཔལ་ལྡན་འབྲུག་གཞུང་།<br />
+                བཟོ་རིག་ཁྱད་རིག་ཚོགས་སྡེ།<br />
+                འབྲུག་ཤེས་ཚད་དང་ཁྱད་རིག་ངོ་སྦྱོར་དབང་འཛིན།<br />
+                ཐིམ་ཕུག : འབྲུག།
+              </h3>
               <h3 class="text-lg font-medium text-gray-900 leading-7">
                 Royal Government of Bhutan<br />
-                Engineering Professional Council of Bhutan<br />
-                Bhutan Qualifications and Professionals Certification<br />
-                Authority<br />
+                Engineering Professionals Council<br />
+                Bhutan Qualifications and Professionals Certification Authority<br />
                 Thimphu : Bhutan
               </h3>
               <h2 class="text-2xl font-bold text-blue-900 mt-6">CERTIFICATE OF GOOD STANDING</h2>
