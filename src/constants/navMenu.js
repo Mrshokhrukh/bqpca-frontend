@@ -825,6 +825,7 @@ const serviceSpecificMenuItems = {
             name: 'Qualifications',
             route: (serviceType) => `/admin/admin/${serviceType}/qualifications`,
           },
+
         ],
       },
       {
@@ -920,7 +921,7 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/eoi_application`,
           },
           // hhhdhd
-        
+
           {
             name: 'DPR Applications',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/dpr_application`,
@@ -955,10 +956,24 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/module_management`,
           },
           {
+            name: 'Faculty Management',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/faculty_management`,
+          },
+          {
+            name: 'Preceptor Management',
+            route: (serviceType) => `/admin/dealing_officer/${serviceType}/preceptor_management`,
+          },
+          {
             name: 'Program Management',
             route: (serviceType) =>
               `/admin/dealing_officer/${serviceType}/education_program_management`,
           },
+          {
+            name: 'Faculty Program Assignment',
+            route: (serviceType) =>
+              `/admin/dealing_officer/${serviceType}/faculty_program_assignment`,
+          },
+
           // {
           //   name: 'Reports',
           //   route: (serviceType) => `/admin/dealing_officer/${serviceType}/institute_report`,
@@ -1106,7 +1121,7 @@ const serviceSpecificMenuItems = {
             icon: getIconComponent('Heart'),
             route: (serviceType) => `/admin/institutions/${serviceType}/site_visit_schedule`,
           },
-        ],
+        ]
       },
     ],
     legal_officer: [
@@ -1629,7 +1644,7 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/user/${serviceType}/dashboard`,
       },
       {
-        name: 'Create Profile of the Institution',
+        name: 'Create Institue Profile',
         icon: getIconComponent('Building'),
         route: (serviceType) => `/admin/user/${serviceType}/institute_profile`,
       },
@@ -1694,22 +1709,22 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/dashboard`, // Corrected "dealing_Officer"
       },
       {
-        name: 'Institutional Accreditation Schedule Management',
+        name: 'Manage Accreditation Schedule',
         icon: getIconComponent('LayoutDashboard'),
         route: (serviceType) =>
           `/admin/dealing_officer/${serviceType}/manage_accreditation_schedule`, // Corrected "dealing_Officer"
       },
       {
-        name: 'Institutional Accreditation',
+        name: 'Accreditation Applications',
         icon: getIconComponent('ClipboardList'),
         children: [
           {
-            name: 'Application',
+            name: 'Initial Accreditation Application',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/initial_accreditations`,
           },
 
           {
-            name: 'Institutional Self Assessment Report',
+            name: 'ISAR Report',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/isar_reports`,
           },
           // {
@@ -1729,7 +1744,7 @@ const serviceSpecificMenuItems = {
         ],
       },
       {
-        name: 'Appeal Applications',
+        name: 'Appeals Applications',
         icon: getIconComponent('History'),
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/appeals`,
       },
