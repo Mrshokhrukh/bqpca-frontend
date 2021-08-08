@@ -113,29 +113,16 @@
                   No file uploaded.
                 </p>
               </div>
+              <!-- === MODIFIED SECTION: "Latest Tax Details" removed and "Date of Last Accreditation" added === -->
               <div class="form-group">
-                <label for="tax_details" class="form-label">Latest Tax Details</label>
-                <input v-if="isEditing" type="file" id="tax_details" @change="handleFileUpload('tax_details', $event)"
-                  class="form-file-input">
-                <p v-if="existingTaxDetails && (!isEditing || (isEditing && !formData.tax_details_file))"
-                  class="form-file-info">
-                  Current file: <a :href="existingTaxDetails" target="_blank" rel="noopener noreferrer"
-                    class="text-blue-600 hover:underline transition-colors duration-200">{{
-                    getFileName(existingTaxDetails) }}</a>
-                  <span v-if="isEditing && !formData.tax_details_file" class="ml-2 text-xs text-gray-400">
-                    (select a new file to replace)</span>
-                </p>
-                <p v-if="formData.tax_details_file && isEditing" class="form-file-new">
-                  New file selected: {{ formData.tax_details_file.name }}
-                </p>
-                <p v-if="!existingTaxDetails && !isEditing" class="form-file-none">
-                  No file uploaded.
-                </p>
+                <label for="date_of_last_accreditation" class="form-label">Date of Last Accreditation</label>
+                <input type="date" id="date_of_last_accreditation" v-model="formData.date_of_last_accreditation"
+                  :disabled="!isEditing" class="form-input">
               </div>
+              <!-- === END OF MODIFIED SECTION === -->
             </div>
           </div>
 
-          <!-- === MODIFIED SECTION: "Details of IQA Focal Person" === -->
           <div class="form-section">
             <h2 class="section-heading">Details of IQA Focal Person</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -153,7 +140,6 @@
               </div>
             </div>
           </div>
-          <!-- === END OF MODIFIED SECTION === -->
 
           <div class="form-section">
             <h2 class="section-heading">Head of Institute</h2>
@@ -477,7 +463,7 @@ const instituteTypes = ref([]);
 const fundingSources = ref([]);
 
 const existingLandRegistration = ref(null);
-const existingTaxDetails = ref(null);
+// === MODIFIED: Removed existingTaxDetails ===
 
 const getFileName = (filePathOrUrl) => {
   if (!filePathOrUrl || typeof filePathOrUrl !== 'string') return 'file';
@@ -490,7 +476,7 @@ const getFileName = (filePathOrUrl) => {
   }
 };
 
-
+// === MODIFIED: Updated formData ref ===
 const formData = ref({
   name: '',
   type: '',
@@ -502,7 +488,8 @@ const formData = ref({
   source_of_funding: '',
   total_area: null,
   land_registration_file: null,
-  tax_details_file: null,
+  date_of_last_accreditation: null, // Added this field
+  // tax_details_file: null, // Removed this field
   telephone: '',
   email: '',
   focal_person: '',
@@ -548,7 +535,6 @@ const formData = ref({
   students_other_female: 0,
 });
 
-// Storing an initial clean state is good practice for reset/create logic
 const initialFormData = JSON.parse(JSON.stringify(formData.value));
 
 // Computed properties for totals (unchanged)
@@ -576,7 +562,6 @@ const loadInstituteTypes = async () => {
     }));
   } catch (error) {
     console.error('Error loading institute types:', error);
-    // Provide a more specific error message based on the status code
     if (error.response && error.response.status === 403) {
       toast.error('Permission denied: You do not have access to load institute types.');
     } else {
@@ -603,7 +588,6 @@ const loadFundingSources = async () => {
 const handleFileUpload = (field, event) => {
   const file = event.target.files[0];
   if (file) {
-    // Corrected syntax for object property access
     formData.value[field + '_file'] = file;
   } else {
     formData.value[field + '_file'] = null;
@@ -613,7 +597,7 @@ const handleFileUpload = (field, event) => {
 const resetForm = async () => {
   if (confirm('Are you sure you want to reset changes? This will revert to the last saved state or clear the form if creating a new profile.')) {
     loading.value = true;
-    await loadProfile(); // This will reset to the last saved state or a blank state if new.
+    await loadProfile();
   }
 };
 
@@ -621,28 +605,24 @@ const handleEditClick = () => {
   isEditing.value = true;
 };
 
-// ========================================================================
-// === MODIFIED FUNCTION: loadProfile (This is the core of the fix) =====
-// ========================================================================
+// === MODIFIED: Updated loadProfile function ===
 const loadProfile = async () => {
   try {
     loading.value = true;
     const response = await apiService.getMyInstituteProfile();
 
-    // SUCCESS CASE: Profile exists and was returned successfully
     if (response && response.data && Object.keys(response.data).length > 0 && response.data.id) {
       profileId.value = response.data.id;
-      // Populate form data from response
       Object.keys(formData.value).forEach(key => {
         if (Object.prototype.hasOwnProperty.call(response.data, key)) {
           if (key.endsWith('_file')) {
-            formData.value[key] = null; // Clear stale File object
+            formData.value[key] = null;
           } else if (typeof formData.value[key] === 'number' && (response.data[key] === null || response.data[key] === undefined)) {
             formData.value[key] = 0;
           } else if (typeof formData.value[key] === 'number' && typeof response.data[key] === 'string') {
             formData.value[key] = Number(response.data[key]) || 0;
-          } else if (response.data[key] === null && typeof formData.value[key] === 'string') {
-            formData.value[key] = '';
+          } else if (response.data[key] === null && (typeof formData.value[key] === 'string' || key === 'date_of_last_accreditation')) {
+             formData.value[key] = key === 'date_of_last_accreditation' ? null : '';
           } else {
             formData.value[key] = response.data[key];
           }
@@ -651,36 +631,28 @@ const loadProfile = async () => {
         }
       });
       existingLandRegistration.value = response.data.land_registration || null;
-      existingTaxDetails.value = response.data.tax_details || null;
-      // Profile exists, so start in VIEW mode.
+      // existingTaxDetails.value = response.data.tax_details || null; // Removed this line
       isEditing.value = false;
     } else {
-      // UNEXPECTED SUCCESS: API returned 200 OK but with no data. Treat as "create new".
       Object.assign(formData.value, JSON.parse(JSON.stringify(initialFormData)));
       profileId.value = null;
       existingLandRegistration.value = null;
-      existingTaxDetails.value = null;
-      // No profile, so start in EDIT (create) mode.
+      // existingTaxDetails.value = null; // Removed this line
       isEditing.value = true;
     }
   } catch (error) {
-    // This now robustly checks for the "No Profile" state, either by a 404 status
-    // or by the specific payload the API sends.
     const isCreateProfileError = error.response && (
       error.response.status === 404 ||
       error.response.data?.action_required === 'create_or_update_profile'
     );
 
     if (isCreateProfileError) {
-
       Object.assign(formData.value, JSON.parse(JSON.stringify(initialFormData)));
       profileId.value = null;
       existingLandRegistration.value = null;
-      existingTaxDetails.value = null;
-
+      // existingTaxDetails.value = null; // Removed this line
       isEditing.value = true;
     } else {
-
       toast.error('An unexpected error occurred while loading the institute profile.');
       console.error('Error loading profile:', error);
       isEditing.value = false;
@@ -690,18 +662,25 @@ const loadProfile = async () => {
   }
 };
 
+
 const submitForm = async () => {
   try {
     submitting.value = true;
     const dataToSubmit = new FormData();
 
     Object.keys(formData.value).forEach(key => {
+      // The logic for handling `_file` suffixes remains valid for land_registration
       if (key.endsWith('_file')) {
         if (formData.value[key] instanceof File) {
           dataToSubmit.append(key.replace('_file', ''), formData.value[key]);
         }
       } else if (formData.value[key] !== null && formData.value[key] !== undefined) {
-        dataToSubmit.append(key, formData.value[key]);
+          // Ensure empty date is not sent as "null" string
+          if (key === 'date_of_last_accreditation' && !formData.value[key]) {
+            // Do not append if the date is empty/null
+          } else {
+            dataToSubmit.append(key, formData.value[key]);
+          }
       }
     });
 
@@ -712,8 +691,6 @@ const submitForm = async () => {
       await apiService.createInstituteProfile(dataToSubmit);
       toast.success('Institute profile created successfully!');
     }
-    // After a successful save (create or update), reload the profile.
-    // This will fetch the latest data and set isEditing to false.
     await loadProfile();
 
   } catch (error) {
@@ -752,7 +729,6 @@ onMounted(async () => {
     loadInstituteTypes(),
     loadFundingSources()
   ]);
-  // This will now correctly set the isEditing state based on whether a profile exists.
   await loadProfile();
 });
 </script>
