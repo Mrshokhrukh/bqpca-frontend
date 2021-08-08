@@ -1626,7 +1626,7 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/user/${serviceType}/dashboard`,
       },
       {
-        name: 'Create Institue Profile',
+        name: 'Create Profile of the Institution',
         icon: getIconComponent('Building'),
         route: (serviceType) => `/admin/user/${serviceType}/institute_profile`,
       },

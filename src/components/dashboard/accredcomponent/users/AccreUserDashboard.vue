@@ -228,7 +228,7 @@ const nextStep = computed(() => {
         return {
           icon: shallowRef(CalendarCheck),
           title: "Ready to Apply? The Window is Open!",
-          description: `The application window is open until ${formatDate(activeSchedule.value.end_date)}. Begin the process by submitting your first application.`,
+          description: `Application window is open until ${formatDate(activeSchedule.value.end_date)}. Begin the process by submitting your first application.`,
           actionType: 'link',
           link: "/admin/user/accreditation/apply_for_accreditation",
           actionText: "Start New Application",
