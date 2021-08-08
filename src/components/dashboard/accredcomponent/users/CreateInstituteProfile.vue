@@ -48,7 +48,7 @@
                 <input type="text" id="name" v-model="formData.name" :disabled="!isEditing" class="form-input" required>
               </div>
               <div class="form-group">
-                <label for="type" class="form-label">Institute Type</label>
+                <label for="type" class="form-label">Type</label>
                 <select id="type" v-model="formData.type" :disabled="!isEditing" class="form-input" required>
                   <option value="">Select type</option>
                   <option v-for="typeObj in instituteTypes" :key="typeObj.id" :value="typeObj.id">{{ typeObj.name }}
@@ -113,37 +113,54 @@
                   No file uploaded.
                 </p>
               </div>
-              <!-- MODIFIED: Replaced the file input with a date input -->
               <div class="form-group">
-                <label for="date_of_last_accreditation" class="form-label">Date of Last Accreditation</label>
-                <input type="date" id="date_of_last_accreditation" v-model="formData.date_of_last_accreditation"
-                  :disabled="!isEditing" class="form-input">
+                <label for="tax_details" class="form-label">Latest Tax Details</label>
+                <input v-if="isEditing" type="file" id="tax_details" @change="handleFileUpload('tax_details', $event)"
+                  class="form-file-input">
+                <p v-if="existingTaxDetails && (!isEditing || (isEditing && !formData.tax_details_file))"
+                  class="form-file-info">
+                  Current file: <a :href="existingTaxDetails" target="_blank" rel="noopener noreferrer"
+                    class="text-blue-600 hover:underline transition-colors duration-200">{{
+                    getFileName(existingTaxDetails) }}</a>
+                  <span v-if="isEditing && !formData.tax_details_file" class="ml-2 text-xs text-gray-400">
+                    (select a new file to replace)</span>
+                </p>
+                <p v-if="formData.tax_details_file && isEditing" class="form-file-new">
+                  New file selected: {{ formData.tax_details_file.name }}
+                </p>
+                <p v-if="!existingTaxDetails && !isEditing" class="form-file-none">
+                  No file uploaded.
+                </p>
               </div>
             </div>
           </div>
 
+          <!-- === MODIFIED SECTION: "Details of IQA Focal Person" === -->
           <div class="form-section">
-            <h2 class="section-heading">Contact Information</h2>
+            <h2 class="section-heading">Details of IQA Focal Person</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div class="form-group"><label for="telephone" class="form-label">Telephone</label><input type="tel"
-                  id="telephone" v-model="formData.telephone" :disabled="!isEditing" class="form-input" required></div>
-              <div class="form-group"><label for="email" class="form-label">Email</label><input type="email" id="email"
-                  v-model="formData.email" :disabled="!isEditing" class="form-input" required></div>
-              <div class="form-group"><label for="focal_person" class="form-label">Focal Person for IQA</label><input
-                  type="text" id="focal_person" v-model="formData.focal_person" :disabled="!isEditing" class="form-input"
-                  required></div>
-              <div class="form-group"><label for="focal_person_contact" class="form-label">Focal Person
-                  Contact</label><input type="tel" id="focal_person_contact" v-model="formData.focal_person_contact"
-                  :disabled="!isEditing" class="form-input" required maxlength="15"></div>
+              <div class="form-group">
+                <label for="focal_person" class="form-label">Name</label>
+                <input type="text" id="focal_person" v-model="formData.focal_person" :disabled="!isEditing" class="form-input" required>
+              </div>
+              <div class="form-group">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" id="email" v-model="formData.email" :disabled="!isEditing" class="form-input" required>
+              </div>
+              <div class="form-group">
+                <label for="telephone" class="form-label">Telephone/Phone Number</label>
+                <input type="tel" id="telephone" v-model="formData.telephone" :disabled="!isEditing" class="form-input" required>
+              </div>
             </div>
           </div>
+          <!-- === END OF MODIFIED SECTION === -->
 
           <div class="form-section">
             <h2 class="section-heading">Head of Institute</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div class="form-group"><label for="head_name" class="form-label">Name</label><input type="text"
                   id="head_name" v-model="formData.head_name" :disabled="!isEditing" class="form-input" required></div>
-              <div class="form-group"><label for="head_position" class="form-label">Position</label><input type="text"
+              <div class="form-group"><label for="head_position" class="form-label">Designation</label><input type="text"
                   id="head_position" v-model="formData.head_position" :disabled="!isEditing" class="form-input" required>
               </div>
               <div class="form-group"><label for="head_email" class="form-label">Email</label><input type="email"
@@ -160,11 +177,11 @@
               <div class="form-group"><label for="departments" class="form-label">Number of Departments</label><input
                   type="number" id="departments" v-model="formData.departments" min="0" class="form-input"
                   :disabled="!isEditing"></div>
-              <div class="form-group"><label for="programs_total" class="form-label">Total Number of Programs</label><input
+              <div class="form-group"><label for="programs_total" class="form-label">Total Number of Programmes</label><input
                   type="number" id="programs_total" v-model="formData.programs_total" min="0" class="form-input"
                   :disabled="!isEditing"></div>
             </div>
-            <h3 class="subsection-heading">Program Breakdown</h3>
+            <h3 class="subsection-heading">Programmes Breakdown</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
               <div class="form-group"><label for="programs_ug" class="form-label">Undergraduate</label><input type="number"
                   id="programs_ug" v-model="formData.programs_ug" min="0" class="form-input" :disabled="!isEditing"></div>
@@ -178,12 +195,12 @@
                   :disabled="!isEditing"></div>
             </div>
             <div class="form-group mb-8">
-              <label for="new_programs" class="form-label">New Programs Introduced (Last 5 Years)</label>
+              <label for="new_programs" class="form-label">New Programmes Introduced (Last 5 Years)</label>
               <textarea id="new_programs" v-model="formData.new_programs" rows="3" class="form-input"
-                placeholder="List new programs with introduction years" :disabled="!isEditing"></textarea>
+                placeholder="List new programmes with the year of commencement" :disabled="!isEditing"></textarea>
             </div>
             <div class="form-group mb-8">
-              <label for="programs_with_electives" class="form-label">Number of Programs with Electives</label>
+              <label for="programs_with_electives" class="form-label">Number of Programmes with Electives</label>
               <input type="number" id="programs_with_electives" v-model="formData.programs_with_electives" min="0"
                 class="form-input" :disabled="!isEditing">
               <div
@@ -238,13 +255,13 @@
               <div class="form-group"><label for="contract_faculty_total" class="form-label">Contract Total</label><input
                   type="number" id="contract_faculty_total" v-model="contractFacultyTotal" class="form-input-readonly"
                   readonly></div>
-              <div class="form-group"><label for="visiting_faculty_female" class="form-label">Visiting (Female)</label><input
+              <div class="form-group"><label for="visiting_faculty_female" class="form-label">Visiting/Adjunct(Female)</label><input
                   type="number" id="visiting_faculty_female" v-model="formData.visiting_faculty_female" min="0"
                   class="form-input" :disabled="!isEditing"></div>
-              <div class="form-group"><label for="visiting_faculty_male" class="form-label">Visiting (Male)</label><input
+              <div class="form-group"><label for="visiting_faculty_male" class="form-label">Visiting/Adjunct (Male)</label><input
                   type="number" id="visiting_faculty_male" v-model="formData.visiting_faculty_male" min="0"
                   class="form-input" :disabled="!isEditing"></div>
-              <div class="form-group"><label for="visiting_faculty_total" class="form-label">Visiting Total</label><input
+              <div class="form-group"><label for="visiting_faculty_total" class="form-label">Visiting/Adjunct Total</label><input
                   type="number" id="visiting_faculty_total" v-model="visitingFacultyTotal" class="form-input-readonly"
                   readonly></div>
             </div>
@@ -253,10 +270,10 @@
               <div class="form-group"><label for="faculty_doctoral" class="form-label">Doctoral Degree</label><input
                   type="number" id="faculty_doctoral" v-model="formData.faculty_doctoral" min="0" class="form-input"
                   :disabled="!isEditing"></div>
-              <div class="form-group"><label for="faculty_masters" class="form-label">Masters Degree</label><input
+              <div class="form-group"><label for="faculty_masters" class="form-label">Master's Degree</label><input
                   type="number" id="faculty_masters" v-model="formData.faculty_masters" min="0" class="form-input"
                   :disabled="!isEditing"></div>
-              <div class="form-group"><label for="faculty_bachelors" class="form-label">Bachelors Degree</label><input
+              <div class="form-group"><label for="faculty_bachelors" class="form-label">Bachelor's Degree</label><input
                   type="number" id="faculty_bachelors" v-model="formData.faculty_bachelors" min="0" class="form-input"
                   :disabled="!isEditing"></div>
             </div>
@@ -460,6 +477,7 @@ const instituteTypes = ref([]);
 const fundingSources = ref([]);
 
 const existingLandRegistration = ref(null);
+const existingTaxDetails = ref(null);
 
 const getFileName = (filePathOrUrl) => {
   if (!filePathOrUrl || typeof filePathOrUrl !== 'string') return 'file';
@@ -472,6 +490,7 @@ const getFileName = (filePathOrUrl) => {
   }
 };
 
+
 const formData = ref({
   name: '',
   type: '',
@@ -483,12 +502,10 @@ const formData = ref({
   source_of_funding: '',
   total_area: null,
   land_registration_file: null,
-  // MODIFIED: Replaced `tax_details_file` with the new date field
-  date_of_last_accreditation: null,
+  tax_details_file: null,
   telephone: '',
   email: '',
   focal_person: '',
-  focal_person_contact: '',
   head_name: '',
   head_position: '',
   head_email: '',
@@ -559,6 +576,7 @@ const loadInstituteTypes = async () => {
     }));
   } catch (error) {
     console.error('Error loading institute types:', error);
+    // Provide a more specific error message based on the status code
     if (error.response && error.response.status === 403) {
       toast.error('Permission denied: You do not have access to load institute types.');
     } else {
@@ -585,6 +603,7 @@ const loadFundingSources = async () => {
 const handleFileUpload = (field, event) => {
   const file = event.target.files[0];
   if (file) {
+    // Corrected syntax for object property access
     formData.value[field + '_file'] = file;
   } else {
     formData.value[field + '_file'] = null;
@@ -594,7 +613,7 @@ const handleFileUpload = (field, event) => {
 const resetForm = async () => {
   if (confirm('Are you sure you want to reset changes? This will revert to the last saved state or clear the form if creating a new profile.')) {
     loading.value = true;
-    await loadProfile();
+    await loadProfile(); // This will reset to the last saved state or a blank state if new.
   }
 };
 
@@ -602,17 +621,22 @@ const handleEditClick = () => {
   isEditing.value = true;
 };
 
+// ========================================================================
+// === MODIFIED FUNCTION: loadProfile (This is the core of the fix) =====
+// ========================================================================
 const loadProfile = async () => {
   try {
     loading.value = true;
     const response = await apiService.getMyInstituteProfile();
 
+    // SUCCESS CASE: Profile exists and was returned successfully
     if (response && response.data && Object.keys(response.data).length > 0 && response.data.id) {
       profileId.value = response.data.id;
+      // Populate form data from response
       Object.keys(formData.value).forEach(key => {
         if (Object.prototype.hasOwnProperty.call(response.data, key)) {
           if (key.endsWith('_file')) {
-            formData.value[key] = null;
+            formData.value[key] = null; // Clear stale File object
           } else if (typeof formData.value[key] === 'number' && (response.data[key] === null || response.data[key] === undefined)) {
             formData.value[key] = 0;
           } else if (typeof formData.value[key] === 'number' && typeof response.data[key] === 'string') {
@@ -627,14 +651,21 @@ const loadProfile = async () => {
         }
       });
       existingLandRegistration.value = response.data.land_registration || null;
+      existingTaxDetails.value = response.data.tax_details || null;
+      // Profile exists, so start in VIEW mode.
       isEditing.value = false;
     } else {
+      // UNEXPECTED SUCCESS: API returned 200 OK but with no data. Treat as "create new".
       Object.assign(formData.value, JSON.parse(JSON.stringify(initialFormData)));
       profileId.value = null;
       existingLandRegistration.value = null;
+      existingTaxDetails.value = null;
+      // No profile, so start in EDIT (create) mode.
       isEditing.value = true;
     }
   } catch (error) {
+    // This now robustly checks for the "No Profile" state, either by a 404 status
+    // or by the specific payload the API sends.
     const isCreateProfileError = error.response && (
       error.response.status === 404 ||
       error.response.data?.action_required === 'create_or_update_profile'
@@ -645,6 +676,8 @@ const loadProfile = async () => {
       Object.assign(formData.value, JSON.parse(JSON.stringify(initialFormData)));
       profileId.value = null;
       existingLandRegistration.value = null;
+      existingTaxDetails.value = null;
+
       isEditing.value = true;
     } else {
 
@@ -663,20 +696,11 @@ const submitForm = async () => {
     const dataToSubmit = new FormData();
 
     Object.keys(formData.value).forEach(key => {
-      // Don't append if the value is a File object but is null
       if (key.endsWith('_file')) {
         if (formData.value[key] instanceof File) {
           dataToSubmit.append(key.replace('_file', ''), formData.value[key]);
         }
-      }
-      // Handle the date field: only append if it's not null to avoid sending empty strings
-      else if (key === 'date_of_last_accreditation') {
-        if (formData.value[key]) {
-           dataToSubmit.append(key, formData.value[key]);
-        }
-      }
-      // Handle other fields
-      else if (formData.value[key] !== null && formData.value[key] !== undefined) {
+      } else if (formData.value[key] !== null && formData.value[key] !== undefined) {
         dataToSubmit.append(key, formData.value[key]);
       }
     });
@@ -688,6 +712,8 @@ const submitForm = async () => {
       await apiService.createInstituteProfile(dataToSubmit);
       toast.success('Institute profile created successfully!');
     }
+    // After a successful save (create or update), reload the profile.
+    // This will fetch the latest data and set isEditing to false.
     await loadProfile();
 
   } catch (error) {
@@ -726,6 +752,7 @@ onMounted(async () => {
     loadInstituteTypes(),
     loadFundingSources()
   ]);
+  // This will now correctly set the isEditing state based on whether a profile exists.
   await loadProfile();
 });
 </script>
