@@ -1,182 +1,440 @@
 <template>
-  <div
-    class="application-tracking mx-auto p-4 md:p-6 bg-white/80 backdrop-blur-md rounded-xl md:rounded-2xl shadow-lg"
-  >
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 md:mb-8">
-      <h1
-        class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent"
-      >
-        Track Your Learning Hospital Applications
-      </h1>
-      <div v-if="savedDraft" class="flex items-center space-x-4">
-        <button
-          @click="openApplicationFormModal(true)"
-          class="px-4 py-2.5 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 flex items-center text-sm font-medium"
-        >
-          <PlusIcon class="w-5 h-5 mr-2" />
-          Load Draft and Continue
-        </button>
-        <button
-          @click="discardDraft"
-          class="px-4 py-2.5 bg-red-600 text-white rounded-lg shadow-md hover:bg-red-700 transition-all duration-300 transform hover:scale-105 flex items-center text-sm font-medium"
-        >
-          <PlusIcon class="w-5 h-5 mr-2" />
-          Discard Draft and Add New
-        </button>
-      </div>
-      <button
-        v-else
-        @click="openApplicationFormModal(false)"
-        class="mt-4 sm:mt-0 px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg shadow-md hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 flex items-center text-sm font-medium"
-      >
-        <PlusIcon class="w-5 h-5 mr-2" />
-        Add New Hospital
-      </button>
-    </div>
-
-    <div v-if="isLoading && !applications.length" class="text-center py-8">
-      <svg class="animate-spin h-8 w-8 text-indigo-600 mx-auto" fill="none" viewBox="0 0 24 24">
-        <circle
-          class="opacity-25"
-          cx="12"
-          cy="12"
-          r="10"
-          stroke="currentColor"
-          stroke-width="4"
-        ></circle>
-        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
-      </svg>
-      <p class="text-gray-600 mt-2">Loading applications...</p>
-    </div>
-
-    <div
-      v-if="!isLoading || applications.length"
-      class="mb-6 flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center"
-    >
-      <div class="relative w-full sm:w-auto sm:flex-grow lg:flex-grow-0 lg:w-1/3">
-        <input
-          type="text"
-          v-model="searchQuery"
-          placeholder="Search by center name or location"
-          class="block w-full px-4 py-2.5 border rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm bg-white/50 backdrop-blur-sm"
-        />
-        <MagnifyingGlassIcon
-          class="absolute top-1/2 right-3 transform -translate-y-1/2 h-5 w-5 text-gray-400"
-        />
-      </div>
-      <div class="flex gap-2 sm:gap-4 w-full sm:w-auto">
-        <div class="relative w-full sm:w-40 md:w-48">
-          <select
-            v-model="filterDzongkhag"
-            class="block w-full px-4 py-2.5 border rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm bg-white/50 backdrop-blur-sm appearance-none"
-          >
-            <option value="">All Dzongkhags</option>
-            <option
-              v-for="dzongkhag in dzongkhagOptionsForCenter"
-              :key="dzongkhag.value"
-              :value="dzongkhag.value"
+  <div class="min-h-screen bg-gray-50 p-6">
+    <!-- Header Section -->
+    <div class="mb-8">
+      <div class="bg-white shadow-sm border border-gray-200 rounded-lg p-6">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+          <div>
+            <h1 class="text-2xl font-semibold text-gray-900 mb-2">
+              Learning Hospital Applications
+            </h1>
+            <p class="text-sm text-gray-600">
+              Track and manage your teaching center applications
+            </p>
+          </div>
+          
+          <!-- Action Buttons -->
+          <div class="flex flex-col sm:flex-row gap-3">
+            <div v-if="savedDraft" class="flex flex-col sm:flex-row gap-2">
+              <button
+                @click="openApplicationFormModal(true)"
+                class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+              >
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                </svg>
+                Continue Draft
+              </button>
+              <button
+                @click="discardDraft"
+                class="inline-flex items-center px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
+              >
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                </svg>
+                Discard & Add New
+              </button>
+            </div>
+            <button
+              v-else
+              @click="openApplicationFormModal(false)"
+              class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
             >
-              {{ dzongkhag.label }}
-            </option>
-          </select>
-          <ChevronDownIcon
-            class="absolute top-1/2 right-3 transform -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none"
-          />
-        </div>
-        <div class="relative w-full sm:w-40 md:w-48">
-          <select
-            v-model="filterGewog"
-            class="block w-full px-4 py-2.5 border rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm bg-white/50 backdrop-blur-sm appearance-none"
-            :disabled="!filterDzongkhag"
-          >
-            <option value="">{{ filterDzongkhag ? 'All Gewogs' : 'Select Dzongkhag' }}</option>
-            <option v-for="gewog in gewogOptionsForCenter" :key="gewog.value" :value="gewog.value">
-              {{ gewog.label }}
-            </option>
-          </select>
-          <ChevronDownIcon
-            class="absolute top-1/2 right-3 transform -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none"
-          />
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+              </svg>
+              Add New Hospital
+            </button>
+          </div>
         </div>
       </div>
     </div>
 
-    <div
-      v-if="!isLoading || applications.length"
-      class="overflow-x-auto bg-white rounded-lg shadow"
-    >
-      <table class="min-w-full border-collapse border border-gray-200">
-        <thead class="bg-gradient-to-r from-indigo-50 to-purple-50">
-          <tr>
-            <th class="px-4 py-3 md:px-6 md:py-3 border-b border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Hospital Name</th>
-            <th class="px-4 py-3 md:px-6 md:py-3 border-b border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Location</th>
-            <th class="px-4 py-3 md:px-6 md:py-3 border-b border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
-            <th class="px-4 py-3 md:px-6 md:py-3 border-b border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Payment Status</th>
-            <th class="px-4 py-3 md:px-6 md:py-3 border-b border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Clinical Preceptor</th>
-            <th class="px-4 py-3 md:px-6 md:py-3 border-b border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Valid Till</th>
-            <th class="px-4 py-3 md:px-6 md:py-3 border-b border-gray-200 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
-          </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-          <tr v-if="isLoading && applications.length">
-            <td colspan="7" class="text-center py-8 relative">
-              <div class="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center">
-                <svg class="animate-spin h-8 w-8 text-indigo-600 mx-auto" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg>
-              </div>
-            </td>
-          </tr>
-          <tr v-for="application in filteredApplications" :key="application.id" class="hover:bg-gray-50/50 transition-colors duration-150">
-            <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ application.center_name }}</td>
-            <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-600">
-              {{ application.center_location }}
-              <span class="text-gray-400">({{ application.state_dzongkhag }}, {{ application.city_gewog }})</span>
-            </td>
-            <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm">
-              <span :class="statusClass(application.tc_review_decision)" class="px-2.5 py-1 rounded-full text-xs font-semibold leading-tight">{{ application.tc_review_decision || 'Unknown' }}</span>
-            </td>
-            <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm">
-              <span :class="paymentStatusClass(application.payment_status)" class="px-2.5 py-1 rounded-full text-xs font-semibold leading-tight">{{ formatPaymentStatus(application.payment_status) }}</span>
-            </td>
-            <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-600">{{ application.preceptorName || 'N/A' }}</td>
-            <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-600">{{ formatDate(application.valid_till) }}</td>
-            <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-gray-700 space-x-2">
-              <button v-if="canMakePayment(application)" @click="initiateTeachingCenterPayment(application)" class="px-3 py-1.5 bg-yellow-500 text-white rounded-md shadow-sm hover:bg-yellow-600 text-xs font-medium transition-colors" :disabled="isPaymentProcessing || isLoading">Make Payment</button>
-              <button v-if="canAddPreceptor(application) && !application.isPreceptorAdded" @click="openAddPreceptorModal(application)" class="px-3 py-1.5 bg-green-500 text-white rounded-md shadow-sm hover:bg-green-600 text-xs font-medium transition-colors" :disabled="isLoading">Add Clinical Preceptor</button>
-              <button v-if="application.isPreceptorAdded && canRemovePreceptor(application)" @click="confirmRemovePreceptor(application)" class="px-3 py-1.5 bg-red-500 text-white rounded-md shadow-sm hover:bg-red-600 text-xs font-medium transition-colors" :disabled="isLoading">Remove Preceptor</button>
-              <button v-if="canDownloadCertificate(application)" @click="openCertificateModal(application)" class="px-3 py-1.5 bg-indigo-500 text-white rounded-md shadow-sm hover:bg-indigo-600 text-xs font-medium transition-colors">View Certificate</button>
-              <button @click="viewDetails(application)" class="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-md shadow-sm hover:bg-blue-200 text-xs font-medium transition-colors">View Details</button>
-            </td>
-          </tr>
-          <tr v-if="!isLoading && filteredApplications.length === 0">
-            <td colspan="7" class="px-6 py-10 text-center text-gray-500 text-sm">
-              <div class="flex flex-col items-center">
-                <svg class="w-12 h-12 text-gray-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path></svg>
-                No applications found.
-                <span v-if="searchQuery || filterDzongkhag || filterGewog" class="text-xs text-gray-400 mt-1">Try adjusting your filters or search.</span>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <!-- Loading State (Initial) -->
+    <div v-if="isLoading && !applications.length" class="bg-white shadow-sm border border-gray-200 rounded-lg p-12 text-center">
+      <div class="inline-flex items-center justify-center w-8 h-8 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin mb-4"></div>
+      <p class="text-gray-500 text-sm">Loading applications...</p>
     </div>
 
-    <!-- All Modals are here -->
+    <!-- Main Content -->
+    <div v-if="!isLoading || applications.length" class="space-y-6">
+      <!-- Filters Section -->
+      <div class="bg-white shadow-sm border border-gray-200 rounded-lg p-4">
+        <div class="flex flex-col lg:flex-row gap-4">
+          <!-- Search Input -->
+          <div class="flex-1 relative">
+            <input
+              type="text"
+              v-model="searchQuery"
+              placeholder="Search by center name or institution..."
+              class="block w-full pl-4 pr-10 py-2.5 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
+            />
+            <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+          </div>
+
+          <!-- Dzongkhag Filter -->
+          <div class="w-full lg:w-48 relative">
+            <select
+              v-model="filterDzongkhag"
+              class="block w-full px-4 py-2.5 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white"
+            >
+              <option value="">All Dzongkhags</option>
+              <option v-for="dzongkhag in dzongkhagOptionsForCenter" :key="dzongkhag.value" :value="dzongkhag.value">
+                {{ dzongkhag.label }}
+              </option>
+            </select>
+            <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </div>
+
+          <!-- Gewog Filter -->
+          <div class="w-full lg:w-48 relative">
+            <select
+              v-model="filterGewog"
+              :disabled="!filterDzongkhag"
+              class="block w-full px-4 py-2.5 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white disabled:bg-gray-50 disabled:text-gray-500"
+            >
+              <option value="">{{ filterDzongkhag ? 'All Gewogs' : 'Select Dzongkhag' }}</option>
+              <option v-for="gewog in gewogOptionsForCenter" :key="gewog.value" :value="gewog.value">
+                {{ gewog.label }}
+              </option>
+            </select>
+            <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Applications Table -->
+      <div class="bg-white shadow-sm border border-gray-200 rounded-lg overflow-hidden">
+        <!-- Loading Overlay -->
+        <div v-if="isLoading && applications.length" class="relative">
+          <div class="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10">
+            <div class="inline-flex items-center justify-center w-8 h-8 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <!-- Table Header -->
+            <thead class="bg-gray-50">
+              <tr>
+                <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Hospital Details
+                </th>
+                <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Status
+                </th>
+                <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Payment
+                </th>
+                <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Clinical Preceptors
+                </th>
+                <th scope="col" class="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+
+            <!-- Table Body -->
+            <tbody class="bg-white divide-y divide-gray-200">
+              <!-- Data Rows -->
+              <tr 
+                v-for="application in filteredApplications" 
+                :key="application.id"
+                class="hover:bg-gray-50 transition-colors duration-150"
+              >
+                <!-- Hospital Details -->
+                <td class="px-6 py-4">
+                  <div class="flex items-start">
+                    <div class="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3"></div>
+                    <div>
+                      <div class="text-sm font-medium text-gray-900 mb-1">
+                        {{ application.center_name }}
+                      </div>
+                      <div class="text-sm text-gray-600">
+                        {{ application.institute_details?.name_of_institution || 'N/A' }}
+                      </div>
+                    </div>
+                  </div>
+                </td>
+
+                <!-- Status -->
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span :class="statusClass(application.tc_review_decision)" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium">
+                    {{ application.tc_review_decision || 'Unknown' }}
+                  </span>
+                </td>
+
+                <!-- Payment -->
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span :class="paymentStatusClass(application.payment_status)" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium">
+                    {{ formatPaymentStatus(application.payment_status) }}
+                  </span>
+                </td>
+
+                <!-- Clinical Preceptors -->
+                <td class="px-6 py-4">
+                  <div v-if="application.clinical_preceptors && application.clinical_preceptors.length > 0" class="space-y-2">
+                    <div 
+                      v-for="preceptor in application.clinical_preceptors" 
+                      :key="preceptor.id"
+                      class="flex items-center justify-between p-2 bg-gray-50 rounded border"
+                    >
+                      <div class="flex-1 min-w-0">
+                        <div class="text-sm font-medium text-gray-900 truncate">
+                          {{ preceptor.name }}
+                        </div>
+                        <div v-if="preceptor.officer_remarks" class="text-xs text-gray-500 mt-1">
+                          {{ preceptor.officer_remarks }}
+                        </div>
+                      </div>
+                      <button 
+                        @click="confirmRemovePreceptor(preceptor, application)"
+                        class="ml-2 p-1 text-red-600 hover:text-red-800 hover:bg-red-50 rounded transition-colors"
+                        title="Remove Preceptor"
+                      >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                  <div v-else class="text-sm text-gray-500">
+                    No preceptors assigned
+                  </div>
+                </td>
+
+                <!-- Actions -->
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex flex-col space-y-2">
+                    <!-- Payment Button -->
+                    <button 
+                      v-if="canMakePayment(application)" 
+                      @click="initiateTeachingCenterPayment(application)"
+                      :disabled="isPaymentProcessing || isLoading"
+                      class="inline-flex items-center px-3 py-1.5 border border-amber-300 text-amber-700 bg-amber-50 text-xs font-medium rounded hover:bg-amber-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
+                      </svg>
+                      Make Payment
+                    </button>
+
+                    <!-- Add Preceptor Button -->
+                    <button 
+                      v-if="canAddPreceptor(application)" 
+                      @click="openAddPreceptorModal(application)"
+                      :disabled="isLoading"
+                      class="inline-flex items-center px-3 py-1.5 border border-green-300 text-green-700 bg-green-50 text-xs font-medium rounded hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                      </svg>
+                      Add Preceptor
+                    </button>
+
+                    <!-- Certificate Button -->
+                    <button 
+                      v-if="canDownloadCertificate(application)" 
+                      @click="openCertificateModal(application)"
+                      class="inline-flex items-center px-3 py-1.5 border border-purple-300 text-purple-700 bg-purple-50 text-xs font-medium rounded hover:bg-purple-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-colors"
+                    >
+                      <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                      </svg>
+                      View Certificate
+                    </button>
+
+                    <!-- View Details Button -->
+                    <button 
+                      @click="viewDetails(application)"
+                      class="inline-flex items-center px-3 py-1.5 border border-gray-300 text-gray-700 bg-white text-xs font-medium rounded hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                    >
+                      <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                      </svg>
+                      View Details
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Empty State -->
+              <tr v-if="!isLoading && filteredApplications.length === 0">
+                <td colspan="5" class="px-6 py-12 text-center">
+                  <div class="flex flex-col items-center">
+                    <svg class="w-12 h-12 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                    </svg>
+                    <p class="text-gray-500 text-sm mb-2">No applications found</p>
+                    <p v-if="searchQuery" class="text-gray-400 text-xs">Try adjusting your search criteria</p>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Details Modal -->
     <teleport to="body">
-      <transition name="modal-fade">
-        <div v-if="isPreceptorModalOpen" class="fixed inset-0 z-[60] bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center p-4" @click.self="closePreceptorModal">
-          <ClinicalPreceptorModal :application-id="selectedApplicationForPreceptor?.id" @close="closePreceptorModal" @submit-success="handlePreceptorSubmitSuccess" />
+      <transition
+        name="modal"
+        enter-active-class="transition-all duration-300 ease-out"
+        enter-from-class="opacity-0 scale-95"
+        enter-to-class="opacity-100 scale-100"
+        leave-active-class="transition-all duration-200 ease-in"
+        leave-from-class="opacity-100 scale-100"
+        leave-to-class="opacity-0 scale-95"
+      >
+        <div
+          v-if="isDetailsModalOpen"
+          class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900 bg-opacity-50 backdrop-blur-sm"
+          @click.self="closeDetailsModal"
+        >
+          <div class="bg-white rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] overflow-hidden border border-gray-200 flex flex-col">
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between px-6 py-4 bg-gray-50 border-b border-gray-200">
+              <div>
+                <h2 class="text-xl font-semibold text-gray-900">Application Details</h2>
+                <p class="text-sm text-gray-600 mt-1">{{ selectedApplication?.center_name }}</p>
+              </div>
+              <button
+                @click="closeDetailsModal"
+                class="flex items-center justify-center w-8 h-8 text-gray-400 hover:text-gray-600 hover:bg-gray-200 rounded-lg transition-colors"
+              >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+              </button>
+            </div>
+
+            <!-- Modal Content -->
+            <div class="overflow-y-auto flex-1 px-6 py-6">
+              <div v-if="selectedApplication" class="space-y-6">
+                <!-- Institution Info -->
+                <div class="bg-gray-50 rounded-lg p-4">
+                  <h3 class="text-lg font-medium text-gray-900 mb-3">Institution Information</h3>
+                  <p class="text-gray-700 font-medium">
+                    {{ selectedApplication.institute_details?.name_of_institution || 'Not specified' }}
+                  </p>
+                </div>
+
+                <!-- Status Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Verification Status</label>
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
+                      {{ selectedApplication.physical_verification_status_display || 'Pending' }}
+                    </span>
+                  </div>
+
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Report</label>
+                    <div>
+                      <a
+                        v-if="selectedApplication.tc_report"
+                        :href="selectedApplication.tc_report"
+                        target="_blank"
+                        class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium transition-colors"
+                      >
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        View Report
+                      </a>
+                      <span v-else class="text-gray-500 italic">No report available</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Remarks -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Verification Remarks</label>
+                  <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <p class="text-gray-700 whitespace-pre-wrap">
+                      {{ selectedApplication.physical_verification_remarks || 'No remarks provided.' }}
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Clinical Preceptors -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-3">Clinical Preceptors</label>
+                  <div v-if="selectedApplication.clinical_preceptors?.length > 0" class="space-y-3">
+                    <div
+                      v-for="preceptor in selectedApplication.clinical_preceptors"
+                      :key="preceptor.id"
+                      class="flex items-center p-3 bg-white border border-gray-200 rounded-lg"
+                    >
+                      <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                        </svg>
+                      </div>
+                      <div>
+                        <p class="font-medium text-gray-900">{{ preceptor.name }}</p>
+                        <p class="text-sm text-gray-600">Registration: {{ preceptor.reg_no }}</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div v-else class="text-center py-8">
+                    <svg class="w-12 h-12 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                    <p class="text-gray-500">No clinical preceptors assigned</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="flex justify-end px-6 py-4 bg-gray-50 border-t border-gray-200">
+              <button
+                @click="closeDetailsModal"
+                class="px-6 py-2 bg-white border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 hover:border-gray-400 transition-colors font-medium"
+              >
+                Close
+              </button>
+            </div>
+          </div>
         </div>
       </transition>
     </teleport>
 
+    <!-- Preceptor Modal -->
+    <teleport to="body">
+      <transition name="modal-fade">
+        <div v-if="isPreceptorModalOpen" class="fixed inset-0 z-[60] bg-gray-900 bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4" @click.self="closePreceptorModal">
+          <ClinicalPreceptorModal
+            :application-id="selectedApplicationForPreceptor?.id"
+            :existing-preceptor-ids="selectedApplicationForPreceptor?.clinical_preceptors.map(p => p.application) || []"
+            @close="closePreceptorModal"
+            @submit-success="handlePreceptorSubmitSuccess"
+          />
+        </div>
+      </transition>
+    </teleport>
+
+    <!-- Certificate Modal -->
     <teleport to="body">
       <transition name="modal-certificate-fade">
-        <div v-if="showCertificateModal" class="fixed inset-0 z-[60] bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4" @click.self="closeCertificateModal">
+        <div v-if="showCertificateModal" class="fixed inset-0 z-[60] bg-gray-900 bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4" @click.self="closeCertificateModal">
           <div class="bg-white rounded-lg shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col">
             <div class="flex justify-between items-center p-4 border-b border-gray-200">
               <h3 class="text-lg font-semibold">Teaching Hospital Certificate</h3>
               <button @click="closeCertificateModal" class="p-2 rounded-full hover:bg-gray-200">
-                <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
               </button>
             </div>
             <div class="overflow-y-auto flex-1">
@@ -191,10 +449,22 @@
       </transition>
     </teleport>
 
-    <!-- Other modals remain unchanged -->
-    <TeachingCenterApplication :is-open="isApplicationFormModalOpen" :draft-data="selectedApplication" @close="closeApplicationFormModal" @form-submitted="handleApplicationFormSubmitted" @draft-saved="handleDraftSaved" />
-    <PaymentModal ref="teachingCenterPaymentModalRef" :amount="teaching_hospital_registration" @payment-completed="handleTeachingCenterPaymentCompleted" @close="closeTeachingCenterPaymentModal" />
+    <!-- Application Form Modal -->
+    <TeachingCenterApplication 
+      :is-open="isApplicationFormModalOpen" 
+      :draft-data="selectedApplication" 
+      @close="closeApplicationFormModal" 
+      @form-submitted="handleApplicationFormSubmitted" 
+      @draft-saved="handleDraftSaved" 
+    />
 
+    <!-- Payment Modal -->
+    <PaymentModal 
+      ref="teachingCenterPaymentModalRef" 
+      :amount="teaching_hospital_registration" 
+      @payment-completed="handleTeachingCenterPaymentCompleted" 
+      @close="closeTeachingCenterPaymentModal" 
+    />
   </div>
 </template>
 
@@ -210,7 +480,6 @@ import TeachingCenterApplication from './TeachingCenterApplicationModal.vue'
 import PaymentModal from '@/components/common/PaymentModal.vue'
 import TeachingCenterCertificate from './TeachingCenterCertificate.vue'
 
-// --- State Variables ---
 const toast = useToast()
 const authStore = useAuthStore()
 const applications = ref([])
@@ -232,8 +501,9 @@ const teachingCenterPaymentModalRef = ref(null)
 const selectedApplicationForPayment = ref(null)
 const savedDraft = ref(null)
 const DRAFT_KEY = 'teachingCenterApplicationDraft'
+const expandedRemarksId = ref(null)
+const REMARKS_TRUNCATE_LIMIT = 50
 
-// --- Computed Properties & Watchers ---
 const dzongkhagOptionsForCenter = computed(() =>
   bhutanDzongkhagsGewogs.map((d) => ({ value: d.dzongkhag, label: d.dzongkhag })),
 )
@@ -249,21 +519,14 @@ watch(() => filterDzongkhag.value, () => { filterGewog.value = '' })
 const filteredApplications = computed(() => {
   if (!Array.isArray(applications.value)) return []
   return applications.value.filter((app) => {
-    const appDzongkhag = app.state_dzongkhag || ''
-    const appGewog = app.city_gewog || ''
+    const instituteName = app.institute_details?.name_of_institution || ''
     const matchesSearch =
       app.center_name?.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      app.center_location?.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      appDzongkhag.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      appGewog.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      app.preceptorName?.toLowerCase().includes(searchQuery.value.toLowerCase())
-    const matchesDzongkhag = filterDzongkhag.value ? appDzongkhag === filterDzongkhag.value : true
-    const matchesGewog = filterGewog.value ? appGewog === filterGewog.value : true
-    return matchesSearch && matchesDzongkhag && matchesGewog
+      instituteName.toLowerCase().includes(searchQuery.value.toLowerCase())
+    return matchesSearch
   })
 })
 
-// --- Formatting & Class Functions ---
 const statusClass = (status) => {
   const s = status ? status.toLowerCase() : 'unknown'
   if (s === 'approved') return 'bg-green-100 text-green-700 border border-green-200'
@@ -274,7 +537,7 @@ const statusClass = (status) => {
 
 const paymentStatusClass = (status) => {
   const s = status ? status.toLowerCase().replace(/_/g, ' ') : 'not paid'
-  if (s === 'paid' || s === 'completed' || s === 'success') return 'bg-green-100 text-green-700 border border-green-200'
+  if (s === 'paid' || s === 'completed') return 'bg-green-100 text-green-700 border border-green-200'
   if (s === 'pending payment' || s === 'processing payment' || s === 'awaiting payment') return 'bg-yellow-100 text-yellow-700 border border-yellow-200'
   if (s === 'failed') return 'bg-red-100 text-red-700 border border-red-200'
   if (s === 'not paid') return 'bg-orange-100 text-orange-700 border border-orange-200'
@@ -286,27 +549,18 @@ const formatPaymentStatus = (status) => {
   return status.replace(/_/g, ' ').split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
 }
 
-const formatDate = (date) => {
-  if (!date) return 'N/A'
-  return new Date(date).toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: '2-digit' })
+const truncateText = (text, limit) => {
+  if (text && text.length > limit) {
+    return text.substring(0, limit) + '...'
+  }
+  return text
 }
 
-// --- Data Fetching Functions ---
-const fetchPreceptorDetails = async (teachingCenterId) => {
-  if (!teachingCenterId) return null
-  try {
-    const params = { teaching_center: teachingCenterId }
-    const response = await apiServices.getMhpcClinicalPreceptors(params)
-    const preceptors = response.data?.results || []
-    if (preceptors.length > 0) {
-      return { name: preceptors[0].name, id: preceptors[0].id }
-    }
-    return null
-  } catch (error) {
-    if (error.response && error.response.status !== 404) {
-      console.error(`Error fetching preceptor details for TC ${teachingCenterId}:`, error)
-    }
-    return null
+const toggleRemarks = (appId) => {
+  if (expandedRemarksId.value === appId) {
+    expandedRemarksId.value = null
+  } else {
+    expandedRemarksId.value = appId
   }
 }
 
@@ -315,22 +569,10 @@ const fetchApplications = async () => {
   isLoading.value = true
   try {
     const response = await apiServices.getMhpcTeachingCenterByCid(authStore.user.cid)
-    let fetchedApplications = response.data?.results || []
+    const fetchedApplications = response.data?.results || []
 
     if (Array.isArray(fetchedApplications)) {
-      applications.value = await Promise.all(
-        fetchedApplications.map(async (app) => {
-          const preceptorInfo = await fetchPreceptorDetails(app.id)
-          return {
-            ...app,
-            tc_review_decision: app.tc_review_decision || 'Pending',
-            payment_status: app.payment_status || 'not_paid',
-            isPreceptorAdded: !!preceptorInfo,
-            preceptorName: preceptorInfo ? preceptorInfo.name : null,
-            preceptorId: preceptorInfo ? preceptorInfo.id : null,
-          }
-        })
-      )
+      applications.value = fetchedApplications
     } else {
       applications.value = []
     }
@@ -342,67 +584,59 @@ const fetchApplications = async () => {
   }
 }
 
-// --- Condition-Checking Functions ---
 const canMakePayment = (application) => {
   const decision = application.tc_review_decision?.toLowerCase()
   const status = application.payment_status ? application.payment_status.toLowerCase().replace(/ /g, '_') : 'not_paid'
-  return decision === 'approved' && ['not_paid', 'failed', 'pending_payment', 'awaiting_payment'].includes(status)
+  return decision === 'approved' && ['not_paid', 'failed', 'awaiting_payment'].includes(status)
 }
 
 const canAddPreceptor = (application) => {
   const status = application.payment_status ? application.payment_status.toLowerCase() : ''
-  return application.tc_review_decision?.toLowerCase() === 'approved' && ['paid', 'completed', 'success'].includes(status)
-}
-
-const canRemovePreceptor = (application) => {
-  return application.isPreceptorAdded
+  return application.tc_review_decision?.toLowerCase() === 'approved' && ['paid', 'completed'].includes(status)
 }
 
 const canDownloadCertificate = (application) => {
   const status = application.payment_status ? application.payment_status.toLowerCase() : ''
   return (
     application.tc_review_decision?.toLowerCase() === 'approved' &&
-    ['paid', 'completed', 'success'].includes(status)
+    ['paid', 'completed'].includes(status) &&
+    application.clinical_preceptors && application.clinical_preceptors.length > 0
   )
 }
 
-
-// --- New/Fixed Functions for Draft Handling & Modals ---
 const openApplicationFormModal = (loadDraft = false) => {
   if (loadDraft && savedDraft.value) {
-    selectedApplication.value = savedDraft.value;
+    selectedApplication.value = savedDraft.value
   } else {
-    selectedApplication.value = null;
+    selectedApplication.value = null
   }
-  isApplicationFormModalOpen.value = true;
-};
+  isApplicationFormModalOpen.value = true
+}
 
 const discardDraft = () => {
   if (confirm('Are you sure you want to discard the saved draft?')) {
-    localStorage.removeItem(DRAFT_KEY);
-    savedDraft.value = null;
-    openApplicationFormModal(false);
+    localStorage.removeItem(DRAFT_KEY)
+    savedDraft.value = null
+    openApplicationFormModal(false)
   }
-};
+}
 
 const handleDraftSaved = (draftData) => {
-  localStorage.setItem(DRAFT_KEY, JSON.stringify(draftData));
-  savedDraft.value = draftData;
-  toast.info('Your application has been saved as a draft.');
-  closeApplicationFormModal();
-};
+  localStorage.setItem(DRAFT_KEY, JSON.stringify(draftData))
+  savedDraft.value = draftData
+  toast.info('Your application has been saved as a draft.')
+  closeApplicationFormModal()
+}
 
-
-// --- Event Handlers & Modal Control ---
 const openCertificateModal = (application) => {
   selectedCertificateData.value = {
     id: application.id,
     center_name: application.center_name,
-    valid_since: application.physical_verification_date || application.valid_since || new Date().toISOString(),
-    valid_till: application.valid_till,
+    valid_since: application.valid_since || new Date().toISOString(),
+    valid_till: application.valid_till || 'N/A',
     institute_name: application.institute_details?.name_of_institution || 'N/A',
-    location: `${application.center_location || ''}, ${application.city_gewog || ''}, ${application.state_dzongkhag || ''}`.replace(/, $/, '').replace(/^, /, ''),
-    issue_date: application.physical_verification_date || new Date().toISOString(),
+    location: application.city_gewog + ', ' + application.state_dzongkhag,
+    issue_date: application.updated_at || new Date().toISOString(),
   }
   showCertificateModal.value = true
 }
@@ -426,9 +660,9 @@ const openAddPreceptorModal = (application) => {
 }
 
 const closePreceptorModal = () => {
-  isPreceptorModalOpen.value = false;
-  selectedApplicationForPreceptor.value = null;
-};
+  isPreceptorModalOpen.value = false
+  selectedApplicationForPreceptor.value = null
+}
 
 const handlePreceptorSubmitSuccess = async () => {
   toast.success('Clinical Preceptor added successfully. Refreshing list...')
@@ -436,107 +670,93 @@ const handlePreceptorSubmitSuccess = async () => {
   await fetchApplications()
 }
 
-const confirmRemovePreceptor = (application) => {
-  if (confirm(`Are you sure you want to remove the preceptor "${application.preceptorName}" for ${application.center_name}?`)) {
-    removePreceptor(application)
+const confirmRemovePreceptor = (preceptor, center) => {
+  if (confirm(`Are you sure you want to remove the preceptor "${preceptor.name}" from ${center.center_name}?`)) {
+    removePreceptor(preceptor)
   }
-};
+}
 
-const removePreceptor = async (application) => {
-  if (!application.preceptorId) {
-    toast.error('Preceptor ID not found.');
-    return;
+const removePreceptor = async (preceptor) => {
+  if (!preceptor.id) {
+    toast.error('Preceptor ID not found.')
+    return
   }
-  isLoading.value = true;
+  isLoading.value = true
   try {
-    await apiServices.deleteMhpcClinicalPreceptor(application.preceptorId);
-    toast.success('Preceptor removed successfully.');
-    await fetchApplications();
+    await apiServices.deleteMhpcClinicalPreceptor(preceptor.id)
+    toast.success('Preceptor removed successfully.')
+    await fetchApplications()
   } catch (error) {
-    toast.error('Failed to remove preceptor.');
+    console.error('Error removing preceptor:', error)
+    toast.error('Failed to remove preceptor.')
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
-};
+}
 
 const viewDetails = (application) => {
-  selectedApplication.value = application;
-  isDetailsModalOpen.value = true;
-};
+  selectedApplication.value = application
+  isDetailsModalOpen.value = true
+}
 
 const closeDetailsModal = () => {
-  isDetailsModalOpen.value = false;
-  selectedApplication.value = null;
-};
+  isDetailsModalOpen.value = false
+  selectedApplication.value = null
+}
 
 const closeApplicationFormModal = () => {
-  isApplicationFormModalOpen.value = false;
-  selectedApplication.value = null; // Also clear selection on close
-};
+  isApplicationFormModalOpen.value = false
+  selectedApplication.value = null
+}
 
 const handleApplicationFormSubmitted = () => {
-  closeApplicationFormModal();
-  fetchApplications();
-  localStorage.removeItem(DRAFT_KEY); // Clear the draft on successful submission
-  savedDraft.value = null;
-  toast.success('Application submitted successfully!');
-};
+  closeApplicationFormModal()
+  fetchApplications()
+  localStorage.removeItem(DRAFT_KEY)
+  savedDraft.value = null
+  toast.success('Application submitted successfully!')
+}
 
 const initiateTeachingCenterPayment = (application) => {
-  selectedApplicationForPayment.value = application;
+  selectedApplicationForPayment.value = application
   if (teachingCenterPaymentModalRef.value) {
-    teachingCenterPaymentModalRef.value.openModal();
+    teachingCenterPaymentModalRef.value.openModal()
   }
-};
+}
 
 const closeTeachingCenterPaymentModal = () => {
   if (!isPaymentProcessing.value) {
-    selectedApplicationForPayment.value = null;
+    selectedApplicationForPayment.value = null
   }
-};
+}
 
 const handleTeachingCenterPaymentCompleted = async (paymentData) => {
-    if (!selectedApplicationForPayment.value) return;
-    isPaymentProcessing.value = true;
+    if (!selectedApplicationForPayment.value) return
+    isPaymentProcessing.value = true
     try {
-        const payload = { payment_status: 'Paid', payment_id: paymentData.transactionId };
-        await apiServices.patchMhpcTeachingCenter(selectedApplicationForPayment.value.id, payload);
-        toast.success('Payment successful! Your application status has been updated.');
-        await fetchApplications();
+        const payload = { payment_status: 'Paid', payment_id: paymentData.transactionId }
+        await apiServices.patchMhpcTeachingCenter(selectedApplicationForPayment.value.id, payload)
+        toast.success('Payment successful! Your application status has been updated.')
+        await fetchApplications()
     } catch (error) {
-        console.error('Error updating payment status:', error);
-        toast.error('Payment was successful, but failed to update application status. Please contact support.');
+        console.error('Error updating payment status:', error)
+        toast.error('Payment was successful, but failed to update application status. Please contact support.')
     } finally {
-        isPaymentProcessing.value = false;
-        closeTeachingCenterPaymentModal();
+        isPaymentProcessing.value = false
+        closeTeachingCenterPaymentModal()
     }
-};
+}
 
-
-// --- Lifecycle Hook ---
 onMounted(() => {
-  fetchApplications();
-  const draft = localStorage.getItem(DRAFT_KEY);
+  fetchApplications()
+  const draft = localStorage.getItem(DRAFT_KEY)
   if (draft) {
-    savedDraft.value = JSON.parse(draft);
+    savedDraft.value = JSON.parse(draft)
   }
 })
 </script>
 
 <style scoped>
-.application-tracking {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.85), rgba(245, 248, 252, 0.8));
-}
-
-table th {
-  @apply text-gray-500 font-medium;
-}
-
-select:focus,
-input[type='text']:focus {
-  box-shadow: 0 0 0 2px theme('colors.indigo.300');
-}
-
 .modal-fade-enter-active,
 .modal-fade-leave-active {
   transition: opacity 0.3s ease-in-out;
@@ -547,30 +767,6 @@ input[type='text']:focus {
   opacity: 0;
 }
 
-.modal-details-fade-enter-active,
-.modal-details-fade-leave-active {
-  transition: opacity 0.3s ease-in-out;
-}
-
-.modal-details-fade-enter-from,
-.modal-details-fade-leave-to {
-  opacity: 0;
-}
-
-.modal-details-fade-enter-active .bg-white,
-.modal-details-fade-leave-active .bg-white {
-  transition:
-    opacity 0.3s ease-in-out,
-    transform 0.3s ease-in-out;
-}
-
-.modal-details-fade-enter-from .bg-white,
-.modal-details-fade-leave-to .bg-white {
-  opacity: 0;
-  transform: scale(0.95) translateY(-20px);
-}
-
-/* NEW: Certificate Modal Transition */
 .modal-certificate-fade-enter-active,
 .modal-certificate-fade-leave-active {
   transition: opacity 0.3s ease-in-out;

@@ -13,7 +13,7 @@
       />
 
       <!-- Filter Section (can be expanded if needed) -->
-      <div class="bg-white rounded-xl shadow-lg p-6 mb-8 border border-gray-100">
+      <!-- <div class="bg-white rounded-xl shadow-lg p-6 mb-8 border border-gray-100">
         <div class="flex justify-between items-center mb-6">
           <h3 class="text-lg font-semibold text-gray-900">Advanced Filters</h3>
           <button
@@ -39,7 +39,7 @@
             Reset Filters
           </button>
         </div>
-      </div>
+      </div> -->
 
       <!-- Results Section -->
       <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">

@@ -1,7 +1,6 @@
 <template>
-  <!-- Use the new computed property to control the modal's visibility -->
   <div
-    v-if="certificateData"
+    v-if="application"
     class="fixed inset-0 z-[100] overflow-y-auto"
     aria-labelledby="modal-title"
     role="dialog"
@@ -21,14 +20,12 @@
         class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full"
       >
         <div id="certificate-content" class="bg-white px-8 pt-8 pb-6 relative min-h-[842px]">
-          <!-- Watermark -->
           <div
             class="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none"
           >
             <img src="@/assets/mhpc-logo.png" alt="Watermark" class="w-2/3 max-w-xl" />
           </div>
 
-          <!-- Header Section -->
           <div class="flex justify-between items-start mb-8">
             <div class="text-center w-32">
               <img src="@/assets/rgob.png" alt="RGOB Logo" class="h-24 mx-auto" />
@@ -50,18 +47,16 @@
             </div>
           </div>
 
-          <!-- Main Content -->
           <div class="mt-8 relative">
-            <!-- CHANGED: All instances of 'application' are replaced with 'certificateData' -->
             <div class="grid grid-cols-[200px_1fr] gap-y-4 text-sm px-12">
               <div class="font-semibold">Name:</div>
-              <div>{{ certificateData.full_name }}</div>
+              <div>{{ application.full_name }}</div>
 
               <div class="font-semibold">Citizenship ID No.:</div>
-              <div>{{ certificateData.cid_no }}</div>
+              <div>{{ application.cid_no }}</div>
 
               <div class="font-semibold">Registration No.:</div>
-              <div>{{ certificateData.registration_no }}</div>
+              <div>{{ application.registration_no }}</div>
 
               <div class="font-semibold">Category:</div>
               <div>Practitioner in Modern Medicine</div>
@@ -70,10 +65,10 @@
               <div>Ophthalmologist</div>
 
               <div class="font-semibold">Date of Initial Registration:</div>
-              <div>{{ formatDate(certificateData.registration_date) }}</div>
+              <div>{{ formatDate(application.registration_date) }}</div>
 
               <div class="font-semibold">Registration Expiry Date:</div>
-              <div>{{ formatDate(certificateData.expiry_date) }}</div>
+              <div>{{ formatDate(application.expiry_date) }}</div>
 
               <div class="font-semibold">Registration Status:</div>
               <div>Registered</div>
@@ -83,7 +78,7 @@
 
               <div class="font-semibold">Qualification(s):</div>
               <div class="space-y-1">
-                <div v-for="qual in certificateData.user_qualifications" :key="qual.id">
+                <div v-for="qual in application.user_qualifications" :key="qual.id">
                   {{ qual.qualification_type_display }} | {{ qual.qualification_name_display }} |
                   {{ qual.completion_year }}
                 </div>
@@ -92,8 +87,8 @@
 
             <div class="absolute top-0 right-12">
               <img
-                v-if="certificateData.passport_photo"
-                :src="certificateData.passport_photo"
+                v-if="application.passport_photo"
+                :src="application.passport_photo"
                 alt="Passport Photo"
                 class="h-32 w-32 object-cover rounded-md border-2 border-gray-300 shadow-sm"
               />
@@ -122,9 +117,8 @@
                 <div class="mt-2 text-sm">
                   <p class="font-medium">{{ directorName }}</p>
                   <p>{{ directorDesignation }}</p>
-                  <!-- ADDED: Safety check to prevent crash if user_qualifications is empty -->
-                  <p v-if="certificateData.user_qualifications?.length" class="mt-1">
-                    Dated: {{ formatDate(certificateData.user_qualifications[0].updated_at) }}
+                  <p v-if="application.user_qualifications?.length" class="mt-1">
+                    Dated: {{ formatDate(application.user_qualifications[0].updated_at) }}
                   </p>
                 </div>
               </div>
@@ -173,9 +167,9 @@ import VueQrcode from '@chenfengyuan/vue-qrcode'
 import html2pdf from 'html2pdf.js'
 import apiServices from '@/services/services'
 
+// --- FIX 1: Define the prop to accept a single, clean application object. ---
 const props = defineProps({
   application: {
-    // This prop still receives the { results: [...] } object
     type: Object,
     default: null,
   },
@@ -186,18 +180,12 @@ const directorName = ref('Dr. Ugyen Tshewang')
 const directorDesignation = ref('Director')
 const directorSignature = ref(null)
 
-// ADDED: Computed property to safely unwrap the application data
-const certificateData = computed(() => {
-  if (props.application && props.application.results && props.application.results.length > 0) {
-    return props.application.results[0]
-  }
-  return null
-})
+// --- FIX 2: Removed the 'certificateData' computed property. We will use `props.application` directly. ---
 
 onMounted(async () => {
   try {
     const response = await apiServices.getMhpcMastersESignatures()
-    if (response.data && response.data.results && response.data.results.length > 0) {
+    if (response.data?.results?.length > 0) {
       const activeDirector =
         response.data.results.find((dir) => dir.status === true) || response.data.results[0]
       directorName.value = activeDirector.name
@@ -213,11 +201,11 @@ const closeModal = () => {
   emit('close')
 }
 
-// CHANGED: Use the new 'certificateData' computed property
+// --- FIX 3: All computed properties and functions now use `props.application` directly ---
 const qrCodeData = computed(() => {
   const baseUrl = window.location.origin
-  return certificateData.value
-    ? `${baseUrl}/certification-validity/search?service_type=health_certification&cert_number=${certificateData.value.registration_no}`
+  return props.application
+    ? `${baseUrl}/certification-validity/search?service_type=health_certification&cert_number=${props.application.registration_no}`
     : ''
 })
 
@@ -233,18 +221,16 @@ const formatDate = (dateString) => {
     .replace(/\//g, '-')
 }
 
-// CHANGED: Use the new 'certificateData' computed property
 const downloadCertificate = () => {
-  if (!certificateData.value) return // Add a guard clause
+  if (!props.application) return
   const element = document.getElementById('certificate-content')
   const opt = {
     margin: 0,
-    filename: `health_certification_${certificateData.value.registration_no}.pdf`,
+    filename: `health_certification_${props.application.registration_no}.pdf`,
     image: { type: 'jpeg', quality: 0.98 },
     html2canvas: { scale: 2 },
     jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
   }
-
   html2pdf().from(element).set(opt).save()
 }
 </script>

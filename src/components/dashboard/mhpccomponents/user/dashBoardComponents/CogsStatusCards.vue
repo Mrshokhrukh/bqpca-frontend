@@ -54,7 +54,7 @@
         <div
           v-for="detail in detailsToShow"
           :key="detail.label"
-          class="bg-white p-4 rounded-xl border border-gray-200/80 flex items-start space-x-3 hover:border-blue-300 hover:shadow-sm transition-all duration-200"
+          class="bg-white p-4 rounded-xl border border-gray-200/80 flex items-start space-x-3"
         >
           <div class="mt-1">
             <component :is="detail.icon" class="w-5 h-5 text-gray-400" />
@@ -72,18 +72,10 @@
       Last Updated: {{ formatDate(application.updated_at) }}
     </div>
   </div>
-
-  <div v-else class="bg-white shadow-lg rounded-xl p-8 text-center border">
-    <div class="flex flex-col items-center text-gray-500">
-      <DocumentMagnifyingGlassIcon class="w-12 h-12 text-gray-400" />
-      <h4 class="font-semibold text-lg mt-3">No Application Data</h4>
-      <p class="text-sm mt-1">Could not find any Certificate of Good Standing application.</p>
-    </div>
-  </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { computed } from 'vue'
 import {
   DocumentMagnifyingGlassIcon,
   CheckBadgeIcon,
@@ -97,57 +89,47 @@ import {
   ExclamationCircleIcon,
   ArrowPathIcon,
 } from '@heroicons/vue/24/outline'
-import apiService from '@/services/services'
 
-const application = ref(null)
-
-onMounted(async () => {
-  try {
-    const response = await apiService.getMhpcCogs()
-    if (response.data.results && response.data.results.length > 0) {
-      application.value = response.data.results[0]
-    } else {
-      console.warn('COGS: No applications found in the API response.')
-    }
-  } catch (error) {
-    console.error('Error fetching COGS application:', error)
-  }
+// The component now only needs the application prop. No close events needed.
+const props = defineProps({
+  application: {
+    type: Object,
+    default: null,
+  },
 })
 
+// All computed properties remain the same and will work perfectly.
 const statusSteps = computed(() => {
-  if (!application.value) return []
+  if (!props.application) return []
   return [
     {
       label: 'Application Review',
-      value: application.value.review_status,
+      value: props.application.review_status,
       icon: DocumentMagnifyingGlassIcon,
     },
     {
       label: 'Endorsement',
-      value: application.value.endorsement_decision,
+      value: props.application.endorsement_decision,
       icon: CheckBadgeIcon,
     },
     {
       label: 'Payment',
-      value: application.value.is_payment_complete ? 'Complete' : 'Pending',
+      value: props.application.is_payment_complete ? 'Complete' : 'Pending',
       icon: BanknotesIcon,
     },
   ]
 })
 
 const additionalDetails = computed(() => {
-  if (!application.value) return []
+  if (!props.application) return []
   return [
-    { label: 'Agency', value: application.value.agency, icon: BuildingOffice2Icon },
-    { label: 'Department', value: application.value.department, icon: BuildingLibraryIcon },
-    { label: 'Workplace', value: application.value.workplace, icon: BriefcaseIcon },
+    { label: 'Agency', value: props.application.agency?.name, icon: BuildingOffice2Icon },
+    { label: 'Department', value: props.application.department?.name, icon: BuildingLibraryIcon },
+    { label: 'Workplace', value: props.application.workplace?.name, icon: BriefcaseIcon },
   ]
 })
 
-// A new computed property to filter out details that are null or empty
-const detailsToShow = computed(() => {
-  return additionalDetails.value.filter((detail) => detail.value)
-})
+const detailsToShow = computed(() => additionalDetails.value.filter((detail) => detail.value))
 
 const getStatusInfo = (status) => {
   switch (String(status).toLowerCase()) {
@@ -181,10 +163,9 @@ const getStatusInfo = (status) => {
 }
 
 const overallStatus = computed(() => {
-  if (!application.value)
+  if (!props.application)
     return { text: 'Loading', class: 'bg-gray-200 text-gray-800', icon: ArrowPathIcon }
-
-  const app = application.value
+  const app = props.application
   if (app.review_status === 'Regretted' || app.endorsement_decision === 'Regretted') {
     return { text: 'Regretted', class: 'bg-red-100 text-red-800', icon: XCircleIcon }
   }

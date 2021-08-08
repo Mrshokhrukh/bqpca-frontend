@@ -207,10 +207,10 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import { RefreshCw } from 'lucide-vue-next' // Ensure you have this or a similar icon library
+import { RefreshCw } from 'lucide-vue-next' 
 import { useToast } from 'vue-toastification'
 import EoiApplicationsModal from './EoiApplicationsModal.vue'
-import apiService from '@/services/services' // Adjust path as necessary
+import apiService from '@/services/services' 
 
 const toast = useToast()
 

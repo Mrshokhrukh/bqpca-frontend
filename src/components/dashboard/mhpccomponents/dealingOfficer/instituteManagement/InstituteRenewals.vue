@@ -92,8 +92,8 @@
                 {{ institute.full_name }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <span :class="getStatusClass(institute.review_decision, institute.valid_till)">
-                  {{ getStatusText(institute.review_decision, institute.valid_till) }}
+                <span :class="getStatusClass(institute)">
+                  {{ getStatusText(institute) }}
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -103,7 +103,8 @@
                 <div class="flex items-center gap-x-2">
                   <button
                     @click="openModal(institute)"
-                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200"
+                    :disabled="!institute.latest_renewal || institute.latest_renewal.renewal_status !== 'PENDING'"
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200 disabled:bg-gray-300 disabled:cursor-not-allowed"
                   >
                     View Details
                   </button>
@@ -135,6 +136,7 @@
 import { ref, onMounted } from 'vue'
 import { useToast } from 'vue-toastification'
 import InstituteRenewalApplicationDetailsModal from '../modals/InstituteRenewalApplicationDetailsModal.vue'
+// Make sure this path is correct for your project structure
 import apiService from '@/services/services'
 
 const toast = useToast()
@@ -150,12 +152,13 @@ onMounted(() => {
 const fetchInstitutes = async () => {
   isLoading.value = true
   try {
+    // Assuming this endpoint returns the Institute list with `latest_renewal` nested object
     const response = await apiService.getMhpcInstitutes()
     if (response.data && Array.isArray(response.data.results)) {
       institutes.value = response.data.results.sort((a, b) => {
-        if (!a.valid_till) return 1
-        if (!b.valid_till) return -1
-        return new Date(a.valid_till) - new Date(b.valid_till)
+        const dateA = a.valid_till ? new Date(a.valid_till) : new Date(0)
+        const dateB = b.valid_till ? new Date(b.valid_till) : new Date(0)
+        return dateA - dateB
       })
     } else {
       console.error('Unexpected API response format:', response)
@@ -172,15 +175,22 @@ const fetchInstitutes = async () => {
 }
 
 const openModal = (institute) => {
+  // We only open the modal if there's a pending renewal
+  if (!institute.latest_renewal || institute.latest_renewal.renewal_status !== 'PENDING') {
+    toast.info('No pending renewal action for this institute.')
+    return
+  }
+  // Pass all the necessary IDs and details to the modal
   selectedInstitute.value = {
-    id: institute.id,
+    instituteId: institute.id,
+    instituteCID: institute.CID, // Pass the CID
+    renewalId: institute.latest_renewal.id, // Pass the renewal's ID
     instituteName: institute.name_of_institution,
     applicantName: institute.full_name,
-    renewalDate: institute.updated_at,
+    lastUpdated: institute.latest_renewal.created_at,
     expiryDate: institute.valid_till,
-    review_decision: institute.review_decision,
-    remarks: institute.remarks,
-    reason_if_rejected: institute.reason_if_rejected,
+    officerRemarks: institute.latest_renewal.officer_remarks || '',
+    renewalStatus: institute.latest_renewal.renewal_status,
   }
   isModalOpen.value = true
 }
@@ -192,7 +202,7 @@ const closeModal = () => {
 
 const handleApplicationUpdate = () => {
   closeModal()
-  fetchInstitutes()
+  fetchInstitutes() // Refresh the list after an update
 }
 
 const confirmDelete = (institute) => {
@@ -201,7 +211,8 @@ const confirmDelete = (institute) => {
       `Are you sure you want to delete the application for "${institute.name_of_institution}"? This action cannot be undone.`,
     )
   ) {
-    deleteApplication(institute.id)
+    // Note: Deleting might now require using the CID instead of ID, depending on backend setup
+    deleteApplication(institute.id) // Or institute.CID
   }
 }
 
@@ -225,50 +236,76 @@ const formatDate = (dateString) => {
   })
 }
 
-const isExpired = (validTill) => {
-  if (!validTill) return false
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  return new Date(validTill) < today
+// --- REFACTORED STATUS FUNCTIONS ---
+
+const getStatusHelpers = (institute) => {
+  const renewalStatus = institute.latest_renewal?.renewal_status;
+  const validTill = institute.valid_till;
+
+  const isExpired = () => {
+    if (!validTill) return false
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return new Date(validTill) < today
+  }
+
+  const isRenewalDueSoon = () => {
+    if (!validTill) return false
+    const today = new Date()
+    const renewalThreshold = new Date()
+    renewalThreshold.setDate(today.getDate() + 90)
+    return new Date(validTill) <= renewalThreshold && !isExpired()
+  }
+
+  return { renewalStatus, validTill, isExpired, isRenewalDueSoon };
 }
 
-const isRenewalDueSoon = (validTill) => {
-  if (!validTill) return false
-  const today = new Date()
-  const renewalThreshold = new Date()
-  renewalThreshold.setDate(today.getDate() + 90)
-  return new Date(validTill) <= renewalThreshold
+const getStatusClass = (institute) => {
+  const { renewalStatus, isExpired, isRenewalDueSoon } = getStatusHelpers(institute);
+
+  const baseClass = 'px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full';
+
+  if (renewalStatus === 'PENDING') {
+    return `${baseClass} bg-yellow-100 text-yellow-800`;
+  }
+  if (renewalStatus === 'AWAITING_PAYMENT') {
+    return `${baseClass} bg-purple-100 text-purple-800`;
+  }
+  if (isExpired()) {
+    return `${baseClass} bg-red-100 text-red-800`;
+  }
+  if (isRenewalDueSoon()) {
+    return `${baseClass} bg-blue-100 text-blue-800`;
+  }
+  if (institute.is_currently_active) {
+    return `${baseClass} bg-green-100 text-green-800`;
+  }
+  if (renewalStatus === 'REJECTED') {
+    return `${baseClass} bg-gray-100 text-gray-800`;
+  }
+
+  // Default/Initial state
+  return `${baseClass} bg-gray-100 text-gray-800`;
 }
 
-const getStatusClass = (status, validTill) => {
-  if (status === 'Pending') {
-    return 'px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800'
-  }
-  if (status === 'Approved') {
-    if (isExpired(validTill)) {
-      return 'px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800'
-    }
-    if (isRenewalDueSoon(validTill)) {
-      return 'px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800'
-    }
-    return 'px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800'
-  }
-  return 'px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800'
-}
+const getStatusText = (institute) => {
+  const { renewalStatus, isExpired, isRenewalDueSoon } = getStatusHelpers(institute);
 
-const getStatusText = (status, validTill) => {
-  if (status === 'Pending') return 'Pending Renewal'
-  if (status === 'Approved') {
-    if (isExpired(validTill)) return 'Expired'
-    if (isRenewalDueSoon(validTill)) return 'Renewal Due'
-    return 'Active'
-  }
-  if (status === 'Rejected' || status === 'Regretted') return 'Rejected'
-  return status
+  if (renewalStatus === 'PENDING') return 'Pending Renewal';
+  if (renewalStatus === 'AWAITING_PAYMENT') return 'Awaiting Payment';
+  if (isExpired()) return 'Expired';
+  if (isRenewalDueSoon()) return 'Renewal Due';
+  if (institute.is_currently_active) return 'Active';
+  if (renewalStatus === 'REJECTED') return 'Renewal Rejected';
+
+  // Default/Initial state
+  return 'Inactive';
 }
 
 const getPendingCount = () => {
   if (!Array.isArray(institutes.value)) return 0
-  return institutes.value.filter((inst) => inst.review_decision === 'Pending').length
+  return institutes.value.filter(
+    (inst) => inst.latest_renewal && inst.latest_renewal.renewal_status === 'PENDING',
+  ).length
 }
 </script>

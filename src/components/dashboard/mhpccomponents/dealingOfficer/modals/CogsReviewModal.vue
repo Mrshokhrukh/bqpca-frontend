@@ -4,7 +4,7 @@
       v-if="isOpen"
       class="fixed z-50 inset-0 overflow-y-auto bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
     >
-      <div class="relative max-w-7xl mx-auto">
+      <div class="relative mx-auto">
         <div class="relative bg-white rounded-xl shadow-2xl overflow-hidden">
           <div
             class="bg-blue-50 px-8 py-5 border-b border-blue-100 flex justify-between items-center"
@@ -140,9 +140,6 @@
                 <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
                   <h3 class="text-lg font-semibold text-gray-800 flex items-center gap-2 mb-4">
                     <UserIcon class="w-5 h-5 text-blue-500" /> Applicant Details
-                    <span v-if="isEditing" class="text-xs font-normal text-orange-600"
-                      >(Editing core details - use caution)</span
-                    >
                   </h3>
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                     <div>
@@ -176,11 +173,11 @@
                         v-model="editableApplication.gender"
                         class="modal-input"
                       >
-                        <option>Male</option>
-                        <option>Female</option>
-                        <option>Others</option>
+                        <option>male</option>
+                        <option>female</option>
+                        <option>other</option>
                       </select>
-                      <span v-else class="modal-display-text">{{
+                      <span v-else class="modal-display-text capitalize">{{
                         application.gender || 'N/A'
                       }}</span>
                     </div>
@@ -211,7 +208,7 @@
                       <a
                         v-else
                         :href="'mailto:' + application.email_address"
-                        class="text-sm text-blue-600 hover:underline"
+                        class="text-sm text-blue-600 hover:underline block p-2"
                         >{{ application.email_address || 'N/A' }}</a
                       >
                     </div>
@@ -227,29 +224,58 @@
                         application.address || 'N/A'
                       }}</span>
                     </div>
+                  </div>
+                </div>
+
+                <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+                  <h3 class="text-lg font-semibold text-gray-800 flex items-center gap-2 mb-4">
+                    <SendIcon class="w-5 h-5 text-blue-500" /> Recipient Details
+                  </h3>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                     <div>
-                      <label class="block text-sm font-medium text-gray-500 mb-1">PO Box</label>
+                      <label class="block text-sm font-medium text-gray-500 mb-1"
+                        >Recipient Name</label
+                      >
                       <input
                         v-if="isEditing"
                         type="text"
-                        v-model="editableApplication.po_box"
+                        v-model="editableApplication.recipient_name"
                         class="modal-input"
                       />
                       <span v-else class="modal-display-text">{{
-                        application.po_box || 'N/A'
+                        application.recipient_name || 'N/A'
                       }}</span>
                     </div>
                     <div>
-                      <label class="block text-sm font-medium text-gray-500 mb-1">ZIP Code</label>
+                      <label class="block text-sm font-medium text-gray-500 mb-1"
+                        >Recipient Contact</label
+                      >
                       <input
                         v-if="isEditing"
                         type="text"
-                        v-model="editableApplication.zip_code"
+                        v-model="editableApplication.recipient_contact_number"
                         class="modal-input"
                       />
                       <span v-else class="modal-display-text">{{
-                        application.zip_code || 'N/A'
+                        application.recipient_contact_number || 'N/A'
                       }}</span>
+                    </div>
+                    <div class="md:col-span-2">
+                      <label class="block text-sm font-medium text-gray-500 mb-1"
+                        >Recipient Email</label
+                      >
+                      <input
+                        v-if="isEditing"
+                        type="email"
+                        v-model="editableApplication.recipient_email"
+                        class="modal-input"
+                      />
+                      <a
+                        v-else
+                        :href="'mailto:' + application.recipient_email"
+                        class="text-sm text-blue-600 hover:underline block p-2"
+                        >{{ application.recipient_email || 'N/A' }}</a
+                      >
                     </div>
                   </div>
                 </div>
@@ -257,47 +283,25 @@
                 <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
                   <h3 class="text-lg font-semibold text-gray-800 flex items-center gap-2 mb-4">
                     <BuildingIcon class="w-5 h-5 text-blue-500" /> Workplace Details
-                    <span v-if="isEditing" class="text-xs font-normal text-orange-600"
-                      >(Editing names only)</span
-                    >
                   </h3>
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                     <div>
                       <label class="block text-sm font-medium text-gray-500 mb-1">Agency</label>
-                      <input
-                        v-if="isEditing"
-                        type="text"
-                        v-model="editableApplication.agency_name"
-                        class="modal-input"
-                        placeholder="Enter agency name"
-                      />
-                      <span v-else class="modal-display-text">{{
+                      <span class="modal-display-text">{{
                         application.agency?.name || 'N/A'
                       }}</span>
                     </div>
-                    <div>
-                      <label class="block text-sm font-medium text-gray-500 mb-1">Department</label>
-                      <input
-                        v-if="isEditing"
-                        type="text"
-                        v-model="editableApplication.department_name"
-                        class="modal-input"
-                        placeholder="Enter department name"
-                      />
-                      <span v-else class="modal-display-text">{{
+                    <div style="display:none">
+                      <label class="block text-sm font-medium text-gray-500 mb-1"
+                        >Department</label
+                      >
+                      <span class="modal-display-text">{{
                         application.department?.name || 'N/A'
                       }}</span>
                     </div>
-                    <div>
+                    <div style="display:none">
                       <label class="block text-sm font-medium text-gray-500 mb-1">Workplace</label>
-                      <input
-                        v-if="isEditing"
-                        type="text"
-                        v-model="editableApplication.workplace_name"
-                        class="modal-input"
-                        placeholder="Enter workplace name"
-                      />
-                      <span v-else class="modal-display-text">{{
+                      <span class="modal-display-text">{{
                         application.workplace?.name || 'N/A'
                       }}</span>
                     </div>
@@ -339,7 +343,7 @@
                         rows="3"
                         class="modal-input"
                       ></textarea>
-                      <p v-else class="text-base text-gray-900 mt-1">
+                      <p v-else class="modal-display-text-block">
                         {{ application.reason_for_application || 'N/A' }}
                       </p>
                     </div>
@@ -393,9 +397,12 @@
                       placeholder="Enter review remarks..."
                       class="modal-input"
                     ></textarea>
-                    <p v-else class="modal-display-text-block">
+                    <p
+                    v-else
+                    class="modal-display-text-block"
+                    >
                       {{ application.review_remark || 'No remarks' }}
-                    </p>
+                  </p>
                   </div>
 
                   <div class="mb-6">
@@ -512,7 +519,8 @@ import {
   ClipboardIcon,
   CheckCircleIcon,
   XCircleIcon,
-  PencilIcon, // Import PencilIcon
+  PencilIcon,
+  SendIcon, // <-- ADDED ICON
 } from 'lucide-vue-next'
 
 // --- Props & Emits ---
@@ -537,7 +545,6 @@ const editableApplication = reactive({}) // Local reactive copy for editing
 
 // --- Methods ---
 
-// Helper to get status CSS classes
 const getStatusClass = (status) => {
   const classes = {
     Pending: 'bg-yellow-100 text-yellow-800',
@@ -547,7 +554,6 @@ const getStatusClass = (status) => {
   return classes[status] || 'bg-gray-100 text-gray-800' // Default
 }
 
-// Helper for timeline step appearance
 const getTimelineStepClass = (status, previousStepApproved = true) => {
   if (!previousStepApproved) return 'bg-gray-100 text-gray-700'
   if (status === 'Approved') return 'bg-green-100 text-green-700'
@@ -557,7 +563,6 @@ const getTimelineStepClass = (status, previousStepApproved = true) => {
   return 'bg-gray-100 text-gray-700'
 }
 
-// Helper for timeline bar appearance
 const getTimelineBarClass = (status, nextStepActiveOrComplete = false) => {
   if (status === 'Approved' && nextStepActiveOrComplete) return 'bg-green-500 w-full'
   if (status === 'Approved') return 'bg-green-500 w-1/2'
@@ -566,22 +571,22 @@ const getTimelineBarClass = (status, nextStepActiveOrComplete = false) => {
   return 'bg-gray-200 w-0'
 }
 
-// Initialize the editable copy when entering edit mode
+// MODIFIED: Initialize the editable copy when entering edit mode
 const initializeEditableData = () => {
   // Applicant Details
   editableApplication.full_name = props.application.full_name || ''
   editableApplication.cid_no = props.application.cid_no || ''
-  editableApplication.gender = props.application.gender || 'Others' // Default if needed
+  editableApplication.gender = props.application.gender || 'other'
   editableApplication.contact_number = props.application.contact_number || ''
   editableApplication.email_address = props.application.email_address || ''
   editableApplication.address = props.application.address || ''
-  editableApplication.po_box = props.application.po_box || ''
-  editableApplication.zip_code = props.application.zip_code || ''
 
-  // Workplace Details (Editing names, might not update relations)
-  editableApplication.agency_name = props.application.agency?.name || ''
-  editableApplication.department_name = props.application.department?.name || ''
-  editableApplication.workplace_name = props.application.workplace?.name || ''
+  // Recipient Details
+  editableApplication.recipient_name = props.application.recipient_name || ''
+  editableApplication.recipient_contact_number = props.application.recipient_contact_number || ''
+  editableApplication.recipient_email = props.application.recipient_email || ''
+
+  // Workplace Details
   editableApplication.supervisor_name = props.application.supervisor_name || ''
   editableApplication.supervisor_designation = props.application.supervisor_designation || ''
   editableApplication.reason_for_application = props.application.reason_for_application || ''
@@ -591,98 +596,61 @@ const initializeEditableData = () => {
   editableApplication.review_remark = props.application.review_remark || ''
   editableApplication.endorsement_decision = props.application.endorsement_decision || 'Pending'
   editableApplication.endorsement_remark = props.application.endorsement_remark || ''
-
-  // Add any other fields you want editable
-  console.log('Editable data initialized:', JSON.parse(JSON.stringify(editableApplication))) // Log deep copy
 }
 
 // Enter edit mode
 const enterEditMode = () => {
-  console.log('Entering edit mode. Initial data:', props.application)
-  initializeEditableData() // Populate local state
+  initializeEditableData()
   isEditing.value = true
 }
 
 // Cancel edit mode
 const cancelEdit = () => {
-  console.log('Cancelling edit mode.')
   isEditing.value = false
-  // Resetting editableApplication is not strictly needed as it's repopulated on entering edit mode
 }
 
-// Save changes made in edit mode
+// MODIFIED: Save changes made in edit mode
 const saveChanges = () => {
-  console.log(
-    'Attempting to save changes. Current editable data:',
-    JSON.parse(JSON.stringify(editableApplication)),
-  )
   const changedData = {}
+  const original = props.application
 
-  // Compare editable fields with original prop data - Check ALL fields made editable
-  // Applicant Details (Use caution editing these)
-  if (editableApplication.full_name !== (props.application.full_name || ''))
-    changedData.full_name = editableApplication.full_name
-  if (editableApplication.cid_no !== (props.application.cid_no || ''))
-    changedData.cid_no = editableApplication.cid_no
-  if (editableApplication.gender !== (props.application.gender || 'Others'))
-    changedData.gender = editableApplication.gender
-  if (editableApplication.contact_number !== (props.application.contact_number || ''))
-    changedData.contact_number = editableApplication.contact_number
-  if (editableApplication.email_address !== (props.application.email_address || ''))
-    changedData.email_address = editableApplication.email_address
-  if (editableApplication.address !== (props.application.address || ''))
-    changedData.address = editableApplication.address
-  if (editableApplication.po_box !== (props.application.po_box || ''))
-    changedData.po_box = editableApplication.po_box
-  if (editableApplication.zip_code !== (props.application.zip_code || ''))
-    changedData.zip_code = editableApplication.zip_code
+  // List of fields to check for changes
+  const fieldsToCheck = [
+    'full_name',
+    'cid_no',
+    'gender',
+    'contact_number',
+    'email_address',
+    'address',
+    'recipient_name',
+    'recipient_contact_number',
+    'recipient_email',
+    'supervisor_name',
+    'supervisor_designation',
+    'reason_for_application',
+    'review_status',
+    'review_remark',
+    'endorsement_decision',
+    'endorsement_remark',
+  ]
 
-  // Workplace Details (Names only - backend might need IDs)
-  if (editableApplication.agency_name !== (props.application.agency?.name || ''))
-    changedData.agency_name = editableApplication.agency_name // Sending name, not ID
-  if (editableApplication.department_name !== (props.application.department?.name || ''))
-    changedData.department_name = editableApplication.department_name // Sending name, not ID
-  if (editableApplication.workplace_name !== (props.application.workplace?.name || ''))
-    changedData.workplace_name = editableApplication.workplace_name // Sending name, not ID
-  if (editableApplication.supervisor_name !== (props.application.supervisor_name || ''))
-    changedData.supervisor_name = editableApplication.supervisor_name
-  if (
-    editableApplication.supervisor_designation !== (props.application.supervisor_designation || '')
-  )
-    changedData.supervisor_designation = editableApplication.supervisor_designation
-  if (
-    editableApplication.reason_for_application !== (props.application.reason_for_application || '')
-  )
-    changedData.reason_for_application = editableApplication.reason_for_application
-
-  // Review & Endorsement
-  if (editableApplication.review_status !== (props.application.review_status || 'Pending'))
-    changedData.review_status = editableApplication.review_status
-  if (editableApplication.review_remark !== (props.application.review_remark || ''))
-    changedData.review_remark = editableApplication.review_remark
-  if (
-    editableApplication.endorsement_decision !==
-    (props.application.endorsement_decision || 'Pending')
-  )
-    changedData.endorsement_decision = editableApplication.endorsement_decision
-  if (editableApplication.endorsement_remark !== (props.application.endorsement_remark || ''))
-    changedData.endorsement_remark = editableApplication.endorsement_remark
-
-  // --- End of comparisons ---
+  fieldsToCheck.forEach((key) => {
+    // Check if the editable value is different from the original value (or an empty string if original is null/undefined)
+    if (editableApplication[key] !== (original[key] || '')) {
+      changedData[key] = editableApplication[key]
+    }
+  })
 
   if (Object.keys(changedData).length > 0) {
-    console.log('Emitting update with payload:', changedData)
-    emit('update', changedData) // Emit only changed data
+    emit('update', changedData)
   } else {
-    console.log('No changes detected.')
-    // Optionally show a message that no changes were made or just exit edit mode
+    // Optionally show a message that no changes were made
   }
-  isEditing.value = false // Exit edit mode after saving or if no changes
+  isEditing.value = false // Exit edit mode
 }
 
-// Close the modal (emits close event)
+// Close the modal
 const closeModal = () => {
-  // Reset editing state if modal is closed while editing
   if (isEditing.value) {
     isEditing.value = false
   }
@@ -690,15 +658,11 @@ const closeModal = () => {
 }
 
 // --- Watchers ---
-// Reset edit mode if the application prop changes externally
 watch(
   () => props.application,
   (newApplication, oldApplication) => {
-    // Only react if the application ID actually changes or if it's a new object instance
-    if (newApplication?.id !== oldApplication?.id || newApplication !== oldApplication) {
-      console.log('Application prop changed:', newApplication)
+    if (newApplication?.id !== oldApplication?.id) {
       if (isEditing.value) {
-        console.log('Prop changed while editing, cancelling edit mode.')
         cancelEdit()
       }
     }
@@ -706,16 +670,13 @@ watch(
   { deep: true },
 )
 
-// Initialize/reset edit mode based on isOpen prop
 watch(
   () => props.isOpen,
   (newIsOpen) => {
     if (!newIsOpen) {
-      isEditing.value = false // Ensure edit mode is off when modal closes
+      isEditing.value = false
     }
-    // No need to initialize editableApplication here, enterEditMode does that
   },
-  { immediate: true },
 )
 </script>
 
@@ -730,52 +691,32 @@ watch(
   opacity: 0;
 }
 
-/* Shared input styles */
 .modal-input {
   @apply block w-full text-base rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm;
-  /* Add padding */
   padding: 0.5rem 0.75rem;
-  /* py-2 px-3 equivalent */
 }
 
 textarea.modal-input {
   min-height: 6rem;
-  /* Give textareas some default height */
 }
 
-/* Shared display text styles */
 .modal-display-text {
   @apply text-base text-gray-900 block;
-  /* Ensure it's a block for layout */
   padding: 0.5rem 0.75rem;
-  /* Match input padding */
-  min-height: calc(1.5rem + 1rem + 2px);
-  /* Match input height (line-height + padding + border) */
-  line-height: 1.5rem;
-  /* sm:text-sm line height */
+  min-height: calc(1.5em + 1rem + 2px);
+  line-height: 1.5;
 }
 
 .modal-display-text-block {
-  /* For paragraphs that replace textareas */
-  @apply text-sm text-gray-700 p-3 bg-gray-50 rounded border border-gray-100 block;
+  @apply text-sm text-gray-700 p-3 bg-gray-50 rounded border border-gray-100 block whitespace-pre-wrap;
   min-height: 6rem;
-  /* Match textarea rows=3 approx */
 }
 
-/* Add focus styles for accessibility */
-input:focus-visible,
-textarea:focus-visible,
-select:focus-visible {
-  outline: 2px solid #3b82f6;
-  /* blue-500 */
-  outline-offset: 1px;
-  border-color: transparent !important;
-  /* Hide default border on focus */
-}
-
-/* Ensure labels have margin below */
 label {
   margin-bottom: 0.25rem;
-  /* mb-1 */
+}
+
+.capitalize {
+  text-transform: capitalize;
 }
 </style>

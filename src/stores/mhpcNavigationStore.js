@@ -94,7 +94,7 @@ export const useHealthCertificationStore = defineStore('healthCertification', ()
           profile: true,
         },
         certificationSubMenus: {
-          applyForCertification: true,
+          applyForCertification: false,
           myApplications: true,
           // Show renewal link if in renewal period OR if it's expired
           renewal: isRenewalPeriod.value || isExpired.value,

@@ -95,6 +95,9 @@ import EducationProgram from '@/components/dashboard/mhpccomponents/dealingOffic
 import InstituteReports from '@/components/dashboard/mhpccomponents/dealingOfficer/InstituteReports.vue'
 import TeachingHospitalReports from '@/components/dashboard/mhpccomponents/dealingOfficer/instituteManagement/TeachingHospitalReports.vue'
 import CogsReports from '@/components/dashboard/mhpccomponents/dealingOfficer/userApplications/CogsReports.vue'
+import FacultyManagement from '@/components/dashboard/mhpccomponents/dealingOfficer/instituteManagement/FacultyManagement.vue'
+import PreceptorManagement from '@/components/dashboard/mhpccomponents/dealingOfficer/instituteManagement/PreceptorManagement.vue'
+import FacultyProgramAssignment from '@/components/dashboard/mhpccomponents/dealingOfficer/instituteManagement/FacultyProgramAssignment.vue'
 
 //MHPC masters components
 import MastersCpdActivities from '@/components/dashboard/mhpccomponents/admin/MastersCpdActivities.vue'
@@ -313,6 +316,13 @@ const bmhDealingOfficerComponent = computed(() => {
       return TeachingHospitalReports
     case path.endsWith('/health_certification/cogs_reports'):
       return CogsReports
+    case path.endsWith('/health_certification/faculty_management'):
+      return FacultyManagement
+    case path.endsWith('/health_certification/preceptor_management'):
+      return PreceptorManagement
+    case path.endsWith('/health_certification/faculty_program_assignment'): // New route for Faculty Program Assignment
+      return FacultyProgramAssignment
+
 
     default:
       return null

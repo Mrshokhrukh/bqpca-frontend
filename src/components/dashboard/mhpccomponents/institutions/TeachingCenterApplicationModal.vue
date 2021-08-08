@@ -546,12 +546,17 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'form-submitted', 'draft-saved'])
 const toast = useToast()
+const authStore = useAuthStore()
+
+const getDraftKey = () => {
+  if (!authStore.user?.id) return null
+  return `draft-teachingCenter-${authStore.user.id}`
+}
 
 const isLoadingOptions = ref(true)
 const isSubmitting = ref(false)
 const isSubmittingDraft = ref(false)
 const paymentModalRef = ref(null)
-const authStore = useAuthStore()
 
 const MHPC_TEACHING_CENTER_FEE = 100
 
@@ -625,7 +630,6 @@ const fetchInstituteOptions = async () => {
         label: institute.name_of_institution,
         data: institute,
       }))
-      // Automatically select the institute if there's only one
       if (instituteOptions.value.length === 1) {
         formData.value.institute_id = instituteOptions.value[0].value
       }
@@ -644,11 +648,21 @@ watch(
     if (newVal) {
       document.body.style.overflow = 'hidden'
       isShowingSuccessMessage.value = false
+
       if (props.draftData) {
         formData.value = { ...initialFormData, ...props.draftData }
+        toast.info('Loaded draft application from server.')
       } else {
-        resetForm()
+        const draftKey = getDraftKey()
+        const savedDraft = draftKey ? localStorage.getItem(draftKey) : null
+        if (savedDraft) {
+          formData.value = JSON.parse(savedDraft)
+          toast.info('Resumed your saved draft.')
+        } else {
+          resetForm()
+        }
       }
+
       if (instituteOptions.value.length === 0) {
         fetchInstituteOptions()
       }
@@ -684,7 +698,7 @@ watch(
       formData.value.addressLocation = instData.address || instData.location || ''
       formData.value.contactNo = instData.contact_no || ''
       formData.value.emailAddress = instData.email_address || ''
-    } else {
+    } else if (!newValue) {
       formData.value.country = 'Bhutan'
       formData.value.dzongkhag = ''
       formData.value.cityGewog = ''
@@ -721,9 +735,7 @@ const createPayload = (isDraft = false) => {
 
   Object.keys(dataToSubmit).forEach((key) => {
     if (key === 'payment_id') return
-
     const value = dataToSubmit[key]
-
     if (value !== null && value !== undefined) {
       const backendKey = key === 'institute_id' ? 'institute' : key
       if (typeof value === 'boolean') {
@@ -738,7 +750,7 @@ const createPayload = (isDraft = false) => {
 
 const validateForm = () => {
   if (!formData.value.institute_id) {
-    toast.error('Please select Teaching Hospital Name.')
+    toast.error('Please select an Institute.')
     return false
   }
   if (!formData.value.center_name.trim()) {
@@ -769,13 +781,9 @@ const validateForm = () => {
 }
 
 const handleFormSubmit = async () => {
-  if (isSubmitting.value) {
-    console.warn('Form submission already in progress. Ignoring additional attempt.')
-    return
-  }
-  if (!validateForm()) {
-    return
-  }
+  if (isSubmitting.value) return
+  if (!validateForm()) return
+
   isSubmitting.value = true
 
   try {
@@ -783,22 +791,27 @@ const handleFormSubmit = async () => {
     if (authStore.userId) {
       formPayloadForApp.append('applicant_user_id', authStore.userId)
     }
-    console.log('Submitting teaching center application:', Object.fromEntries(formPayloadForApp))
+
     await apiServices.createMhpcTeachingCenter(formPayloadForApp)
 
-    // Clear draft from localStorage on successful submission
-    const draftKey = `draft-teachingCenter-${authStore.user.id}`
-    localStorage.removeItem(draftKey)
+    // 1. Clear the local storage draft
+    const draftKey = getDraftKey()
+    if (draftKey) {
+      localStorage.removeItem(draftKey)
+    }
 
+    // 2. Show the success message to the user
     isShowingSuccessMessage.value = true
+
+    // 3. Set a timer to close the modal AND reset the form's data
     setTimeout(() => {
-      emit('form-submitted')
+      emit('form-submitted') // Signal parent to close the modal
+      resetForm()          // Reset the form data for the next use
     }, 3000)
+
   } catch (error) {
-    console.error(
-      'Error during submission process:',
-      error.response?.data || error.message || error,
-    )
+    console.error('Error during submission process:', error.response?.data || error.message || error)
+    
     let errorMessage = 'Error submitting application. '
     if (error.response?.data) {
       const errors = error.response.data
@@ -821,8 +834,7 @@ const handleFormSubmit = async () => {
       errorMessage += error.message || 'An unexpected network or server error occurred.'
     }
     toast.error(errorMessage)
-  } finally {
-    isSubmitting.value = false
+    isSubmitting.value = false // Ensure submission is re-enabled on error
   }
 }
 
@@ -840,21 +852,28 @@ const handleCancel = () => {
 
 const handleSaveDraft = () => {
   if (!formData.value.institute_id || !formData.value.center_name.trim()) {
-    toast.info('Please provide at least Teaching Hospital Name and Hospital Name to save a draft.')
+    toast.info('Please select an Institute and enter the Hospital Name to save a draft.')
     return
   }
 
-  const draftData = {
-    ...formData.value,
-    version: (props.draftData?.version || 0) + 1,
-    savedAt: new Date().toISOString(),
+  const draftKey = getDraftKey()
+  if (!draftKey) {
+    toast.error('Could not save draft. User not logged in.');
+    return;
   }
 
-  const draftKey = `draft-teachingCenter-${authStore.user.id}`
-  localStorage.setItem(draftKey, JSON.stringify(draftData))
-  toast.success('Draft saved successfully!')
-  emit('draft-saved')
-  emit('close')
+  isSubmittingDraft.value = true;
+  try {
+    localStorage.setItem(draftKey, JSON.stringify(formData.value));
+    toast.success('Draft saved successfully!');
+    emit('draft-saved');
+    emit('close');
+  } catch (e) {
+    console.error('Failed to save draft to localStorage:', e);
+    toast.error('Could not save draft. Your browser storage might be full.');
+  } finally {
+    isSubmittingDraft.value = false;
+  }
 }
 </script>
 
@@ -898,13 +917,6 @@ const handleSaveDraft = () => {
 
 .disabled-input {
   @apply bg-slate-100/80 text-slate-500 cursor-not-allowed ring-slate-100;
-}
-
-/* .form-file-input class is kept for potential future use or consistency, though no file inputs currently use it */
-.form-file-input {
-  @apply block w-full text-xs text-slate-600 bg-white/60 backdrop-blur-sm rounded-lg border-0 shadow-md ring-1 ring-slate-200/50 transition-all duration-300 hover:shadow-sm hover:ring-slate-300/50 focus:ring-2 focus:ring-indigo-500/50 focus:ring-offset-0
-    file:mr-3 file:py-2.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-gradient-to-r file:from-indigo-50 file:to-purple-50 file:text-indigo-700 file:shadow-sm
-    hover:file:from-indigo-100 hover:file:to-purple-100 hover:file:shadow-md file:transition-all file:duration-300 cursor-pointer;
 }
 
 .form-select {

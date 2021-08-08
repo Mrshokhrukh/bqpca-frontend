@@ -6,7 +6,6 @@
       :show-actions="false"
     />
 
-    <!-- Conditional rendering based on authStore.user.cid availability -->
     <div
       v-if="!authStore.user || !authStore.user.cid"
       class="mt-8 text-center py-16 bg-white rounded-2xl border border-gray-200 shadow-sm"
@@ -29,7 +28,6 @@
       <p class="mt-1 text-sm text-gray-500">
         User profile is loading or essential information (like CID) is not yet available.
       </p>
-      <!-- Display a simple loader or message -->
       <div
         v-if="initialAuthCheckPending"
         class="flex items-center justify-center mt-4 text-indigo-600"
@@ -40,8 +38,6 @@
     </div>
 
     <template v-else>
-      <!-- Filters Section Removed -->
-
       <div v-if="isLoading" class="flex flex-col items-center justify-center min-h-[400px] mt-8">
         <Loader class="animate-spin text-indigo-600 w-10 h-10" />
         <p class="mt-4 text-lg font-medium text-gray-700">Loading teaching center data...</p>
@@ -87,7 +83,6 @@
       </div>
 
       <div v-else class="space-y-8 mt-8">
-        <!-- Teaching Center Cards Loop -->
         <div
           v-for="center in instituteTeachingCenters"
           :key="center.id"
@@ -134,7 +129,7 @@
             </div>
 
             <div
-              v-if="center.is_active && getDaysUntilExpiration(center) <= 90"
+              v-if="center.is_active && center.valid_till && getDaysUntilExpiration(center) <= 90"
               class="mb-6 p-4 rounded-lg flex items-start"
               :class="[
                 getDaysUntilExpiration(center) <= 0
@@ -197,8 +192,7 @@
               <div class="ml-3">
                 <h3 class="text-sm font-semibold">Payment Required</h3>
                 <p class="mt-1 text-xs">
-                  Your renewal has been approved. Please complete the payment to activate your
-                  registration and view the certificate.
+                  Your application or renewal has been approved. Please complete the payment to activate your registration.
                 </p>
               </div>
             </div>
@@ -319,13 +313,27 @@
 
               <div class="flex justify-end items-center space-x-3 mt-4">
                 <button
-                  v-if="center.tc_review_decision === 'Approved'"
-                  @click="handleViewCertificateClick(center)"
+                  v-if="isPaymentRequired(center)"
+                  @click="initiatePayment(center)"
+                  class="btn btn-primary bg-yellow-500 hover:bg-yellow-600 focus:ring-yellow-500"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4 mr-2"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"
+                    />
+                  </svg>
+                  Make Payment to Activate
+                </button>
+
+                <button
+                  v-if="center.tc_review_decision === 'Approved' && !isPaymentRequired(center)"
+                  @click="openCertificateDialog(center)"
                   class="btn btn-outline"
-                  :class="{
-                    'bg-yellow-500 hover:bg-yellow-600 text-white border-yellow-500':
-                      isPaymentRequired(center),
-                  }"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -341,11 +349,7 @@
                       d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                     />
                   </svg>
-                  {{
-                    isPaymentRequired(center)
-                      ? 'Make Payment & View Certificate'
-                      : 'View Certificate'
-                  }}
+                  View Certificate
                 </button>
 
                 <button
@@ -366,9 +370,7 @@
         </div>
       </div>
     </template>
-    <!-- End of v-else for main content -->
 
-    <!-- Renewal Dialog -->
     <div
       v-if="showRenewalDialog"
       class="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 p-4"
@@ -461,7 +463,6 @@
       </div>
     </div>
 
-    <!-- Certificate Dialog -->
     <CertificateDialog
       v-if="showCertificateDialog"
       :show="showCertificateDialog"
@@ -470,7 +471,6 @@
       @close="closeCertificateDialog"
     />
 
-    <!-- Payment Modal -->
     <PaymentModal ref="paymentModalRef" :amount="100" @payment-completed="handlePaymentCompleted" />
   </div>
 </template>
@@ -520,7 +520,7 @@ const fetchData = async () => {
   initialAuthCheckPending.value = false
   const userCid = authStore.user?.cid
   try {
-    const response = await apiServices.getMhpcTeachingCenterByCid( userCid )
+    const response = await apiServices.getMhpcTeachingCenterByCid(userCid)
     instituteTeachingCenters.value = response.data?.results || []
   } catch (error) {
     console.error('Error fetching teaching centers:', error)
@@ -568,7 +568,6 @@ const formatDate = (dateString) => {
       year: 'numeric',
     })
   } catch (e) {
-    console.error('Error formatting date:', e)
     return 'Invalid Date'
   }
 }
@@ -583,13 +582,12 @@ const getDaysUntilExpiration = (center) => {
     const timeDiff = expirationDate.getTime() - today.getTime()
     return Math.ceil(timeDiff / (1000 * 3600 * 24))
   } catch (e) {
-    console.error('Error calculating days until expiration:', e)
     return 0
   }
 }
 
 const isRenewalInProgress = (center) => {
-  return center.tc_review_decision === 'Pending' && !center.is_active && isRenewal(center)
+  return center.latest_renewal?.renewal_status === 'PENDING'
 }
 
 const isRenewal = (center) => {
@@ -624,14 +622,20 @@ const getReviewDecisionClass = (decision, type = 'text', isActive = null) => {
 }
 
 const isPaymentRequired = (center) => {
-  if (!center) return false
-  return center.tc_review_decision === 'Approved' && !center.is_payment_complete
+  const initialPayment = center.payment_status === 'awaiting_payment'
+  const renewalPayment = center.latest_renewal?.renewal_status === 'AWAITING_PAYMENT'
+  return initialPayment || renewalPayment
 }
 
 const getStatusText = (center) => {
-  if (isPaymentRequired(center)) return 'Approved - Pending Payment'
+  if (isPaymentRequired(center)) {
+    if (center.latest_renewal?.renewal_status === 'AWAITING_PAYMENT') {
+      return 'Renewal Approved - Pending Payment'
+    }
+    return 'Approved - Pending Payment'
+  }
   if (center.is_active) return 'Active Registration'
-  if (center.tc_review_decision === 'Approved' && !center.is_active) return 'Expired / Inactive'
+  if (center.valid_till) return 'Expired Registration'
   return 'Registration Inactive'
 }
 
@@ -642,8 +646,12 @@ const getStatusTextClass = (center) => {
 }
 
 const getPaymentStatusText = (center) => {
-  if (isPaymentRequired(center)) return 'Pending Payment'
-  return center.is_payment_complete ? 'Completed' : 'Not Initiated'
+  if (center.latest_renewal?.renewal_status === 'AWAITING_PAYMENT')
+    return 'Pending Payment (Renewal)'
+  if (center.payment_status === 'awaiting_payment') return 'Pending Payment (Initial)'
+  if (center.is_payment_complete || center.latest_renewal?.payment_status === 'completed')
+    return 'Completed'
+  return 'Not Applicable'
 }
 
 const getPaymentStatusTextClass = (center) => {
@@ -714,34 +722,28 @@ const closeRenewalDialog = () => {
 
 const confirmRenewal = async () => {
   if (!selectedCenter.value || !renewalFormData.value.tc_declaration) {
-    toast.error(!selectedCenter.value ? 'No center selected.' : 'Please accept the declaration.')
+    toast.error('Please select a center and accept the declaration.')
     return
   }
   isRenewing.value = true
   try {
     const formDataPayload = new FormData()
-    formDataPayload.append('tc_review_decision', 'Pending')
-    formDataPayload.append('is_active', false)
-    formDataPayload.append('is_payment_complete', false) // Reset payment status on new renewal
-    formDataPayload.append('physical_verification_status', 'PENDING_PV')
-    formDataPayload.append('remarks', renewalFormData.value.remarks || '')
-    formDataPayload.append('tc_declaration', renewalFormData.value.tc_declaration)
-
+    formDataPayload.append('user_remarks', renewalFormData.value.remarks || '')
     if (selectedFile.value) {
-      formDataPayload.append('tc_attachments', selectedFile.value)
+      formDataPayload.append('renewal_document', selectedFile.value)
     }
 
-    await apiServices.patchMhpcTeachingCenter(selectedCenter.value.id, formDataPayload)
+    await apiServices.createTeachingCenterRenewal(selectedCenter.value.id, formDataPayload)
 
     await fetchData()
     toast.success('Teaching center renewal application submitted successfully!')
     closeRenewalDialog()
   } catch (error) {
-    toast.error(
+    const errorMsg =
       error.response?.data?.detail ||
-        error.response?.data?.message ||
-        'Failed to submit renewal application.',
-    )
+      error.response?.data?.[0] ||
+      'Failed to submit renewal application.'
+    toast.error(errorMsg)
   } finally {
     isRenewing.value = false
   }
@@ -757,14 +759,6 @@ const closeCertificateDialog = () => {
   selectedCenter.value = null
 }
 
-const handleViewCertificateClick = (center) => {
-  if (isPaymentRequired(center)) {
-    initiatePayment(center)
-  } else {
-    openCertificateDialog(center)
-  }
-}
-
 const initiatePayment = (center) => {
   selectedCenter.value = center
   if (paymentModalRef.value) {
@@ -777,61 +771,44 @@ const initiatePayment = (center) => {
 
 const handlePaymentCompleted = async (paymentData) => {
   if (!selectedCenter.value) {
-    toast.error('No center selected for payment.')
-    return
-  }
-  const user = authStore.user
-  if (!user || !user.cid || !user.email || !user.id) {
-    toast.error('User information is missing. Please log in again.')
-    return
+    toast.error('No center selected for payment.');
+    return;
   }
 
-  isLoading.value = true
-  const paymentId = paymentData.paymentHash
+  isLoading.value = true;
+  const paymentId = paymentData.paymentHash;
+  const payload = { payment_id: paymentId };
+
+  const isForRenewal = selectedCenter.value.latest_renewal?.renewal_status === 'AWAITING_PAYMENT';
 
   try {
-    // 1. Notify Payment Gateway
-    const paymentGatewayFormData = new FormData()
-    paymentGatewayFormData.append('refNo', paymentId)
-    paymentGatewayFormData.append('serviceCode', '100252')
-    paymentGatewayFormData.append(
-      'taxPayerName',
-      selectedCenter.value.institute_details?.name_of_institution || user.name,
-    )
-    paymentGatewayFormData.append('taxPayerNo', user.cid)
-    paymentGatewayFormData.append('taxPayerDocumentNo', user.cid)
-    paymentGatewayFormData.append('totalPayableAmount', 100)
-    paymentGatewayFormData.append('description', 'MHPC Teaching Center Renewal Fee')
-    paymentGatewayFormData.append('mobileNo', user.contact_number || 'NA')
-    paymentGatewayFormData.append('payerEmail', user.email)
-    paymentGatewayFormData.append('user', user.id)
-    paymentGatewayFormData.append('payableAmount', 100)
-    paymentGatewayFormData.append('application_no', selectedCenter.value.id)
-    paymentGatewayFormData.append('app_type', 'teaching_hospital_renewal')
+    if (isForRenewal) {
+    const renewalId = selectedCenter.value.latest_renewal.id;
+    const teachingCenterId = selectedCenter.value.id; 
 
-    await apiServices.makePayment(paymentGatewayFormData)
-
-    // 2. Update Backend Record
-    const updateBackendFormData = new FormData()
-    updateBackendFormData.append('payment_id', paymentId)
-    updateBackendFormData.append('is_payment_complete', true)
-
-    await apiServices.patchMhpcTeachingCenter(selectedCenter.value.id, updateBackendFormData)
+    await apiServices.confirmRenewalPayment(teachingCenterId, renewalId, payload);
 
     toast.success(
-      `Payment initiated (Ref: ${paymentId.substring(0, 8)}...). Status will update shortly.`,
-    )
+        `Renewal payment confirmed (Ref: ${paymentId.substring(0, 8)}...). Status will update shortly.`,
+    );
+    } else {
+      // FIXED: Calling the new, dedicated endpoint for initial payment
+      await apiServices.confirmInitialCenterPayment(selectedCenter.value.id, payload);
+      toast.success(
+        `Initial payment confirmed (Ref: ${paymentId.substring(0, 8)}...). Status will update shortly.`,
+      );
+    }
 
-    // 3. Refresh UI Data
-    await fetchData()
+    await fetchData(); // Refresh all data from the server
   } catch (error) {
-    console.error('Payment handling error:', error.response || error)
-    toast.error('An error occurred while confirming your payment. Please contact support.')
+    console.error('Payment handling error:', error.response || error);
+    const errorMsg = error.response?.data?.error || error.response?.data?.detail || 'An error occurred while confirming your payment.';
+    toast.error(`${errorMsg} Please contact support.`);
   } finally {
-    isLoading.value = false
-    selectedCenter.value = null
+    isLoading.value = false;
+    selectedCenter.value = null;
   }
-}
+};
 </script>
 
 <style scoped>
@@ -840,7 +817,7 @@ const handlePaymentCompleted = async (paymentData) => {
 }
 .required-label::after {
   content: ' *';
-  color: #dc2626; /* Tailwind's red-600 */
+  color: #dc2626;
   margin-left: 2px;
 }
 .form-input,

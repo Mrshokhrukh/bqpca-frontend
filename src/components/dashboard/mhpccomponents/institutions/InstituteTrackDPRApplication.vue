@@ -192,11 +192,11 @@
                   </button>
                   <button
                     v-if="isPaymentCompleted(application)"
-                    @click="openCertificateModal(application)"
+                    @click="openCertificateModal()"
                     class="text-green-600 hover:text-green-900"
                     title="View Certificate"
                   >
-                    Certificate
+                    View Certificate
                   </button>
                 </td>
               </tr>
@@ -312,11 +312,11 @@
       @application-submitted="handleSubmissionSuccess"
     />
 
-    <CertificateModal
+    <!-- <InstituteCertificate
       :application="selectedApplicationForCertificate"
       :showModal="showCertificateModal"
       @close="closeCertificateModal"
-    />
+    /> -->
 
     <PaymentModal
       ref="paymentModalRef"
@@ -331,15 +331,17 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useToast } from 'vue-toastification'
 import { useAuthStore } from '@/stores/authStore'
+import { useRouter } from 'vue-router'
 import debounce from 'lodash/debounce'
 import apiServices from '@/services/services'
 import InstituteHeader from '@/components/common/MHPC/InstituteHeader.vue'
 import DPRApplicationFormModal from './InstituteDPRApplication.vue'
 import PaymentModal from '@/components/common/PaymentModal.vue'
-import CertificateModal from '@/components/common/MHPC/MHPCCertificateModal.vue'
+// import InstituteCertificate from './InstituteCertificate.vue'
 
 const toast = useToast()
 const authStore = useAuthStore()
+const router = useRouter()
 
 // --- STATE MANAGEMENT ---
 const applications = ref([])
@@ -524,82 +526,88 @@ const closePaymentModal = () => {
   selectedApplicationForPayment.value = null
 }
 
-const openCertificateModal = (application) => {
-  selectedApplicationForCertificate.value = { results: [application] }
-  showCertificateModal.value = true
+const openCertificateModal = () => {
+  router.push('/admin/institutions/health_certification/institution_profile')
 }
 
-const closeCertificateModal = () => {
-  showCertificateModal.value = false
-  selectedApplicationForCertificate.value = null
-}
 
 const handlePaymentCompleted = async (paymentData) => {
   if (!selectedApplicationForPayment.value) {
-    toast.error('No application selected for payment.')
-    return
-  }
-  const user = authStore.user
-  if (!user?.contact_number || !user?.email || !user?.cid || !user?.id) {
-    toast.error('Missing user information. Please log in again.')
-    return
+    toast.error('No application selected for payment.');
+    return;
   }
 
-  isDataRefreshing.value = true
-  const paymentId = paymentData.paymentHash
-  const appForPayment = selectedApplicationForPayment.value
+  const user = authStore.user;
 
-  // Update UI immediately for better UX
-  const appIndex = applications.value.findIndex((a) => a.id === appForPayment.id)
+  if (!user) {
+    toast.error('User session not found. Please log in again.');
+    return;
+  }
+
+  const missingFields = [];
+  if (!user.id) missingFields.push('User ID');
+  if (!user.cid) missingFields.push('User CID');
+  if (!user.email) missingFields.push('User Email');
+
+  if (missingFields.length > 0) {
+    const errorMessage = `Cannot proceed. Missing essential information: [${missingFields.join(', ')}].`;
+    toast.error(errorMessage);
+    return;
+  }
+
+  isDataRefreshing.value = true;
+  const paymentId = paymentData.paymentHash;
+  const appForPayment = selectedApplicationForPayment.value;
+
+  const appIndex = applications.value.findIndex((a) => a.id === appForPayment.id);
   if (appIndex > -1) {
-    applications.value[appIndex].application_status = ApplicationStatus.PAYMENT_PROCESSING
+    applications.value[appIndex].application_status = ApplicationStatus.PAYMENT_PROCESSING;
   }
 
   try {
-    const paymentGatewayFormData = new FormData()
-    paymentGatewayFormData.append('refNo', paymentId)
-    paymentGatewayFormData.append('serviceCode', '100197') // Example Service Code for DPR
-    paymentGatewayFormData.append('taxPayerName', user.cid)
-    paymentGatewayFormData.append('taxPayerNo', user.cid)
-    paymentGatewayFormData.append('taxPayerDocumentNo', user.cid)
-    paymentGatewayFormData.append('totalPayableAmount', 5000) // DPR Fee
-    paymentGatewayFormData.append('description', 'MHPC DPR Accreditation Fee')
-    paymentGatewayFormData.append('mobileNo', user.contact_number)
-    paymentGatewayFormData.append('payerEmail', user.email)
-    paymentGatewayFormData.append('user', user.id)
-    paymentGatewayFormData.append('payableAmount', 5000)
-    paymentGatewayFormData.append('application_no', appForPayment.id)
-    paymentGatewayFormData.append('app_type', 'dpr_accreditation')
+    const paymentGatewayFormData = new FormData();
+    paymentGatewayFormData.append('refNo', paymentId);
+    paymentGatewayFormData.append('serviceCode', '100197');
+    paymentGatewayFormData.append('taxPayerName', user.cid);
+    paymentGatewayFormData.append('taxPayerNo', user.cid);
+    paymentGatewayFormData.append('taxPayerDocumentNo', user.cid);
+    paymentGatewayFormData.append('totalPayableAmount', 5000);
+    paymentGatewayFormData.append('description', 'MHPC DPR Accreditation Fee');
+    paymentGatewayFormData.append('payerEmail', user.email);
+    paymentGatewayFormData.append('user', user.id);
+    paymentGatewayFormData.append('payableAmount', 5000);
+    paymentGatewayFormData.append('application_no', appForPayment.id);
+    paymentGatewayFormData.append('app_type', 'dpr_accreditation');
 
-    await apiServices.makePayment(paymentGatewayFormData)
+    // --- UPDATED LINE WITH DEFAULT MOBILE NUMBER ---
+    // If user.contact_number exists, use it. If not, use the default value '17110000'.
+    paymentGatewayFormData.append('mobileNo', user.contact_number || '17110000');
 
-    const backendUpdateFormData = new FormData()
-    backendUpdateFormData.append('payment_id', paymentId)
-    backendUpdateFormData.append('payment_status', 'processing_payment')
-    // The backend should handle changing the application_status to 'Fully Approved' upon verification
-    backendUpdateFormData.append('is_payment_complete', true)
+    await apiServices.makePayment(paymentGatewayFormData);
 
-    // Assumes a PATCH endpoint exists for the institute application
-    await apiServices.patchMhpcInstitute(appForPayment.id, backendUpdateFormData)
+    const backendUpdateFormData = new FormData();
+    backendUpdateFormData.append('payment_id', paymentId);
+    backendUpdateFormData.append('payment_status', 'processing_payment');
+    backendUpdateFormData.append('is_payment_complete', true);
+
+    await apiServices.patchMhpcInstitute(appForPayment.id, backendUpdateFormData);
 
     toast.success(
       `Payment initiated (Ref: ${paymentId.substring(0, 8)}...). Your application status will update shortly.`,
-    )
+    );
   } catch (error) {
-    console.error('Payment handling error:', error.response || error)
-    toast.error('An error occurred while processing the payment. Please contact support.')
-    // Revert status on error
+    console.error('Payment handling error:', error.response || error);
+    toast.error('An error occurred while processing the payment. Please contact support.');
     if (appIndex > -1) {
-      applications.value[appIndex].application_status = ApplicationStatus.PAYMENT_PENDING
+      applications.value[appIndex].application_status = ApplicationStatus.PAYMENT_PENDING;
     }
   } finally {
-    // Refresh data from the server to get the final, confirmed status
-    await fetchApplications()
-    isDataRefreshing.value = false
-    selectedApplicationForPayment.value = null
-    closePaymentModal()
+    await fetchApplications();
+    isDataRefreshing.value = false;
+    selectedApplicationForPayment.value = null;
+    closePaymentModal();
   }
-}
+};
 
 // Helper functions
 const getStatusColor = (status) => {
@@ -639,7 +647,9 @@ watch(filterStatus, () => {
 })
 
 // --- LIFECYCLE HOOK ---
-onMounted(fetchApplications)
+onMounted(async () => {
+  await fetchApplications();
+});
 </script>
 
 <style scoped>

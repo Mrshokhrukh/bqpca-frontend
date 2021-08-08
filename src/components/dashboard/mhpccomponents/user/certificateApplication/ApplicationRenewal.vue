@@ -1317,7 +1317,7 @@ const fetchApplicationData = async () => {
     const userCid = authStore.user?.cid
     if (!userCid) throw new Error('User CID not found. Please log in.')
 
-    const response = await apiService.getMhpcNewApplications({ params: { cid: userCid } })
+    const response = await apiService.getMhpcFullApplicationListByCid(userCid)
     let applications = []
     if (Array.isArray(response.data)) applications = response.data
     else if (response.data && Array.isArray(response.data.results))
@@ -1535,13 +1535,10 @@ const confirmSubmit = async () => {
     }
 
     const renewalPayload = {
-      user_qualification_id: qualificationIdToRenew,
+      user_qualification: qualificationIdToRenew,
       proposed_expiry_date: formattedNewExpiryDate,
       renewal_remarks: remarks.value || '',
     }
-
-    formData.value.registration_type = renewalType.value
-    renewalPayload.registration_type = formData.value.registration_type
 
     const renewalResponse = await apiService.createMhpcRenewal(renewalPayload)
 

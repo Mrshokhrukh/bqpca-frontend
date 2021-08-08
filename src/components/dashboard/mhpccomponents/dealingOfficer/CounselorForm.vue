@@ -12,39 +12,8 @@
       :filter-options="statusFilterOptions"
     />
 
-    <!-- Removed the old header with stats cards -->
-    <!-- Removed the old search and status filter container -->
-
     <!-- Applicant Filter (Remains separate as it's specific) -->
-    <div class="mb-6 bg-white p-5 rounded-lg shadow-sm border border-gray-200">
-      <h2 class="text-lg font-medium text-gray-800 mb-4">Filters</h2>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <!-- Search and Status filters are now handled by DOPageHeader -->
-        <!-- Keep Applicant Filter -->
-        <div class="md:col-start-2">
-          <label for="applicantFilter" class="block text-sm font-medium text-gray-500 mb-1"
-            >Applicant</label
-          >
-          <select
-            id="applicantFilter"
-            v-model="applicantFilter"
-            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-blue-500 transition-all bg-white"
-          >
-            <option value="">All Applicants</option>
-            <option
-              v-for="applicant in uniqueApplicants"
-              :key="applicant.cid"
-              :value="applicant.cid"
-            >
-              {{ applicant.full_name }} ({{ applicant.cid }})
-            </option>
-          </select>
-        </div>
-        <!-- Empty divs for grid alignment if needed -->
-        <div></div>
-        <div></div>
-      </div>
-    </div>
+
 
     <!-- Applications Table -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">

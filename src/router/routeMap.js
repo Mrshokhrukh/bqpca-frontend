@@ -156,6 +156,7 @@ export default {
       submit_isar_report: accredDashboard,
       track_isar_reports: accredDashboard,
       track_accreditation: accredDashboard,
+      iqar: accredDashboard,
     },
     engineering_certification: {
       dashboard: engineeringDashboard,
@@ -300,6 +301,9 @@ export default {
       institute_reports: mhpcDashboard,
       teaching_hospital_reports: mhpcDashboard,
       cogs_reports: mhpcDashboard,
+      faculty_management: mhpcDashboard,
+      preceptor_management: mhpcDashboard,
+      faculty_program_assignment: mhpcDashboard,
     },
   },
   chief: {

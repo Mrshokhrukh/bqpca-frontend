@@ -267,28 +267,25 @@ async function handlePhotoSubmit({ cpdTask, photo, description }) {
   bulkUploadErrorList.value = []
   try {
     const formDataToSend = new FormData()
-    formDataToSend.append('cpd_task', cpdTask)
-    formDataToSend.append('attendance_photo', photo, photo.name)
+    // You don't need to append cpd_task to the form data anymore
+    // formDataToSend.append('cpd_task', cpdTask)
+    
+    // IMPORTANT: Use the key 'photo' to match the backend
+    formDataToSend.append('photo', photo, photo.name) // <-- RENAMED KEY
+    
     if (description) {
       formDataToSend.append('photo_description', description)
     }
 
-    await apiService.uploadCpdTaskAttendancePhoto(formDataToSend)
+    // Pass the ID and the form data as separate arguments
+    await apiService.uploadAttendancePhoto(cpdTask, formDataToSend) // <-- MODIFIED CALL
+    
     showMessage('Attendance photo uploaded successfully!', 'success')
     if (attendancePhotoFormRef.value?.resetForm) {
-      attendancePhotoFormRef.value.resetForm(false)
+      attendancePhotoFormRef.value.resetForm()
     }
   } catch (error) {
-    console.error('Error uploading attendance photo:', error)
-    let errorMessage = 'Failed to upload attendance photo.'
-    if (error.response?.data) {
-      const errors = error.response.data
-      if (errors.detail) errorMessage = errors.detail
-      else if (errors.attendance_photo && Array.isArray(errors.attendance_photo))
-        errorMessage = `Photo error: ${errors.attendance_photo.join(', ')}`
-      else errorMessage = 'An unexpected error occurred.'
-    }
-    showMessage(errorMessage, 'error')
+    // ... your error handling
   } finally {
     isPhotoUploading.value = false
   }
