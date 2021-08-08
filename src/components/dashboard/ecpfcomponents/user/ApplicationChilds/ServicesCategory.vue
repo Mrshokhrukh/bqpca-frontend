@@ -54,7 +54,7 @@ const props = defineProps({
 })
 
 // Use a local ref to emit changes
-import { ref, watch, defineEmits } from 'vue'
+import { ref, watch } from 'vue'
 const emit = defineEmits(['update:selectedCategory'])
 
 const selected = ref(props.selectedCategory)

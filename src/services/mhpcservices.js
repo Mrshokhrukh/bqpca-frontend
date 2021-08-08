@@ -796,6 +796,10 @@ export default {
     return apiClient.delete(`/mhpc/mhpc-teaching-centers/${id}/`)
   },
 
+  confirmTeachingCenterPayment(applicationId, payload) {
+    return apiClient.post(`/mhpc/mhpc-teaching-centers/${applicationId}/confirm-initial-payment/`, payload);
+  },
+
   confirmInitialCenterPayment(centerId, paymentData) {
     return apiClient.post(
       `/mhpc/mhpc-teaching-centers/${centerId}/confirm-initial-payment/`,
