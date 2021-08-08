@@ -1,7 +1,7 @@
 <template>
   <div class="p-8 bg-gray-50 min-h-screen">
     <div class="mx-auto">
-      <h1 class="text-3xl font-bold text-gray-800 mb-6">ISAR Applications Dashboard</h1>
+      <h1 class="text-3xl font-bold text-gray-800 mb-6">Institutional Self Assessment Report</h1>
 
       <div v-if="isLoading" class="text-center p-10">
         <p class="text-gray-600">Loading applications...</p>
