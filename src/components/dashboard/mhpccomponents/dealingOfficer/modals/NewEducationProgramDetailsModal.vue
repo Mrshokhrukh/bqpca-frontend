@@ -145,7 +145,7 @@
                 </svg>
               </a>
               <p v-else class="text-sm text-gray-500 italic">No document uploaded.</p>
-              <div v-if="application.status === 'Pending'">
+              <div v-if="application.status && application.status.toLowerCase() === 'pending'">
                 <label
                   for="validation-letter-upload"
                   class="cursor-pointer inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
@@ -192,7 +192,7 @@
                 </svg>
               </a>
               <p v-else class="text-sm text-gray-500 italic">No document uploaded.</p>
-              <div v-if="application.status === 'Pending'">
+              <div v-if="application.status && application.status.toLowerCase() === 'pending'">
                 <label
                   for="curriculum-doc-upload"
                   class="cursor-pointer inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
@@ -244,7 +244,7 @@
           Close
         </button>
         <button
-          v-if="application.status === 'Pending'"
+          v-if="application.status && application.status.toLowerCase() === 'pending'"
           @click="emit('reject', localApplication)"
           class="inline-flex justify-center items-center w-full sm:w-auto px-4 py-2 text-sm font-medium text-white bg-yellow-600 border border-transparent rounded-md hover:bg-yellow-700"
         >
@@ -263,7 +263,7 @@
           Reject
         </button>
         <button
-          v-if="application.status === 'Pending'"
+          v-if="application.status && application.status.toLowerCase() === 'pending'"
           @click="emit('approve', localApplication)"
           class="inline-flex justify-center items-center w-full sm:w-auto px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700"
         >

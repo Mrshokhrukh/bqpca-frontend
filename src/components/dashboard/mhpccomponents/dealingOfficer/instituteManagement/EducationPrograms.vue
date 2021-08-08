@@ -111,9 +111,9 @@
                       class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
                       :class="{
                         'bg-blue-100 text-blue-800': app.status === 'Pending',
-                        'bg-green-100 text-green-800': app.status === 'Approved',
-                        'bg-red-100 text-red-800': app.status === 'Rejected',
-                        'bg-gray-100 text-gray-800': !['Pending', 'Approved', 'Rejected'].includes(app.status),
+                        'bg-green-100 text-green-800': app.status === 'AWAITING_PAYMENT',
+                        'bg-red-100 text-red-800': app.status === 'REJECTED',
+                        'bg-gray-100 text-gray-800': !['Pending', 'AWAITING_PAYMENT', 'REJECTED'].includes(app.status),
                       }"
                     >
                       {{ app.status || 'Unknown' }}
@@ -193,7 +193,7 @@ const error = ref(null)
 const isViewModalOpen = ref(false)
 const selectedApplication = ref(null)
 const isConfirmModalOpen = ref(false)
-const actionContext = ref(null) // { type: 'approve' | 'reject' | 'delete', application: object, remarks: string }
+const actionContext = ref(null)
 const confirmDialog = ref({
   title: '',
   message: '',
@@ -233,10 +233,9 @@ const fetchApplications = async () => {
   try {
     const response = await apiServices.getMhpcProgramsOffered()
     applications.value = (response.data.results || response.data || []).map((app) => {
-      // console.log('Processing application:', app); // Keep for debugging if needed
       return {
         ...app,
-        institute_details: app.institute || { name_of_institution: 'N/A' }, // Ensure institute_details exists
+        institute_details: app.institute || { name_of_institution: 'N/A' }, 
         curriculum_validation_letter: app.curriculum_validation_letter || null,
         curriculum_document: app.curriculum_document || null,
       }
@@ -259,7 +258,7 @@ const getTeachingCenterName = (tcId) => {
   if (center) {
     return `${center.center_name}${center.center_location ? ` - ${center.center_location}` : ''}`
   }
-  return `ID: ${tcId}` // Fallback if center not found
+  return `ID: ${tcId}`
 }
 
 const formatDate = (dateString) => {
@@ -280,7 +279,6 @@ const openViewModal = (app) => {
   selectedApplication.value = {
     // Create a deep enough copy for editing files
     ...app,
-    // Ensure files are handled correctly if they are File objects vs strings
     curriculum_validation_letter: app.curriculum_validation_letter,
     curriculum_document: app.curriculum_document,
   }
@@ -400,16 +398,11 @@ const executeAction = async () => {
         // Ensure it's not null/undefined
         formData.append('payment_id', application.payment_id)
       }
-      formData.append('status', type === 'approve' ? 'Approved' : 'Rejected')
+      formData.append('status', type === 'approve' ? 'AWAITING_PAYMENT' : 'REJECTED')
       if (remarks && remarks.trim()) {
         // Only append if remarks are provided
         formData.append('status_remarks', remarks.trim())
       }
-
-      // Log formData for debugging
-      // for (let [key, value] of formData.entries()) {
-      //   console.log(`${key}: ${value instanceof File ? value.name : value}`);
-      // }
 
       await apiServices.updateMhpcProgramOffered(application.id, formData)
 
@@ -418,15 +411,11 @@ const executeAction = async () => {
       if (appIndex !== -1) {
         applications.value[appIndex].status = formData.get('status')
         applications.value[appIndex].status_remarks =
-          formData.get('status_remarks') || applications.value[appIndex].status_remarks // Keep old if not updated
-        // If files were uploaded, their string URLs won't be immediately available without a re-fetch
-        // For now, status and remarks update is the most important for UI feedback
+          formData.get('status_remarks') || applications.value[appIndex].status_remarks 
       }
       toast.success(
         `Application '${application.specific_program_title || application.id}' ${type === 'approve' ? 'approved' : 'rejected'}.`,
       )
-      // Optionally re-fetch the specific application or all applications if file URLs need to be updated in the view
-      // await fetchApplications(); // Or a more targeted fetch
     }
   } catch (err) {
     console.error(`Error executing ${type}:`, err)
@@ -447,7 +436,6 @@ const executeAction = async () => {
     }
     toast.error(errorMessage, { timeout: 7000 })
   } finally {
-    // Only close confirm modal if not a validation error that keeps it open
     if (!(type === 'reject' && !remarks.trim())) {
       closeConfirmModal()
     }
