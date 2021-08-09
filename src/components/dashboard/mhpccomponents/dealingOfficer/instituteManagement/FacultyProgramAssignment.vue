@@ -56,39 +56,41 @@
                   </div>
                 </td>
               </tr>
-              <tr v-if="program.isExpanded" v-for="module in program.modules" :key="module.id" class="module-row">
-                <td>
-                  <div class="cell-content">
-                    <div class="module-name">{{ module.name }}</div>
-                    <div class="sub-text">{{ module.code }} &middot; Semester {{ module.semester }}</div>
-                  </div>
-                </td>
-                <td>
-                  <div class="faculty-pills-container">
-                    <span v-for="faculty in module.faculties" :key="faculty.id" :class="['faculty-pill', { 'primary': faculty.isPrimary }]">
-                       <svg v-if="faculty.isPrimary" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><polyline points="16 11 18 13 22 9"></polyline></svg>
-                      {{ faculty.name }}
-                    </span>
-                  </div>
-                </td>
-                <td class="text-center">
-                  <div class="student-count-cell">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                    <span>{{ module.studentCount }}</span>
-                  </div>
-                </td>
-                <td class="remarks-cell">
-                  <textarea
-                    v-model="module.remarks"
-                    placeholder="Add a remark..."
-                    class="remarks-input"
-                    rows="2"
-                    :disabled="module.isSavingRemarks"
-                    @blur="saveRemark(module)"
-                  ></textarea>
-                  <span v-if="module.isSavingRemarks" class="saving-indicator">Saving...</span>
-                </td>
-              </tr>
+              <template v-if="program.isExpanded">
+                <tr v-for="module in program.modules" :key="module.id" class="module-row">
+                  <td>
+                    <div class="cell-content">
+                      <div class="module-name">{{ module.name }}</div>
+                      <div class="sub-text">{{ module.code }} &middot; Semester {{ module.semester }}</div>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="faculty-pills-container">
+                      <span v-for="faculty in module.faculties" :key="faculty.id" :class="['faculty-pill', { 'primary': faculty.isPrimary }]">
+                         <svg v-if="faculty.isPrimary" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><polyline points="16 11 18 13 22 9"></polyline></svg>
+                        {{ faculty.name }}
+                      </span>
+                    </div>
+                  </td>
+                  <td class="text-center">
+                    <div class="student-count-cell">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                      <span>{{ module.studentCount }}</span>
+                    </div>
+                  </td>
+                  <td class="remarks-cell">
+                    <textarea
+                      v-model="module.remarks"
+                      placeholder="Add a remark..."
+                      class="remarks-input"
+                      rows="2"
+                      :disabled="module.isSavingRemarks"
+                      @blur="saveRemark(module)"
+                    ></textarea>
+                    <span v-if="module.isSavingRemarks" class="saving-indicator">Saving...</span>
+                  </td>
+                </tr>
+              </template>
             </tbody>
           </table>
         </div>
