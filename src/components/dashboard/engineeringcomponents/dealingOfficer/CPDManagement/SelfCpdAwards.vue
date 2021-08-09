@@ -345,12 +345,10 @@ onMounted(async () => {
           10000 // Show for 10 seconds
         );
       }
-
-      // 3. Map and load only the non-draft data into the participants list
       participants.value = nonDraftData.map((item) => ({
         id: item.id,
         fullName: item.full_name,
-        registrationNumber: item.registration_no,
+        registrationNumber: item?.registration_no_details?.registration_no,
         cpdTitle: item.title_of_cpd,
         cpdCredits: item.cpd_credit,
         cidNumber: item.cid_no,
