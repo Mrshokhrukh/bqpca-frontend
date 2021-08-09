@@ -303,11 +303,9 @@
                       </button>
                     </template>
                     <template v-if="!isEditing && overallStatus === 'Pending'">
+                      <!-- CHANGE 1: Removed the :disabled and conditional :title attributes that checked for payment. The button is now always enabled when the status is Pending. -->
                       <button type="button" class="btn btn-success" @click="openApproveDialog"
-                        :disabled="!transformedApplication.isPaymentComplete" :title="!transformedApplication.isPaymentComplete
-                          ? 'Cannot approve, payment is pending.'
-                          : 'Approve Application'
-                          ">
+                        title="Approve Application">
                         <Check class="h-4 w-4" /> <span>Approve</span>
                       </button>
                       <button type="button" class="btn btn-danger" @click="openRejectDialog">
@@ -656,7 +654,8 @@ const saveChanges = async () => {
 const closeModalHandler = () => emit('close');
 
 const openApproveDialog = () => {
-  if (!transformedApplication.value.isPaymentComplete || overallStatus.value !== 'Pending') return;
+  // CHANGE 2: Removed the check for payment completion. Now it only checks if the status is 'Pending'.
+  if (overallStatus.value !== 'Pending') return;
   isApproveDialogOpen.value = true;
 };
 
