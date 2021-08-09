@@ -99,7 +99,6 @@ defineProps({
 const emit = defineEmits(['close'])
 
 const closeModal = () => {
-  console.log('ViewApplicationModal close called')
   emit('close')
 }
 

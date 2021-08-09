@@ -190,6 +190,28 @@
       </div>
     </div>
 
+    <NewEducationProgramModal
+      :is-open="isModalOpen"
+      :current-user-institute-id="currentUserInstitute?.id"
+      :current-institute-name="instituteName"
+      @close="closeAddProgramModal"
+      @program-configured="handleProgramConfigured"
+    />
+    <EditFacultyAssignmentModal
+      :is-open="isEditModalOpen"
+      :assignment="selectedAssignment"
+      :faculty-list="facultyList"
+      @close="closeEditModal"
+      @save="saveAssignment"
+    />
+
+    <NewEducationProgramViewApplicationModal
+      v-if="isViewModalOpen && applicationForViewing"
+      :isVisible="isViewModalOpen"
+      :application="applicationForViewing"
+      :teachingCenterNameProp="applicationForViewing.teaching_center_details?.name_of_teaching_center"
+      @close="closeViewApplicationModal"
+    />
   </div>
 </template>
 

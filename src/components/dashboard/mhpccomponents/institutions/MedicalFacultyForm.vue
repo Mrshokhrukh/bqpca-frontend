@@ -412,7 +412,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed } from 'vue'
 import UploadFile from '@/components/common/FileUpload.vue'
 import apiServices from '@/services/services'
 
@@ -426,10 +426,12 @@ const emit = defineEmits(['update:form', 'show-notification'])
 
 const isFetchingDetails = ref(false)
 
+// This computed property correctly determines if data has been fetched.
 const dataEffectivelyFetched = computed(() => {
-  return !!props.form.staff_name;
+  return !!props.form.staff_name
 })
 
+// This logic correctly disables the CID input when necessary.
 const identifierInputDisabled = computed(() => {
   return (
     props.mode === 'view' ||
@@ -442,10 +444,16 @@ const updateForm = (key, value) => {
   emit('update:form', { ...props.form, [key]: value })
 }
 
-const mapSourceDataToForm = (sourceData, baseForm) => {
-  const safeSourceData = sourceData || {};
+/**
+ * Maps the raw data from the BMHC API response to the component's form structure.
+ * @param {object} apiData - The faculty data object from the API response.
+ * @param {object} baseForm - The current form state, to preserve user input on editable fields.
+ * @returns {object} A new form state object.
+ */
+const mapApiDataToForm = (apiData, baseForm) => {
+  const safeApiData = apiData || {}
 
-  const mappedEducationDetails = (safeSourceData.user_qualifications || []).map(edu => ({
+  const mappedEducationDetails = (safeApiData.user_qualifications || []).map((edu) => ({
     type: edu.qualification_type_display || 'N/A',
     qualification: edu.qualification_name_display || 'N/A',
     institute: edu.institute_university_display || 'N/A',
@@ -456,28 +464,29 @@ const mapSourceDataToForm = (sourceData, baseForm) => {
       registration_no: edu.registration_no,
       registration_date: edu.registration_date,
       expiry_date: edu.expiry_date,
-    }
-  }));
+    },
+  }))
 
   return {
     ...baseForm,
-    identifier: safeSourceData.CID || baseForm.identifier,
-    application_profile_identifier: safeSourceData.id || null,
-    staff_name: safeSourceData.full_name || '',
-    registration_type_name: safeSourceData.registration_type_name || '',
-    nationality: safeSourceData.nationality || '',
-    date_of_birth: safeSourceData.date_of_birth || '',
-    village: safeSourceData.village || '',
-    gewog: safeSourceData.gewog || '',
-    dzongkhag: safeSourceData.dzongkhag || '',
-    contact_no: safeSourceData.contact_no || '',
-    email_address: safeSourceData.email_address || '',
-    registration_date: safeSourceData.registration_date || '',
-    expiry_date: safeSourceData.expiry_date || '',
+    identifier: safeApiData.CID || baseForm.identifier,
+    application_profile_identifier: safeApiData.id || null,
+    staff_name: safeApiData.full_name || '',
+    registration_type_name: safeApiData.registration_type_name || '',
+    nationality: safeApiData.nationality || '',
+    date_of_birth: safeApiData.date_of_birth || '',
+    village: safeApiData.village || '',
+    gewog: safeApiData.gewog || '',
+    dzongkhag: safeApiData.dzongkhag || '',
+    contact_no: safeApiData.contact_no || '',
+    email_address: safeApiData.email_address || '',
+    registration_date: safeApiData.registration_date || '',
+    expiry_date: safeApiData.expiry_date || '',
     education_details: mappedEducationDetails,
-    designation: safeSourceData.designation || baseForm.designation,
-    date_of_joining: safeSourceData.date_of_joining || baseForm.date_of_joining,
-  };
+    // Keep existing values for designation/date_of_joining if API doesn't provide them
+    designation: baseForm.designation || safeApiData.designation,
+    date_of_joining: baseForm.date_of_joining || safeApiData.date_of_joining,
+  }
 }
 
 const fetchFacultyByCid = async () => {
@@ -491,8 +500,9 @@ const fetchFacultyByCid = async () => {
     const results = response?.data?.results || []
 
     if (results.length > 0) {
-      const newFormState = mapSourceDataToForm(results[0], props.form);
-      emit('update:form', newFormState);
+      // Use the mapping function to transform the API data
+      const newFormState = mapApiDataToForm(results[0], props.form)
+      emit('update:form', newFormState)
       emit(
         'show-notification',
         'success',
@@ -517,11 +527,7 @@ const fetchFacultyByCid = async () => {
 
 const handleFileUpload = (field, file) => {
   updateForm(field, file)
-  if (file) {
-    updateForm(`${field}_name`, file.name)
-  } else {
-    updateForm(`${field}_name`, '')
-  }
+  updateForm(`${field}_name`, file ? file.name : '')
 }
 
 const handleFileRemoval = (field) => {
@@ -529,14 +535,7 @@ const handleFileRemoval = (field) => {
   updateForm(`${field}_name`, '')
 }
 
-onMounted(() => {
-  if (props.mode === 'edit' || props.mode === 'view') {
-    if (props.form && props.form.full_name) {
-      const initialFormState = mapSourceDataToForm(props.form, props.form);
-      emit('update:form', initialFormState);
-    }
-  }
-})
+// The onMounted hook has been removed as it is not needed and was causing a bug.
 </script>
 
 <style scoped>
