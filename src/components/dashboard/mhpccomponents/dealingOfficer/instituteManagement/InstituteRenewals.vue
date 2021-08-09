@@ -1,120 +1,129 @@
 <template>
-  <div class="p-8 min-h-screen bg-gray-50">
-    <!-- Header -->
-    <div class="bg-white rounded-xl p-8 mb-10 shadow-sm border border-gray-100">
-      <h1 class="text-4xl font-bold text-gray-900 mb-3">Institute Applications</h1>
-      <div class="flex items-center text-gray-600">
-        <span class="flex items-center">
-          <svg class="w-4 h-4 mr-2 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+  <div class="p-4 sm:p-6 md:p-8 min-h-screen bg-gray-50">
+    <div class="bg-white rounded-lg shadow-md p-6 mb-8 border border-gray-200">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-10 w-10 text-blue-500"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+          >
             <path
-              d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a1 1 0 011-1h14a1 1 0 110 2H3a1 1 0 01-1-1z"
-            ></path>
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+            />
           </svg>
-          Total Institutes: {{ institutes.length }}
-        </span>
-        <span class="flex items-center ml-6">
-          <svg class="w-4 h-4 mr-2 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
-            <path
-              fill-rule="evenodd"
-              d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-              clip-rule="evenodd"
-            ></path>
-          </svg>
-          Pending Action: {{ getPendingCount() }}
-        </span>
+          <div>
+            <h1 class="text-3xl font-bold text-gray-800">Institute Profiles</h1>
+            <p class="text-sm text-gray-500">
+              A total of
+              <span class="font-semibold text-blue-600">{{ institutes.length }}</span>
+              institutes in the system.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Table -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div class="relative md:col-span-2">
+        <input
+          v-model="searchTerm"
+          type="text"
+          placeholder="Search by name, CID..."
+          class="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+        />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          />
+        </svg>
+      </div>
+      <div class="md:col-span-1">
+        <select
+          v-model="selectedStatus"
+          class="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+        >
+          <option value="all">All Statuses</option>
+          <option value="Pending">Pending</option>
+          <option value="Approved">Approved</option>
+          <option value="Rejected">Rejected</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
+          <thead class="bg-gray-100">
             <tr>
-              <th
-                scope="col"
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
-                Institute Name
+              <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                Institution Name
               </th>
-              <th
-                scope="col"
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
-                Applicant Name
+              <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                CID
               </th>
-              <th
-                scope="col"
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
+              <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                Dzongkhag
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
                 Status
               </th>
-              <th
-                scope="col"
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
-                Expiry Date
-              </th>
-              <th
-                scope="col"
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
+              <th scope="col" class="px-6 py-3 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
                 Actions
               </th>
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
-            <!-- Loading State -->
-            <tr v-if="isLoading">
-              <td colspan="5" class="px-6 py-10 text-center text-sm text-gray-500">
-                Loading institute applications...
-              </td>
-            </tr>
-            <!-- Empty State -->
-            <tr v-else-if="institutes.length === 0">
-              <td colspan="5" class="px-6 py-10 text-center text-sm text-gray-500">
-                No institute applications found.
-              </td>
-            </tr>
-            <!-- Data Rows -->
-            <tr
-              v-for="institute in institutes"
-              :key="institute.id"
-              class="hover:bg-gray-50 transition-colors"
-              v-else
-            >
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-gray-900">
-                  {{ institute.name_of_institution }}
+            <tr v-if="loading">
+              <td colspan="5" class="px-6 py-12 text-center">
+                <div class="flex justify-center items-center gap-2">
+                  <div class="h-2 w-2 bg-blue-500 rounded-full animate-pulse [animation-delay:-0.3s]"></div>
+                  <div class="h-2 w-2 bg-blue-500 rounded-full animate-pulse [animation-delay:-0.15s]"></div>
+                  <div class="h-2 w-2 bg-blue-500 rounded-full animate-pulse"></div>
+                  <span class="text-sm text-gray-500 ml-2">Loading institutes...</span>
                 </div>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {{ institute.full_name }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span :class="getStatusClass(institute)">
-                  {{ getStatusText(institute) }}
-                </span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {{ formatDate(institute.valid_till) }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                <div class="flex items-center gap-x-2">
-                  <button
-                    @click="openModal(institute)"
-                    :disabled="!institute.latest_renewal || institute.latest_renewal.renewal_status !== 'PENDING'"
-                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200 disabled:bg-gray-300 disabled:cursor-not-allowed"
-                  >
-                    View Details
-                  </button>
-                  <button
-                    @click="confirmDelete(institute)"
-                    class="bg-red-100 hover:bg-red-200 text-red-700 font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200"
-                  >
-                    Delete
-                  </button>
+            </tr>
+            <tr v-else-if="error">
+              <td colspan="5" class="px-6 py-12 text-center">
+                <div class="text-red-500">
+                  <p class="font-semibold">Oops! Something went wrong.</p>
+                  <p class="text-sm">{{ error }}</p>
                 </div>
+              </td>
+            </tr>
+            <tr v-else-if="filteredInstitutes.length === 0">
+              <td colspan="5" class="px-6 py-12 text-center">
+                <div class="flex flex-col items-center justify-center text-gray-500">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mb-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
+                  <p class="font-semibold">No Institutes Found</p>
+                  <p class="text-sm">Try adjusting your search or filter criteria.</p>
+                </div>
+              </td>
+            </tr>
+            <tr v-else v-for="institute in filteredInstitutes" :key="institute.id" class="hover:bg-gray-50 transition-colors duration-150">
+              <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm font-medium text-gray-900">{{ institute.name_of_institution }}</div></td>
+              <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm text-gray-700">{{ institute.CID }}</div></td>
+              <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm text-gray-600">{{ institute.dzongkhag }}</div></td>
+              <td class="px-6 py-4 whitespace-nowrap"><span :class="getStatusClasses(institute.do_dpr_review_decision)">{{ getStatusText(institute.do_dpr_review_decision) }}</span></td>
+              <td class="px-6 py-4 whitespace-nowrap text-center">
+                <button @click="openModal(institute)" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow-sm transition-all duration-200 ease-in-out transform hover:scale-105">View</button>
               </td>
             </tr>
           </tbody>
@@ -122,190 +131,130 @@
       </div>
     </div>
 
-    <!-- Modal -->
-    <InstituteRenewalApplicationDetailsModal
+    <div class="mt-6 flex items-center justify-between bg-white px-4 py-3 rounded-lg shadow-md border border-gray-200">
+      <div class="text-sm text-gray-700">Showing <span class="font-medium">{{ filteredInstitutes.length > 0 ? 1 : 0 }}</span> to <span class="font-medium">{{ filteredInstitutes.length }}</span> of <span class="font-medium">{{ filteredInstitutes.length }}</span> results</div>
+      <div class="flex items-center gap-2">
+        <button class="px-3 py-1 border border-gray-300 rounded-md text-sm hover:bg-gray-100 transition disabled:opacity-50 disabled:cursor-not-allowed" :disabled="true">Previous</button>
+        <button class="px-3 py-1 border border-gray-300 rounded-md text-sm hover:bg-gray-100 transition disabled:opacity-50 disabled:cursor-not-allowed" :disabled="true">Next</button>
+      </div>
+    </div>
+
+    <InstituteProfileDetailsModal
       :is-open="isModalOpen"
-      :application-details="selectedInstitute"
+      :institute-details="selectedInstitute"
       @close-modal="closeModal"
-      @application-updated="handleApplicationUpdate"
+      @save-changes="handleSaveChanges"
     />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useToast } from 'vue-toastification'
-import InstituteRenewalApplicationDetailsModal from '../modals/InstituteRenewalApplicationDetailsModal.vue'
-// Make sure this path is correct for your project structure
-import apiService from '@/services/services'
+import { ref, onMounted, computed } from 'vue';
+import InstituteProfileDetailsModal from '../modals/InstituteProfileDetailsModal.vue';
+import apiServices from '@/services/services';
 
-const toast = useToast()
-const institutes = ref([])
-const isLoading = ref(true)
-const isModalOpen = ref(false)
-const selectedInstitute = ref(null)
+const institutes = ref([]);
+const isModalOpen = ref(false);
+const selectedInstitute = ref(null);
+const loading = ref(true);
+const error = ref(null);
+const searchTerm = ref('');
+const selectedStatus = ref('all');
+
+const filteredInstitutes = computed(() => {
+  let filtered = [...institutes.value];
+  const lowerCaseSearch = searchTerm.value.trim().toLowerCase();
+  if (lowerCaseSearch) {
+    filtered = filtered.filter(institute =>
+      (institute.name_of_institution && institute.name_of_institution.toLowerCase().includes(lowerCaseSearch)) ||
+      (institute.CID && institute.CID.toLowerCase().includes(lowerCaseSearch))
+    );
+  }
+  if (selectedStatus.value !== 'all') {
+    filtered = filtered.filter(institute => getStatusText(institute.do_dpr_review_decision) === selectedStatus.value);
+  }
+  return filtered;
+});
 
 onMounted(() => {
-  fetchInstitutes()
-})
+  fetchInstitutes();
+});
 
-const fetchInstitutes = async () => {
-  isLoading.value = true
+async function fetchInstitutes() {
+  loading.value = true;
+  error.value = null;
   try {
-    // Assuming this endpoint returns the Institute list with `latest_renewal` nested object
-    const response = await apiService.getMhpcInstitutes()
-    if (response.data && Array.isArray(response.data.results)) {
-      institutes.value = response.data.results.sort((a, b) => {
-        const dateA = a.valid_till ? new Date(a.valid_till) : new Date(0)
-        const dateB = b.valid_till ? new Date(b.valid_till) : new Date(0)
-        return dateA - dateB
-      })
+    const response = await apiServices.getMhpcInstitutes();
+    if (response && response.data && Array.isArray(response.data.results)) {
+      institutes.value = response.data.results;
+    } else if (response && Array.isArray(response.data)) {
+      institutes.value = response.data;
     } else {
-      console.error('Unexpected API response format:', response)
-      institutes.value = []
-      toast.error('Unexpected data format received from server')
+      error.value = 'The data received from the server was in an unexpected format.';
     }
-  } catch (error) {
-    console.error('Error fetching institutes:', error)
-    toast.error('Failed to load institute applications')
-    institutes.value = []
+  } catch (err) {
+    error.value = 'Failed to connect to the server. Please check your connection and try again.';
   } finally {
-    isLoading.value = false
+    loading.value = false;
+  }
+}
+
+async function handleSaveChanges(updatedInstituteData) {
+  const payload = {
+    name_of_institution: updatedInstituteData.name_of_institution,
+    CID: updatedInstituteData.CID,
+    full_name: updatedInstituteData.full_name,
+    gender: updatedInstituteData.gender,
+    contact_no: updatedInstituteData.contact_no,
+    email_address: updatedInstituteData.email_address,
+    country: updatedInstituteData.country,
+    gewog: updatedInstituteData.gewog,
+    dzongkhag: updatedInstituteData.dzongkhag,
+    village: updatedInstituteData.village,
+    address: updatedInstituteData.address,
+    chiwog: updatedInstituteData.chiwog,
+    website: updatedInstituteData.website,
+    head_of_institution_name: updatedInstituteData.head_of_institution_name,
+    head_of_institution_gender: updatedInstituteData.head_of_institution_gender,
+    head_of_institution_phone_number: updatedInstituteData.head_of_institution_phone_number,
+    head_of_institution_email: updatedInstituteData.head_of_institution_email,
+  };
+
+  try {
+    await apiServices.updateMhpcInstitute(updatedInstituteData.id, payload);
+    alert('Institute profile updated successfully!');
+    closeModal();
+    await fetchInstitutes();
+  } catch (err) {
+    const errorDetail = JSON.stringify(err.response?.data) || 'Please check the console for details.';
+    alert(`Failed to update institute. Server responded with: ${errorDetail}`);
   }
 }
 
 const openModal = (institute) => {
-  // We only open the modal if there's a pending renewal
-  if (!institute.latest_renewal || institute.latest_renewal.renewal_status !== 'PENDING') {
-    toast.info('No pending renewal action for this institute.')
-    return
-  }
-  // Pass all the necessary IDs and details to the modal
-  selectedInstitute.value = {
-    instituteId: institute.id,
-    instituteCID: institute.CID, // Pass the CID
-    renewalId: institute.latest_renewal.id, // Pass the renewal's ID
-    instituteName: institute.name_of_institution,
-    applicantName: institute.full_name,
-    lastUpdated: institute.latest_renewal.created_at,
-    expiryDate: institute.valid_till,
-    officerRemarks: institute.latest_renewal.officer_remarks || '',
-    renewalStatus: institute.latest_renewal.renewal_status,
-  }
-  isModalOpen.value = true
-}
+  selectedInstitute.value = { ...institute };
+  isModalOpen.value = true;
+};
 
 const closeModal = () => {
-  isModalOpen.value = false
-  selectedInstitute.value = null
-}
+  isModalOpen.value = false;
+  selectedInstitute.value = null;
+};
 
-const handleApplicationUpdate = () => {
-  closeModal()
-  fetchInstitutes() // Refresh the list after an update
-}
+const getStatusText = (decision) => {
+  if (decision === 'Approved') return 'Approved';
+  if (decision === 'Regretted') return 'Rejected';
+  return 'Pending';
+};
 
-const confirmDelete = (institute) => {
-  if (
-    window.confirm(
-      `Are you sure you want to delete the application for "${institute.name_of_institution}"? This action cannot be undone.`,
-    )
-  ) {
-    // Note: Deleting might now require using the CID instead of ID, depending on backend setup
-    deleteApplication(institute.id) // Or institute.CID
-  }
-}
-
-const deleteApplication = async (instituteId) => {
-  try {
-    await apiService.deleteMhpcInstitute(instituteId)
-    toast.success('Application deleted successfully.')
-    institutes.value = institutes.value.filter((inst) => inst.id !== instituteId)
-  } catch (error) {
-    console.error('Error deleting application:', error)
-    toast.error('Failed to delete the application. Please try again.')
-  }
-}
-
-const formatDate = (dateString) => {
-  if (!dateString) return 'N/A'
-  return new Date(dateString).toLocaleDateString('en-GB', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  })
-}
-
-// --- REFACTORED STATUS FUNCTIONS ---
-
-const getStatusHelpers = (institute) => {
-  const renewalStatus = institute.latest_renewal?.renewal_status;
-  const validTill = institute.valid_till;
-
-  const isExpired = () => {
-    if (!validTill) return false
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return new Date(validTill) < today
-  }
-
-  const isRenewalDueSoon = () => {
-    if (!validTill) return false
-    const today = new Date()
-    const renewalThreshold = new Date()
-    renewalThreshold.setDate(today.getDate() + 90)
-    return new Date(validTill) <= renewalThreshold && !isExpired()
-  }
-
-  return { renewalStatus, validTill, isExpired, isRenewalDueSoon };
-}
-
-const getStatusClass = (institute) => {
-  const { renewalStatus, isExpired, isRenewalDueSoon } = getStatusHelpers(institute);
-
-  const baseClass = 'px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full';
-
-  if (renewalStatus === 'PENDING') {
-    return `${baseClass} bg-yellow-100 text-yellow-800`;
-  }
-  if (renewalStatus === 'AWAITING_PAYMENT') {
-    return `${baseClass} bg-purple-100 text-purple-800`;
-  }
-  if (isExpired()) {
-    return `${baseClass} bg-red-100 text-red-800`;
-  }
-  if (isRenewalDueSoon()) {
-    return `${baseClass} bg-blue-100 text-blue-800`;
-  }
-  if (institute.is_currently_active) {
-    return `${baseClass} bg-green-100 text-green-800`;
-  }
-  if (renewalStatus === 'REJECTED') {
-    return `${baseClass} bg-gray-100 text-gray-800`;
-  }
-
-  // Default/Initial state
-  return `${baseClass} bg-gray-100 text-gray-800`;
-}
-
-const getStatusText = (institute) => {
-  const { renewalStatus, isExpired, isRenewalDueSoon } = getStatusHelpers(institute);
-
-  if (renewalStatus === 'PENDING') return 'Pending Renewal';
-  if (renewalStatus === 'AWAITING_PAYMENT') return 'Awaiting Payment';
-  if (isExpired()) return 'Expired';
-  if (isRenewalDueSoon()) return 'Renewal Due';
-  if (institute.is_currently_active) return 'Active';
-  if (renewalStatus === 'REJECTED') return 'Renewal Rejected';
-
-  // Default/Initial state
-  return 'Inactive';
-}
-
-const getPendingCount = () => {
-  if (!Array.isArray(institutes.value)) return 0
-  return institutes.value.filter(
-    (inst) => inst.latest_renewal && inst.latest_renewal.renewal_status === 'PENDING',
-  ).length
-}
+const getStatusClasses = (decision) => {
+  const baseClasses = 'px-3 py-1 inline-block rounded-full text-xs font-semibold leading-tight';
+  const status = getStatusText(decision);
+  const statusClasses = {
+    Pending: 'bg-yellow-100 text-yellow-800',
+    Approved: 'bg-green-100 text-green-800',
+    Rejected: 'bg-red-100 text-red-800',
+  };
+  return `${baseClasses} ${statusClasses[status]}`;
+};
 </script>
