@@ -502,6 +502,22 @@ export default {
     return apiClient.get(`/epc/epc-teaching-centers/${applicationId}/`)
   },
 
+  // renewalfor teaching center
+  getEpcTeachingCenterRenewals(params) {
+    return apiClient.get('/epc/epc-teaching-center-renewals/', { params })
+  },
+
+  createEpcTeachingCenterRenewal(formData) {
+    return apiClient.post('/epc/epc-teaching-center-renewals/', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+  },
+  patchEpcTeachingCenterRenewal(id, data) {
+    return apiClient.patch(`/epc/epc-teaching-center-renewals/${id}/`, data)
+  },
+
   // Masters CPD Activities endpoints
   getEpcMastersCpdActivities() {
     return apiClient.get('/epc/masters-cpd-activities/')
