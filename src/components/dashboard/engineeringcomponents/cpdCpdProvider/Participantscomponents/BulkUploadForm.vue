@@ -14,6 +14,7 @@
         <li>
           Each row should contain one participant's registration number.
         </li>
+        <li>The file will be checked for internal duplicates before upload.</li>
       </ul>
       <a href="#" @click.prevent="downloadTemplate" class="text-sm text-green-700 underline mt-2 inline-block">
         Download Simple CSV Template
@@ -55,21 +56,24 @@
           </label>
           <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg" :class="{
             'border-green-400 bg-green-50': csvFile && !props.isProcessingUpload,
+            'border-red-400 bg-red-50': fileError,
             'border-blue-400': isDragging && !props.isProcessingUpload,
             'bg-gray-100 cursor-not-allowed': props.isProcessingUpload,
           }" @dragover.prevent="handleDragOver" @dragleave.prevent="handleDragLeave" @drop.prevent="handleDrop">
             <div class="space-y-1 text-center">
-              <DocumentIcon class="mx-auto h-12 w-12 text-gray-400" :class="{ 'text-green-500': csvFile }" />
+              <DocumentIcon class="mx-auto h-12 w-12 text-gray-400"
+                :class="{ 'text-green-500': csvFile, 'text-red-500': fileError }" />
               <div class="flex text-sm text-gray-600">
                 <label for="csv-upload"
                   class="relative cursor-pointer bg-white rounded-md font-medium text-green-600 hover:text-green-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-green-500"
                   :class="{ '!text-gray-400 !cursor-not-allowed': props.isProcessingUpload }">
-                  <span v-if="!csvFile">Upload a CSV file</span>
-                  <span v-else class="text-green-700">{{ csvFile.name }}</span>
+                  <span v-if="!csvFile && !fileError">Upload a CSV file</span>
+                  <span v-else-if="csvFile" class="text-green-700">{{ csvFile.name }}</span>
+                  <span v-else class="text-red-700">Upload failed. Try again.</span>
                   <input id="csv-upload" name="csv-upload" type="file" class="sr-only" accept=".csv, text/csv"
                     @change="handleCSVInputChange" ref="csvFileInput" :disabled="props.isProcessingUpload" />
                 </label>
-                <p v-if="!csvFile && !props.isProcessingUpload" class="pl-1">or drag and drop</p>
+                <p v-if="!csvFile && !props.isProcessingUpload && !fileError" class="pl-1">or drag and drop</p>
                 <p v-if="props.isProcessingUpload" class="pl-1 text-gray-500">Processing...</p>
               </div>
               <p class="text-xs text-gray-500">CSV up to 10MB</p>
@@ -133,39 +137,96 @@ const processedCpdTasks = computed(() => {
 
 const isFormValid = computed(() => formData.cpdTask && csvFile.value && !fileError.value)
 
-const formatDateRange = (startDate, endDate) => {
-  if (!startDate || !endDate) return 'N/A'
-  try {
-    const start = new Date(startDate).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
-    const end = new Date(endDate).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
-    return `${start} to ${end}`
-  } catch (err) {
-    return `${startDate} to ${endDate}`
-  }
-}
 
-function processFile(file) {
-  if (props.isProcessingUpload) return
-  fileError.value = ''
-  if (file) {
-    if (file.type === 'text/csv' || file.name.toLowerCase().endsWith('.csv')) {
-      if (file.size > 10 * 1024 * 1024) {
-        fileError.value = 'File size exceeds 10MB limit.'
-        csvFile.value = null
-        if (csvFileInput.value) csvFileInput.value.value = ''
-      } else {
-        csvFile.value = file
+const validateCsvContent = (file) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = (event) => {
+      try {
+        const text = event.target.result;
+        const rows = text.split(/\r?\n/).map(row => row.trim()).filter(row => row);
+
+        if (rows.length < 2) {
+          return reject('CSV file must contain a header and at least one participant row.');
+        }
+
+        const header = rows[0].toLowerCase().trim();
+        if (header !== 'participant_reg_no') {
+          return reject('Invalid CSV header. The header must be "participant_reg_no".');
+        }
+
+        const regNumbers = rows.slice(1);
+        const seen = new Set();
+        const duplicates = new Set();
+
+        for (const num of regNumbers) {
+          const trimmedNum = num.trim();
+          if (trimmedNum) { // Ignore empty lines between data
+            if (seen.has(trimmedNum)) {
+              duplicates.add(trimmedNum);
+            } else {
+              seen.add(trimmedNum);
+            }
+          }
+        }
+
+        if (duplicates.size > 0) {
+          return reject(`Duplicate registration numbers found in the file: ${[...duplicates].join(', ')}.`);
+        }
+
+        if (seen.size === 0) {
+          return reject('No participant registration numbers found in the file.');
+        }
+
+        resolve();
+      } catch (e) {
+        reject('An unexpected error occurred while parsing the file.');
       }
-    } else {
-      fileError.value = 'Invalid file type. Please upload a CSV file.'
-      csvFile.value = null
-      if (csvFileInput.value) csvFileInput.value.value = ''
-    }
+    };
+
+    reader.onerror = () => {
+      reject('Failed to read the file.');
+    };
+
+    reader.readAsText(file);
+  });
+};
+
+
+async function processFile(file) {
+  if (props.isProcessingUpload) return
+
+  fileError.value = ''
+  csvFile.value = null
+  if (csvFileInput.value) csvFileInput.value.value = ''
+
+  if (!file) return;
+
+  if (!file.type.includes('csv') && !file.name.toLowerCase().endsWith('.csv')) {
+    fileError.value = 'Invalid file type. Please upload a CSV file.'
+    return;
+  }
+
+  if (file.size > 10 * 1024 * 1024) { // 10MB
+    fileError.value = 'File size exceeds 10MB limit.'
+    return;
+  }
+
+  try {
+    await validateCsvContent(file);
+    csvFile.value = file;
+    toast.success("CSV file is valid and ready for upload.");
+  } catch (error) {
+
+    fileError.value = error;
+    toast.error(error);
   }
 }
 
 function handleCSVInputChange(event) {
-  processFile(event.target.files[0])
+  const file = event.target.files ? event.target.files[0] : null;
+  processFile(file);
 }
 
 function handleDragOver(event) {
@@ -184,15 +245,17 @@ function handleDrop(event) {
   if (props.isProcessingUpload) return
   event.preventDefault()
   isDragging.value = false
-  const file = event.dataTransfer.files[0]
-  processFile(file)
-  if (csvFileInput.value && file) {
-    const dataTransfer = new DataTransfer()
-    dataTransfer.items.add(file)
-    csvFileInput.value.files = dataTransfer.files
-  } else if (csvFileInput.value) {
-    csvFileInput.value.value = ''
+  const file = event.dataTransfer.files ? event.dataTransfer.files[0] : null;
+
+  if (file) {
+    const dataTransfer = new DataTransfer();
+    dataTransfer.items.add(file);
+    if (csvFileInput.value) {
+      csvFileInput.value.files = dataTransfer.files;
+    }
   }
+
+  processFile(file)
 }
 
 function removeCsvFile() {
@@ -205,7 +268,12 @@ function removeCsvFile() {
 }
 
 function submitForm() {
-  if (!isFormValid.value || props.isProcessingUpload) return
+  if (!isFormValid.value || props.isProcessingUpload) {
+    if (!isFormValid.value) {
+      toast.warning("Please select a task and a valid CSV file.");
+    }
+    return;
+  }
   emit('submit', { cpdTask: parseInt(formData.cpdTask), file: csvFile.value })
 }
 
@@ -214,7 +282,6 @@ function resetForm(clearSelection = true) {
   removeCsvFile()
 }
 
-// UPDATED TEMPLATE FUNCTION
 function downloadTemplate() {
   try {
     const csvContent = [
@@ -238,6 +305,17 @@ function downloadTemplate() {
   } catch (err) {
     console.error('Error downloading CSV template:', err);
     toast.error('Failed to download CSV template.');
+  }
+}
+
+const formatDateRange = (startDate, endDate) => {
+  if (!startDate || !endDate) return 'N/A'
+  try {
+    const start = new Date(startDate).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
+    const end = new Date(endDate).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
+    return `${start} to ${end}`
+  } catch (err) {
+    return `${startDate} to ${endDate}`
   }
 }
 

@@ -185,9 +185,8 @@
             <form @submit.prevent="submitReview" v-if="selectedRenewal.renewal_status === 'PENDING'"
               class="space-y-4 border-t pt-6">
               <div v-if="!isPaymentCompleted"
-                class="p-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 rounded-r-lg">
-                <p class="font-bold">Awaiting Payment</p>
-                <p class="text-sm">Approval is disabled until the applicant completes the payment for this renewal.</p>
+                class="p-3 bg-yellow-100 border border-yellow-300 text-yellow-800 rounded-lg">
+                <p class="text-sm">Please note: The payment for this renewal is still pending.</p>
               </div>
 
               <div>
@@ -195,7 +194,7 @@
                 <select id="reviewDecision" v-model="reviewForm.renewal_status" required
                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
                   <option value="REJECTED">Reject</option>
-                  <option v-if="isPaymentCompleted" value="COMPLETED">Approve & Complete</option>
+                  <option value="COMPLETED">Approve & Complete</option>
                 </select>
               </div>
 
@@ -213,7 +212,7 @@
               <div class="flex justify-end pt-2">
                 <button type="submit"
                   class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg"
-                  :disabled="isSubmitting || (reviewForm.renewal_status === 'COMPLETED' && !isPaymentCompleted)">
+                  :disabled="isSubmitting">
                   {{ isSubmitting ? 'Submitting...' : 'Submit Review' }}
                 </button>
               </div>
@@ -287,7 +286,7 @@ const getPaymentStatusClass = (status) => {
 const openDetailsModal = (renewal) => {
   selectedRenewal.value = renewal;
   reviewForm.value = {
-    renewal_status: isPaymentCompleted.value ? 'COMPLETED' : 'REJECTED',
+    renewal_status: 'REJECTED',
     officer_remarks: renewal.officer_remarks || '',
   };
   showDetailsModal.value = true;
@@ -306,11 +305,6 @@ const submitReview = async () => {
     return;
   }
 
-  if (reviewForm.value.renewal_status === 'COMPLETED' && !isPaymentCompleted.value) {
-    toast.error('Cannot approve an application that has not been paid.');
-    return;
-  }
-
   isSubmitting.value = true;
   try {
     const renewalId = selectedRenewal.value.id;
@@ -320,7 +314,7 @@ const submitReview = async () => {
     };
     await apiServices.patchEpcTeachingCenterRenewal(renewalId, payload);
 
-    toast.success(`Renewal application has been ${reviewForm.value.renewal_status.toLowerCase()}.`);
+    toast.success(`Renewal application has been successfully ${reviewForm.value.renewal_status.toLowerCase()}.`);
     await fetchRenewalData();
     closeDetailsModal();
   } catch (error) {

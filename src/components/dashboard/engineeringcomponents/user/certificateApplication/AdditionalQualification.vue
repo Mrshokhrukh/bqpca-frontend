@@ -87,7 +87,7 @@
           </div>
           <span v-if="errors.application" class="text-sm text-red-500 mt-1 block">{{
             errors.application
-          }}</span>
+            }}</span>
         </div>
       </div>
 
@@ -110,7 +110,7 @@
               </select>
               <span v-if="errors.qualification_type" class="text-sm text-red-500 mt-1">{{
                 errors.qualification_type
-              }}</span>
+                }}</span>
             </div>
 
             <!-- Qualification Name -->
@@ -127,7 +127,7 @@
               </select>
               <span v-if="errors.qualification_name" class="text-sm text-red-500 mt-1">{{
                 errors.qualification_name
-              }}</span>
+                }}</span>
             </div>
 
             <!-- Institute/University with Add New Option -->
@@ -193,7 +193,7 @@
 
               <span v-if="errors.institute" class="text-sm text-red-500 mt-1">{{
                 errors.institute
-              }}</span>
+                }}</span>
             </div>
 
             <!-- Year of Completion -->
@@ -205,7 +205,7 @@
               <span class="text-xs text-gray-500">Select month and year</span>
               <span v-if="errors.year_of_completion" class="text-sm text-red-500 mt-1">{{
                 errors.year_of_completion
-              }}</span>
+                }}</span>
             </div>
           </div>
         </div>
@@ -365,7 +365,7 @@
           </div>
           <span v-if="errors.declaration" class="text-sm text-red-500 mt-1">{{
             errors.declaration
-          }}</span>
+            }}</span>
         </div>
       </div>
 
@@ -449,27 +449,25 @@ const fetchedDocumentTypes = ref([])
 const isConfirmationModalOpen = ref(false)
 const countries = ref(countryData)
 
-// Institute selection state
 const instituteSelection = ref('')
 
-// Define newInstitute for "Add New Institute/University" option
 const newInstitute = reactive({
   institute_name: '',
   university: '',
   country: ''
 })
 
-// Form data with hidden registration_type field
+
 const localFormData = reactive({
   qualification_type: '',
   qualification_name: '',
-  institute: '', // THIS WILL BE POPULATED WITH THE FINAL ID AT SUBMISSION
+  institute: '',
   year_of_completion: '',
   remarks: '',
   declaration: false,
   application: '',
-  registration_type: '', // Hidden field that will be set to "Additional Certificate"
-  is_primary_qualification: false, // This is additional, not primary
+  registration_type: '',
+  is_primary_qualification: false,
 })
 
 const createNewInstitute = async () => {
@@ -492,10 +490,8 @@ const createNewInstitute = async () => {
     throw error
   }
 }
-// Store documents separately for easier management (initialize as empty, will be populated from API)
 const supportingDocuments = ref([])
 
-// Computed properties
 const filteredQualifications = computed(() => {
   if (!localFormData.qualification_type) {
     return []
@@ -505,26 +501,22 @@ const filteredQualifications = computed(() => {
   )
 })
 
-// ADD these helper functions for country code conversion
 const getCountryName = (countryCode) => {
   const country = countries.value.find(c => c.code === countryCode)
   return country ? country.name : countryCode
 }
 
 
-// Helper function to display university with country name instead of code
 const getUniversityDisplayText = (university) => {
   const countryName = getCountryName(university.country)
   return `${university.institute_name} (${university.university}, ${countryName})`
 }
 
-// Helper function to get document type name
 const getDocumentTypeName = (typeId) => {
   const docType = fetchedDocumentTypes.value.find(type => type.id === typeId)
   return docType ? docType.document_name : 'Unknown Document Type'
 }
 
-// Document validation summary
 const getDocumentValidationSummary = () => {
   const missingDocs = supportingDocuments.value
     .filter(doc => !doc.files || doc.files.length === 0)
@@ -542,7 +534,6 @@ const getDocumentValidationSummary = () => {
   }
 }
 
-// CHANGED: Simplified watcher. It now only clears the "add new" form when the user switches away.
 watch(instituteSelection, (newValue) => {
   if (newValue !== 'add_new') {
     newInstitute.institute_name = ''
@@ -551,7 +542,6 @@ watch(instituteSelection, (newValue) => {
   }
 })
 
-// Initialize supporting documents based on fetched document types
 const initializeSupportingDocuments = () => {
   if (fetchedDocumentTypes.value.length > 0) {
     supportingDocuments.value = fetchedDocumentTypes.value.map(docType => ({
@@ -563,7 +553,6 @@ const initializeSupportingDocuments = () => {
   }
 }
 
-// Fetch user's primary application
 const fetchApplications = async () => {
   delete errors.application
   try {
@@ -610,16 +599,13 @@ const fetchApplications = async () => {
   }
 }
 
-// Handle qualification type change to filter qualifications
+
 const onQualificationTypeChange = () => {
-  localFormData.qualification_name = '' // Reset qualification name when type changes
+  localFormData.qualification_name = ''
 }
 
-// Handle file selection for documents
 const handleFileSelect = (event, index) => {
   const files = Array.from(event.target.files)
-
-  // Clear previous errors
   supportingDocuments.value[index].error = null
   delete errors.documents
 
@@ -642,7 +628,6 @@ const handleFileSelect = (event, index) => {
   supportingDocuments.value[index].files = [file]
 }
 
-// Helper to format date as YYYY-MM-DD
 const formatDateForAPI = (date) => {
   if (!(date instanceof Date) || isNaN(date)) {
     return ''
@@ -653,12 +638,9 @@ const formatDateForAPI = (date) => {
   return `${year}-${month}-${day}`
 }
 
-// FIXED: The validation function is now aware of the "add_new" option
 const validateForm = () => {
   Object.keys(errors).forEach((key) => delete errors[key])
   let isValid = true
-
-  // Clear individual document errors first
   supportingDocuments.value.forEach(doc => {
     doc.error = null
   })
@@ -678,12 +660,10 @@ const validateForm = () => {
     isValid = false
   }
 
-  // FIXED: Institute validation logic
   if (!instituteSelection.value) {
     errors.institute = 'Institute/University is required.';
     isValid = false;
   } else if (instituteSelection.value === 'add_new') {
-    // If 'add_new' is selected, validate the new institute fields
     if (!newInstitute.institute_name.trim() || !newInstitute.university.trim() || !newInstitute.country) {
       errors.institute = 'Please fill all new institute fields.';
       isValid = false;
