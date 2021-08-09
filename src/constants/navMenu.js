@@ -920,8 +920,6 @@ const serviceSpecificMenuItems = {
             name: 'EOI Applications',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/eoi_application`,
           },
-          // hhhdhd
-
           {
             name: 'DPR Applications',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/dpr_application`,

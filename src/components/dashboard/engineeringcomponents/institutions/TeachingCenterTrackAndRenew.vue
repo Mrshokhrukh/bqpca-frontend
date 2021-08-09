@@ -10,11 +10,13 @@
       </p>
     </div>
 
-    <!-- Loading, Error, No Results States -->
+    <!-- Loading State -->
     <div v-if="isLoading" class="flex justify-center items-center my-8">
       <Loader class="animate-spin text-blue-600 w-6 h-6" />
       <p class="ml-2 text-gray-600">Loading teaching center data...</p>
     </div>
+
+    <!-- Error State -->
     <div v-else-if="apiError" class="bg-red-50 border border-red-200 text-red-700 p-6 rounded-lg mb-6">
       <h3 class="text-lg font-medium mb-2">Error Loading Data</h3>
       <p>{{ errorMessage }}</p>
@@ -23,6 +25,8 @@
         Try Again
       </button>
     </div>
+
+    <!-- No Teaching Centers Found -->
     <div v-else-if="!filteredTeachingCenters.length"
       class="bg-yellow-50 border border-yellow-200 text-yellow-700 p-6 rounded-lg mb-6">
       <h3 class="text-lg font-medium mb-2">No Teaching Centers Found</h3>
@@ -34,8 +38,10 @@
     <div v-else class="space-y-8">
       <div v-for="center in filteredTeachingCenters" :key="center.id"
         class="bg-white rounded-xl shadow-lg overflow-hidden relative border border-gray-200">
+
         <!-- Status Indicator -->
         <div class="absolute top-0 right-0 h-full w-1 rounded-r-xl" :class="getStatusIndicatorClass(center)"></div>
+
         <!-- Center Header -->
         <div class="p-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200">
           <div class="flex items-start justify-between mb-4">
@@ -65,8 +71,9 @@
               </div>
             </div>
           </div>
+
           <!-- Expiration Alert -->
-          <div v-if="center.is_active && shouldShowExpirationAlert(center)" class="mt-4 p-4 rounded-lg border-l-4"
+          <div v-if="shouldShowExpirationAlert(center)" class="mt-4 p-4 rounded-lg border-l-4"
             :class="getExpirationAlertClass(center)">
             <div class="flex items-center">
               <div class="flex-shrink-0">
@@ -87,9 +94,11 @@
             </div>
           </div>
         </div>
+
         <!-- Center Details -->
         <div class="p-6">
           <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+
             <!-- Registration Information -->
             <div class="lg:col-span-1">
               <div class="bg-gray-50 rounded-lg p-5 h-full">
@@ -106,7 +115,7 @@
                     <span class="text-sm text-gray-600">Status:</span>
                     <span class="text-sm font-semibold px-2 py-1 rounded"
                       :class="center.is_active ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'">
-                      {{ center.is_active ? 'Active' : 'Pending' }}
+                      {{ center.is_active ? 'Active' : 'Inactive' }}
                     </span>
                   </div>
                   <div class="flex justify-between items-center pb-2 border-b border-gray-200">
@@ -136,6 +145,7 @@
                 </div>
               </div>
             </div>
+
             <!-- Institute Information -->
             <div class="lg:col-span-1">
               <div class="bg-gray-50 rounded-lg p-5 h-full">
@@ -180,6 +190,7 @@
                 </div>
               </div>
             </div>
+
             <!-- Actions: Payment, Renewal, or Status -->
             <div class="lg:col-span-1">
               <div class="bg-gray-50 rounded-lg p-5 h-full">
@@ -258,8 +269,8 @@
                       {{ getExpirationDays(center) <= 0 ? 'Renew Expired' : 'Renew & Pay Now' }} </button>
                   </div>
 
-                  <!-- Default 'Current' State -->
-                  <div v-else class="space-y-3">
+                  <!-- Default 'Current' State for active, non-expiring centers -->
+                  <div v-else-if="center.is_active" class="space-y-3">
                     <div
                       class="inline-flex items-center px-4 py-2 rounded-full text-sm bg-green-100 text-green-800 border border-green-200">
                       <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -272,6 +283,17 @@
                       <p class="text-xs text-green-700">Registration is valid and up to date</p>
                     </div>
                   </div>
+
+                  <!-- Fallback for other states (e.g. pending approval from start) -->
+                   <div v-else class="space-y-3">
+                    <div
+                      class="inline-flex items-center px-4 py-2 rounded-full text-sm bg-yellow-100 text-yellow-800 border border-yellow-200">
+                      <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                      Pending Approval
+                    </div>
+                    <p class="text-sm text-gray-600">Your application is under review.</p>
+                  </div>
+
                 </div>
               </div>
             </div>
@@ -280,7 +302,7 @@
       </div>
     </div>
 
-    <!-- Renewal Dialog -->
+    <!-- Renewal Dialog (Unchanged from your working version) -->
     <div v-if="showRenewalDialog"
       class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-screen overflow-y-auto">
@@ -296,7 +318,17 @@
 
           <form @submit.prevent="confirmRenewal" class="space-y-6">
             <div v-if="selectedCenter" class="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                <!-- Center info -->
+              <h4 class="font-semibold text-blue-900 mb-2">{{ selectedCenter.center_name }}</h4>
+              <div class="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <span class="text-blue-600">ID:</span>
+                  <span class="font-medium text-blue-800 ml-2">{{ selectedCenter.id }}</span>
+                </div>
+                <div>
+                  <span class="text-blue-600">Expires:</span>
+                  <span class="font-medium text-blue-800 ml-2">{{ formatDate(selectedCenter.valid_till) }}</span>
+                </div>
+              </div>
             </div>
             <div>
               <label for="renewal_document" class="block text-sm font-medium text-gray-700 mb-2">
@@ -354,7 +386,11 @@
             </div>
             <div v-if="isRenewing"
               class="flex items-center justify-center py-6 bg-blue-50 rounded-lg border border-blue-200">
-                <!-- Loading State in modal -->
+              <Loader class="animate-spin text-blue-600 w-6 h-6 mr-3" />
+              <div class="text-center">
+                <p class="text-blue-800 font-medium">Processing payment and submission...</p>
+                <p class="text-blue-600 text-sm mt-1">Please wait</p>
+              </div>
             </div>
             <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200">
               <button type="button" @click="closeRenewalDialog"
@@ -374,7 +410,7 @@
         </div>
       </div>
     </div>
-
+    
     <!-- Payment Modal -->
     <PaymentModal
       ref="paymentModalRef"
@@ -393,6 +429,7 @@ import apiServices from '@/services/services'
 import PaymentModal from '@/components/common/PaymentModal.vue';
 import { Loader, CreditCard, Award } from 'lucide-vue-next'
 
+// --- STATE ---
 const teachingCenters = ref([])
 const pendingRenewals = ref([])
 const isLoading = ref(false)
@@ -406,7 +443,7 @@ const selectedFileName = ref('')
 const renewalFormData = ref({ user_remarks: '' })
 const declarationChecked = ref(false)
 
-// Payment State
+// --- PAYMENT STATE ---
 const paymentModalRef = ref(null);
 const selectedCenterForNewPayment = ref(null);
 const selectedCenterForRenewalPayment = ref(null);
@@ -414,7 +451,7 @@ const selectedCenterForRenewalPayment = ref(null);
 const toast = useToast()
 const authStore = useAuthStore()
 
-// --- COMPUTED & GETTERS (Unchanged) ---
+// --- COMPUTED & GETTERS ---
 const filteredTeachingCenters = computed(() => {
   if (!authStore.user?.cid) return []
   return teachingCenters.value.filter(center =>
@@ -424,111 +461,168 @@ const filteredTeachingCenters = computed(() => {
 
 const formatDate = (dateString) => {
   if (!dateString) return 'N/A'
-  return new Date(dateString + 'T00:00:00Z').toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+  try {
+    const date = new Date(dateString + 'T00:00:00Z')
+    return date.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    })
+  } catch {
+    return 'Invalid Date'
+  }
 }
 
 const getExpirationDays = (center) => {
-  if (!center.is_active || !center.valid_till) return Infinity
-  const today = new Date();
-  const expirationDate = new Date(center.valid_till + 'T00:00:00Z');
-  today.setUTCHours(0, 0, 0, 0);
-  expirationDate.setUTCHours(0, 0, 0, 0);
-  return Math.ceil((expirationDate - today) / (1000 * 60 * 60 * 24));
+  if (!center.valid_till) return Infinity
+  const today = new Date()
+  const expirationDate = new Date(center.valid_till + 'T00:00:00Z')
+  today.setUTCHours(0, 0, 0, 0)
+  expirationDate.setUTCHours(0, 0, 0, 0)
+  return Math.ceil((expirationDate - today) / (1000 * 60 * 60 * 24))
 }
 
-const isRenewalInProgress = (center) => pendingRenewals.value.some(r => r.teaching_center_details?.id === center.id)
-const shouldShowRenewButton = (center) => center.is_active && getExpirationDays(center) <= 90 && !isRenewalInProgress(center)
-const shouldShowExpirationAlert = (center) => center.is_active && getExpirationDays(center) <= 90
-const getExpirationMessage = (center) => {
-  const days = getExpirationDays(center);
-  if (days <= 0) return '⚠️ Registration Expired';
-  if (days <= 7) return `⚠️ Expires in ${days} ${days === 1 ? 'day' : 'days'}`;
-  return `ℹ️ Expires in ${days} days`;
+const isRenewalInProgress = (center) => {
+  return pendingRenewals.value.some(renewal =>
+    renewal.teaching_center_details?.id === center.id
+  )
 }
+
+// =================================================================
+// CORRECTED LOGIC FOR RENEW BUTTON VISIBILITY
+// =================================================================
+const shouldShowRenewButton = (center) => {
+  // A center is renewable if it has a `valid_till` date (meaning it was approved once),
+  // is within the renewal window (or expired), and not already being renewed.
+  // We remove the `center.is_active` check to allow expired centers to be renewed.
+  return center.valid_till &&
+    getExpirationDays(center) <= 90 &&
+    !isRenewalInProgress(center)
+}
+// =================================================================
+
+const shouldShowExpirationAlert = (center) => {
+  // Show alert for active centers nearing expiration or for expired centers.
+  return center.valid_till && getExpirationDays(center) <= 90
+}
+
+const getExpirationMessage = (center) => {
+  const daysLeft = getExpirationDays(center)
+  if (daysLeft <= 0) return '⚠️ Registration Expired'
+  if (daysLeft <= 7) return `⚠️ Expires in ${daysLeft} ${daysLeft === 1 ? 'day' : 'days'}`
+  if (daysLeft <= 30) return `⚠️ Expires in ${daysLeft} days`
+  return `ℹ️ Expires in ${daysLeft} days`
+}
+
 const getStatusText = (center) => {
   if (center.tc_review_decision === 'Approved' && !center.is_payment_complete) return 'Payment Pending'
   if (isRenewalInProgress(center)) return 'Renewal In Progress'
-  if (!center.is_active) return 'Pending Approval'
   if (getExpirationDays(center) <= 0) return 'Expired'
+  if (!center.is_active) return 'Pending Approval' // Catches new applications
   if (getExpirationDays(center) <= 30) return 'Expiring Soon'
   return 'Active'
 }
+
 const getDaysLeft = (center) => {
-  const days = getExpirationDays(center);
+  const days = getExpirationDays(center)
   if (days <= 0) return 'Registration has expired'
+  if (days <= 7) return `Only ${days} ${days === 1 ? 'day' : 'days'} remaining`
+  if (days <= 30) return `${days} days until expiration`
   return `Renewal window open (${days} days remaining)`
 }
+
 const getStatusIndicatorClass = (center) => {
   if (center.tc_review_decision === 'Approved' && !center.is_payment_complete) return 'bg-indigo-500'
   if (isRenewalInProgress(center)) return 'bg-blue-500'
+  const daysLeft = getExpirationDays(center)
+  if (daysLeft <= 0) return 'bg-red-500'
   if (!center.is_active) return 'bg-yellow-500'
-  const days = getExpirationDays(center);
-  if (days <= 0) return 'bg-red-500'
-  if (days <= 30) return 'bg-orange-500'
+  if (daysLeft <= 30) return 'bg-orange-500'
   return 'bg-green-500'
 }
+
 const getStatusBadgeClass = (center) => {
   if (center.tc_review_decision === 'Approved' && !center.is_payment_complete) return 'bg-indigo-100 text-indigo-800 border-indigo-200'
   if (isRenewalInProgress(center)) return 'bg-blue-100 text-blue-800 border-blue-200'
+  const daysLeft = getExpirationDays(center)
+  if (daysLeft <= 0) return 'bg-red-100 text-red-800 border-red-200'
   if (!center.is_active) return 'bg-yellow-100 text-yellow-800 border-yellow-200'
-  const days = getExpirationDays(center);
-  if (days <= 0) return 'bg-red-100 text-red-800 border-red-200'
-  if (days <= 30) return 'bg-orange-100 text-orange-800 border-orange-200'
+  if (daysLeft <= 30) return 'bg-orange-100 text-orange-800 border-orange-200'
   return 'bg-green-100 text-green-800 border-green-200'
 }
+
 const getStatusDotClass = (center) => {
   if (center.tc_review_decision === 'Approved' && !center.is_payment_complete) return 'bg-indigo-500'
   if (isRenewalInProgress(center)) return 'bg-blue-500'
+  const daysLeft = getExpirationDays(center)
+  if (daysLeft <= 0) return 'bg-red-500'
   if (!center.is_active) return 'bg-yellow-500'
-  const days = getExpirationDays(center);
-  if (days <= 0) return 'bg-red-500'
-  if (days <= 30) return 'bg-orange-500'
+  if (daysLeft <= 30) return 'bg-orange-500'
   return 'bg-green-500'
 }
+
 const getExpirationAlertClass = (center) => {
-  const days = getExpirationDays(center);
-  if (days <= 0) return 'bg-red-50 border-red-500'
-  if (days <= 30) return 'bg-orange-50 border-orange-500'
+  const daysLeft = getExpirationDays(center)
+  if (daysLeft <= 0) return 'bg-red-50 border-red-500'
+  if (daysLeft <= 30) return 'bg-orange-50 border-orange-500'
   return 'bg-yellow-50 border-yellow-500'
 }
+
 const getExpirationTextClass = (center) => {
-  const days = getExpirationDays(center);
-  if (days <= 0) return 'text-red-700'
-  if (days <= 30) return 'text-orange-700'
+  const daysLeft = getExpirationDays(center)
+  if (daysLeft <= 0) return 'text-red-700'
+  if (daysLeft <= 30) return 'text-orange-700'
   return 'text-yellow-700'
 }
+
 const getExpirationDateClass = (center) => {
   if (!center.valid_till) return 'text-gray-800'
-  const days = getExpirationDays(center);
-  if (days <= 0) return 'text-red-600 font-bold'
-  if (days <= 30) return 'text-orange-600 font-semibold'
+  const daysLeft = getExpirationDays(center)
+  if (daysLeft <= 0) return 'text-red-600 font-bold'
+  if (daysLeft <= 30) return 'text-orange-600 font-semibold'
   return 'text-gray-800'
 }
+
 const getRenewButtonClass = (center) => {
-  const days = getExpirationDays(center);
-  if (days <= 0) return 'bg-red-600 hover:bg-red-700 focus:ring-red-500 animate-pulse'
-  if (days <= 30) return 'bg-orange-600 hover:bg-orange-700 focus:ring-orange-500'
+  const daysLeft = getExpirationDays(center)
+  if (daysLeft <= 0) return 'bg-red-600 hover:bg-red-700 focus:ring-red-500 animate-pulse'
+  if (daysLeft <= 30) return 'bg-orange-600 hover:bg-orange-700 focus:ring-orange-500'
   return 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500'
 }
+
 const getOfficerStatusClass = (status) => {
   switch (status?.toUpperCase()) {
     case 'APPROVED': return 'bg-green-100 text-green-800'
     case 'REJECTED': return 'bg-red-100 text-red-800'
-    default: return 'bg-yellow-100 text-yellow-800'
+    case 'PENDING': default: return 'bg-yellow-100 text-yellow-800'
   }
 }
+
+// --- FILE & DIALOG LOGIC ---
 const handleFileUpload = (event) => {
-  const file = event.target.files[0];
-  if (!file) { selectedFile.value = null; selectedFileName.value = ''; return; }
-  if (file.size > 10 * 1024 * 1024) { toast.error('File size must be less than 10MB'); event.target.value = ''; return; }
-  const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-  if (!allowedTypes.includes(file.type)) { toast.error('Please upload a PDF, DOC, or DOCX file'); event.target.value = ''; return; }
-  selectedFile.value = file;
-  selectedFileName.value = file.name;
-  toast.success(`File "${file.name}" selected successfully`);
+  const file = event.target.files[0]
+  if (!file) {
+    selectedFile.value = null
+    selectedFileName.value = ''
+    return
+  }
+  const maxSizeInBytes = 10 * 1024 * 1024
+  if (file.size > maxSizeInBytes) {
+    toast.error('File size must be less than 10MB')
+    event.target.value = ''
+    return
+  }
+  const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
+  if (!allowedTypes.includes(file.type)) {
+    toast.error('Please upload a PDF, DOC, or DOCX file')
+    event.target.value = ''
+    return
+  }
+  selectedFile.value = file
+  selectedFileName.value = file.name
+  toast.success(`File "${file.name}" selected successfully`)
 }
 
-// --- RENEWAL DIALOG LOGIC ---
 const openRenewalDialog = (center) => {
   selectedCenter.value = center
   renewalFormData.value = { user_remarks: '' }
@@ -540,6 +634,7 @@ const openRenewalDialog = (center) => {
 
 const closeRenewalDialog = () => {
   showRenewalDialog.value = false
+  isRenewing.value = false
   selectedCenter.value = null
   renewalFormData.value = { user_remarks: '' }
   declarationChecked.value = false
@@ -547,14 +642,14 @@ const closeRenewalDialog = () => {
   selectedFileName.value = ''
 }
 
-// --- MODIFIED RENEWAL SUBMISSION (TRIGGERS PAYMENT) ---
+// --- PAYMENT & SUBMISSION FLOW ---
 const confirmRenewal = () => {
   if (!declarationChecked.value || !selectedFile.value) {
     toast.warning('Please check the declaration and upload a renewal document')
     return
   }
-  // Instead of submitting, open the payment modal
   selectedCenterForRenewalPayment.value = selectedCenter.value;
+  selectedCenterForNewPayment.value = null;
   if (paymentModalRef.value) {
     paymentModalRef.value.openModal();
   } else {
@@ -562,9 +657,6 @@ const confirmRenewal = () => {
   }
 }
 
-// --- PAYMENT LOGIC ---
-
-// 1. Dispatcher function to handle payment completion
 const onPaymentCompleted = (paymentData) => {
   if (selectedCenterForRenewalPayment.value) {
     handleRenewalPaymentCompleted(paymentData);
@@ -572,12 +664,13 @@ const onPaymentCompleted = (paymentData) => {
     handleNewRegistrationPayment(paymentData);
   } else {
     toast.error("Payment context is unclear. Please try again.");
+    closePaymentModal();
   }
 };
 
-// 2. Handler for NEW registration payment
 const initiateNewRegistrationPayment = (center) => {
   selectedCenterForNewPayment.value = center;
+  selectedCenterForRenewalPayment.value = null;
   if (paymentModalRef.value) {
     paymentModalRef.value.openModal();
   } else {
@@ -587,38 +680,16 @@ const initiateNewRegistrationPayment = (center) => {
 
 const handleNewRegistrationPayment = async (paymentData) => {
   if (!selectedCenterForNewPayment.value) return;
-
   isLoading.value = true;
   const paymentId = paymentData.paymentHash;
   const centerToPay = selectedCenterForNewPayment.value;
-  const user = authStore.user;
-
   try {
-    const paymentGatewayFormData = new FormData();
-    paymentGatewayFormData.append('refNo', paymentId);
-    paymentGatewayFormData.append('serviceCode', '100199'); // TC Registration Service Code
-    paymentGatewayFormData.append('taxPayerName', user.full_name || user.cid);
-    paymentGatewayFormData.append('taxPayerNo', user.cid);
-    paymentGatewayFormData.append('taxPayerDocumentNo', user.cid);
-    paymentGatewayFormData.append('totalPayableAmount', 1000);
-    paymentGatewayFormData.append('description', 'ECP Teaching Center Registration Fee');
-    paymentGatewayFormData.append('mobileNo', user.contact_number || 'NA');
-    paymentGatewayFormData.append('payerEmail', user.email || 'NA');
-    paymentGatewayFormData.append('user', user.id);
-    paymentGatewayFormData.append('payableAmount', 1000);
-    paymentGatewayFormData.append('application_no', centerToPay.id);
-    paymentGatewayFormData.append('app_type', 'epc_teaching_center');
-
-    await apiServices.makePayment(paymentGatewayFormData);
-
     const updateFormData = new FormData();
     updateFormData.append('payment_id', paymentId);
     updateFormData.append('is_payment_complete', true);
-
     await apiServices.patchEpcTeachingCenter(centerToPay.id, updateFormData);
     toast.success(`Payment confirmed. Your center is now being activated.`);
     await fetchData();
-
   } catch (error) {
     console.error('New Registration Payment error:', error);
     toast.error(`Payment confirmation failed. Please contact support with Ref: ${paymentId}`);
@@ -628,14 +699,11 @@ const handleNewRegistrationPayment = async (paymentData) => {
   }
 };
 
-// 3. Handler for RENEWAL payment
 const handleRenewalPaymentCompleted = async (paymentData) => {
   if (!selectedCenterForRenewalPayment.value) return;
-
   isRenewing.value = true;
   const paymentId = paymentData.paymentHash;
   const centerToRenew = selectedCenterForRenewalPayment.value;
-
   try {
     const finalFormData = new FormData();
     finalFormData.append('teaching_center', centerToRenew.id);
@@ -644,11 +712,7 @@ const handleRenewalPaymentCompleted = async (paymentData) => {
     finalFormData.append('payment_id', paymentId);
     finalFormData.append('is_payment_complete', true);
 
-    // NOTE: This assumes your renewal API can accept payment details.
-    // The service code here might be different if renewal is a separate service.
-    // For this example, we assume it's part of the same transaction group.
     await apiServices.createEpcTeachingCenterRenewal(finalFormData);
-
     toast.success('🎉 Renewal application and payment submitted successfully!');
     await fetchData();
     closeRenewalDialog();
@@ -662,12 +726,10 @@ const handleRenewalPaymentCompleted = async (paymentData) => {
   }
 };
 
-
 const closePaymentModal = () => {
   selectedCenterForNewPayment.value = null;
   selectedCenterForRenewalPayment.value = null;
 };
-
 
 // --- DATA FETCHING ---
 const fetchData = async () => {
@@ -687,32 +749,43 @@ const fetchData = async () => {
     pendingRenewals.value = renewalsResponse.data.results || []
   } catch (error) {
     console.error('❌ Error fetching data:', error)
-    errorMessage.value = `Error fetching data: ${error.message}`
+    errorMessage.value = error.response?.data?.detail || `Error fetching data: ${error.message}`
     apiError.value = true
   } finally {
     isLoading.value = false
   }
 }
 
+// --- LIFECYCLE ---
 onMounted(() => {
   fetchData()
 })
 </script>
 
 <style scoped>
-.btn {
-  @apply inline-flex items-center justify-center space-x-2 px-4 py-3 text-sm font-semibold rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 transition-colors;
+/* Custom animations */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
-.btn-primary { @apply text-white bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500; }
-.btn-success { @apply text-white bg-green-600 hover:bg-green-700 focus:ring-green-500; }
-@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
 .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
 .animate-spin { animation: spin 1s linear infinite; }
+.btn { @apply inline-flex items-center justify-center space-x-2 px-4 py-3 text-sm font-semibold rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 transition-colors; }
+.btn-primary { @apply text-white bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500; }
+.btn-success { @apply text-white bg-green-600 hover:bg-green-700 focus:ring-green-500; }
+/* Smooth transitions */
 * { transition: all 0.2s ease-in-out; }
+/* Hover effects */
 .border-dashed:hover { border-color: #6B7280; background-color: #F9FAFB; }
+/* Focus states */
 input:focus, textarea:focus, button:focus { outline: none; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+/* Card hover effect */
 .bg-white:hover { transform: translateY(-2px); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15); }
+/* Button animations */
 button:hover:not(:disabled) { transform: translateY(-1px); }
 button:active:not(:disabled) { transform: translateY(0); }
 </style>
