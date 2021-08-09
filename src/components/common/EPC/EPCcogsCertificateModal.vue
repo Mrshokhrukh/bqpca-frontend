@@ -47,7 +47,7 @@
             </div>
           </div>
 
-          <h2 class="text-xl font-bold text-center my-4 border-y-2 border-gray-400 py-2">
+          <h2 class="text-xl font-bold text-center my-4 py-2">
             CERTIFICATE OF GOOD STANDING
           </h2>
 
@@ -62,10 +62,10 @@
                   <div>{{ cogsData.cid_no }}</div>
 
                   <div class="font-semibold">Registration No.:</div>
-                  <div>{{ cogsData.registration_no?.registration_no || 'N/A' }}</div>
+                  <div>{{ cogsData.registration_no || 'N/A' }}</div>
 
                   <div class="font-semibold">Date of Initial Registration:</div>
-                  <div>{{ formatDate(cogsData.registration_no?.created_at) }}</div>
+                  <div>N/A</div>
 
                   <div class="font-semibold">Registration Type:</div>
                   <div>Professional Engineer</div>
@@ -74,7 +74,7 @@
                   <div>{{ cogsData.qualifications || 'Not specified' }}</div>
 
                   <div class="font-semibold">Date of Issue:</div>
-                  <div>{{ formatDate(cogsData.cogs_approved_date) }}</div>
+                  <div>{{ formatDate(cogsData.updated_at) }}</div>
 
                   <div class="font-semibold">Valid Till:</div>
                   <div>{{ cogsData.valid_till ? formatDate(cogsData.valid_till) : 'N/A' }}</div>
@@ -85,12 +85,10 @@
                 <div
                   class="h-40 w-36 border-2 border-gray-400 flex items-center justify-center bg-gray-100"
                 >
-                  <span v-if="!cogsData.registration_no?.passport_photo" class="text-gray-500"
-                    >Photo</span
-                  >
+                  <span v-if="!cogsData.passport_photo" class="text-gray-500">Photo</span>
                   <img
                     v-else
-                    :src="cogsData.registration_no.passport_photo"
+                    :src="cogsData.passport_photo"
                     alt="Passport Photo"
                     class="h-full w-full object-cover"
                   />
@@ -124,7 +122,7 @@
                 <img :src="eSignature.signature" alt="Signature" class="h-16 mx-auto" />
                 <div class="mt-2 text-sm border-t border-gray-500 pt-1">
                   <p class="font-bold">Director</p>
-                  <p>Date: {{ formatDate(eSignature.updated_at) }}</p>
+                  <p>Date: {{ formatDate(cogsData.updated_at) }}</p>
                 </div>
               </div>
               <div v-else class="text-center h-24"></div>
@@ -192,6 +190,7 @@ onMounted(async () => {
   try {
     const response = await apiServices.getEpcMastersESignatures()
     if (response.data?.results?.length > 0) {
+      // For this example, we take the first available signature
       eSignature.value = response.data.results[0]
     }
   } catch (error) {
@@ -219,13 +218,15 @@ const formatDate = (dateString) => {
 const qrCodeData = computed(() => {
   if (!cogsData.value) return ''
   const baseUrl = window.location.origin
-  const certIdentifier = cogsData.value.registration_no?.registration_no || cogsData.value.id
+  // CORRECTED: Was cogsData.value.registration_no?.registration_no
+  const certIdentifier = cogsData.value.registration_no || cogsData.value.id
   return `${baseUrl}/verify-cogs?cert_number=${certIdentifier}`
 })
 
 const downloadCertificate = () => {
   const element = document.getElementById('cogs-certificate-content')
-  const regNo = cogsData.value?.registration_no?.registration_no
+  // CORRECTED: Was cogsData.value?.registration_no?.registration_no
+  const regNo = cogsData.value?.registration_no
   const id = cogsData.value?.id
   const filename = `cogs-certificate-${regNo || id || 'unknown'}.pdf`
 
@@ -233,7 +234,7 @@ const downloadCertificate = () => {
     margin: 0,
     filename: filename,
     image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true }, // Added useCORS for external images
+    html2canvas: { scale: 2, useCORS: true },
     jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
   }
 
