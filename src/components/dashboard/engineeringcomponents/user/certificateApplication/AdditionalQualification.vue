@@ -87,7 +87,7 @@
           </div>
           <span v-if="errors.application" class="text-sm text-red-500 mt-1 block">{{
             errors.application
-            }}</span>
+          }}</span>
         </div>
       </div>
 
@@ -110,7 +110,7 @@
               </select>
               <span v-if="errors.qualification_type" class="text-sm text-red-500 mt-1">{{
                 errors.qualification_type
-                }}</span>
+              }}</span>
             </div>
 
             <!-- Qualification Name -->
@@ -127,7 +127,7 @@
               </select>
               <span v-if="errors.qualification_name" class="text-sm text-red-500 mt-1">{{
                 errors.qualification_name
-                }}</span>
+              }}</span>
             </div>
 
             <!-- Institute/University with Add New Option -->
@@ -193,7 +193,7 @@
 
               <span v-if="errors.institute" class="text-sm text-red-500 mt-1">{{
                 errors.institute
-                }}</span>
+              }}</span>
             </div>
 
             <!-- Year of Completion -->
@@ -205,7 +205,7 @@
               <span class="text-xs text-gray-500">Select month and year</span>
               <span v-if="errors.year_of_completion" class="text-sm text-red-500 mt-1">{{
                 errors.year_of_completion
-                }}</span>
+              }}</span>
             </div>
           </div>
         </div>
@@ -365,7 +365,7 @@
           </div>
           <span v-if="errors.declaration" class="text-sm text-red-500 mt-1">{{
             errors.declaration
-            }}</span>
+          }}</span>
         </div>
       </div>
 
@@ -709,7 +709,7 @@ const validateForm = () => {
     }
   }
 
-  // Document validation
+
   const missingDocuments = []
 
   supportingDocuments.value.forEach((doc) => {
@@ -737,7 +737,6 @@ const validateForm = () => {
   return isValid
 }
 
-// Handle form submission attempt -> Show confirmation modal
 const handleSubmit = (event) => {
   event.preventDefault()
   if (validateForm()) {
@@ -745,7 +744,6 @@ const handleSubmit = (event) => {
   }
 }
 
-// FIXED: The actual submission logic now handles creating the institute first.
 const handleSubmitActual = async () => {
   if (isSubmitting.value) return
 
@@ -753,33 +751,21 @@ const handleSubmitActual = async () => {
   isSubmitting.value = true
 
   try {
-    // Step 1: Handle new institute creation if selected
     if (instituteSelection.value === 'add_new') {
       const newId = await createNewInstitute()
-      // Set the final institute ID in our form data
       localFormData.institute = newId
     } else {
-      // If an existing institute was selected, use its ID
       localFormData.institute = instituteSelection.value
     }
-
-    // Step 2: Now that institute ID is set, validate the entire form
     if (!validateForm()) {
       isSubmitting.value = false
-      // If creation succeeded but other fields fail, we stop.
-      // The user can fix the other fields and submit again without re-creating the institute.
       return
     }
-
-    // Step 3: Prepare FormData for submission
     const formData = new FormData()
-
-    // Extract year from YYYY-MM format
     const completionYear = localFormData.year_of_completion
       ? new Date(localFormData.year_of_completion + '-01').getFullYear()
       : null
 
-    // Append standard fields
     formData.append('completion_year', String(completionYear))
     formData.append('declaration', localFormData.declaration ? 'True' : 'False')
     formData.append('remarks', localFormData.remarks || '')
@@ -794,13 +780,9 @@ const handleSubmitActual = async () => {
     formData.append('application', String(localFormData.application))
     formData.append('qualification_name', String(localFormData.qualification_name))
     formData.append('qualification_type', String(localFormData.qualification_type))
-    // Use the final, correct institute ID
     formData.append('institute_university', String(localFormData.institute))
-
-    // Add the hidden registration_type for "Additional Certificate"
     formData.append('registration_type', String(localFormData.registration_type))
 
-    // Append file attachments
     supportingDocuments.value.forEach((doc, index) => {
       if (doc.type && doc.files && doc.files.length > 0) {
         formData.append(`attachments-${index}-file_type`, String(doc.type))
@@ -861,13 +843,10 @@ const handleSubmitActual = async () => {
   }
 }
 
-// Fetch master data on component mount
 onMounted(async () => {
-  // Fetch primary application first
   await fetchApplications()
 
   try {
-    // Fetch all master data concurrently
     const [
       qualificationTypesResponse,
       qualificationsResponse,
@@ -881,15 +860,14 @@ onMounted(async () => {
       apiService.getEpcMastersDocumentTypes(),
       apiService.getEpcMastersRegistrationTypes(),
     ])
-
-    // Assign results
     qualificationTypes.value = qualificationTypesResponse.data?.results || []
     qualifications.value = qualificationsResponse.data?.results || []
     universities.value = universitiesResponse.data?.results || []
-    fetchedDocumentTypes.value = documentTypesResponse.data?.results || []
     registrationTypes.value = registrationTypesResponse.data?.results || []
-
-    // Find and set the "Additional Certificate" registration type
+    const allDocumentTypes = documentTypesResponse.data?.results || [];
+    fetchedDocumentTypes.value = allDocumentTypes.filter(
+      doc => doc.application_type === 'Additional Qualification'
+    );
     const additionalCertificateType = registrationTypes.value.find(
       type => type.name.toLowerCase().includes('additional') ||
         type.name.toLowerCase().includes('certificate')
@@ -899,14 +877,13 @@ onMounted(async () => {
       localFormData.registration_type = additionalCertificateType.id
       console.log('Set registration_type to Additional Certificate:', additionalCertificateType)
     } else {
-      console.warn('Additional Certificate registration type not found')
-      toast.warning('Additional Certificate registration type not found. Please contact support.')
+      console.warn('"Additional Certificate" registration type was not found in the API response.')
+      toast.warning('Could not find the registration type for Additional Certificate. Please contact support.')
     }
-
-    // Initialize supporting documents with all required document types
     initializeSupportingDocuments()
 
-    console.log('Master data fetched successfully.')
+    console.log('Master data fetched and filtered successfully.')
+
   } catch (error) {
     console.error('Error fetching master data:', error)
     toast.error('Failed to load necessary selection options. Please refresh or try again later.')
@@ -915,7 +892,6 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-/* Required field indicator */
 .required::after {
   content: ' *';
   color: #ef4444;
@@ -923,7 +899,6 @@ onMounted(async () => {
   margin-left: 2px;
 }
 
-/* Basic scrollbar styling for the form container if needed */
 .overflow-y-auto {
   scrollbar-width: thin;
   /* Firefox */

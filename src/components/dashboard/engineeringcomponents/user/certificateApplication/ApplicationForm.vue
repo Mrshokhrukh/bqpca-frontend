@@ -2344,7 +2344,11 @@ onMounted(async () => {
     qualificationTypes.value = qualTypesResponse.data.results || []
     qualifications.value = qualsResponse.data.results || []
     universities.value = unisResponse.data.results || []
-    fetchedDocumentTypes.value = docTypesResponse.data.results || []
+    const allDocumentTypes = docTypesResponse.data.results || [];
+    fetchedDocumentTypes.value = allDocumentTypes.filter(
+      doc => doc.application_type === 'Applicant'
+    );
+
 
     // IMPORTANT: Initialize supporting documents AFTER fetching document types
     initializeSupportingDocuments()

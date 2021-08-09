@@ -5,8 +5,6 @@
       @update:searchQuery="searchQuery = $event" search-placeholder="Search by name, CID or registration number..."
       :filter-value="filterStatus" @update:filterValue="filterStatus = $event" :filter-options="statusFilterOptions" />
 
-    <!-- Removed the old header and filter grid -->
-
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
