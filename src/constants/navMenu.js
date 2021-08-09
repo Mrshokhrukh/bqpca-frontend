@@ -1719,7 +1719,7 @@ const serviceSpecificMenuItems = {
         icon: getIconComponent('ClipboardList'),
         children: [
           {
-            name: 'Initial Accreditation Application',
+            name: 'Accreditation Application',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/initial_accreditations`,
           },
 
