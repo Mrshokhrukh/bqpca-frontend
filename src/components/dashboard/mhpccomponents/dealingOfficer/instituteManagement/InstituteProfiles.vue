@@ -1,5 +1,6 @@
 <template>
   <div class="p-4 sm:p-6 md:p-8 min-h-screen bg-gray-50">
+    <!-- Header Section -->
     <div class="bg-white rounded-lg shadow-md p-6 mb-8 border border-gray-200">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-4">
@@ -22,18 +23,20 @@
             <p class="text-sm text-gray-500">
               A total of
               <span class="font-semibold text-blue-600">{{ institutes.length }}</span>
-              institutes found.
+              institutes in the system.
             </p>
           </div>
         </div>
       </div>
     </div>
 
+    <!-- Filter Controls Section -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-      <div class="relative">
+      <div class="relative md:col-span-2">
         <input
+          v-model="searchTerm"
           type="text"
-          placeholder="Search institutes..."
+          placeholder="Search by name, CID..."
           class="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
         />
         <svg
@@ -53,6 +56,7 @@
       </div>
       <div class="md:col-span-1">
         <select
+          v-model="selectedStatus"
           class="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
         >
           <option value="all">All Statuses</option>
@@ -63,44 +67,31 @@
       </div>
     </div>
 
+    <!-- Institutes Table -->
     <div class="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-100">
             <tr>
-              <th
-                scope="col"
-                class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider"
-              >
+              <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
                 Institution Name
               </th>
-              <th
-                scope="col"
-                class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider"
-              >
+              <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
                 CID
               </th>
-              <th
-                scope="col"
-                class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider"
-              >
+              <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
                 Dzongkhag
               </th>
-              <th
-                scope="col"
-                class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider"
-              >
+              <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
                 Status
               </th>
-              <th
-                scope="col"
-                class="px-6 py-3 text-center text-xs font-bold text-gray-600 uppercase tracking-wider"
-              >
+              <th scope="col" class="px-6 py-3 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">
                 Actions
               </th>
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
+            <!-- Loading State -->
             <tr v-if="loading">
               <td colspan="5" class="px-6 py-12 text-center">
                 <div class="flex justify-center items-center gap-2">
@@ -111,6 +102,7 @@
                 </div>
               </td>
             </tr>
+            <!-- Error State -->
             <tr v-else-if="error">
               <td colspan="5" class="px-6 py-12 text-center">
                 <div class="text-red-500">
@@ -119,34 +111,20 @@
                 </div>
               </td>
             </tr>
-            <tr v-else-if="institutes.length === 0">
+            <!-- Empty State (after filtering) -->
+            <tr v-else-if="filteredInstitutes.length === 0">
               <td colspan="5" class="px-6 py-12 text-center">
                 <div class="flex flex-col items-center justify-center text-gray-500">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-12 w-12 mb-2 text-gray-400"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="1.5"
-                      d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                    />
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mb-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                   </svg>
                   <p class="font-semibold">No Institutes Found</p>
-                  <p class="text-sm">There are no institute profiles to display at the moment.</p>
+                  <p class="text-sm">Try adjusting your search or filter criteria.</p>
                 </div>
               </td>
             </tr>
-            <tr
-              v-else
-              v-for="institute in institutes"
-              :key="institute.id"
-              class="hover:bg-gray-50 transition-colors duration-150"
-            >
+            <!-- Data Rows -->
+            <tr v-else v-for="institute in filteredInstitutes" :key="institute.id" class="hover:bg-gray-50 transition-colors duration-150">
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="text-sm font-medium text-gray-900">
                   {{ institute.name_of_institution }}
@@ -177,17 +155,21 @@
       </div>
     </div>
 
+    <!-- Pagination & Results Count -->
     <div class="mt-6 flex items-center justify-between bg-white px-4 py-3 rounded-lg shadow-md border border-gray-200">
       <div class="text-sm text-gray-700">
-        Showing <span class="font-medium">1</span> to <span class="font-medium">10</span> of
-        <span class="font-medium">{{ institutes.length }}</span> results
+        Showing
+        <span class="font-medium">{{ filteredInstitutes.length > 0 ? 1 : 0 }}</span> to
+        <span class="font-medium">{{ filteredInstitutes.length }}</span> of
+        <span class="font-medium">{{ filteredInstitutes.length }}</span> results
       </div>
       <div class="flex items-center gap-2">
-        <button class="px-3 py-1 border border-gray-300 rounded-md text-sm hover:bg-gray-100 transition">Previous</button>
-        <button class="px-3 py-1 border border-gray-300 rounded-md text-sm hover:bg-gray-100 transition">Next</button>
+        <button class="px-3 py-1 border border-gray-300 rounded-md text-sm hover:bg-gray-100 transition disabled:opacity-50 disabled:cursor-not-allowed" :disabled="true">Previous</button>
+        <button class="px-3 py-1 border border-gray-300 rounded-md text-sm hover:bg-gray-100 transition disabled:opacity-50 disabled:cursor-not-allowed" :disabled="true">Next</button>
       </div>
     </div>
 
+    <!-- Modal Component -->
     <InstituteProfileDetailsModal
       :is-open="isModalOpen"
       :institute-details="selectedInstitute"
@@ -197,16 +179,45 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import InstituteProfileDetailsModal from '../modals/InstituteProfileDetailsModal.vue';
 import apiServices from '@/services/services';
 
-// --- State Management ---
+// --- Reactive State ---
 const institutes = ref([]);
 const isModalOpen = ref(false);
 const selectedInstitute = ref(null);
-const loading = ref(true); // Start in loading state
+const loading = ref(true);
 const error = ref(null);
+
+// --- State for Filters ---
+const searchTerm = ref('');
+const selectedStatus = ref('all'); // 'all' is the default value for the dropdown
+
+// --- Computed Property for Filtering ---
+const filteredInstitutes = computed(() => {
+  // Start with the original list of institutes
+  let filtered = [...institutes.value];
+
+  // 1. Apply search term filter
+  const lowerCaseSearch = searchTerm.value.trim().toLowerCase();
+  if (lowerCaseSearch) {
+    filtered = filtered.filter(institute =>
+      (institute.name_of_institution && institute.name_of_institution.toLowerCase().includes(lowerCaseSearch)) ||
+      (institute.CID && institute.CID.toLowerCase().includes(lowerCaseSearch))
+    );
+  }
+
+  // 2. Apply status filter
+  if (selectedStatus.value !== 'all') {
+    filtered = filtered.filter(institute => {
+      const statusText = getStatusText(institute.do_dpr_review_decision);
+      return statusText === selectedStatus.value;
+    });
+  }
+
+  return filtered;
+});
 
 // --- Lifecycle Hooks ---
 onMounted(() => {
@@ -244,10 +255,11 @@ const closeModal = () => {
   selectedInstitute.value = null; // Clear selection on close
 };
 
-// --- Status Helpers ---
+// --- Helper Functions ---
 const getStatusText = (decision) => {
   if (decision === 'Approved') return 'Approved';
   if (decision === 'Rejected') return 'Rejected';
+  // Any other value, including null or undefined, will be 'Pending'
   return 'Pending';
 };
 
@@ -263,4 +275,4 @@ const getStatusClasses = (decision) => {
 
   return `${baseClasses} ${statusClasses[status]}`;
 };
-</script> 
+</script>
