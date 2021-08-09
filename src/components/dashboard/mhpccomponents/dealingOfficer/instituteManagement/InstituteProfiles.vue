@@ -111,7 +111,7 @@
                 </div>
               </td>
             </tr>
-            <!-- Empty State (after filtering) -->
+            <!-- Empty State -->
             <tr v-else-if="filteredInstitutes.length === 0">
               <td colspan="5" class="px-6 py-12 text-center">
                 <div class="flex flex-col items-center justify-center text-gray-500">
@@ -125,29 +125,12 @@
             </tr>
             <!-- Data Rows -->
             <tr v-else v-for="institute in filteredInstitutes" :key="institute.id" class="hover:bg-gray-50 transition-colors duration-150">
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-gray-900">
-                  {{ institute.name_of_institution }}
-                </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-700">{{ institute.CID }}</div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-600">{{ institute.dzongkhag }}</div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span :class="getStatusClasses(institute.do_dpr_review_decision)">
-                  {{ getStatusText(institute.do_dpr_review_decision) }}
-                </span>
-              </td>
+              <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm font-medium text-gray-900">{{ institute.name_of_institution }}</div></td>
+              <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm text-gray-700">{{ institute.CID }}</div></td>
+              <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm text-gray-600">{{ institute.dzongkhag }}</div></td>
+              <td class="px-6 py-4 whitespace-nowrap"><span :class="getStatusClasses(institute.do_dpr_review_decision)">{{ getStatusText(institute.do_dpr_review_decision) }}</span></td>
               <td class="px-6 py-4 whitespace-nowrap text-center">
-                <button
-                  @click="openModal(institute)"
-                  class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow-sm transition-all duration-200 ease-in-out transform hover:scale-105"
-                >
-                  View
-                </button>
+                <button @click="openModal(institute)" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow-sm transition-all duration-200 ease-in-out transform hover:scale-105">View</button>
               </td>
             </tr>
           </tbody>
@@ -155,14 +138,9 @@
       </div>
     </div>
 
-    <!-- Pagination & Results Count -->
+    <!-- Pagination & Results Count (Placeholder) -->
     <div class="mt-6 flex items-center justify-between bg-white px-4 py-3 rounded-lg shadow-md border border-gray-200">
-      <div class="text-sm text-gray-700">
-        Showing
-        <span class="font-medium">{{ filteredInstitutes.length > 0 ? 1 : 0 }}</span> to
-        <span class="font-medium">{{ filteredInstitutes.length }}</span> of
-        <span class="font-medium">{{ filteredInstitutes.length }}</span> results
-      </div>
+      <div class="text-sm text-gray-700">Showing <span class="font-medium">{{ filteredInstitutes.length > 0 ? 1 : 0 }}</span> to <span class="font-medium">{{ filteredInstitutes.length }}</span> of <span class="font-medium">{{ filteredInstitutes.length }}</span> results</div>
       <div class="flex items-center gap-2">
         <button class="px-3 py-1 border border-gray-300 rounded-md text-sm hover:bg-gray-100 transition disabled:opacity-50 disabled:cursor-not-allowed" :disabled="true">Previous</button>
         <button class="px-3 py-1 border border-gray-300 rounded-md text-sm hover:bg-gray-100 transition disabled:opacity-50 disabled:cursor-not-allowed" :disabled="true">Next</button>
@@ -174,6 +152,7 @@
       :is-open="isModalOpen"
       :institute-details="selectedInstitute"
       @close-modal="closeModal"
+      @save-changes="handleSaveChanges"
     />
   </div>
 </template>
@@ -183,23 +162,16 @@ import { ref, onMounted, computed } from 'vue';
 import InstituteProfileDetailsModal from '../modals/InstituteProfileDetailsModal.vue';
 import apiServices from '@/services/services';
 
-// --- Reactive State ---
 const institutes = ref([]);
 const isModalOpen = ref(false);
 const selectedInstitute = ref(null);
 const loading = ref(true);
 const error = ref(null);
-
-// --- State for Filters ---
 const searchTerm = ref('');
-const selectedStatus = ref('all'); // 'all' is the default value for the dropdown
+const selectedStatus = ref('all');
 
-// --- Computed Property for Filtering ---
 const filteredInstitutes = computed(() => {
-  // Start with the original list of institutes
   let filtered = [...institutes.value];
-
-  // 1. Apply search term filter
   const lowerCaseSearch = searchTerm.value.trim().toLowerCase();
   if (lowerCaseSearch) {
     filtered = filtered.filter(institute =>
@@ -207,24 +179,16 @@ const filteredInstitutes = computed(() => {
       (institute.CID && institute.CID.toLowerCase().includes(lowerCaseSearch))
     );
   }
-
-  // 2. Apply status filter
   if (selectedStatus.value !== 'all') {
-    filtered = filtered.filter(institute => {
-      const statusText = getStatusText(institute.do_dpr_review_decision);
-      return statusText === selectedStatus.value;
-    });
+    filtered = filtered.filter(institute => getStatusText(institute.do_dpr_review_decision) === selectedStatus.value);
   }
-
   return filtered;
 });
 
-// --- Lifecycle Hooks ---
 onMounted(() => {
   fetchInstitutes();
 });
 
-// --- API Methods ---
 async function fetchInstitutes() {
   loading.value = true;
   error.value = null;
@@ -232,6 +196,8 @@ async function fetchInstitutes() {
     const response = await apiServices.getMhpcInstitutes();
     if (response && response.data && Array.isArray(response.data.results)) {
       institutes.value = response.data.results;
+    } else if (response && Array.isArray(response.data)) {
+      institutes.value = response.data;
     } else {
       console.error('Unexpected API response structure:', response);
       error.value = 'The data received from the server was in an unexpected format.';
@@ -244,7 +210,60 @@ async function fetchInstitutes() {
   }
 }
 
-// --- Modal Methods ---
+async function handleSaveChanges(updatedInstituteData) {
+  console.log('Saving changes for institute:', updatedInstituteData.id);
+
+  const payload = {
+    // *** THE FIX IS HERE ***
+    // Add the required name_of_institution field to the payload.
+    name_of_institution: updatedInstituteData.name_of_institution,
+
+    // Basic Info
+    CID: updatedInstituteData.CID,
+    full_name: updatedInstituteData.full_name,
+    gender: updatedInstituteData.gender,
+    contact_no: updatedInstituteData.contact_no,
+    email_address: updatedInstituteData.email_address,
+
+    // Location Details
+    country: updatedInstituteData.country,
+    gewog: updatedInstituteData.gewog,
+    dzongkhag: updatedInstituteData.dzongkhag,
+    village: updatedInstituteData.village,
+    address: updatedInstituteData.address,
+    chiwog: updatedInstituteData.chiwog,
+    website: updatedInstituteData.website,
+
+    // Head of Institution
+    head_of_institution_name: updatedInstituteData.head_of_institution_name,
+    head_of_institution_gender: updatedInstituteData.head_of_institution_gender,
+    head_of_institution_phone_number: updatedInstituteData.head_of_institution_phone_number,
+    head_of_institution_email: updatedInstituteData.head_of_institution_email,
+  };
+
+  try {
+    // If your backend API method for updates is PATCH, you should use it.
+    // If it's PUT, the payload must be complete as above.
+    // Assuming your service file has updateMhpcInstitute (PUT) and patchMhpcInstitute (PATCH)
+
+    // OPTION 1 (Current Fix): Send the complete payload with PUT
+    await apiServices.updateMhpcInstitute(updatedInstituteData.id, payload);
+
+    // OPTION 2 (Better Practice): Change service to use PATCH for partial updates
+    // await apiServices.patchMhpcInstitute(updatedInstituteData.id, payload);
+
+
+    alert('Institute profile updated successfully!');
+    closeModal();
+    await fetchInstitutes();
+
+  } catch (err) {
+    console.error('Error updating institute:', err.response?.data || err.message);
+    const errorDetail = JSON.stringify(err.response?.data) || 'Please check the console for details.';
+    alert(`Failed to update institute. Server responded with: ${errorDetail}`);
+  }
+}
+
 const openModal = (institute) => {
   selectedInstitute.value = institute;
   isModalOpen.value = true;
@@ -252,27 +271,23 @@ const openModal = (institute) => {
 
 const closeModal = () => {
   isModalOpen.value = false;
-  selectedInstitute.value = null; // Clear selection on close
+  selectedInstitute.value = null;
 };
 
-// --- Helper Functions ---
 const getStatusText = (decision) => {
   if (decision === 'Approved') return 'Approved';
-  if (decision === 'Rejected') return 'Rejected';
-  // Any other value, including null or undefined, will be 'Pending'
+  if (decision === 'Regretted') return 'Rejected';
   return 'Pending';
 };
 
 const getStatusClasses = (decision) => {
   const baseClasses = 'px-3 py-1 inline-block rounded-full text-xs font-semibold leading-tight';
   const status = getStatusText(decision);
-
   const statusClasses = {
     Pending: 'bg-yellow-100 text-yellow-800',
     Approved: 'bg-green-100 text-green-800',
     Rejected: 'bg-red-100 text-red-800',
   };
-
   return `${baseClasses} ${statusClasses[status]}`;
 };
 </script>
