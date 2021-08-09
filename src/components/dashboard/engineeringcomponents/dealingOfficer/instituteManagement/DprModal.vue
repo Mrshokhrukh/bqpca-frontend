@@ -304,10 +304,7 @@
                     </template>
                     <template v-if="!isEditing && overallStatus === 'Pending'">
                       <button type="button" class="btn btn-success" @click="openApproveDialog"
-                        :disabled="!transformedApplication.isPaymentComplete" :title="!transformedApplication.isPaymentComplete
-                          ? 'Cannot approve, payment is pending.'
-                          : 'Approve Application'
-                          ">
+                        title="Approve Application">
                         <Check class="h-4 w-4" /> <span>Approve</span>
                       </button>
                       <button type="button" class="btn btn-danger" @click="openRejectDialog">
@@ -656,7 +653,7 @@ const saveChanges = async () => {
 const closeModalHandler = () => emit('close');
 
 const openApproveDialog = () => {
-  if (!transformedApplication.value.isPaymentComplete || overallStatus.value !== 'Pending') return;
+  if (overallStatus.value !== 'Pending') return;
   isApproveDialogOpen.value = true;
 };
 

@@ -50,13 +50,14 @@
 <script setup>
 import apiService from '@/services/services'
 import { useAuthStore } from '@/stores/authStore'
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import {
   AcademicCapIcon,
   TrophyIcon,
   ChartBarIcon,
   DocumentTextIcon,
 } from '@heroicons/vue/24/outline'
+
 
 const props = defineProps({
   title: {
@@ -67,23 +68,12 @@ const props = defineProps({
     type: String,
     default: 'TrophyIcon',
   },
-  progress: {
-    type: Number,
-    required: false,
-  },
-  total: {
-    type: Number,
-    default: null,
-  },
-  type: {
-    type: String,
-    default: 'progress',
-  },
 })
 
 const authStore = useAuthStore()
 const selfSubmittedApps = ref([])
 const participantRecords = ref([])
+const resourcePersonTasks = ref([])
 const isLoading = ref(false)
 const apiError = ref(false)
 
@@ -91,28 +81,40 @@ const fetchAllData = async () => {
   isLoading.value = true
   apiError.value = false
   try {
-    const [selfSubmittedResponse, participantResponse] = await Promise.all([
+    const [selfSubmittedResponse, participantResponse, resourceTasksResponse] = await Promise.all([
       apiService.getEpcCpdRecords(),
       apiService.getEpcCpdTaskParticipants(),
+      apiService.getEpcCpdTasks(),
     ])
+
     selfSubmittedApps.value = selfSubmittedResponse.data?.results || selfSubmittedResponse.data || []
     participantRecords.value = participantResponse.data?.results || participantResponse.data || []
+    resourcePersonTasks.value = resourceTasksResponse.data?.results || resourceTasksResponse.data || []
 
   } catch (error) {
     console.error('Error fetching EPC CPD data:', error)
     apiError.value = true
     selfSubmittedApps.value = []
     participantRecords.value = []
+    resourcePersonTasks.value = []
   } finally {
     isLoading.value = false
   }
 }
 
 onMounted(fetchAllData)
+
 const userRegistrationNo = computed(() => {
-  if (!authStore.user || !authStore.user.cid) return null;
-  const userApps = selfSubmittedApps.value.filter(app => app.cid_no === authStore.user.cid);
-  return userApps.find(app => app.registration_no_details?.registration_no)?.registration_no_details.registration_no || null;
+  if (!authStore.user || !authStore.user.cid) {
+    return null;
+  }
+  const userApp = selfSubmittedApps.value.find(app => app.cid_no === authStore.user.cid);
+
+  return userApp?.registration_no_details?.registration_no || null;
+});
+
+watch(userRegistrationNo, (newValue) => {
+  console.log('User Registration Number has been found:', newValue);
 });
 
 const allUserApplications = computed(() => {
@@ -120,17 +122,16 @@ const allUserApplications = computed(() => {
     return []
   }
   const unifiedSelfSubmitted = selfSubmittedApps.value
-    .filter(app => app.cid_no === authStore.user.cid)
+    .filter(app => app.cid_no === authStore.user.cid && app.review_status === 'Approved')
     .map(app => ({
       id: `self-${app.id}`,
       status: app.review_status || 'Pending',
       credits: app.cpd_credit || 0
     }));
-
   let unifiedParticipantRecords = [];
   if (userRegistrationNo.value) {
     unifiedParticipantRecords = participantRecords.value
-      .filter(p => p.participant_reg_no === userRegistrationNo.value)
+      .filter(p => p.participant_reg_no === userRegistrationNo.value && p.review_status === 'Approved')
       .map(p => ({
         id: `participant-${p.id}`,
         status: p.review_status || 'Pending',
@@ -138,8 +139,27 @@ const allUserApplications = computed(() => {
       }));
   }
 
-  return [...unifiedSelfSubmitted, ...unifiedParticipantRecords];
+  let unifiedResourceRecords = [];
+  if (userRegistrationNo.value) {
+    unifiedResourceRecords = resourcePersonTasks.value.flatMap(task => {
+      const resourceInfo = task.resources.find(
+        resource => resource.resource_person_reg_no === userRegistrationNo.value
+      );
+
+      if (resourceInfo && task.status === 'Approved') {
+        return [{
+          id: `resource-${task.id}`,
+          status: 'Approved',
+          credits: (task.credit || 0) * 2
+        }];
+      }
+      return [];
+    });
+  }
+
+  return [...unifiedSelfSubmitted, ...unifiedParticipantRecords, ...unifiedResourceRecords];
 });
+
 
 const relevantApplications = computed(() => allUserApplications.value)
 
@@ -156,8 +176,14 @@ const progressPercentage = computed(() => {
 
 const statusCounts = computed(() => {
   const counts = { Approved: 0, Pending: 0, Rejected: 0 };
-  for (const app of relevantApplications.value) {
-    let status = app.status;
+  const allRecords = [
+    ...selfSubmittedApps.value.filter(app => app.cid_no === authStore.user.cid),
+    ...participantRecords.value.filter(p => p.participant_reg_no === userRegistrationNo.value),
+    ...resourcePersonTasks.value.filter(task => task.resources.some(r => r.resource_person_reg_no === userRegistrationNo.value))
+  ];
+
+  for (const app of allRecords) {
+    let status = app.review_status || app.status || 'Pending';
     if (status === 'Regretted') {
       status = 'Rejected';
     }
@@ -196,14 +222,8 @@ const statusTextClasses = (status) => {
 
 const resolveIcon = (iconName) => {
   const icons = {
-    AcademicCapIcon,
-    TrophyIcon,
-    ChartBarIcon,
-    DocumentTextIcon,
-    Award: TrophyIcon,
-    Document: DocumentTextIcon,
-    Chart: ChartBarIcon,
-    Academic: AcademicCapIcon,
+    AcademicCapIcon, TrophyIcon, ChartBarIcon, DocumentTextIcon,
+    Award: TrophyIcon, Document: DocumentTextIcon, Chart: ChartBarIcon, Academic: AcademicCapIcon,
   }
   return icons[iconName] || TrophyIcon
 }

@@ -12,7 +12,6 @@
             {{ isEditing ? 'Edit Sub Category' : 'Add New Sub Category' }}
           </h2>
 
-          <!-- Show error messages if any -->
           <div v-if="errorMessage" class="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
             <p class="text-red-700 text-sm">{{ errorMessage }}</p>
           </div>
@@ -37,6 +36,15 @@
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Enter sub category name" required />
               </div>
+
+              <!-- Added Abbreviation Field for Sub-Category -->
+              <div>
+                <label for="abbreviation" class="block text-sm font-medium text-slate-700">Abbreviation</label>
+                <input type="text" id="abbreviation" v-model="formData.abbreviation"
+                  class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="e.g., CE for Civil Engineering" maxlength="2" />
+              </div>
+
               <div>
                 <label for="sub_category_description"
                   class="block text-sm font-medium text-slate-700">Description</label>
@@ -55,7 +63,7 @@
                 <label for="renewal_fee" class="block text-sm font-medium text-slate-700">Renewal Fee</label>
                 <input type="number" id="renewal_fee" v-model.number="formData.renewal_fee"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter renewal fee" required />
+                  placeholder="Example: 0001" required />
               </div>
 
               <div class="flex gap-3">
@@ -83,9 +91,8 @@
               </span>
             </div>
 
-            <!-- Search Bar -->
             <div class="relative">
-              <input type="text" v-model="searchQuery" placeholder="Search Sub Categories..."
+              <input type="text" v-model="searchQuery" placeholder="Search by name, description, abbreviation..."
                 class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
               <svg class="absolute left-3 top-2.5 h-5 w-5 text-slate-400" fill="none" stroke="currentColor"
                 viewBox="0 0 24 24">
@@ -95,19 +102,30 @@
             </div>
           </div>
 
-          <!-- Sub Categories Grid -->
           <div class="space-y-4 mb-6">
             <TransitionGroup name="list">
               <div v-for="subCategory in paginatedSubCategories" :key="subCategory.id"
                 class="p-4 border border-slate-200 rounded-lg hover:border-blue-200 hover:bg-blue-50/30 transition-colors duration-200">
                 <div class="flex justify-between items-start gap-4">
                   <div>
-                    <h3 class="font-medium text-slate-900">{{ subCategory.sub_category_name }}</h3>
+                    <h3 class="font-medium text-slate-900 flex items-center">
+                      {{ subCategory.sub_category_name }}
+                      <!-- Display Sub-Category Abbreviation -->
+                      <span v-if="subCategory.abbreviation"
+                        class="ml-2 text-xs font-semibold text-blue-500 bg-blue-100 px-2 py-0.5 rounded-full">
+                        {{ subCategory.abbreviation }}
+                      </span>
+                    </h3>
                     <p class="text-sm text-slate-600 mt-1">
                       {{ subCategory.sub_category_description }}
                     </p>
-                    <p class="text-sm text-slate-600 mt-1">
+                    <p class="text-sm text-slate-600 mt-1 flex items-center">
                       Category: {{ subCategory.personnel_category?.category_name || 'N/A' }}
+                      <!-- Display Parent Category Abbreviation -->
+                      <span v-if="subCategory.personnel_category?.abbreviation"
+                        class="ml-2 text-xs font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
+                        {{ subCategory.personnel_category.abbreviation }}
+                      </span>
                     </p>
                     <p class="text-sm text-slate-600 mt-1">
                       Code: {{ subCategory.registration_code }}
@@ -132,13 +150,11 @@
               </div>
             </TransitionGroup>
 
-            <!-- Empty State -->
             <div v-if="filteredSubCategories.length === 0" class="text-center py-8">
               <p class="text-slate-500">No sub categories found</p>
             </div>
           </div>
 
-          <!-- Pagination -->
           <div v-if="filteredSubCategories.length > itemsPerPage" class="flex justify-center gap-2">
             <button @click="currentPage--" :disabled="currentPage === 1"
               class="px-3 py-1 rounded border border-slate-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50">
@@ -184,6 +200,7 @@
   </div>
 </template>
 
+
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
 import apiServices from '@/services/services'
@@ -199,18 +216,19 @@ import {
 
 // State
 const subCategories = ref([])
-const categories = ref([]) // For the categories dropdown
+const categories = ref([])
 const formData = ref({
   id: null,
   sub_category_name: '',
   sub_category_description: '',
   registration_code: '',
   renewal_fee: null,
-  category_name: null, // Fixed: Use null instead of empty string
+  category_name: null,
+  abbreviation: '',
 })
 const isEditing = ref(false)
-const isSubmitting = ref(false) // Added loading state
-const errorMessage = ref('') // Added error handling
+const isSubmitting = ref(false)
+const errorMessage = ref('')
 const searchQuery = ref('')
 const currentPage = ref(1)
 const itemsPerPage = 5
@@ -218,8 +236,7 @@ const itemsPerPage = 5
 const isDeleteModalOpen = ref(false)
 const subCategoryToDelete = ref(null)
 
-// Fetch sub categories and categories on component mount
-onMounted(async () => {
+onMounted(() => {
   fetchSubCategories()
   fetchCategories()
 })
@@ -244,15 +261,18 @@ const fetchCategories = async () => {
   }
 }
 
-// Computed
 const filteredSubCategories = computed(() => {
   return subCategories.value.filter((subCategory) => {
     const query = searchQuery.value.toLowerCase()
+    const subCategoryAbbreviationMatch =
+      subCategory.abbreviation && subCategory.abbreviation.toLowerCase().includes(query)
+
     return (
       subCategory.sub_category_name.toLowerCase().includes(query) ||
       subCategory.sub_category_description.toLowerCase().includes(query) ||
       (subCategory.personnel_category?.category_name &&
-        subCategory.personnel_category.category_name.toLowerCase().includes(query))
+        subCategory.personnel_category.category_name.toLowerCase().includes(query)) ||
+      subCategoryAbbreviationMatch
     )
   })
 })
@@ -267,21 +287,19 @@ const paginatedSubCategories = computed(() => {
   return filteredSubCategories.value.slice(start, end)
 })
 
-// Methods
 const handleSubmit = async () => {
   if (isSubmitting.value) return
-
   isSubmitting.value = true
   errorMessage.value = ''
 
   try {
-    // Prepare form data - ensure category_name is a number
     const submitData = {
       sub_category_name: formData.value.sub_category_name,
       sub_category_description: formData.value.sub_category_description,
       registration_code: formData.value.registration_code,
       renewal_fee: parseFloat(formData.value.renewal_fee),
-      category_name: parseInt(formData.value.category_name)
+      category_name: parseInt(formData.value.category_name),
+      abbreviation: formData.value.abbreviation,
     }
 
     if (isEditing.value) {
@@ -301,15 +319,10 @@ const handleSubmit = async () => {
   } catch (error) {
     console.error('Error saving sub category:', error)
     if (error.response?.data) {
-      // Handle specific field errors from the backend
-      if (typeof error.response.data === 'object') {
-        const errors = Object.values(error.response.data).flat()
-        errorMessage.value = errors.join(', ')
-      } else {
-        errorMessage.value = error.response.data || 'Failed to save sub category'
-      }
+      const errors = Object.values(error.response.data).flat()
+      errorMessage.value = errors.join(', ')
     } else {
-      errorMessage.value = 'Failed to save sub category'
+      errorMessage.value = 'An unexpected error occurred.'
     }
   } finally {
     isSubmitting.value = false
@@ -317,17 +330,17 @@ const handleSubmit = async () => {
 }
 
 const startEdit = (subCategory) => {
-  // Fixed: Properly map the personnel_category to category_name
   formData.value = {
     id: subCategory.id,
     sub_category_name: subCategory.sub_category_name,
     sub_category_description: subCategory.sub_category_description,
     registration_code: subCategory.registration_code,
     renewal_fee: subCategory.renewal_fee,
-    category_name: subCategory.personnel_category?.id || null // Extract the ID from the nested object
+    category_name: subCategory.personnel_category?.id || null,
+    abbreviation: subCategory.abbreviation || '',
   }
   isEditing.value = true
-  errorMessage.value = '' // Clear any previous errors
+  errorMessage.value = ''
 }
 
 const cancelEdit = () => {
@@ -349,10 +362,9 @@ const confirmDelete = async () => {
 
   try {
     await apiServices.deleteEpcMastersSubCategory(subCategoryToDelete.value.id)
-    const index = subCategories.value.findIndex((sc) => sc.id === subCategoryToDelete.value.id)
-    if (index !== -1) {
-      subCategories.value.splice(index, 1)
-    }
+    subCategories.value = subCategories.value.filter(
+      (sc) => sc.id !== subCategoryToDelete.value.id,
+    )
     closeDeleteModal()
   } catch (error) {
     console.error('Error deleting sub category:', error)
@@ -366,14 +378,14 @@ const resetForm = () => {
     sub_category_name: '',
     sub_category_description: '',
     registration_code: '',
-    renewal_fee: null, // Fixed: Use null instead of empty string
-    category_name: null, // Fixed: Use null instead of empty string
+    renewal_fee: null,
+    category_name: null,
+    abbreviation: '',
   }
   isEditing.value = false
-  errorMessage.value = '' // Clear any errors when resetting
+  errorMessage.value = ''
 }
 
-// Watch for search query changes to reset pagination
 watch(searchQuery, () => {
   currentPage.value = 1
 })

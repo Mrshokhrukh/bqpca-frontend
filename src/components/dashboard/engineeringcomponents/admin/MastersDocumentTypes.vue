@@ -31,10 +31,7 @@
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   required>
                   <option value="Applicant">Applicant</option>
-                  <option value="Applicant">CPD</option>
-                  <option value="Applicant">CoGS</option>
-                  <option value="Applicant">CAPA</option>
-                  <option value="Applicant">Institute</option>
+                  <option value="Additional Qualification">Additional Qualification</option>
 
                 </select>
               </div>
@@ -283,7 +280,6 @@ const resetForm = () => {
   isEditing.value = false
 }
 
-// Watch for search query changes to reset pagination
 watch(searchQuery, () => {
   currentPage.value = 1
 })
