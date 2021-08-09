@@ -1709,13 +1709,13 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/dashboard`, // Corrected "dealing_Officer"
       },
       {
-        name: 'Manage Accreditation Schedule',
+        name: 'Institutional Accreditation Schedule Management',
         icon: getIconComponent('LayoutDashboard'),
         route: (serviceType) =>
           `/admin/dealing_officer/${serviceType}/manage_accreditation_schedule`, // Corrected "dealing_Officer"
       },
       {
-        name: 'Accreditation Applications',
+        name: 'Institutional Accreditation',
         icon: getIconComponent('ClipboardList'),
         children: [
           {
@@ -1724,7 +1724,7 @@ const serviceSpecificMenuItems = {
           },
 
           {
-            name: 'ISAR Report',
+            name: 'Institutional Self Assessment Report',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/isar_reports`,
           },
           // {
