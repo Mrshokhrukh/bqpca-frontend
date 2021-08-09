@@ -1117,16 +1117,10 @@ const handleFacultyTypeChange = () => {
 }
 
 const saveFaculty = async () => {
-  console.log('Current form state before validation:', JSON.parse(JSON.stringify(form.value)))
   if (!validateForm()) {
-    console.log(
-      'Client-side validation failed. Errors:',
-      JSON.parse(JSON.stringify(validation.errors))
-    )
     showNotification('error', 'Validation Error', 'Please check the form for errors and try again.')
     return
   }
-  console.log('Client-side validation passed.')
 
   if (!institutePk.value) {
     showNotification(
@@ -1186,11 +1180,6 @@ const saveFaculty = async () => {
 
   if (form.value.faculty_type && !formDataPayload.has('faculty_type')) {
     formDataPayload.append('faculty_type', form.value.faculty_type)
-  }
-
-  console.log('FormData to be sent:')
-  for (let [key, value] of formDataPayload.entries()) {
-    console.log(key, value)
   }
 
   try {
