@@ -189,19 +189,13 @@
           Are you sure you want to renew your engineering institute registration? You will be
           prompted to make a payment to complete the renewal process.
         </p>
-        <div v-if="isRenewing" class="flex items-center justify-center mb-4">
-          <Loader class="inline-block animate-spin text-blue-600 w-6 h-6" />
-          <p class="ml-2">Processing...</p>
-        </div>
         <div class="flex justify-end space-x-4">
           <button @click="closeRenewalDialog"
-            class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            :disabled="isRenewing">
+            class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
             Cancel
           </button>
           <button @click="initiatePayment"
-            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            :disabled="isRenewing">
+            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
             Proceed to Payment
           </button>
         </div>
@@ -209,7 +203,12 @@
     </div>
 
     <!-- Payment Modal -->
-    <PaymentModal ref="paymentModal" :amount="100000" @payment-completed="handlePaymentCompleted" @close="closePaymentModal" />
+    <PaymentModal 
+      ref="paymentModal" 
+      :amount="100000" 
+      @payment-completed="handlePaymentCompleted" 
+      @close="closePaymentModal" 
+    />
   </div>
 </template>
 
@@ -309,17 +308,29 @@ const openRenewalDialog = () => { showRenewalDialog.value = true; };
 const closeRenewalDialog = () => { showRenewalDialog.value = false; };
 const closePaymentModal = () => { isRenewing.value = false; };
 
+/**
+ * Step 1: User confirms renewal, which just opens the payment modal.
+ */
 const initiatePayment = () => {
   if (!instituteData.value) {
     toast.error('No institute data available for payment.');
     closeRenewalDialog();
     return;
   }
-  isRenewing.value = true;
-  paymentModal.value.openModal();
+
+  if (paymentModal.value) {
+    paymentModal.value.openModal();
+  } else {
+    toast.error("Payment module failed to load. Please refresh and try again.");
+  }
+  
   closeRenewalDialog();
 };
 
+/**
+ * Step 2: This function is triggered by the PaymentModal's '@payment-completed' event.
+ * It performs the backend API calls AFTER payment is successful.
+ */
 const handlePaymentCompleted = async (paymentData) => {
   if (!instituteData.value) {
     toast.error('Institute data is not available. Cannot proceed.');
@@ -334,11 +345,11 @@ const handlePaymentCompleted = async (paymentData) => {
     return;
   }
 
-  isRenewing.value = true;
   isLoading.value = true;
+  isRenewing.value = true;
 
   try {
-    // Step 1: Log the payment for auditing.
+    // Step 2a: Log the payment for auditing.
     const paymentLogFormData = new FormData();
     paymentLogFormData.append('refNo', paymentData.paymentHash);
     paymentLogFormData.append('serviceCode', '100196');
@@ -355,7 +366,7 @@ const handlePaymentCompleted = async (paymentData) => {
     paymentLogFormData.append('app_type', 'engineering_institute_renewal');
     await apiServices.makePayment(paymentLogFormData);
 
-    // Step 2: Create the dedicated Institute Renewal record. THIS IS THE CORRECT LOGIC.
+    // Step 2b: Create the dedicated Institute Renewal record. THIS IS THE CORRECT LOGIC.
     const renewalFormData = new FormData();
     renewalFormData.append('institute', instituteData.value.id);
     renewalFormData.append('payment_id', paymentData.paymentHash);
@@ -374,7 +385,7 @@ const handlePaymentCompleted = async (paymentData) => {
 
   } catch (error) {
     console.error('Renewal process failed:', error);
-    const apiErrorMsg = error.response?.data?.detail || JSON.stringify(error.response?.data) || error.message;
+    const apiErrorMsg = error.response?.data?.detail || JSON.stringify(error.response?.data) || 'An unknown error occurred';
     toast.error(
       `Renewal Failed: ${apiErrorMsg}. Please contact support with Payment Ref: ${paymentData.paymentHash}`,
       { timeout: 10000 }
