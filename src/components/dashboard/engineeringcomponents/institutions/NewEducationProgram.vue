@@ -340,9 +340,6 @@
                   Submitted Date
                 </th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Form Status
-                </th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Approval Status
                 </th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -355,16 +352,14 @@
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
               <tr v-if="filteredApplications.length === 0">
-                <td colspan="7" class="px-6 py-8 text-center text-sm text-gray-500">
+                <td colspan="6" class="px-6 py-8 text-center text-sm text-gray-500">
                   <FolderIcon class="w-8 h-8 mx-auto mb-2 text-gray-400" />
                   <div v-if="searchQuery">No applications match your search criteria.</div>
                   <div v-else>No educational programme applications found.</div>
                 </td>
               </tr>
               <tr v-for="application in filteredApplications" :key="application.id"
-                class="hover:bg-gray-50 transition-colors duration-150"
-                :class="{ 'cursor-pointer': application.is_draft }"
-                @click="application.is_draft ? loadApplication(application.id, true) : null">
+                class="hover:bg-gray-50 transition-colors duration-150">
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-indigo-600">
                   {{ application.id }}
                 </td>
@@ -374,39 +369,46 @@
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   {{ application.created_at ? new Date(application.created_at).toLocaleDateString() : 'N/A' }}
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {{ application.is_draft ? 'Draft' : 'Submitted' }}
-                </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm">
-                  <span :class="getStatusClass(application.is_draft ? 'Draft' : application.review_decision)"
+                   <span :class="getStatusClass(application.review_decision, application.is_draft)"
                     class="px-2 py-1 rounded-full text-xs font-medium flex items-center w-fit">
-                    <span class="w-2 h-2 rounded-full mr-1" :class="{
-                      'bg-green-500': application.review_decision === 'Approved',
-                      'bg-red-500': application.review_decision === 'Rejected',
-                      'bg-yellow-500': application.is_draft || application.review_decision === 'Pending',
-                      'bg-blue-500': application.review_decision === 'Under Review',
-                      'bg-gray-500': !application.review_decision && !application.is_draft,
-                    }"></span>
-                    {{ application.is_draft ? 'Draft' : (application.review_decision || 'Unknown') }}
+                    <span class="w-2 h-2 rounded-full mr-1.5" :class="getApprovalStatusDotClass(application)"></span>
+                    {{ getApprovalStatusText(application) }}
                   </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {{ application.training_institute_details?.valid_till
-                    ? new Date(application.training_institute_details.valid_till).toLocaleDateString()
+                  {{ application.valid_till
+                    ? new Date(application.valid_till).toLocaleDateString()
                     : 'N/A' }}
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm flex space-x-2">
-                  <button class="text-indigo-600 hover:text-indigo-800 font-medium flex items-center"
+                <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
+                  <button class="btn-action-view"
                     @click.stop="loadApplication(application.id, false)">
                     <EyeIcon class="w-4 h-4 mr-1" />
                     View
                   </button>
                   <button v-if="application.is_draft"
-                    class="text-indigo-600 hover:text-indigo-800 font-medium flex items-center"
+                    class="btn-action-edit"
                     @click.stop="loadApplication(application.id, true)">
                     <EditIcon class="w-4 h-4 mr-1" />
                     Edit
                   </button>
+                  <!-- Payment & Certificate Buttons -->
+                   <button v-if="application.review_decision === 'Approved' && !application.is_payment_complete"
+                      @click.stop="initiatePayment(application)"
+                      class="btn btn-primary">
+                      <CreditCard class="h-4 w-4 mr-1.5" />
+                      Make Payment
+                  </button>
+                  <a v-if="application.review_decision === 'Approved' && application.is_payment_complete && application.certificate_url"
+                     :href="application.certificate_url" target="_blank" rel="noopener noreferrer"
+                     class="btn btn-success">
+                      <Award class="h-4 w-4 mr-1.5" />
+                      View Certificate
+                  </a>
+                   <p v-if="application.review_decision === 'Approved' && application.is_payment_complete && !application.certificate_url" class="text-xs text-gray-500 italic inline-flex items-center">
+                      Certificate is being generated...
+                  </p>
                 </td>
               </tr>
             </tbody>
@@ -461,9 +463,9 @@
                 <div>
                   <label class="block font-medium text-gray-500">Approval Status</label>
                   <div class="mt-1">
-                    <span :class="getStatusClass(selectedApplication.review_decision)"
+                    <span :class="getStatusClass(selectedApplication.review_decision, selectedApplication.is_draft)"
                       class="px-3 py-1 text-xs font-bold leading-5 rounded-full">
-                      {{ selectedApplication.review_decision_display || 'N/A' }}
+                      {{ getApprovalStatusText(selectedApplication) }}
                     </span>
                   </div>
                 </div>
@@ -578,6 +580,13 @@
         </div>
       </div>
     </div>
+    <!-- Payment Modal -->
+    <PaymentModal
+      ref="paymentModalRef"
+      :amount="1000"
+      @payment-completed="handlePaymentCompleted"
+      @close="closePaymentModal"
+    />
   </div>
 </template>
 
@@ -587,7 +596,8 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
 import { useToast } from 'vue-toastification'
 import apiService from '@/services/services'
-import { Loader, Search, EditIcon, EyeIcon, FileText, BuildingIcon, UserIcon, GlobeIcon, ClipboardIcon, AlertCircle, AlertTriangle, UploadIcon, InfoIcon, CheckCircleIcon, XIcon, SaveIcon, SendIcon, AlertOctagonIcon, ListIcon, FolderIcon } from 'lucide-vue-next'
+import PaymentModal from '@/components/common/PaymentModal.vue';
+import { Loader, Search, EditIcon, EyeIcon, FileText, BuildingIcon, UserIcon, GlobeIcon, ClipboardIcon, AlertCircle, AlertTriangle, UploadIcon, InfoIcon, CheckCircleIcon, XIcon, SaveIcon, SendIcon, AlertOctagonIcon, ListIcon, FolderIcon, UserCheckIcon, PaperclipIcon, CreditCard, Award } from 'lucide-vue-next'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -627,6 +637,10 @@ const submittedApplications = ref([])
 const isTableLoading = ref(false)
 const tableApiError = ref(false)
 const searchQuery = ref('')
+
+// Payment related state
+const paymentModalRef = ref(null);
+const selectedAppForPayment = ref(null);
 
 // Computed property for filtering applications
 const filteredApplications = computed(() => {
@@ -751,7 +765,7 @@ const loadApplication = async (applicationId, forEditing = false) => {
       } else {
 
         selectedApplication.value = {
-          ...app // 
+          ...app //
         };
         showModal.value = true;
       }
@@ -1005,27 +1019,107 @@ const handleCancel = () => {
   }
 }
 
-// Helper function for status styling
-const getStatusClass = (status) => {
-  status = status?.toLowerCase()
-  if (
-    status === 'approved' ||
-    status === 'approved, pending payment' ||
-    status === 'active' ||
-    status === 'completed'
-  ) {
-    return 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800'
-  } else if (status === 'rejected' || status === 'failed') {
-    return 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800'
-  } else if (
-    status === 'pending' ||
-    status === 'under review' ||
-    status === 'draft' ||
-    status === 'processing_payment'
-  ) {
-    return 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800'
+// --- PAYMENT LOGIC ---
+const initiatePayment = (app) => {
+  selectedAppForPayment.value = app;
+  if (paymentModalRef.value) {
+    paymentModalRef.value.openModal();
   } else {
-    return 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800'
+    toast.error('Payment module could not be loaded.');
+  }
+};
+
+const closePaymentModal = () => {
+  selectedAppForPayment.value = null;
+};
+
+const handlePaymentCompleted = async (paymentData) => {
+  if (!selectedAppForPayment.value) {
+    toast.error('No application selected for payment.');
+    return;
+  }
+  const user = authStore.user;
+  if (!user?.cid) {
+    toast.error('User information is missing. Please log in again.');
+    return;
+  }
+
+  isSubmitting.value = true;
+  const paymentId = paymentData.paymentHash;
+  const appToPay = selectedAppForPayment.value;
+
+  try {
+    const paymentGatewayFormData = new FormData();
+    paymentGatewayFormData.append('refNo', paymentId);
+    // ASSUMPTION: '100197' is the service code for New Educational Program applications.
+    paymentGatewayFormData.append('serviceCode', '100197');
+    paymentGatewayFormData.append('taxPayerName', user.full_name || user.cid);
+    paymentGatewayFormData.append('taxPayerNo', user.cid);
+    paymentGatewayFormData.append('taxPayerDocumentNo', user.cid);
+    paymentGatewayFormData.append('totalPayableAmount', 1000);
+    paymentGatewayFormData.append('description', 'ECP New Education Programme Fee');
+    paymentGatewayFormData.append('mobileNo', user.contact_number || 'NA');
+    paymentGatewayFormData.append('payerEmail', user.email || 'NA');
+    paymentGatewayFormData.append('user', user.id);
+    paymentGatewayFormData.append('payableAmount', 1000);
+    paymentGatewayFormData.append('application_no', appToPay.id);
+    paymentGatewayFormData.append('app_type', 'epc_new_education_program');
+
+    await apiService.makePayment(paymentGatewayFormData);
+
+    const updateFormData = new FormData();
+    updateFormData.append('payment_id', paymentId);
+    updateFormData.append('is_payment_complete', true);
+
+    await apiService.updateEpcNewEducationProgram(appToPay.id, updateFormData);
+
+    toast.success(`Payment confirmed (Ref: ${paymentId.substring(0, 8)}...). Your application is updated.`);
+    await fetchSubmittedApplications();
+
+  } catch (error) {
+    console.error('Payment handling error:', error);
+    let errorMsg = 'An error occurred while confirming your payment.';
+    if (error.response?.data) {
+      errorMsg = `API Error: ${JSON.stringify(error.response.data)}`;
+    }
+    toast.error(`${errorMsg} Please contact support with Payment Ref: ${paymentId}`);
+  } finally {
+    isSubmitting.value = false;
+    closePaymentModal();
+  }
+};
+
+
+// --- HELPER FUNCTIONS FOR STYLING ---
+const getApprovalStatusText = (app) => {
+  if (app.is_draft) return 'Draft';
+  if (app.review_decision === 'Approved' && app.is_payment_complete) return 'Completed';
+  if (app.review_decision === 'Approved' && !app.is_payment_complete) return 'Payment Pending';
+  return app.review_decision || 'Submitted';
+};
+
+const getApprovalStatusDotClass = (app) => {
+  if (app.review_decision === 'Approved' && app.is_payment_complete) return 'bg-green-500'; // Completed
+  if (app.review_decision === 'Approved' && !app.is_payment_complete) return 'bg-blue-500'; // Payment Pending
+  if (app.review_decision === 'Rejected' || app.review_decision === 'Regretted') return 'bg-red-500';
+  if (app.is_draft || app.review_decision === 'Pending' || app.review_decision === 'Under Review') return 'bg-yellow-500';
+  return 'bg-gray-500'; // Default
+};
+
+
+const getStatusClass = (status, is_draft = false) => {
+  if (is_draft) {
+    return 'bg-yellow-100 text-yellow-800'
+  }
+  status = status?.toLowerCase()
+  if (status === 'approved' || status === 'active' || status === 'completed') {
+    return 'bg-green-100 text-green-800'
+  } else if (status === 'rejected' || status === 'regretted' || status === 'failed') {
+    return 'bg-red-100 text-red-800'
+  } else if (status === 'pending' || status === 'under review') {
+    return 'bg-yellow-100 text-yellow-800'
+  } else {
+    return 'bg-blue-100 text-blue-800' // For payment pending etc.
   }
 }
 
@@ -1043,27 +1137,6 @@ button:disabled {
   cursor: not-allowed;
 }
 
-input[type='file'] {
-  color: #64748b;
-}
-
-input[type='file']::file-selector-button {
-  margin-right: 1rem;
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
-  border-width: 0px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  background-color: #eef2ff;
-  color: #4338ca;
-  cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
-}
-
-input[type='file']::file-selector-button:hover {
-  background-color: #e0e7ff;
-}
-
 .border-red-500 {
   border-color: #ef4444;
 }
@@ -1071,5 +1144,21 @@ input[type='file']::file-selector-button:hover {
 .border-red-500:focus {
   border-color: #ef4444;
   box-shadow: 0 0 0 1px #ef4444;
+}
+
+.btn {
+  @apply inline-flex items-center justify-center space-x-2 px-3 py-1.5 text-xs font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 transition-colors;
+}
+
+.btn-primary {
+  @apply text-white bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500;
+}
+
+.btn-success {
+    @apply text-white bg-green-600 hover:bg-green-700 focus:ring-green-500;
+}
+
+.btn-action-view, .btn-action-edit {
+    @apply text-indigo-600 hover:text-indigo-800 font-medium flex items-center text-xs px-2 py-1 rounded-md hover:bg-indigo-50;
 }
 </style>
