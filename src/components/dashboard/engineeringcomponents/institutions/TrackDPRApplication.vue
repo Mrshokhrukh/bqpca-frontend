@@ -59,7 +59,7 @@
             <div>
               <p class="text-gray-500">Payment</p>
               <p class="font-semibold" :class="app.is_payment_complete ? 'text-green-600' : 'text-amber-600'">
-                {{ app.payment_status_display || (app.is_payment_complete ? 'Completed' : 'Pending') }}
+                 {{ app.payment_status_display || (app.is_payment_complete ? 'Completed' : 'Pending') }}
               </p>
             </div>
             <div>
@@ -92,7 +92,32 @@
           leave-active-class="transition-all ease-in duration-200 overflow-hidden"
           leave-from-class="transform opacity-100 max-h-screen" leave-to-class="transform opacity-0 max-h-0">
           <div v-if="expandedApplicationId === app.id" class="px-6 pb-6">
-            <!-- Details content... -->
+            <div class="border-t border-gray-200 pt-4">
+              <!-- Tabs Navigation -->
+              <div class="border-b border-gray-200">
+                <nav class="-mb-px flex flex-wrap" aria-label="Tabs">
+                  <button v-for="tab in tabs" :key="tab.id" @click="activeTab = tab.id" :class="[
+                    activeTab === tab.id
+                      ? 'border-indigo-500 text-indigo-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300',
+                    'whitespace-nowrap py-3 px-4 border-b-2 font-medium text-sm'
+                  ]">
+                    {{ tab.name }}
+                  </button>
+                </nav>
+              </div>
+              <!-- Tab Content -->
+              <div class="mt-4">
+                <div v-for="tab in tabs" :key="tab.id">
+                  <div v-if="activeTab === tab.id">
+                    <h4 class="text-base font-semibold text-gray-800 mb-2">{{ tab.name }}</h4>
+                    <p class="text-sm text-gray-600 whitespace-pre-wrap bg-gray-50 p-4 rounded-md h-64 overflow-y-auto">
+                      {{ app[tab.id] || 'No information provided.' }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </transition>
 
@@ -148,7 +173,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useAuthStore } from '@/stores/authStore';
-import apiService from '@/services/services'; // Assuming epcServices handles institute APIs
+import apiService from '@/services/services';
 import PaymentModal from '@/components/common/PaymentModal.vue';
 import { useToast } from 'vue-toastification';
 import { Loader, FileText, AlertTriangle, ChevronDown, ChevronUp, ExternalLink, CreditCard, Award } from 'lucide-vue-next';
@@ -160,12 +185,34 @@ const apiError = ref(false);
 const errorMessage = ref('');
 const expandedApplicationId = ref(null);
 const activeTab = ref('vision_mission_strategies');
-
 const paymentModalRef = ref(null);
 const selectedAppForPayment = ref(null);
 
 const authStore = useAuthStore();
 const toast = useToast();
+
+const tabs = ref([
+  { id: 'vision_mission_strategies', name: 'Vision & Mission' },
+  { id: 'project_scheduling', name: 'Scheduling' },
+  { id: 'gross_national_happiness', name: 'GNH' },
+  { id: 'land_details', name: 'Land Details' },
+  { id: 'conceptual_master_plan', name: 'Master Plan' },
+  { id: 'academic_plan', name: 'Academic Plan' },
+  { id: 'affiliation_details', name: 'Affiliation' },
+  { id: 'teaching_hospital', name: 'Teaching Hospital' },
+  { id: 'research_policy', name: 'Research' },
+  { id: 'human_resource', name: 'HR' },
+  { id: 'quality_assurance', name: 'QA' },
+  { id: 'governance_structure', name: 'Governance' },
+  { id: 'business_plan', name: 'Business Plan' },
+  { id: 'project_cost_analysis', name: 'Cost Analysis' },
+  { id: 'facilities_student_services', name: 'Facilities' },
+  { id: 'admission_policy', name: 'Admission' },
+  { id: 'service_conditions', name: 'Service Conditions' },
+  { id: 'safety_security', name: 'Safety' },
+  { id: 'public_information_system', name: 'Public Info' },
+  { id: 'other_details', name: 'Other Details' },
+]);
 
 // --- METHODS ---
 const getStatusColor = (status) => {
@@ -275,7 +322,6 @@ const handlePaymentCompleted = async (paymentData) => {
     paymentGatewayFormData.append('application_no', appToPay.id);
     paymentGatewayFormData.append('app_type', 'epc_institute');
 
-    // Use the correct service for making the payment
     await apiService.makePayment(paymentGatewayFormData);
 
     // 2. Patch your application with the payment details
@@ -283,12 +329,10 @@ const handlePaymentCompleted = async (paymentData) => {
     updateFormData.append('payment_id', paymentId);
     updateFormData.append('is_payment_complete', true);
 
-    // Use the correct service for patching the EPC institute
     await apiService.patchEpcInstitute(appToPay.id, updateFormData);
 
     toast.success(`Payment confirmed (Ref: ${paymentId.substring(0, 8)}...). Your application is updated.`);
 
-    // Refresh data to show updated status
     await fetchApplications();
 
   } catch (error) {
@@ -316,9 +360,11 @@ onMounted(fetchApplications);
 .btn-secondary {
   @apply text-gray-700 bg-white border border-gray-300 hover:bg-gray-100 focus:ring-indigo-500;
 }
+
 .btn-primary {
   @apply text-white bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500;
 }
+
 .btn-success {
     @apply text-white bg-green-600 hover:bg-green-700 focus:ring-green-500;
 }

@@ -450,23 +450,22 @@ export default {
     return apiClient.delete(`/epc/epc-new-education-programs/${id}/`)
   },
   getEpcInstituteRenewals() {
-    // Make sure your backend url for this is registered, e.g., '/epc/institute-renewals/'
-    return apiClient.get('/epc/institute-renewals/')
+    return apiClient.get('/epc/epc-institute-renewals/');
   },
   createEpcInstituteRenewal(data) {
-    return apiClient.post('/epc/institute-renewals/', data)
+    return apiClient.post('/epc/epc-institute-renewals/', data);
   },
   getEpcInstituteRenewal(id) {
-    return apiClient.get(`/epc/institute-renewals/${id}/`)
+    return apiClient.get(`/epc/epc-institute-renewals/${id}/`);
   },
   updateEpcInstituteRenewal(id, data) {
-    return apiClient.put(`/epc/institute-renewals/${id}/`, data)
+    return apiClient.put(`/epc/epc-institute-renewals/${id}/`, data);
   },
   patchEpcInstituteRenewal(id, data) {
-    return apiClient.patch(`/epc/institute-renewals/${id}/`, data)
+    return apiClient.patch(`/epc/epc-institute-renewals/${id}/`, data);
   },
   deleteEpcInstituteRenewal(id) {
-    return apiClient.delete(`/epc/institute-renewals/${id}/`)
+    return apiClient.delete(`/epc/epc-institute-renewals/${id}/`);
   },
 
   // EPC Renewals endpoints
