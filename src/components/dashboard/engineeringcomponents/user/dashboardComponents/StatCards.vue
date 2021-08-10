@@ -50,15 +50,13 @@
 <script setup>
 import apiService from '@/services/services'
 import { useAuthStore } from '@/stores/authStore'
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import {
   AcademicCapIcon,
   TrophyIcon,
   ChartBarIcon,
   DocumentTextIcon,
 } from '@heroicons/vue/24/outline'
-
-
 const props = defineProps({
   title: {
     type: String,
@@ -74,8 +72,17 @@ const authStore = useAuthStore()
 const selfSubmittedApps = ref([])
 const participantRecords = ref([])
 const resourcePersonTasks = ref([])
-const isLoading = ref(false)
+const isLoading = ref(true)
 const apiError = ref(false)
+
+onMounted(async () => {
+  authStore.initializeAuth()
+  if (!authStore.userRegistrationNo && authStore.user?.cid) {
+    await authStore.fetchAndSetRegistrationNo()
+  }
+  await fetchAllData()
+})
+
 
 const fetchAllData = async () => {
   isLoading.value = true
@@ -86,7 +93,6 @@ const fetchAllData = async () => {
       apiService.getEpcCpdTaskParticipants(),
       apiService.getEpcCpdTasks(),
     ])
-
     selfSubmittedApps.value = selfSubmittedResponse.data?.results || selfSubmittedResponse.data || []
     participantRecords.value = participantResponse.data?.results || participantResponse.data || []
     resourcePersonTasks.value = resourceTasksResponse.data?.results || resourceTasksResponse.data || []
@@ -94,105 +100,72 @@ const fetchAllData = async () => {
   } catch (error) {
     console.error('Error fetching EPC CPD data:', error)
     apiError.value = true
-    selfSubmittedApps.value = []
-    participantRecords.value = []
-    resourcePersonTasks.value = []
   } finally {
     isLoading.value = false
   }
 }
+const userCid = computed(() => authStore.user?.cid)
+const registrationNo = computed(() => authStore.userRegistrationNo)
+const userSelfSubmittedApps = computed(() => {
+  if (!userCid.value) return []
+  return selfSubmittedApps.value.filter(app => String(app.cid_no) === String(userCid.value))
+})
 
-onMounted(fetchAllData)
+const userParticipantRecords = computed(() => {
+  if (!registrationNo.value) return []
+  return participantRecords.value.filter(p => p.participant_reg_no === registrationNo.value)
+})
 
-const userRegistrationNo = computed(() => {
-  if (!authStore.user || !authStore.user.cid) {
-    return null;
-  }
-  const userApp = selfSubmittedApps.value.find(app => app.cid_no === authStore.user.cid);
-
-  return userApp?.registration_no_details?.registration_no || null;
-});
-
-watch(userRegistrationNo, (newValue) => {
-  console.log('User Registration Number has been found:', newValue);
-});
-
-const allUserApplications = computed(() => {
-  if (!authStore.user || !authStore.user.cid) {
-    return []
-  }
-  const unifiedSelfSubmitted = selfSubmittedApps.value
-    .filter(app => app.cid_no === authStore.user.cid && app.review_status === 'Approved')
-    .map(app => ({
-      id: `self-${app.id}`,
-      status: app.review_status || 'Pending',
-      credits: app.cpd_credit || 0
-    }));
-  let unifiedParticipantRecords = [];
-  if (userRegistrationNo.value) {
-    unifiedParticipantRecords = participantRecords.value
-      .filter(p => p.participant_reg_no === userRegistrationNo.value && p.review_status === 'Approved')
-      .map(p => ({
-        id: `participant-${p.id}`,
-        status: p.review_status || 'Pending',
-        credits: p.cpd_credits || 0
-      }));
-  }
-
-  let unifiedResourceRecords = [];
-  if (userRegistrationNo.value) {
-    unifiedResourceRecords = resourcePersonTasks.value.flatMap(task => {
-      const resourceInfo = task.resources.find(
-        resource => resource.resource_person_reg_no === userRegistrationNo.value
-      );
-
-      if (resourceInfo && task.status === 'Approved') {
-        return [{
-          id: `resource-${task.id}`,
-          status: 'Approved',
-          credits: (task.credit || 0) * 2
-        }];
-      }
-      return [];
-    });
-  }
-
-  return [...unifiedSelfSubmitted, ...unifiedParticipantRecords, ...unifiedResourceRecords];
-});
-
-
-const relevantApplications = computed(() => allUserApplications.value)
+const userResourceTasks = computed(() => {
+  if (!registrationNo.value) return []
+  return resourcePersonTasks.value.filter(task =>
+    task.resources?.some(r => r.resource_person_reg_no === registrationNo.value)
+  )
+})
+const relevantApplications = computed(() => {
+  return [
+    ...userSelfSubmittedApps.value,
+    ...userParticipantRecords.value,
+    ...userResourceTasks.value,
+  ]
+})
 
 const totalCpdCredits = computed(() => {
-  return relevantApplications.value.reduce((total, app) => total + app.credits, 0)
+  const selfCredits = userSelfSubmittedApps.value
+    .filter(app => app.review_status === 'Approved')
+    .reduce((sum, app) => sum + (app.cpd_credit || 0), 0)
+  const participantCredits = userParticipantRecords.value
+    .filter(p => p.review_status === 'Approved')
+    .reduce((sum, p) => sum + (p.cpd_credits || 0), 0)
+  const resourceCredits = userResourceTasks.value
+    .filter(task => task.status === 'Approved')
+    .reduce((sum, task) => sum + (task.credit || 0) * 2, 0)
+
+  return selfCredits + participantCredits + resourceCredits
 })
 
 const progressPercentage = computed(() => {
-  const target = 50;
-  if (target === 0) return 0;
+  const target = 50
+  if (target === 0) return 0
   const percentage = (totalCpdCredits.value / target) * 100
   return Math.min(percentage, 100)
 })
 
 const statusCounts = computed(() => {
-  const counts = { Approved: 0, Pending: 0, Rejected: 0 };
-  const allRecords = [
-    ...selfSubmittedApps.value.filter(app => app.cid_no === authStore.user.cid),
-    ...participantRecords.value.filter(p => p.participant_reg_no === userRegistrationNo.value),
-    ...resourcePersonTasks.value.filter(task => task.resources.some(r => r.resource_person_reg_no === userRegistrationNo.value))
-  ];
+  const counts = { Approved: 0, Pending: 0, Rejected: 0 }
 
-  for (const app of allRecords) {
-    let status = app.review_status || app.status || 'Pending';
+  for (const record of relevantApplications.value) {
+    let status = record.review_status || record.status || 'Pending'
     if (status === 'Regretted') {
-      status = 'Rejected';
+      status = 'Rejected'
     }
     if (counts.hasOwnProperty(status)) {
-      counts[status]++;
+      counts[status]++
     }
   }
-  return counts;
+  return counts
 })
+
 
 const statusCardClasses = (status) => {
   switch (status) {
