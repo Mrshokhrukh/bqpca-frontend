@@ -825,7 +825,6 @@ const serviceSpecificMenuItems = {
             name: 'Qualifications',
             route: (serviceType) => `/admin/admin/${serviceType}/qualifications`,
           },
-
         ],
       },
       {
@@ -1119,7 +1118,7 @@ const serviceSpecificMenuItems = {
             icon: getIconComponent('Heart'),
             route: (serviceType) => `/admin/institutions/${serviceType}/site_visit_schedule`,
           },
-        ]
+        ],
       },
     ],
     legal_officer: [
@@ -1158,15 +1157,15 @@ const serviceSpecificMenuItems = {
           const store = useEngineeringCertificationStore()
           const items = []
 
-          console.log('Building certification menu. Store state:', {
-            registration: store.visibleMenus.certificationSubMenus.registration,
-            myApplications: store.visibleMenus.certificationSubMenus.myApplications,
-            renewal: store.visibleMenus.certificationSubMenus.renewal,
-            additionalQualification:
-              store.visibleMenus.certificationSubMenus.additionalQualification,
-            hasSubmittedApplication: store.hasSubmittedApplication,
-            hasApprovedQualification: store.hasApprovedQualification,
-          })
+          // console.log('Building certification menu. Store state:', {
+          //   registration: store.visibleMenus.certificationSubMenus.registration,
+          //   myApplications: store.visibleMenus.certificationSubMenus.myApplications,
+          //   renewal: store.visibleMenus.certificationSubMenus.renewal,
+          //   additionalQualification:
+          //     store.visibleMenus.certificationSubMenus.additionalQualification,
+          //   hasSubmittedApplication: store.hasSubmittedApplication,
+          //   hasApprovedQualification: store.hasApprovedQualification,
+          // })
 
           // Show Registration only for new users (before any application submission)
           if (store.visibleMenus.certificationSubMenus.registration) {
@@ -1211,7 +1210,7 @@ const serviceSpecificMenuItems = {
             })
           }
 
-          console.log('Built certification menu items:', items)
+          // console.log('Built certification menu items:', items)
           return items
         },
       },

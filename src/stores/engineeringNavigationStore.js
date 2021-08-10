@@ -56,12 +56,12 @@ export const useEngineeringCertificationStore = defineStore('engineeringCertific
     )
 
     const hasSubmitted = applicationsWithQualifications.length > 0
-    console.log(
-      'hasSubmittedApplication:',
-      hasSubmitted,
-      'Applications found:',
-      applicationsWithQualifications.length,
-    )
+    // console.log(
+    //   'hasSubmittedApplication:',
+    //   hasSubmitted,
+    //   'Applications found:',
+    //   applicationsWithQualifications.length,
+    // )
 
     return hasSubmitted
   })
@@ -82,7 +82,7 @@ export const useEngineeringCertificationStore = defineStore('engineeringCertific
           app.user_qualifications.some((qual) => qual.endorsement_decision === 'Approved'),
       )
 
-    console.log('hasApprovedQualification:', hasApproved)
+    // console.log('hasApprovedQualification:', hasApproved)
     return hasApproved
   })
 
@@ -113,7 +113,7 @@ export const useEngineeringCertificationStore = defineStore('engineeringCertific
       return today.isAfter(expiryDate)
     })
 
-    console.log('hasExpiredQualification:', hasExpired)
+    // console.log('hasExpiredQualification:', hasExpired)
     return hasExpired
   })
 
@@ -150,7 +150,7 @@ export const useEngineeringCertificationStore = defineStore('engineeringCertific
 
     // Within 3 months of expiry but not yet expired, OR already expired (allow renewal for expired)
     const inRenewalPeriod = monthsToExpiry <= 3
-    console.log('isRenewalPeriod:', inRenewalPeriod, 'Months to expiry:', monthsToExpiry)
+    // console.log('isRenewalPeriod:', inRenewalPeriod, 'Months to expiry:', monthsToExpiry)
 
     return inRenewalPeriod
   })
@@ -162,14 +162,14 @@ export const useEngineeringCertificationStore = defineStore('engineeringCertific
   })
 
   const visibleMenus = computed(() => {
-    console.log('Computing visibleMenus:', {
-      initialized: initialized.value,
-      isLoading: isLoading.value,
-      hasSubmittedApplication: hasSubmittedApplication.value,
-      hasApprovedQualification: hasApprovedQualification.value,
-      hasExpiredQualification: hasExpiredQualification.value,
-      isRenewalPeriod: isRenewalPeriod.value,
-    })
+    // console.log('Computing visibleMenus:', {
+    //   initialized: initialized.value,
+    //   isLoading: isLoading.value,
+    //   hasSubmittedApplication: hasSubmittedApplication.value,
+    //   hasApprovedQualification: hasApprovedQualification.value,
+    //   hasExpiredQualification: hasExpiredQualification.value,
+    //   isRenewalPeriod: isRenewalPeriod.value,
+    // })
 
     // If not initialized yet, show loading state with basic menu
     if (!initialized.value || isLoading.value) {
@@ -225,11 +225,11 @@ export const useEngineeringCertificationStore = defineStore('engineeringCertific
         }
       }
 
-      console.log('User has submitted application - returning menus:', {
-        baseMenus,
-        certificationSubMenus,
-        reasoning: 'Additional qualification always shown for submitted applications',
-      })
+      // console.log('User has submitted application - returning menus:', {
+      //   baseMenus,
+      //   certificationSubMenus,
+      //   reasoning: 'Additional qualification always shown for submitted applications',
+      // })
       return { baseMenus, certificationSubMenus }
     }
 
@@ -267,26 +267,26 @@ export const useEngineeringCertificationStore = defineStore('engineeringCertific
         return
       }
 
-      console.log('Fetching application details for CID:', authStore.user.cid)
+      // console.log('Fetching application details for CID:', authStore.user.cid)
       const response = await apiServices.getEpcFullApplicationListByCid(authStore.user.cid)
 
       if (response?.data) {
         applicationDetails.value = response.data
-        console.log('Fetched application details:', applicationDetails.value)
+        // console.log('Fetched application details:', applicationDetails.value)
 
         // Log status for debugging
-        if (hasSubmittedApplication.value) {
-          console.log('User has submitted application(s)')
-        }
-        if (hasApprovedQualification.value) {
-          console.log('User has approved qualification(s)')
-        }
-        if (hasExpiredQualification.value) {
-          console.log('User has expired qualification(s) - CPD and CoGS disabled')
-        }
-        if (isRenewalPeriod.value) {
-          console.log('User is in renewal period')
-        }
+        // if (hasSubmittedApplication.value) {
+        //   console.log('User has submitted application(s)')
+        // }
+        // if (hasApprovedQualification.value) {
+        //   console.log('User has approved qualification(s)')
+        // }
+        // if (hasExpiredQualification.value) {
+        //   console.log('User has expired qualification(s) - CPD and CoGS disabled')
+        // }
+        // if (isRenewalPeriod.value) {
+        //   console.log('User is in renewal period')
+        // }
       } else {
         applicationDetails.value = { results: [] }
       }
