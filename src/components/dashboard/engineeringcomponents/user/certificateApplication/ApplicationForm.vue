@@ -387,6 +387,7 @@
               <label class="block text-sm font-medium text-gray-700 required">Qualification Type</label>
               <select
                 v-model="localFormData.qualification_type"
+                @change="handleQualificationTypeChange"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
               >
                 <option value="">Select Qualification Type</option>
@@ -403,10 +404,11 @@
                 v-model="localFormData.qualification_name"
                 @change="localFormData.qualification_name !== 'OTHERS' ? (localFormData.other_qualification_name_specify = '') : ''"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
+                :disabled="!localFormData.qualification_type"
               >
                 <option value="">Select Qualification Name</option>
                 <option
-                  v-for="qualification in qualifications"
+                  v-for="qualification in filteredQualifications"
                   :key="qualification.id"
                   :value="qualification.id"
                 >
@@ -1046,6 +1048,25 @@ const isCIDValid = computed(() => {
   return /^\d{11}$/.test(localFormData.cid_no)
 })
 
+const filteredQualifications = computed(() => {
+  if (!localFormData.qualification_type) {
+    return []
+  }
+  // Using == to handle potential type mismatch (string vs number) from the select input
+  return qualifications.value.filter(
+    (q) => q.qualification_type == localFormData.qualification_type,
+  )
+})
+
+watch(
+  () => localFormData.qualification_type,
+  (newVal, oldVal) => {
+    if (newVal !== oldVal) {
+      localFormData.qualification_name = ''
+    }
+  },
+)
+
 watch(
   () => localFormData,
   (newData) => {
@@ -1451,6 +1472,7 @@ const handleSubmitActual = async () => {
   try {
     const qualificationFormData = new FormData()
     qualificationFormData.append('application', localFormData.application)
+    qualificationFormData.append('registration_type', localFormData.registration_type)
     if (localFormData.qualification_name === 'OTHERS') {
       qualificationFormData.append(
         'qualification_name_text',
