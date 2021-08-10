@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full max-w-7xl mx-auto px-4 py-8">
+  <div class="w-full mx-auto px-4 py-8">
     <!-- Header Section -->
     <div class="bg-white rounded-xl shadow-md p-8 mb-10 border border-gray-100">
       <h2 class="text-3xl font-bold text-gray-800 mb-3 text-center">Your Applications</h2>
