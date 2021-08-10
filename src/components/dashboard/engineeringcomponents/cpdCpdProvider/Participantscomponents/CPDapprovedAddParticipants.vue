@@ -1,4 +1,3 @@
-<!-- CPDapprovedAddParticipants.vue -->
 <template>
   <div class="max-w-4xl mx-auto px-4 py-8">
     <h1 class="text-3xl font-bold text-center mb-8 text-gray-800">
@@ -28,13 +27,11 @@
         :cpdTasks="cpdTasksForSelection" :current-provider-cid="currentProviderCid" :is-submitting="isPhotoUploading"
         @submit="handlePhotoSubmit" @cancel="cancel" />
 
-      <StatusMessage v-if="message" :message="message" :type="messageType" @close="clearMessage" class="mt-6" />
-
-      <!-- The error list UI remains the same, it will now show validation errors -->
       <div v-if="bulkUploadErrorList.length > 0 && activeTab === 'bulk'"
         class="mt-6 p-4 bg-red-50 border border-red-200 rounded-md">
-        <h4 class="text-md font-semibold text-red-700 mb-2">Upload Cancelled. Please fix the following issues in your
-          CSV:</h4>
+        <h4 class="text-md font-semibold text-red-700 mb-2">
+          Upload Cancelled. Please fix the following issues in your CSV:
+        </h4>
         <ul class="list-disc list-inside text-sm text-red-600 space-y-1">
           <li v-for="(err, index) in bulkUploadErrorList" :key="index">
             Reg No: <strong>{{ err.participant_reg_no || 'N/A' }}</strong> - {{ err.error }}
@@ -55,7 +52,6 @@ import TabNavigation from './TabNavigation.vue';
 import SingleEntryForm from './SingleEntryForm.vue';
 import BulkUploadForm from './BulkUploadForm.vue';
 import AttendancePhotoForm from './AttendancePhotoForm.vue';
-import StatusMessage from './StatusMessage.vue';
 
 const router = useRouter();
 const route = useRoute();
@@ -68,9 +64,6 @@ const preselectedTaskId = ref(null);
 
 const activeTab = ref('single');
 const isLoading = ref(true);
-const message = ref('');
-const messageType = ref('');
-const messageTimeoutId = ref(null);
 
 const isSingleSubmitting = ref(false);
 const isBulkUploading = ref(false);
@@ -83,7 +76,7 @@ const attendancePhotoFormRef = ref(null);
 const bulkUploadErrorList = ref([]);
 
 const cpdTasksForSelection = computed(() => {
-  const filtered = allCpdTasks.value
+  return allCpdTasks.value
     .filter((task) => {
       const isApproved = task.is_cpd_approved === true;
       if (currentProviderCid.value) {
@@ -92,7 +85,6 @@ const cpdTasksForSelection = computed(() => {
       return isApproved;
     })
     .sort((a, b) => (a.title || '').localeCompare(b.title || ''));
-  return filtered;
 });
 
 const participantRegNoSet = computed(() => {
@@ -124,7 +116,7 @@ async function fetchData() {
     participants.value = participantsResponse.data?.results || participantsResponse.data || [];
   } catch (error) {
     console.error('Error fetching initial data:', error);
-    showMessage('Failed to load essential data.', 'error');
+    toast.error('Failed to load essential data.');
   } finally {
     isLoading.value = false;
   }
@@ -132,30 +124,43 @@ async function fetchData() {
 
 function handleTabChange(newTab) {
   activeTab.value = newTab;
+  bulkUploadErrorList.value = [];
 }
 
 watch(activeTab, () => {
-  clearMessage();
+  bulkUploadErrorList.value = [];
 });
 
 async function handleSingleSubmit(submissionData) {
+  if (isSingleSubmitting.value) return;
   isSingleSubmitting.value = true;
-  clearMessage();
+  bulkUploadErrorList.value = [];
+
+  const toastId = toast.info("Adding participant...", { timeout: false });
+
   try {
     await apiService.createEpcCpdTaskParticipant(submissionData);
-    showMessage('Participant added successfully!', 'success');
+    toast.update(toastId, {
+      content: 'Participant added successfully!',
+      type: 'success',
+      timeout: 5000,
+    });
     if (singleEntryFormRef.value?.resetForm) singleEntryFormRef.value.resetForm(true);
   } catch (error) {
-    const errorMessage = error.response?.data?.detail || 'Failed to add participant.';
-    showMessage(errorMessage, 'error');
+    toast.update(toastId, {
+      content: `Error:${error.response?.data?.detail || 'Failed to add participant.'}`,
+      type: 'error',
+      timeout: 5000,
+    });
   } finally {
     isSingleSubmitting.value = false;
   }
 }
 
 async function handleBulkSubmit({ cpdTask, file }) {
+  if (isBulkUploading.value) return;
   isBulkUploading.value = true;
-  clearMessage();
+  bulkUploadErrorList.value = [];
 
   Papa.parse(file, {
     header: true,
@@ -163,79 +168,98 @@ async function handleBulkSubmit({ cpdTask, file }) {
     complete: async (results) => {
       const participantsToUpload = results.data;
       const validationErrors = [];
-
       if (!participantsToUpload || participantsToUpload.length === 0) {
-        showMessage('CSV file is empty or could not be read.', 'error');
+        toast.error('CSV file is empty or could not be read.');
         isBulkUploading.value = false;
         return;
       }
-      for (const participant of participantsToUpload) {
-        const regNo = participant.participant_reg_no?.trim();
-
+      for (const p of participantsToUpload) {
+        const regNo = p.participant_reg_no?.trim();
         if (!regNo) {
           validationErrors.push({ participant_reg_no: 'Empty Row', error: 'Registration number was missing.' });
         } else if (!participantRegNoSet.value.has(regNo)) {
           validationErrors.push({ participant_reg_no: regNo, error: 'This registration number does not exist in the system.' });
         }
       }
-
       if (validationErrors.length > 0) {
         bulkUploadErrorList.value = validationErrors;
-        showMessage(`Upload cancelled. ${validationErrors.length} error(s) found in your file.`, 'error');
+        toast.error(`Upload cancelled. ${validationErrors.length} error(s) found in the file.`);
         isBulkUploading.value = false;
         return;
       }
 
-      showMessage(`Validation successful. Now uploading ${participantsToUpload.length} participants...`, 'info');
-
-      const submissionPromises = participantsToUpload.map(participant => {
-        const payload = {
+      const submissionPromises = participantsToUpload.map(p =>
+        apiService.createEpcCpdTaskParticipant({
           cpd_task: cpdTask,
-          participant_reg_no: participant.participant_reg_no.trim(),
-        };
-        return apiService.createEpcCpdTaskParticipant(payload);
-      });
+          participant_reg_no: p.participant_reg_no.trim(),
+        })
+      );
+
+      const toastId = toast.info(`Uploading ${participantsToUpload.length} participants...`, { timeout: false });
 
       try {
-
         await Promise.all(submissionPromises);
-
-        showMessage(`${participantsToUpload.length} participants were uploaded successfully!`, 'success');
-        if (bulkUploadFormRef.value) {
-          bulkUploadFormRef.value.resetForm(false);
-        }
-
+        toast.update(toastId, {
+          content: `${participantsToUpload.length} participants uploaded successfully!`,
+          type: 'success',
+          timeout: 5000,
+        });
+        if (bulkUploadFormRef.value) bulkUploadFormRef.value.resetForm(false);
       } catch (error) {
-
-        showMessage('An unexpected error occurred during the submission phase. Some participants may not have been added.', 'error');
+        console.error("An error occurred during bulk submission:", error);
+        toast.update(toastId, {
+          content: 'An error occurred. Some participants may not have been added.',
+          type: 'error',
+          timeout: 5000,
+        });
       } finally {
         isBulkUploading.value = false;
       }
     },
     error: (err) => {
-      showMessage(`Failed to parse CSV file: ${err.message}`, 'error');
+      toast.error(`Failed to parse CSV file: ${err.message}`);
       isBulkUploading.value = false;
-    }
+    },
   });
 }
 
-async function handlePhotoSubmit({ cpdTask, photo, description }) { /* ... */ }
+async function handlePhotoSubmit({ cpdTask, photo, description }) {
+  if (isPhotoUploading.value) return;
+  isPhotoUploading.value = true;
+  bulkUploadErrorList.value = [];
+
+  const formDataToSend = new FormData();
+  formDataToSend.append('attendance_sheet_attachment', photo, photo.name);
+  if (description) {
+    formDataToSend.append('photo_description', description);
+  }
+
+  const toastId = toast.info("Uploading attendance PDF...", { timeout: false });
+
+  try {
+    await apiService.patchEpcCpdTask(cpdTask, formDataToSend);
+    toast.update(toastId, {
+      content: 'Attendance PDF uploaded successfully!',
+      type: 'success',
+      timeout: 5000,
+    });
+    if (attendancePhotoFormRef.value?.resetForm) {
+      attendancePhotoFormRef.value.resetForm(false);
+    }
+  } catch (error) {
+    let errorMessage = 'Failed to upload attendance PDF.';
+
+    toast.update(toastId, {
+      content: `Error: ${errorMessage}`,
+      type: 'error',
+      timeout: 5000,
+    });
+  } finally {
+    isPhotoUploading.value = false;
+  }
+}
 
 function cancel() {
   router.go(-1);
-}
-
-function showMessage(text, type = 'info', duration = 7000) {
-  message.value = text;
-  messageType.value = type;
-  if (messageTimeoutId.value) clearTimeout(messageTimeoutId.value);
-  messageTimeoutId.value = setTimeout(clearMessage, duration);
-}
-
-function clearMessage() {
-  message.value = '';
-  messageType.value = '';
-  bulkUploadErrorList.value = [];
-  if (messageTimeoutId.value) clearTimeout(messageTimeoutId.value);
 }
 </script>
