@@ -494,7 +494,7 @@
                   class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 text-sm"
                 >
                   <option value="">Select Document Type</option>
-                  <option v-for="docTypeOption in fetchedDocumentTypes" :key="docTypeOption.id" :value="docTypeOption.id">
+                  <option v-for="docTypeOption in filteredDocTypes" :key="docTypeOption.id" :value="docTypeOption.id">
                     {{ docTypeOption.document_name }}
                   </option>
                 </select>
@@ -942,7 +942,9 @@ onMounted(async () => {
     qualifications.value = responses[1]?.data?.results || []
     universities.value = responses[2]?.data?.results || []
     allRegistrationTypesFromAPI.value = responses[3]?.data?.results || []
-    fetchedDocumentTypes.value = responses[4]?.data?.results || []
+    const allDocs = responses[4]?.data?.results || []
+    // Filter documents to only show those for the initial applicant stage
+    fetchedDocumentTypes.value = allDocs.filter(doc => doc.application_type === 'Applicant')
 
     const fullType = filteredRegistrationTypes.value.find((rt) =>
       rt.name.toLowerCase().includes('full'),
@@ -1021,21 +1023,28 @@ const getRegistrationTypeCategory = (typeId) => {
   return null
 }
 
-const currentMandatoryDocIds = computed(() => {
-  const category = getRegistrationTypeCategory(localFormData.registration_type)
+const filteredDocTypes = computed(() => {
+  const category = getRegistrationTypeCategory(localFormData.registration_type);
+  const defaultDocs = fetchedDocumentTypes.value.filter(doc => doc.application_type === 'Applicant');
+
+  if (!category) return defaultDocs;
+
   if (category === 'full') {
-    return fetchedDocumentTypes.value.map((dt) => dt.id)
-  } else if (category === 'provisional' || category === 'temporary') {
-    const keywords = MANDATORY_DOC_KEYWORDS[category]
-    return fetchedDocumentTypes.value
-      .filter((dt) => {
-        const docNameLower = dt.document_name.toLowerCase()
-        return keywords.some((keyword) => docNameLower.includes(keyword.toLowerCase()))
-      })
-      .map((dt) => dt.id)
+    return defaultDocs;
   }
-  return []
-})
+
+  const keywords = MANDATORY_DOC_KEYWORDS[category] || [];
+  if (!keywords.length) return defaultDocs;
+
+  return fetchedDocumentTypes.value.filter((dt) => {
+    const docNameLower = dt.document_name.toLowerCase();
+    return keywords.some((keyword) => docNameLower.includes(keyword.toLowerCase()));
+  });
+});
+
+const currentMandatoryDocIds = computed(() => {
+  return filteredDocTypes.value.map(doc => doc.id);
+});
 
 const currentRequiredDocNames = computed(() => {
   const mandatoryIds = currentMandatoryDocIds.value
@@ -1492,16 +1501,16 @@ const handleSubmitActual = async () => {
     qualificationFormData.append('declaration', localFormData.declaration ? 'True' : 'False')
     qualificationFormData.append('remarks', localFormData.remarks || '')
     qualificationFormData.append('is_primary_qualification', 'True')
-    localFormData.documents.forEach((doc) => {
+    localFormData.documents.forEach((doc, index) => {
       if (doc.files && doc.files.length > 0 && doc.type) {
-        doc.files.forEach((fileObject) => {
-          qualificationFormData.append(
-            'user_qualification_attachment_files',
-            fileObject,
-            fileObject.name,
-          )
-          qualificationFormData.append('user_qualification_attachment_file_types', doc.type)
-        })
+        // The backend expects indexed fields. We'll send the first file for each type.
+        const fileObject = doc.files[0]; 
+        qualificationFormData.append(
+          `attachments-${index}-file`,
+          fileObject,
+          fileObject.name,
+        )
+        qualificationFormData.append(`attachments-${index}-file_type`, doc.type)
       }
     })
     await apiService.createEpcNewQualification(qualificationFormData)

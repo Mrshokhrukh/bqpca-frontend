@@ -1553,10 +1553,18 @@ const serviceSpecificMenuItems = {
           {
             name: 'Apply for EOI',
             route: (serviceType) => `/admin/institutions/${serviceType}/apply_for_eoi`,
+            hidden: () => {
+              const store = useEngineeringCertificationStore();
+              return store.hasEoiApplication;
+            }
           },
           {
             name: 'Track EOI',
             route: (serviceType) => `/admin/institutions/${serviceType}/track_eoi`,
+            hidden: () => {
+              const store = useEngineeringCertificationStore();
+              return !store.hasEoiApplication;
+            }
           },
         ],
       },
@@ -1567,10 +1575,18 @@ const serviceSpecificMenuItems = {
           {
             name: 'Apply for DPR',
             route: (serviceType) => `/admin/institutions/${serviceType}/apply_for_dpr`,
+            hidden: () => {
+              const store = useEngineeringCertificationStore();
+              return store.hasDprApplication;
+            }
           },
           {
             name: 'Track DPR',
             route: (serviceType) => `/admin/institutions/${serviceType}/track_dpr`,
+            hidden: () => {
+              const store = useEngineeringCertificationStore();
+              return !store.hasDprApplication;
+            }
           },
         ],
       },
