@@ -285,7 +285,7 @@ const handlePaymentCompleted = async (paymentData) => {
 
     const paymentInitiationFormData = new FormData();
     paymentInitiationFormData.append('refNo', paymentId);
-    paymentInitiationFormData.append('serviceCode', 'cogs_application_fee');
+    paymentInitiationFormData.append('serviceCode', '100247');
     paymentInitiationFormData.append('taxPayerName', user.cid);
     paymentInitiationFormData.append('taxPayerNo', user.cid);
     paymentInitiationFormData.append('taxPayerDocumentNo', user.cid);
@@ -304,7 +304,7 @@ const handlePaymentCompleted = async (paymentData) => {
     updateFormData.append('is_payment_complete', 'true');
     updateFormData.append('payment_id', paymentId);
 
-    await apiService.patchMhpcCogs(applicationId, updateFormData);
+    await apiService.patchEpcCogs(applicationId, updateFormData);
 
     toast.success(`Payment successful! Your application status has been updated.`);
   } catch (error) {

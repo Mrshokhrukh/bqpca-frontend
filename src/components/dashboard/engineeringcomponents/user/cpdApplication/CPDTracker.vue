@@ -325,26 +325,106 @@ import {
 
 // State
 const applications = ref([])
-const isLoading = ref(false)
+const isLoading = ref(true)
 const apiError = ref(false)
 const authStore = useAuthStore()
-const learningMethods = ref([])
 const cpdTaskParticipants = ref([])
 const cpdTasks = ref([])
 
+const userRegistrationNo = computed(() => authStore.userRegistrationNo)
+
+
 const filteredApplications = computed(() => {
-  if (!authStore.user || !authStore.user.cid) {
+  if (!authStore.user?.cid) {
     return []
   }
-
   return applications.value.filter(
-    (app) => app.cid_no === authStore.user.cid && !app.is_draft
+    (app) => String(app.cid_no) === String(authStore.user.cid) && !app.is_draft,
   )
 })
 
+const userCpdParticipantRecords = computed(() => {
+  if (!userRegistrationNo.value) {
+    return []
+  }
+  return (
+    cpdTaskParticipants.value
+      .filter(
+        (p) =>
+          p.participant_reg_no &&
+          p.participant_reg_no.trim() === userRegistrationNo.value.trim(),
+      )
+      .map((participant) => {
+        const task = cpdTasks.value.find((t) => t.id === participant.cpd_task_id)
+        return { participant, task }
+      })
+  )
+})
+
+const totalApprovedCredits = computed(() => {
+  const approvedSelfCpd = filteredApplications.value
+    .filter((app) => app.review_status === 'Approved')
+    .reduce((total, app) => total + (app.cpd_credit || 0), 0)
+  const approvedParticipantCpd = userCpdParticipantRecords.value
+    .filter(({ participant }) => participant.review_status === 'Approved')
+    .reduce((total, { participant }) => total + (participant.cpd_credits || 0), 0)
+
+  return approvedSelfCpd + approvedParticipantCpd
+})
+
+onMounted(async () => {
+
+  authStore.initializeAuth()
+  if (!authStore.userRegistrationNo) {
+    await authStore.fetchAndSetRegistrationNo()
+  }
+  isLoading.value = true
+  apiError.value = false
+
+  try {
+    await Promise.all([
+      fetchApplications(),
+      fetchCpdTaskParticipants(),
+      fetchCpdTasks(),
+    ])
+  } catch (error) {
+    console.error('An error occurred during data fetching:', error)
+    apiError.value = true
+  } finally {
+    isLoading.value = false
+  }
+})
+const fetchApplications = async () => {
+  if (!authStore.user?.cid) return
+  try {
+    const response = await apiServices.getEpcCpdRecordsByCid(authStore.user.cid)
+    applications.value = response.data?.results || response.data || []
+  } catch (error) {
+    console.error('Error fetching self-CPD applications:', error)
+    throw error
+  }
+}
+const fetchCpdTaskParticipants = async () => {
+  try {
+    const response = await apiServices.getEpcCpdTaskParticipants()
+    cpdTaskParticipants.value = response.data?.results || []
+  } catch (error) {
+    console.error('Error fetching CPD task participants:', error)
+    throw error
+  }
+}
+const fetchCpdTasks = async () => {
+  try {
+    const response = await apiServices.getEpcCpdTasks()
+    cpdTasks.value = response.data?.results || []
+  } catch (error) {
+    console.error('Error fetching CPD tasks:', error)
+    throw error
+  }
+}
+
 const formatDate = (dateString) => {
   if (!dateString) return 'N/A'
-
   try {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -356,120 +436,8 @@ const formatDate = (dateString) => {
     return 'Invalid Date'
   }
 }
-
-const fetchLearningMethods = async () => {
-  try {
-    const response = await apiServices.getEpcCpdTaskLearningMethods()
-
-    if (response.data && response.data.results) {
-      learningMethods.value = response.data.results.map((method) => ({
-        id: method.id,
-        name: method.name || method.description || `Method ${method.id}`,
-      }))
-    } else if (Array.isArray(response.data)) {
-      learningMethods.value = response.data.map((method) => ({
-        id: method.id,
-        name: method.name || method.description || `Method ${method.id}`,
-      }))
-    }
-  } catch (error) {
-    console.error('Error fetching learning methods:', error)
-    // Fallback values if API fails
-    learningMethods.value = [
-      { id: 1, name: 'Workshop' },
-      { id: 2, name: 'Seminar' },
-      { id: 3, name: 'Online Course' },
-      { id: 4, name: 'Conference' },
-    ]
-  }
-}
-
-const fetchApplications = async () => {
-  isLoading.value = true
-  apiError.value = false
-
-  try {
-    const response = await apiServices.getEpcCpdRecordsByCid(authStore.user.cid)
-    console.log('API Response okoko:', response)
-    if (response.data && Array.isArray(response.data)) {
-      applications.value = response.data
-    } else if (response.data && Array.isArray(response.data.results)) {
-      applications.value = response.data.results
-    } else {
-      applications.value = []
-      apiError.value = true
-    }
-
-
-  } catch (error) {
-    console.error('Error fetching CPD applications:', error)
-    applications.value = []
-    apiError.value = true
-  } finally {
-    isLoading.value = false
-  }
-}
-
-const fetchCpdTaskParticipants = async () => {
-  try {
-    const response = await apiServices.getEpcCpdTaskParticipants()
-    cpdTaskParticipants.value = response.data.results || []
-  } catch (error) {
-    console.error('Error fetching CPD task participants:', error)
-  }
-}
-
-const fetchCpdTasks = async () => {
-  try {
-    const response = await apiServices.getEpcCpdTasks()
-    cpdTasks.value = response.data.results || []
-  } catch (error) {
-    console.error('Error fetching CPD tasks:', error)
-  }
-}
-
-const userRegistrationNo = computed(() => {
-  return applications.value[0]?.registration_no_details?.registration_no || null
-})
-
-const userCpdParticipantRecords = computed(() => {
-  if (!userRegistrationNo.value) return []
-  return cpdTaskParticipants.value
-    .filter(p => p.participant_reg_no === userRegistrationNo.value)
-    .map(participant => {
-      const task = cpdTasks.value.find(t => t.id === participant.cpd_task_id)
-
-      const application = applications.value.find(
-        app => app.registration_no_details?.registration_no === participant.participant_reg_no
-      )
-      return { participant, task, application }
-    })
-})
-
-const totalApprovedCredits = computed(() => {
-  const approvedSelfCpd = filteredApplications.value
-    .filter(app => app.review_status === 'Approved')
-    .reduce((total, app) => total + (app.cpd_credit || 0), 0);
-
-  const approvedParticipantCpd = userCpdParticipantRecords.value
-    .filter(({ participant }) => participant.review_status === 'Approved')
-    .reduce((total, { participant }) => total + (participant.cpd_credits || 0), 0);
-
-  return approvedSelfCpd + approvedParticipantCpd;
-});
-
-onMounted(async () => {
-  await Promise.all([
-    fetchApplications(),
-    fetchLearningMethods(),
-    fetchCpdTaskParticipants(),
-    fetchCpdTasks(),
-  ])
-})
 </script>
-
 <style scoped>
-/* List Transition Animations */
 .list-enter-active,
 .list-leave-active {
   transition: all 0.5s ease;

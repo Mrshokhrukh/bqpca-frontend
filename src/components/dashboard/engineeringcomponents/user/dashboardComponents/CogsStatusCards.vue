@@ -81,7 +81,7 @@ const fetchApplications = async () => {
       )[0]
     } else {
       application.value = null
-      console.warn('No CoGS applications found for current user')
+      // console.warn('No CoGS applications found for current user')
     }
   } catch (error) {
     console.error('Error fetching EPC CoGS applications:', error)

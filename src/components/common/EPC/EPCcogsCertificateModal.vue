@@ -65,19 +65,19 @@
                   <div>{{ cogsData.registration_no || 'N/A' }}</div>
 
                   <div class="font-semibold">Date of Initial Registration:</div>
-                  <div>N/A</div>
+                  <div>{{ formatDate(cogsData.date_of_initial_registration) }}</div>
 
                   <div class="font-semibold">Registration Type:</div>
                   <div>Professional Engineer</div>
 
                   <div class="font-semibold">Qualification(s):</div>
-                  <div>{{ cogsData.qualifications || 'Not specified' }}</div>
+                  <div>{{ cogsData.qualifications }}</div>
 
                   <div class="font-semibold">Date of Issue:</div>
                   <div>{{ formatDate(cogsData.updated_at) }}</div>
 
                   <div class="font-semibold">Valid Till:</div>
-                  <div>{{ cogsData.valid_till ? formatDate(cogsData.valid_till) : 'N/A' }}</div>
+                  <div>{{ formatDate(cogsData.valid_till) }}</div>
                 </div>
               </div>
 
