@@ -408,56 +408,76 @@
                       <div v-if="application.participants && application.participants.length > 0"
                         class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
                         <div class="p-6">
-                          <h4 class="text-lg font-medium text-gray-900 mb-6 flex items-center space-x-2">
-                            <Users class="h-5 w-5 text-gray-500" />
-                            <span>Participants ({{ application.participants.length }})</span>
-                          </h4>
+                          <!-- Header with Select All -->
+                          <div class="flex items-center justify-between mb-6">
+                            <h4 class="text-lg font-medium text-gray-900 flex items-center space-x-2">
+                              <Users class="h-5 w-5 text-gray-500" />
+                              <span>Participants ({{ application.participants.length }})</span>
+                            </h4>
+                            <div class="flex items-center space-x-2">
+                              <input type="checkbox" v-model="allParticipantsSelected"
+                                class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                id="selectAllCheckbox" />
+                              <label for="selectAllCheckbox" class="text-sm font-medium text-gray-700 cursor-pointer">
+                                Select All
+                              </label>
+                            </div>
+                          </div>
+
+                          <!-- Participants List -->
                           <div class="space-y-4">
                             <div v-for="participant in application.participants" :key="participant.id"
                               class="p-4 bg-gray-50 rounded-lg border border-gray-200">
                               <div class="flex items-center justify-between">
-                                <div class="flex-1">
-                                  <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                                    <div>
-                                      <p class="text-xs text-gray-500">Registration No.</p>
-                                      <p class="text-sm font-medium text-gray-900">
-                                        {{ getParticipantRegNo(participant) }}
-                                      </p>
-                                    </div>
-                                    <div>
-                                      <p class="text-xs text-gray-500">Name</p>
-                                      <p class="text-sm font-medium text-gray-900">
-                                        {{ getParticipantName(participant) }}
-                                      </p>
-                                    </div>
-                                    <div>
-                                      <p class="text-xs text-gray-500">Review Status</p>
-                                      <span :class="[
-                                        'inline-flex px-2 py-1 text-xs font-medium rounded-full',
-                                        {
-                                          'bg-yellow-100 text-yellow-800': participant.review_status === 'Pending',
-                                          'bg-green-100 text-green-800': participant.review_status === 'Approved',
-                                          'bg-red-100 text-red-800': participant.review_status === 'Rejected',
-                                        },
-                                      ]">
-                                        {{ participant.review_status || 'Pending' }}
-                                      </span>
-                                    </div>
-                                    <div>
-                                      <p class="text-xs text-gray-500">CPD Credits</p>
-                                      <div v-if="editingParticipant === participant.id" class="mt-1">
-                                        <input v-model.number="participantCredits[participant.id]" type="number" min="0"
-                                          step="0.5"
-                                          class="w-20 px-2 py-1 text-sm bg-white border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                                <div class="flex-1 flex items-start space-x-4">
+                                  <!-- Individual Participant Checkbox -->
+                                  <input type="checkbox" :value="participant.id" v-model="selectedParticipants"
+                                    class="h-4 w-4 mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500 flex-shrink-0" />
+
+                                  <!-- Participant Details -->
+                                  <div class="flex-1">
+                                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                      <div>
+                                        <p class="text-xs text-gray-500">Registration No.</p>
+                                        <p class="text-sm font-medium text-gray-900">
+                                          {{ getParticipantRegNo(participant) }}
+                                        </p>
                                       </div>
-                                      <p v-else class="text-sm font-medium text-gray-900">
-                                        {{ participant.cpd_credits || application.credit }}
-                                      </p>
+                                      <div>
+                                        <p class="text-xs text-gray-500">Name</p>
+                                        <p class="text-sm font-medium text-gray-900">
+                                          {{ getParticipantName(participant) }}
+                                        </p>
+                                      </div>
+                                      <div>
+                                        <p class="text-xs text-gray-500">Review Status</p>
+                                        <span :class="[
+                                          'inline-flex px-2 py-1 text-xs font-medium rounded-full',
+                                          {
+                                            'bg-yellow-100 text-yellow-800': participant.review_status === 'Pending',
+                                            'bg-green-100 text-green-800': participant.review_status === 'Approved',
+                                            'bg-red-100 text-red-800': participant.review_status === 'Rejected',
+                                          },
+                                        ]">
+                                          {{ participant.review_status || 'Pending' }}
+                                        </span>
+                                      </div>
+                                      <div>
+                                        <p class="text-xs text-gray-500">CPD Credits</p>
+                                        <div v-if="editingParticipant === participant.id" class="mt-1">
+                                          <input v-model.number="participantCredits[participant.id]" type="number"
+                                            min="0" step="0.5"
+                                            class="w-20 px-2 py-1 text-sm bg-white border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                                        </div>
+                                        <p v-else class="text-sm font-medium text-gray-900">
+                                          {{ participant.cpd_credits || application.credit }}
+                                        </p>
+                                      </div>
                                     </div>
-                                  </div>
-                                  <div v-if="participant.review_remarks" class="mt-3">
-                                    <p class="text-xs text-gray-500">Remarks</p>
-                                    <p class="text-sm text-gray-700">{{ participant.review_remarks }}</p>
+                                    <div v-if="participant.review_remarks" class="mt-3">
+                                      <p class="text-xs text-gray-500">Remarks</p>
+                                      <p class="text-sm text-gray-700">{{ participant.review_remarks }}</p>
+                                    </div>
                                   </div>
                                 </div>
                                 <div class="flex items-center space-x-2 ml-4">
@@ -479,6 +499,15 @@
                                 </div>
                               </div>
                             </div>
+                          </div>
+
+                          <!-- Bulk Approve Button Footer -->
+                          <div class="mt-6 flex justify-end" v-if="selectedParticipants.length > 0">
+                            <button @click="approveSelectedParticipants"
+                              class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors flex items-center space-x-2">
+                              <CheckCircle class="h-4 w-4" />
+                              <span>Approve Selected ({{ selectedParticipants.length }})</span>
+                            </button>
                           </div>
                         </div>
                       </div>
@@ -640,7 +669,7 @@
   </TransitionRoot>
 </template>
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import {
   Activity,
@@ -704,7 +733,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['close', 'save', 'approve', 'reject', 'updateParticipant'])
+const emit = defineEmits(['close', 'save', 'approve', 'reject', 'updateParticipant', 'approveParticipants'])
 
 const isEditing = ref(false)
 const editedApplication = ref({ ...props.application })
@@ -714,14 +743,12 @@ const approvalMessage = ref('')
 const rejectionMessage = ref('')
 const rejectionError = ref('')
 const approvalCredits = ref(props.application?.credit || 0)
-const allParticipants = ref([])
-// Participant editing
 const editingParticipant = ref(null)
 const participantCredits = ref({})
-
 const editingResource = ref(null)
 const resourceCredits = ref({})
-// CPD Type mapping
+const selectedParticipants = ref([])
+const allParticipants = ref([])
 const cpdTypeMap = {
   1: 'Workshop',
   2: 'Seminar',
@@ -736,7 +763,7 @@ const getCpdTypeName = (typeId) => {
   return cpdTypeMap[typeId] || `Unknown Type (ID: ${typeId})`
 }
 
-// CPD Providing Agency mapping
+
 const cpdProvidingAgencyMap = {
   1: 'Royal University of Bhutan',
   2: 'Engineers Australia',
@@ -752,7 +779,27 @@ const getCpdProvidingAgencyName = (agencyId) => {
   return cpdProvidingAgencyMap[agencyId] || `Unknown Agency (ID: ${agencyId})`
 }
 
-// Reason for Conducting mapping
+const allParticipantsSelected = computed({
+  get() {
+    return props.application.participants && selectedParticipants.value.length === props.application.participants.length && props.application.participants.length > 0;
+  },
+  set(value) {
+    if (value) {
+      selectedParticipants.value = props.application.participants.map(p => p.id);
+    } else {
+      selectedParticipants.value = [];
+    }
+  }
+});
+
+const approveSelectedParticipants = () => {
+  emit('approveParticipants', {
+    participantIds: selectedParticipants.value,
+    credit: props.application.credit || 0,
+    remarks: 'Bulk Approved'
+  });
+  selectedParticipants.value = [];
+};
 const reasonForConductingMap = {
   1: 'Professional Development',
   2: 'Regulatory Requirement',
@@ -768,7 +815,6 @@ const getReasonForConductingName = (reasonId) => {
   return reasonForConductingMap[reasonId] || `Unknown Reason (ID: ${reasonId})`
 }
 
-// Methodology mapping
 const methodologyMap = {
   1: 'Lecture/Presentation',
   2: 'Interactive Workshop',
@@ -782,10 +828,9 @@ const methodologyMap = {
   10: 'Other'
 }
 
-// Add this new function after the watch
+
 const fetchParticipantsData = async () => {
   try {
-    // You'll need to import your API service at the top of the file
     const apiServices = await import('@/services/services')
     const response = await apiServices.default.getEpcFullApplicationListByCid('')
 
@@ -895,24 +940,26 @@ watch(
   () => props.application,
   (newApplication) => {
     if (newApplication) {
-      editedApplication.value = { ...newApplication }
-      approvalCredits.value = newApplication.credit || 0
-      isEditing.value = false
-      showApprovalForm.value = false
-      showRejectionForm.value = false
-      approvalMessage.value = ''
-      rejectionMessage.value = ''
-      rejectionError.value = ''
-      editingParticipant.value = null
-      participantCredits.value = {}
-      editingResource.value = null
-      resourceCredits.value = {}
+      editedApplication.value = { ...newApplication };
+      approvalCredits.value = newApplication.credit || 0;
+      isEditing.value = false;
+      showApprovalForm.value = false;
+      showRejectionForm.value = false;
+      approvalMessage.value = '';
+      rejectionMessage.value = '';
+      rejectionError.value = '';
+      editingParticipant.value = null;
+      participantCredits.value = {};
+      editingResource.value = null;
+      resourceCredits.value = {};
+      selectedParticipants.value = [];
 
-      fetchParticipantsData()
+      fetchParticipantsData();
     }
   },
-  { immediate: true }
-)
+  { immediate: true, deep: true }
+);
+
 
 
 

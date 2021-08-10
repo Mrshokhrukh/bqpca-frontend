@@ -1,4 +1,3 @@
-<!-- BulkUploadForm.vue -->
 <template>
   <div class="space-y-6">
     <div class="bg-green-50 rounded-lg p-4 border border-green-200 mb-6">
@@ -162,7 +161,7 @@ const validateCsvContent = (file) => {
 
         for (const num of regNumbers) {
           const trimmedNum = num.trim();
-          if (trimmedNum) { // Ignore empty lines between data
+          if (trimmedNum) {
             if (seen.has(trimmedNum)) {
               duplicates.add(trimmedNum);
             } else {
