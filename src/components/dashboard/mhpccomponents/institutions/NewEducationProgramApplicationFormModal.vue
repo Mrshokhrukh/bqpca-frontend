@@ -356,7 +356,7 @@ const steps = [
 
 // --- DATA STRUCTURES & HELPERS ---
 const createNewModule = () => ({
-  uuid: crypto.randomUUID(),
+  uuid: `module-${Date.now()}-${Math.random()}`, 
   moduleMasterId: '',
   facultyIds: [],
   numberOfStudents: 10,
