@@ -326,6 +326,54 @@
             </div>
           </div>
 
+          <!-- START: Resource Persons Section -->
+          <div v-if="selectedApplication.resources && selectedApplication.resources.length > 0"
+            class="border border-gray-200 p-4 rounded-lg">
+            <h3 class="text-lg font-semibold mb-3 text-gray-700 border-b pb-2">
+              Resource Person(s)
+            </h3>
+            <div class="overflow-x-auto -mx-4 px-4">
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-100">
+                  <tr>
+                    <th scope="col"
+                      class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Name
+                    </th>
+                    <th scope="col"
+                      class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Registration No
+                    </th>
+                    <th scope="col"
+                      class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Supporting Document
+                    </th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                  <tr v-for="(resource, index) in selectedApplication.resources"
+                    :key="`resource-${resource.id || index}`">
+                    <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-800">
+                      {{ resource.resource_person_name || 'N/A' }}
+                    </td>
+                    <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-800">
+                      {{ resource.resource_person_reg_no || 'N/A' }}
+                    </td>
+                    <td class="px-4 py-2 whitespace-nowrap text-sm">
+                      <a v-if="resource.resource_document" :href="resource.resource_document" target="_blank"
+                        class="text-blue-600 hover:text-blue-800 hover:underline">
+                        View Document
+                      </a>
+                      <span v-else class="text-gray-500">No Document</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <!-- END: Resource Persons Section -->
+
+
           <!-- CPD Details Section -->
           <div class="border border-gray-200 p-4 rounded-lg">
             <h3 class="text-lg font-semibold mb-3 text-gray-700 border-b pb-2">CPD Details</h3>
@@ -371,7 +419,8 @@
               <div class="col-span-full">
                 <p class="text-xs font-medium text-gray-500 uppercase">CPD Providing Agency</p>
                 <p class="text-sm text-gray-800 mt-1">
-                  {{ getCpdProvidingAgencyName(selectedApplication.cpd_providing_agency) || selectedApplication.if_others_specify || 'N/A' }}
+                  {{ getCpdProvidingAgencyName(selectedApplication.cpd_providing_agency) ||
+                    selectedApplication.if_others_specify || 'N/A' }}
                 </p>
               </div>
             </div>
@@ -455,7 +504,7 @@
                           ? 'bg-green-100 text-green-800'
                           : participant.review_status === 'Rejected'
                             ? 'bg-red-100 text-red-800'
-                            : 'bg-yellow-100 text-yellow-800', // Default to Pending/Yellow
+                            : 'bg-yellow-100 text-yellow-800',
                       ]">
                         {{ participant.review_status || 'Pending' }}
                       </span>
@@ -497,15 +546,13 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import apiService from '@/services/services' // Corrected import path
+import apiService from '@/services/services'
 import { useToast } from 'vue-toastification'
 import { useAuthStore } from '@/stores/authStore'
 
 const router = useRouter()
 const toast = useToast()
 const authStore = useAuthStore()
-
-// Reactive state
 const applications = ref([])
 const loading = ref(false)
 const error = ref(null)
@@ -514,7 +561,6 @@ const statusFilter = ref('')
 const showViewModal = ref(false)
 const selectedApplication = ref(null)
 
-// CPD Providing Agency mapping
 const cpdProvidingAgencyMap = {
   1: 'Royal University of Bhutan',
   2: 'Engineers Australia',
@@ -530,7 +576,6 @@ const getCpdProvidingAgencyName = (agencyId) => {
   return cpdProvidingAgencyMap[agencyId] || `Unknown Agency (ID: ${agencyId})`
 }
 
-// Helper functions to handle different field name variations for participants
 const getParticipantName = (participant) => {
   if (participant.participant_reg_no && !participant.first_name && !participant.full_name) {
     const userData = findUserByRegNo(participant.participant_reg_no)
@@ -566,7 +611,6 @@ const getParticipantRegNo = (participant) => {
   return participant.participant_reg_no || participant.cid || participant.registration_no || participant.reg_no || participant.registrationNo || 'N/A'
 }
 
-// Helper function to find user data by registration number
 const findUserByRegNo = (regNo) => {
   return allParticipants.value.find(p =>
     p.cid === regNo ||
@@ -646,7 +690,7 @@ const getStatusClass = (application) => {
 
 const isApprovedWithoutParticipants = (application) => {
   return application.status?.toLowerCase() === 'approved' &&
-         (!application.participants || application.participants.length === 0)
+    (!application.participants || application.participants.length === 0)
 }
 
 const filteredApplications = computed(() => {
