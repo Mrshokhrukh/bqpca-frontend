@@ -1,4 +1,4 @@
-<!-- Production Ready ProfileHeader Component with certificate modal and dynamic button behavior -->
+<!--  ProfileHeader from './dashboardComponents/ProfileHeaders.vue' -->
 <template>
   <div class="bg-white rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl"
     :class="{ 'animate-pulse': isExpiringSoon }">
@@ -50,7 +50,7 @@
                 Status:
                 <span :class="statusClass">{{
                   firstApprovedQualificationStatus || 'Loading...'
-                }}</span>
+                  }}</span>
               </div>
               <div class="text-xs">
                 Days Remaining: <span :class="daysRemainingClass">{{ daysRemaining }}</span>
@@ -94,6 +94,7 @@ import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import dayjs from 'dayjs'
 import EPCCertificateModal from '@/components/common/EPC/EPCCertificateModal.vue'
+import { useToast } from 'vue-toastification'
 
 const props = defineProps({
   userDetail: {
@@ -111,6 +112,7 @@ const props = defineProps({
 })
 
 const router = useRouter()
+const toast = useToast()
 const showCertificateModal = ref(false)
 const certificateData = ref(null)
 
@@ -142,25 +144,18 @@ const getStatusDotClass = (message) => {
   )
 }
 
-// Get qualifications from the correct location in your data structure
 const userQualifications = computed(() => {
-  // First try the qualifications prop (this comes from dashboardState.primaryQualifications)
   if (props.qualifications?.length > 0) {
     return props.qualifications
   }
-
-  // Then try userDetail.user_qualifications
   if (props.userDetail?.user_qualifications?.length > 0) {
     return props.userDetail.user_qualifications
   }
-
   return []
 })
 
-// Create a synthetic userDetail that includes the qualifications for the certificate modal
 const enhancedUserDetail = computed(() => {
   if (!props.userDetail) return null
-
   return {
     ...props.userDetail,
     user_qualifications: userQualifications.value
@@ -169,17 +164,12 @@ const enhancedUserDetail = computed(() => {
 
 const firstApprovedQualification = computed(() => {
   if (!userQualifications.value || userQualifications.value.length === 0) return null
-
-  // First try to find primary qualification
   let primaryQual = userQualifications.value.find(
     (q) => q && q.is_primary_qualification === true && q.endorsement_decision === 'Approved'
   )
-
-  // If no primary qualification found, find any approved qualification
   if (!primaryQual) {
     primaryQual = userQualifications.value.find(q => q && q.endorsement_decision === 'Approved')
   }
-
   return primaryQual || null
 })
 
@@ -195,25 +185,15 @@ const firstApprovedQualificationStatus = computed(() => {
 
 const formattedExpiryDate = computed(() => {
   if (!firstApprovedQualificationExpiryDate.value) return 'N/A'
-  try {
-    return dayjs(firstApprovedQualificationExpiryDate.value).format('MMM DD, YYYY')
-  } catch (error) {
-    console.error('Error formatting expiry date:', error)
-    return 'Invalid Date'
-  }
+  return dayjs(firstApprovedQualificationExpiryDate.value).format('MMM DD, YYYY')
 })
 
 const daysRemaining = computed(() => {
   if (!firstApprovedQualificationExpiryDate.value) return null
-  try {
-    const expiry = dayjs(firstApprovedQualificationExpiryDate.value)
-    const now = dayjs()
-    if (!expiry.isValid()) return null
-    return expiry.diff(now, 'day')
-  } catch (error) {
-    console.error('Error calculating days remaining:', error)
-    return null
-  }
+  const expiry = dayjs(firstApprovedQualificationExpiryDate.value)
+  const now = dayjs()
+  if (!expiry.isValid()) return null
+  return expiry.diff(now, 'day')
 })
 
 const daysRemainingClass = computed(() => {
@@ -226,23 +206,14 @@ const daysRemainingClass = computed(() => {
 
 const expiryStatusClass = computed(() => {
   if (!firstApprovedQualificationExpiryDate.value) return 'text-gray-600'
-
-  try {
-    const expiry = dayjs(firstApprovedQualificationExpiryDate.value)
-    const now = dayjs()
-
-    if (!expiry.isValid()) return 'text-gray-600'
-
-    const daysUntilExpiry = expiry.diff(now, 'day')
-
-    if (daysUntilExpiry <= 0) return 'text-red-600' // Expired
-    if (daysUntilExpiry <= 14) return 'text-red-500' // Critical (within 2 weeks)
-    if (daysUntilExpiry <= 90) return 'text-yellow-500' // Warning (within 3 months)
-    return 'text-green-500' // Valid
-  } catch (error) {
-    console.error('Error calculating expiry status:', error)
-    return 'text-gray-600'
-  }
+  const expiry = dayjs(firstApprovedQualificationExpiryDate.value)
+  const now = dayjs()
+  if (!expiry.isValid()) return 'text-gray-600'
+  const daysUntilExpiry = expiry.diff(now, 'day')
+  if (daysUntilExpiry <= 0) return 'text-red-600'
+  if (daysUntilExpiry <= 14) return 'text-red-500'
+  if (daysUntilExpiry <= 90) return 'text-yellow-500'
+  return 'text-green-500'
 })
 
 const statusClass = computed(() => {
@@ -265,96 +236,48 @@ const statusIconClass = computed(() => {
   return classes[firstApprovedQualificationStatus.value] || 'text-gray-500'
 })
 
-// Only show warning if within 3 months (90 days) OR already expired
 const isExpiringSoon = computed(() => {
   if (!firstApprovedQualificationExpiryDate.value) return false
-
-  try {
-    const expiry = dayjs(firstApprovedQualificationExpiryDate.value)
-    const now = dayjs()
-
-    if (!expiry.isValid()) return false
-
-    const daysUntilExpiry = expiry.diff(now, 'day')
-
-    // Only show warning if within 90 days (3 months) or already expired
-    return daysUntilExpiry <= 90
-  } catch (error) {
-    console.error('Error checking expiry status:', error)
-    return false
-  }
+  const expiry = dayjs(firstApprovedQualificationExpiryDate.value)
+  const now = dayjs()
+  if (!expiry.isValid()) return false
+  const daysUntilExpiry = expiry.diff(now, 'day')
+  return daysUntilExpiry <= 90
 })
 
-// Message with days remaining or expired status for the overlay warning
 const getExpiryMessage = computed(() => {
   if (!firstApprovedQualificationExpiryDate.value) return ''
-
-  try {
-    const expiry = dayjs(firstApprovedQualificationExpiryDate.value)
-    const now = dayjs()
-
-    if (!expiry.isValid()) return 'has invalid expiry date'
-
-    const daysRemaining = expiry.diff(now, 'day')
-
-    if (daysRemaining < 0) {
-      const daysExpired = Math.abs(daysRemaining)
-      if (daysExpired === 1) {
-        return 'expired 1 day ago! Renew it now.'
-      } else {
-        return `expired ${daysExpired} days ago! Renew it now.`
-      }
-    } else if (daysRemaining === 0) {
-      return 'expires today! Renew it now.'
-    } else if (daysRemaining === 1) {
-      return 'expires in 1 day! Renew it now.'
-    } else {
-      return `expires in ${daysRemaining} days! Renew it now.`
-    }
-  } catch (error) {
-    console.error('Error generating expiry message:', error)
-    return 'has expiry date issues'
+  const expiry = dayjs(firstApprovedQualificationExpiryDate.value)
+  const now = dayjs()
+  if (!expiry.isValid()) return 'has invalid expiry date'
+  const daysRemainingVal = expiry.diff(now, 'day')
+  if (daysRemainingVal < 0) {
+    const daysExpired = Math.abs(daysRemainingVal)
+    return `expired ${daysExpired} day${daysExpired === 1 ? '' : 's'} ago! Renew it now.`
   }
+  if (daysRemainingVal === 0) return 'expires today! Renew it now.'
+  return `expires in ${daysRemainingVal} day${daysRemainingVal === 1 ? '' : 's'}! Renew it now.`
 })
 
-// Calculate renewal message based on actual expiry date for the status badge
 const calculatedRenewalMessage = computed(() => {
   if (!firstApprovedQualificationExpiryDate.value || !firstApprovedQualification.value) return ''
-
-  try {
-    const expiry = dayjs(firstApprovedQualificationExpiryDate.value)
-    const now = dayjs()
-
-    if (!expiry.isValid()) return ''
-
-    const daysUntilExpiry = expiry.diff(now, 'day')
-
-    if (daysUntilExpiry < 0) {
-      const daysExpired = Math.abs(daysUntilExpiry)
-      return `License expired ${daysExpired} ${daysExpired === 1 ? 'day' : 'days'} ago`
-    } else if (daysUntilExpiry === 0) {
-      return 'License expires today'
-    } else if (daysUntilExpiry <= 14) {
-      return `License expires in ${daysUntilExpiry} ${daysUntilExpiry === 1 ? 'day' : 'days'} - 2 weeks warning`
-    } else if (daysUntilExpiry <= 90) {
-      const weeksRemaining = Math.ceil(daysUntilExpiry / 7)
-      const monthsRemaining = Math.ceil(daysUntilExpiry / 30)
-
-      if (daysUntilExpiry <= 30) {
-        return `License expires in ${weeksRemaining} ${weeksRemaining === 1 ? 'week' : 'weeks'} - 3 months warning`
-      } else {
-        return `License expires in ${monthsRemaining} ${monthsRemaining === 1 ? 'month' : 'months'} - 3 months warning`
-      }
-    } else {
-      return 'License valid'
-    }
-  } catch (error) {
-    console.error('Error calculating renewal message:', error)
-    return ''
+  const expiry = dayjs(firstApprovedQualificationExpiryDate.value)
+  const now = dayjs()
+  if (!expiry.isValid()) return ''
+  const daysUntilExpiry = expiry.diff(now, 'day')
+  if (daysUntilExpiry < 0) {
+    const daysExpired = Math.abs(daysUntilExpiry)
+    return `License expired ${daysExpired} ${daysExpired === 1 ? 'day' : 'days'} ago`
   }
+  if (daysUntilExpiry === 0) return 'License expires today'
+  if (daysUntilExpiry <= 14) return `License expires in ${daysUntilExpiry} ${daysUntilExpiry === 1 ? 'day' : 'days'} - 2 weeks warning`
+  if (daysUntilExpiry <= 90) {
+    const monthsRemaining = Math.ceil(daysUntilExpiry / 30)
+    return `License expires in ${monthsRemaining} ${monthsRemaining === 1 ? 'month' : 'months'} - 3 months warning`
+  }
+  return 'License valid'
 })
 
-// Dynamic action button logic
 const shouldShowActionButton = computed(() => {
   return userQualifications.value?.some(
     (q) => q && q.endorsement_decision === 'Approved'
@@ -363,106 +286,63 @@ const shouldShowActionButton = computed(() => {
 
 const actionButtonText = computed(() => {
   if (!firstApprovedQualificationExpiryDate.value) return 'View Certificate'
-
-  try {
-    const expiry = dayjs(firstApprovedQualificationExpiryDate.value)
-    const now = dayjs()
-
-    if (!expiry.isValid()) return 'View Certificate'
-
-    const daysUntilExpiry = expiry.diff(now, 'day')
-
-    if (daysUntilExpiry < 0) {
-      // License is expired
-      return 'Re-register'
-    } else if (daysUntilExpiry <= 90) {
-      // License expires within 3 months
-      return 'Renew Certificate'
-    } else {
-      // License is valid for more than 3 months
-      return 'View Certificate'
-    }
-  } catch (error) {
-    console.error('Error determining action button text:', error)
-    return 'View Certificate'
-  }
+  const expiry = dayjs(firstApprovedQualificationExpiryDate.value)
+  const now = dayjs()
+  if (!expiry.isValid()) return 'View Certificate'
+  const daysUntilExpiry = expiry.diff(now, 'day')
+  if (daysUntilExpiry < 0) return 'Re-register'
+  if (daysUntilExpiry <= 90) return 'Renew Certificate'
+  return 'View Certificate'
 })
 
 const actionButtonClass = computed(() => {
-  if (!firstApprovedQualificationExpiryDate.value) {
-    return 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 focus:ring-blue-500'
-  }
-
-  try {
-    const expiry = dayjs(firstApprovedQualificationExpiryDate.value)
-    const now = dayjs()
-
-    if (!expiry.isValid()) {
-      return 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 focus:ring-blue-500'
-    }
-
-    const daysUntilExpiry = expiry.diff(now, 'day')
-
-    if (daysUntilExpiry < 0) {
-      // License is expired - red button for re-register
-      return 'bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 focus:ring-red-500'
-    } else if (daysUntilExpiry <= 90) {
-      // License expires within 3 months - orange button for renewal
-      return 'bg-gradient-to-r from-orange-500 to-orange-600 text-white hover:from-orange-600 hover:to-orange-700 focus:ring-orange-500'
-    } else {
-      // License is valid for more than 3 months - blue button for view certificate
-      return 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 focus:ring-blue-500'
-    }
-  } catch (error) {
-    console.error('Error determining action button class:', error)
-    return 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 focus:ring-blue-500'
-  }
+  const text = actionButtonText.value
+  if (text === 'Re-register') return 'bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 focus:ring-red-500'
+  if (text === 'Renew Certificate') return 'bg-gradient-to-r from-orange-500 to-orange-600 text-white hover:from-orange-600 hover:to-orange-700 focus:ring-orange-500'
+  return 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 focus:ring-blue-500'
 })
 
 const handleActionButtonClick = () => {
   const buttonText = actionButtonText.value
-
   if (buttonText === 'View Certificate') {
-    // Show certificate modal
     openCertificateModal()
   } else if (buttonText === 'Renew Certificate' || buttonText === 'Re-register') {
-    // Redirect to renewal/registration page
     router.push('/admin/user/engineering_certification/renewal')
   }
 }
 
 const openCertificateModal = () => {
-  // Map the enhancedUserDetail to the format expected by the certificate modal
+  const allQualifications = enhancedUserDetail.value?.user_qualifications || [];
+  const approvedQualifications = allQualifications.filter(
+    q => q && q.endorsement_decision === 'Approved'
+  );
+  if (approvedQualifications.length === 0) {
+    toast.info("There are no approved qualifications to display in a certificate.");
+    return;
+  }
+
   const mappedUserDetail = {
-    // Basic user info
     full_name: enhancedUserDetail.value?.name || enhancedUserDetail.value?.username,
     cid_no: enhancedUserDetail.value?.id,
     registration_no: enhancedUserDetail.value?.registration_no,
     email_address: enhancedUserDetail.value?.email,
     contact_no: enhancedUserDetail.value?.phone,
     passport_photo: enhancedUserDetail.value?.photo,
-
-    // Registration info - get from qualification data
-    registration_date: enhancedUserDetail.value?.user_qualifications?.[0]?.registration_date,
-    expiry_date: enhancedUserDetail.value?.user_qualifications?.[0]?.expiry_date,
-    is_active: enhancedUserDetail.value?.user_qualifications?.[0]?.is_active,
-
-    // Category info - get from qualification
-    category_display: enhancedUserDetail.value?.user_qualifications?.[0]?.personnel_category_name || 'Professional Engineer',
-    subcategory_display: enhancedUserDetail.value?.user_qualifications?.[0]?.personnel_sub_category_name,
+    registration_date: approvedQualifications[0]?.registration_date,
+    expiry_date: approvedQualifications[0]?.expiry_date,
+    is_active: approvedQualifications[0]?.is_active,
+    category_display: approvedQualifications[0]?.personnel_category_name || 'Professional Engineer',
+    subcategory_display: approvedQualifications[0]?.personnel_sub_category_name,
     registration_type_display: enhancedUserDetail.value?.registrationType || 'Full Registration',
+    user_qualifications: approvedQualifications,
 
-    // Include the complete user_qualifications array
-    user_qualifications: enhancedUserDetail.value?.user_qualifications || [],
+    updated_at: approvedQualifications[0]?.updated_at
+  };
 
-    // Additional fields that might be needed
-    updated_at: enhancedUserDetail.value?.user_qualifications?.[0]?.updated_at
-  }
-
-  // Use the mapped data for the certificate modal
-  certificateData.value = { results: [mappedUserDetail] }
-  showCertificateModal.value = true
+  certificateData.value = { results: [mappedUserDetail] };
+  showCertificateModal.value = true;
 }
+
 
 const closeCertificateModal = () => {
   showCertificateModal.value = false

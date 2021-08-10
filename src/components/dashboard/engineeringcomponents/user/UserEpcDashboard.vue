@@ -24,8 +24,17 @@
           <ApplicationsModal v-if="selectedApplications.length" :applications="selectedApplications" :title="modalTitle"
             @close="closeApplicationsModal" @visit="visitApplication" />
 
-          <CertificateModal v-if="showCertificateModal" :application="selectedApplication"
+          <!-- ================================================================== -->
+          <!-- START OF CORRECTION                                                -->
+          <!-- The prop name is changed from 'application' to 'qualification' to  -->
+          <!-- match what the CertificateModal component expects.                 -->
+          <!-- ================================================================== -->
+          <CertificateModal v-if="showCertificateModal" :qualification="selectedApplication"
             @close="closeCertificateModal" />
+          <!-- ================================================================== -->
+          <!-- END OF CORRECTION                                                  -->
+          <!-- ================================================================== -->
+
         </template>
         <div v-else class="p-10 text-center">
           <p class="text-gray-600">Could not determine dashboard state. Please check your application status or contact
@@ -42,7 +51,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useAuthStore } from '@/stores/authStore'
 import { useEpcDashboardStore } from '@/stores/epcUserDashboardStore'
 import { storeToRefs } from 'pinia'
-
+import { useToast } from 'vue-toastification'
 import ProfileHeader from './dashboardComponents/ProfileHeaders.vue'
 import StatCard from './dashboardComponents/StatCards.vue'
 import CogsStatusCard from './dashboardComponents/CogsStatusCards.vue'
@@ -57,6 +66,7 @@ import FirstDashboardState from './dashboardComponents/FirstDashboardStates.vue'
 
 const authStore = useAuthStore()
 const dashboardStore = useEpcDashboardStore()
+const toast = useToast()
 const { user } = storeToRefs(authStore)
 
 const {
@@ -73,6 +83,7 @@ const {
   selectedApplication,
   showCertificateModal
 } = storeToRefs(dashboardStore)
+
 const combinedUserDetail = computed(() => {
   if (!userDetail.value) return null
   const allQualifications = applications.value?.flatMap(app => app.user_qualifications || []) || []
@@ -202,18 +213,38 @@ const visitApplication = (app) => {
 }
 
 const handleViewCertificate = () => {
-  const primaryQual = dashboardState.value.primaryQualifications[0]
-  if (!primaryQual) return
+  const primaryQual = dashboardState.value.primaryQualifications[0];
+  if (!primaryQual) {
+    toast.error("Could not find an approved primary qualification to display.");
+    return;
+  }
 
   const application = applications.value.find(app =>
     app.user_qualifications.some(q => q.id === primaryQual.id)
-  )
+  );
 
   if (application) {
-    dashboardStore.setSelectedApplication({ results: [application] })
-    dashboardStore.setShowCertificateModal(true)
+    const approvedQualifications = application.user_qualifications.filter(
+      q => q.endorsement_decision === 'Approved'
+    );
+
+    if (approvedQualifications.length === 0) {
+      toast.info("There are no approved qualifications to display in the certificate.");
+      return;
+    }
+
+    const certificateData = {
+      ...application,
+      user_qualifications: approvedQualifications
+    };
+
+    dashboardStore.setSelectedApplication({ results: [certificateData] });
+    dashboardStore.setShowCertificateModal(true);
+  } else {
+    toast.error("An error occurred while trying to load the certificate data.");
   }
 }
+
 
 const closeCertificateModal = () => {
   dashboardStore.setShowCertificateModal(false)

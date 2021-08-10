@@ -13,6 +13,7 @@ export const useAuthStore = defineStore('auth', () => {
   const accessToken = ref(localStorage.getItem('accessToken') || null)
   const refreshToken = ref(localStorage.getItem('refreshToken') || null)
   const user = ref(JSON.parse(localStorage.getItem('user')) || null)
+  const userRegistrationNo = ref(localStorage.getItem('registrationNo') || null)
 
   // Getters (remains largely the same)
   const isAuthenticated = computed(() => !!accessToken.value)
@@ -53,8 +54,32 @@ export const useAuthStore = defineStore('auth', () => {
       accessToken.value = localStorage.getItem('accessToken') || null
       refreshToken.value = localStorage.getItem('refreshToken') || null
       user.value = JSON.parse(localStorage.getItem('user')) || null
+      userRegistrationNo.value = localStorage.getItem('registrationNo') || null
     } catch (error) {
       console.error('Error initializing auth:', error)
+    }
+  }
+  const fetchAndSetRegistrationNo = async () => {
+    if (!user.value?.cid) {
+      console.warn('Cannot fetch registration number: User CID is not available.')
+      return
+    }
+
+    try {
+      const response = await apiService.getEpcApplicationsByCid(user.value.cid)
+      if (response.data && response.data.length > 0) {
+        const regNo = response.data[0]?.registration_no
+        if (regNo) {
+          // Update the state
+          userRegistrationNo.value = regNo
+          // Save to localStorage for persistence across page reloads
+          localStorage.setItem('registrationNo', regNo)
+        }
+      }
+    } catch (err) {
+      console.error('Failed to fetch and set EPC registration number:', err)
+      // Throw the error so the calling component's try...catch block can handle it
+      throw err
     }
   }
 
@@ -145,6 +170,7 @@ export const useAuthStore = defineStore('auth', () => {
     accessToken.value = null
     refreshToken.value = null
     user.value = null
+    userRegistrationNo.value = null
 
     // Clear localStorage
     localStorage.removeItem('accessToken')
@@ -238,5 +264,7 @@ export const useAuthStore = defineStore('auth', () => {
     refreshAccessToken,
     updateUserAfterFetch,
     setNewAccessToken,
+    userRegistrationNo,
+    fetchAndSetRegistrationNo,
   }
 })
