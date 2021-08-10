@@ -1420,10 +1420,10 @@ const serviceSpecificMenuItems = {
         name: 'User Management',
         icon: getIconComponent('Users'),
         children: [
-          {
-            name: 'Users',
-            route: (serviceType) => `/admin/admin/${serviceType}/user_management`,
-          },
+          // {
+          //   name: 'Users',
+          //   route: (serviceType) => `/admin/admin/${serviceType}/user_management`,
+          // },
           {
             name: 'Personnel Categories',
             route: (serviceType) => `/admin/admin/${serviceType}/personnel_categories`,
