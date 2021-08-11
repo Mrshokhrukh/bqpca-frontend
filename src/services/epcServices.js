@@ -516,6 +516,28 @@ export default {
   deleteEpcTeachingCenter(id) {
     return apiClient.delete(`/epc/epc-teaching-centers/${id}/`)
   },
+  // <<< THIS IS THE FIX >>>
+  /**
+   * Approves a teaching center application. Calls the custom @action endpoint.
+   * @param {number} id
+   * @param {object} data 
+   */
+  approveEpcTeachingCenter(id, data) {
+
+    return apiClient.post(`/epc/epc-teaching-centers/${id}/approve/`, data)
+  },
+
+  /**
+
+   * @param {number} id
+   * @param {object} data
+   */
+  rejectEpcTeachingCenter(id, data) {
+
+    return apiClient.post(`/epc/epc-teaching-centers/${id}/reject/`, data)
+  },
+
+
   getApplicationStatus(applicationId) {
     return apiClient.get(`/epc/epc-teaching-centers/${applicationId}/`)
   },
@@ -533,9 +555,25 @@ export default {
     })
   },
   patchEpcTeachingCenterRenewal(id, data) {
-    return apiClient.patch(`/epc/epc-teaching-center-renewals/${id}/`, data)
+    // This will be used by the user's payment confirmation
+    return apiClient.patch(`/epc/epc-teaching-center-renewals/${id}/`, data, {
+        headers: {
+            // Ensure correct content type if sending FormData
+            'Content-Type': data instanceof FormData ? 'multipart/form-data' : 'application/json',
+        }
+    })
   },
 
+
+  approveEpcTeachingCenterRenewal(renewalId, data) {
+    // data should be an object like { remarks: 'Optional approval message' }
+    return apiClient.post(`/epc/epc-teaching-center-renewals/${renewalId}/approve/`, data)
+  },
+
+  rejectEpcTeachingCenterRenewal(renewalId, data) {
+    // data should be an object like { reason: 'Mandatory rejection reason' }
+    return apiClient.post(`/epc/epc-teaching-center-renewals/${renewalId}/reject/`, data)
+  },
   // Masters CPD Activities endpoints
   getEpcMastersCpdActivities() {
     return apiClient.get('/epc/masters-cpd-activities/')
