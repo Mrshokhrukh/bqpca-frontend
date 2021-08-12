@@ -70,15 +70,25 @@
                 <label for="dzongkhag" class="block text-sm font-medium text-gray-700 mb-1 required-label">
                   Dzongkhag
                 </label>
-                <input type="text" id="dzongkhag" v-model.trim="formData.dzongkhag"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2" />
+                <select id="dzongkhag" v-model="formData.dzongkhag" @change="handleDzongkhagChange"
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2">
+                  <option value="">Select Dzongkhag</option>
+                  <option v-for="d in bhutanDzongkhagsGewogs" :key="d.dzongkhag" :value="d.dzongkhag">
+                    {{ d.dzongkhag }}
+                  </option>
+                </select>
               </div>
               <div>
                 <label for="gewog" class="block text-sm font-medium text-gray-700 mb-1 required-label">
                   Gewog
                 </label>
-                <input type="text" id="gewog" v-model.trim="formData.gewog"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2 " />
+                <select id="gewog" v-model="formData.gewog" :disabled="!formData.dzongkhag"
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2 disabled:bg-gray-100 disabled:cursor-not-allowed">
+                  <option value="">Select Gewog</option>
+                  <option v-for="g in availableGewogs" :key="g" :value="g">
+                    {{ g }}
+                  </option>
+                </select>
               </div>
               <div>
                 <label for="village" class="block text-sm font-medium text-gray-700 mb-1 required-label">
@@ -285,11 +295,12 @@ import apiService from '@/services/services'
 import { useToast } from 'vue-toastification'
 import { useAuthStore } from '@/stores/authStore'
 import { countryData } from '@/constants/countries.js'
+import { bhutanDzongkhagsGewogs } from '@/constants/dzongkhags.js'
 
 const router = useRouter()
 const toast = useToast()
 const authStore = useAuthStore()
-
+const availableGewogs = ref([])
 const showForm = ref(true)
 const existingApplication = ref(null)
 
@@ -311,7 +322,7 @@ const formData = ref({
 
   // Institution Details
   name_of_institution: '',
-  country: 'Bhutan', // Default to Bhutan (or any country name)
+  country: 'Bhutan',
   gewog: '',
   dzongkhag: '',
   village: '',
@@ -345,17 +356,23 @@ const formData = ref({
   do_dpr_review_decision: 'Pending',
   do_dpr_reason_if_rejected: '',
 
-  // Declaration
   declaration: '',
 
-  // Backend-set fields
   review_decision: 'Pending',
   reason_if_rejected: '',
 })
 
+const handleDzongkhagChange = () => {
+  const selectedDzongkhag = bhutanDzongkhagsGewogs.find(
+    (d) => d.dzongkhag === formData.value.dzongkhag
+  )
+  availableGewogs.value = selectedDzongkhag ? selectedDzongkhag.gewogs : []
+  formData.value.gewog = ''
+}
+
 const isSubmitting = ref(false)
 
-// Options for dropdowns
+
 const genderOptions = [
   { value: 'male', label: 'Male' },
   { value: 'female', label: 'Female' },
@@ -586,6 +603,13 @@ onMounted(async () => {
           }
         }
       });
+
+      if (formData.value.dzongkhag) {
+        const selectedDzongkhag = bhutanDzongkhagsGewogs.find(
+          (d) => d.dzongkhag === formData.value.dzongkhag
+        );
+        availableGewogs.value = selectedDzongkhag ? selectedDzongkhag.gewogs : [];
+      }
       toast.info('Draft loaded. Please re-select any required files.');
     } catch (error) {
       console.error('Error loading draft:', error);

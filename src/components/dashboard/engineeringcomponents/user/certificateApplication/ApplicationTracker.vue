@@ -164,7 +164,7 @@ const fetchNewApplications = async () => {
     if (response && response.data && response.data.results) {
       // Filter for applications that are NOT renewals AND have at least one PRIMARY qualification
       newApplications.value = response.data.results.filter(app => {
-        const isNotRenewal = !app.is_renewal // Adjust if is_renewal flag is named differently
+        const isNotRenewal = !app.is_renewal
 
         const hasPrimaryQualifications =
           app.user_qualifications &&
@@ -236,10 +236,23 @@ const fetchAdditionalApplications = async () => {
   }
 }
 
+
 const openCertificateModal = (application) => {
-  selectedCertificateData.value = { results: [application] }
-  showCertificateModal.value = true
-}
+  const approvedQualifications = application.user_qualifications.filter(
+    (q) => q.endorsement_decision === 'Approved'
+  );
+  if (approvedQualifications.length === 0) {
+    toast.info('There are no approved qualifications to display in the certificate yet.');
+    return;
+  }
+  const certificateData = {
+    ...application,
+    user_qualifications: approvedQualifications,
+  };
+  selectedCertificateData.value = { results: [certificateData] };
+  showCertificateModal.value = true;
+};
+
 
 const closeCertificateModal = () => {
   showCertificateModal.value = false

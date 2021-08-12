@@ -232,7 +232,7 @@
     <!-- Modal Component -->
     <CpdViewApplicationsModal v-if="isViewModalOpen" :application="selectedApplication" @save="saveApplication"
       @approve="approveApplication" @reject="rejectApplication" @updateParticipant="updateParticipant"
-      @close="closeViewModal" />
+      @approveParticipants="handleBulkApprove" @close="closeViewModal" />
   </div>
 </template>
 
@@ -258,7 +258,55 @@ const notification = ref({
   timeout: null,
 })
 
+const handleBulkApprove = async ({ participantIds, credit, remarks }) => {
+  if (!participantIds || participantIds.length === 0) {
+    showNotification('info', 'No Selection', 'No participants were selected.');
+    return;
+  }
 
+  const appToUpdate = selectedApplication.value;
+  if (!appToUpdate) return;
+  const approvalPromises = participantIds.map(id => {
+    const participant = appToUpdate.participants.find(p => p.id === id);
+    if (participant) {
+      participant.review_status = 'Approved';
+      participant.endorsement_decision = 'Approved';
+      participant.cpd_credits = credit;
+    }
+    const payload = {
+      review_status: 'Approved',
+      endorsement_decision: 'Approved',
+      cpd_credits: credit,
+      review_remarks: remarks,
+    };
+    return apiServices.patchEpcCpdTaskParticipant(id, payload);
+  });
+
+  try {
+    await Promise.all(approvalPromises);
+
+    showNotification('success', 'Bulk Approval Successful', `${participantIds.length} participants have been approved.`);
+    const mainListApp = applications.value.find(app => app.id === appToUpdate.id);
+    if (mainListApp) {
+      mainListApp.participants.forEach(p => {
+        if (participantIds.includes(p.id)) {
+          p.review_status = 'Approved';
+          p.endorsement_decision = 'Approved';
+          p.cpd_credits = credit;
+        }
+      });
+    }
+
+  } catch (err) {
+    console.error('Bulk approval failed:', err.response ? err.response.data : err);
+    showNotification(
+      'error',
+      'Bulk Approval Failed',
+      `Could not approve all participants: ${err.response?.data?.detail || err.message}`
+    );
+    await fetchApplications();
+  }
+};
 const getTaskStatus = (item) => {
 
   if (item.is_draft) {
@@ -295,10 +343,8 @@ const filteredApplications = computed(() => {
     )
   }
 
-  // Always filter out drafts from the view
-  filtered = filtered.filter((app) => app.status !== 'Draft');
 
-  // If a specific status is chosen (not 'All'), apply that filter
+  filtered = filtered.filter((app) => app.status !== 'Draft');
   if (statusFilter.value !== 'All') {
     filtered = filtered.filter((app) => app.status === statusFilter.value);
   }
@@ -366,8 +412,7 @@ const getStatusColor = (status) => {
 }
 
 const openViewModal = (app) => {
-  // Use a deep copy to prevent mutations from affecting the main list directly
-  // until they are saved.
+
   selectedApplication.value = JSON.parse(JSON.stringify(app));
   isViewModalOpen.value = true
 }
@@ -388,13 +433,8 @@ const updateParticipant = async (participantData) => {
 
   const participantToUpdate = appToUpdate.participants.find(p => p.id === participantData.id);
   if (!participantToUpdate) return;
-
-  // Store old values to revert on API failure
   const oldCredits = participantToUpdate.cpd_credits;
   const oldStatus = participantToUpdate.review_status;
-
-  // **INSTANT UI UPDATE**
-  // Update the local data in the modal immediately
   participantToUpdate.cpd_credits = participantData.cpd_credits;
   participantToUpdate.review_status = participantData.review_status;
 
@@ -406,8 +446,6 @@ const updateParticipant = async (participantData) => {
     };
     await apiServices.patchEpcCpdTaskParticipant(participantData.id, patchData);
     showNotification('success', 'Update Successful', 'Participant credits have been saved.');
-
-    // Also update the main list in the background for consistency
     const mainListApp = applications.value.find(app => app.id === appToUpdate.id);
     if (mainListApp) {
       const mainListParticipant = mainListApp.participants.find(p => p.id === participantData.id);
@@ -417,8 +455,6 @@ const updateParticipant = async (participantData) => {
     }
 
   } catch (err) {
-    // **REVERT ON FAILURE**
-    // If the API call fails, revert the local data to its original state
     participantToUpdate.cpd_credits = oldCredits;
     participantToUpdate.review_status = oldStatus;
 
@@ -444,7 +480,7 @@ const saveApplication = async (updatedApplicationData) => {
     }
     await apiServices.patchEpcCpdTask(updatedApplicationData.id, patchData)
     showNotification('success', 'Application Updated', 'Changes saved successfully.')
-    await fetchApplications() // Full refresh is ok here since modal closes
+    await fetchApplications()
     closeViewModal()
   } catch (err) {
     console.error('Failed to save application:', err.response ? err.response.data : err)
@@ -481,7 +517,7 @@ const approveApplication = async (payload) => {
     await apiServices.patchEpcCpdTask(payload.id, patchData);
 
     showNotification('success', 'Application Approved', 'The CPD application has been approved.');
-    await fetchApplications(); // Refresh the list with the new status
+    await fetchApplications();
 
   } catch (err) {
     console.error('Failed to approve application. Server responded with:', err.response.data);
@@ -509,7 +545,7 @@ const rejectApplication = async (payload) => {
   try {
     const patchData = {
       is_cpd_approved: false,
-      status: 'Rejected', // Note: Your backend might use 'Regretted'. Adjust if needed.
+      status: 'Rejected',
       is_draft: false,
       review_remarks: payload.remarks,
       credit: 0,
@@ -518,7 +554,7 @@ const rejectApplication = async (payload) => {
     await apiServices.patchEpcCpdTask(payload.id, patchData);
 
     showNotification('success', 'Application Rejected', 'The CPD application has been rejected.');
-    await fetchApplications(); // Refresh the list with the new status
+    await fetchApplications();
 
   } catch (err) {
     console.error('Failed to reject application. Server responded with:', err.response.data);
