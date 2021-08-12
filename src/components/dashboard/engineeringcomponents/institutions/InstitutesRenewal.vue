@@ -1,33 +1,36 @@
 <template>
-  <div class=" mx-auto px-6 py-8 bg-gray-50 min-h-screen">
+  <div class="mx-auto px-6 py-8 bg-gradient-to-br from-gray-50 to-blue-50 min-h-screen">
     <!-- Header Section -->
     <div class="mb-8">
-      <h1 class="text-2xl font-semibold text-gray-900 mb-2">Institute Registration Management</h1>
-      <p class="text-gray-600">Monitor and manage your engineering institute registration status</p>
+      <h1 class="text-3xl font-bold text-gray-900 mb-3 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Institute Registration Management</h1>
+      <p class="text-gray-600 text-lg">Monitor and manage your engineering institute registration status</p>
     </div>
 
     <!-- Loading State -->
-    <div v-if="isLoading" class="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+    <div v-if="isLoading" class="bg-white rounded-xl shadow-lg border border-gray-200 p-8">
       <div class="flex items-center justify-center space-x-3">
-        <Loader class="w-5 h-5 animate-spin text-blue-600" />
-        <span class="text-gray-600 font-medium">Loading institute information...</span>
+        <Loader class="w-6 h-6 animate-spin text-blue-600" />
+        <span class="text-gray-600 font-medium text-lg">Loading institute information...</span>
       </div>
     </div>
 
     <!-- Error State -->
-    <div v-else-if="apiError" class="bg-white rounded-lg shadow-sm border border-red-200 p-6 mb-6">
-      <div class="flex items-start space-x-3">
-        <div class="flex-shrink-0">
-          <svg class="w-5 h-5 text-red-500 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+    <div v-else-if="apiError" class="bg-white rounded-xl shadow-lg border border-red-200 p-6 mb-6">
+      <div class="flex items-start space-x-4">
+        <div class="flex-shrink-0 bg-red-100 rounded-full p-2">
+          <svg class="w-6 h-6 text-red-600" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
           </svg>
         </div>
         <div class="flex-1">
-          <h3 class="text-sm font-semibold text-red-800 mb-1">Error Loading Data</h3>
-          <p class="text-sm text-red-700 mb-3">{{ errorMessage }}</p>
+          <h3 class="text-lg font-bold text-red-800 mb-2">Error Loading Data</h3>
+          <p class="text-red-700 mb-4">{{ errorMessage }}</p>
           <button
             @click="fetchInstituteAndCapaData"
-            class="inline-flex items-center px-3 py-2 border border-red-300 shadow-sm text-sm font-medium rounded-md text-red-700 bg-red-50 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200">
+            class="inline-flex items-center px-4 py-2 border border-red-300 shadow-sm text-sm font-medium rounded-lg text-red-700 bg-red-50 hover:bg-red-100 hover:border-red-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-200 transform hover:scale-105">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
             Try Again
           </button>
         </div>
@@ -35,57 +38,57 @@
     </div>
 
     <!-- No Data State -->
-    <div v-else-if="!instituteData" class="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
-      <div class="mx-auto w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-        <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div v-else-if="!instituteData" class="bg-white rounded-xl shadow-lg border border-gray-200 p-12 text-center">
+      <div class="mx-auto w-16 h-16 bg-gradient-to-r from-gray-100 to-gray-200 rounded-full flex items-center justify-center mb-6 shadow-inner">
+        <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
         </svg>
       </div>
-      <h3 class="text-lg font-medium text-gray-900 mb-2">No Institute Found</h3>
-      <p class="text-gray-600">No engineering institutes are associated with your account.</p>
+      <h3 class="text-xl font-semibold text-gray-900 mb-3">No Institute Found</h3>
+      <p class="text-gray-600 text-lg">No engineering institutes are associated with your account.</p>
     </div>
 
     <!-- Main Content -->
-    <div v-else class="space-y-6">
+    <div v-else class="space-y-8">
       <!-- Institute Header Card -->
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        <div class="px-6 py-5 border-b border-gray-200 bg-gray-50">
+      <div class="bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden">
+        <div class="px-8 py-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200">
           <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-3">
+            <div class="flex items-center space-x-4">
               <div class="flex-shrink-0">
-                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="w-14 h-14 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                   </svg>
                 </div>
               </div>
               <div>
-                <h2 class="text-xl font-semibold text-gray-900">{{ instituteData.name_of_institution }}</h2>
-                <p class="text-sm text-gray-600">{{ registrationStatusText }}</p>
+                <h2 class="text-2xl font-bold text-gray-900">{{ instituteData.name_of_institution }}</h2>
+                <p class="text-gray-600 font-medium">{{ registrationStatusText }}</p>
               </div>
             </div>
-            <div class="flex items-center space-x-2">
+            <div class="flex items-center space-x-3">
               <!-- Status Indicator -->
-              <div class="flex items-center space-x-2">
+              <div class="flex items-center space-x-3 bg-white px-4 py-2 rounded-full shadow-sm border border-gray-200">
                 <div
                   :class="[
-                    'w-3 h-3 rounded-full',
+                    'w-3 h-3 rounded-full shadow-sm',
                     {
-                      'bg-red-500': isExpired,
-                      'bg-yellow-500': isExpiringSoon && !isExpired,
-                      'bg-green-500': !isExpired && !isExpiringSoon && !isRenewalPending,
-                      'bg-blue-500': isRenewalPending
+                      'bg-red-500 shadow-red-200': isExpired,
+                      'bg-yellow-500 shadow-yellow-200': isExpiringSoon && !isExpired,
+                      'bg-green-500 shadow-green-200': !isExpired && !isExpiringSoon && !isRenewalPending,
+                      'bg-blue-500 shadow-blue-200': isRenewalPending
                     }
                   ]">
                 </div>
                 <span
                   :class="[
-                    'text-sm font-medium',
+                    'text-sm font-semibold',
                     {
-                      'text-red-600': isExpired,
-                      'text-yellow-600': isExpiringSoon && !isExpired,
-                      'text-green-600': !isExpired && !isExpiringSoon && !isRenewalPending,
-                      'text-blue-600': isRenewalPending
+                      'text-red-700': isExpired,
+                      'text-yellow-700': isExpiringSoon && !isExpired,
+                      'text-green-700': !isExpired && !isExpiringSoon && !isRenewalPending,
+                      'text-blue-700': isRenewalPending
                     }
                   ]">
                   {{ registrationStatusText }}
@@ -96,17 +99,19 @@
         </div>
 
         <!-- Alert Messages -->
-        <div class="px-6 py-4 space-y-4">
+        <div class="px-8 py-6 space-y-4">
           <!-- Renewal Pending Alert -->
-          <div v-if="isRenewalPending" class="border border-blue-200 bg-blue-50 rounded-lg p-4">
-            <div class="flex items-start space-x-3">
-              <svg class="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
-              </svg>
+          <div v-if="isRenewalPending" class="border border-blue-200 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl p-6">
+            <div class="flex items-start space-x-4">
+              <div class="flex-shrink-0 bg-blue-500 rounded-full p-2">
+                <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+                </svg>
+              </div>
               <div>
-                <h4 class="text-sm font-semibold text-blue-900 mb-1">Renewal In Progress</h4>
-                <p class="text-sm text-blue-700">
-                  Your renewal application is currently <span class="font-medium">{{ renewalData.renewal_status_display }}</span>.
+                <h4 class="text-lg font-bold text-blue-900 mb-2">Renewal In Progress</h4>
+                <p class="text-blue-800">
+                  Your renewal application is currently <span class="font-semibold">{{ renewalData.renewal_status_display }}</span>.
                   <span v-if="isRenewalApproved"> Please proceed with payment to complete the renewal process.</span>
                   <span v-else> You will be notified once the review is complete.</span>
                 </p>
@@ -115,30 +120,34 @@
           </div>
 
           <!-- Expired Alert -->
-          <div v-else-if="isExpired" class="border border-red-200 bg-red-50 rounded-lg p-4">
-            <div class="flex items-start space-x-3">
-              <svg class="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-              </svg>
+          <div v-else-if="isExpired" class="border border-red-200 bg-gradient-to-r from-red-50 to-red-100 rounded-xl p-6">
+            <div class="flex items-start space-x-4">
+              <div class="flex-shrink-0 bg-red-500 rounded-full p-2">
+                <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                </svg>
+              </div>
               <div>
-                <h4 class="text-sm font-semibold text-red-900 mb-1">Registration Expired</h4>
-                <p class="text-sm text-red-700">
-                  Your registration expired on <span class="font-medium">{{ formattedExpirationDate }}</span>. Please renew immediately to restore active status.
+                <h4 class="text-lg font-bold text-red-900 mb-2">Registration Expired</h4>
+                <p class="text-red-800">
+                  Your registration expired on <span class="font-semibold">{{ formattedExpirationDate }}</span>. Please renew immediately to restore active status.
                 </p>
               </div>
             </div>
           </div>
 
           <!-- Expiring Soon Alert -->
-          <div v-else-if="isExpiringSoon" class="border border-yellow-200 bg-yellow-50 rounded-lg p-4">
-            <div class="flex items-start space-x-3">
-              <svg class="w-5 h-5 text-yellow-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-              </svg>
+          <div v-else-if="isExpiringSoon" class="border border-yellow-200 bg-gradient-to-r from-yellow-50 to-yellow-100 rounded-xl p-6">
+            <div class="flex items-start space-x-4">
+              <div class="flex-shrink-0 bg-yellow-500 rounded-full p-2">
+                <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                </svg>
+              </div>
               <div>
-                <h4 class="text-sm font-semibold text-yellow-900 mb-1">Registration Expiring Soon</h4>
-                <p class="text-sm text-yellow-700">
-                  Your registration expires in <span class="font-medium">{{ daysUntilExpiration }} days</span> on {{ formattedExpirationDate }}. Please renew to maintain active status.
+                <h4 class="text-lg font-bold text-yellow-900 mb-2">Registration Expiring Soon</h4>
+                <p class="text-yellow-800">
+                  Your registration expires in <span class="font-semibold">{{ daysUntilExpiration }} days</span> on {{ formattedExpirationDate }}. Please renew to maintain active status.
                 </p>
               </div>
             </div>
@@ -147,43 +156,45 @@
       </div>
 
       <!-- Information Cards -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <!-- Registration Details -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
-            <svg class="w-5 h-5 text-gray-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
+        <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-8">
+          <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+            <div class="bg-gradient-to-r from-green-500 to-teal-600 rounded-lg p-2 mr-3">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
             Registration Details
           </h3>
-          <div class="space-y-4">
-            <div class="flex justify-between items-center py-2 border-b border-gray-100">
-              <span class="text-sm text-gray-600">Status</span>
+          <div class="space-y-6">
+            <div class="flex justify-between items-center py-3 border-b border-gray-100">
+              <span class="text-gray-600 font-medium">Status</span>
               <span
                 :class="[
-                  'text-sm font-medium px-2 py-1 rounded-full text-xs',
+                  'font-bold px-3 py-1 rounded-full text-sm',
                   {
-                    'bg-red-100 text-red-800': isExpired,
-                    'bg-yellow-100 text-yellow-800': isExpiringSoon && !isExpired,
-                    'bg-green-100 text-green-800': !isExpired && !isExpiringSoon && !isRenewalPending,
-                    'bg-blue-100 text-blue-800': isRenewalPending
+                    'bg-red-100 text-red-800 ring-2 ring-red-200': isExpired,
+                    'bg-yellow-100 text-yellow-800 ring-2 ring-yellow-200': isExpiringSoon && !isExpired,
+                    'bg-green-100 text-green-800 ring-2 ring-green-200': !isExpired && !isExpiringSoon && !isRenewalPending,
+                    'bg-blue-100 text-blue-800 ring-2 ring-blue-200': isRenewalPending
                   }
                 ]">
                 {{ registrationStatusText }}
               </span>
             </div>
-            <div class="flex justify-between items-center py-2 border-b border-gray-100">
-              <span class="text-sm text-gray-600">Valid From</span>
-              <span class="text-sm font-medium text-gray-900">{{ formattedActiveDate }}</span>
+            <div class="flex justify-between items-center py-3 border-b border-gray-100">
+              <span class="text-gray-600 font-medium">Valid From</span>
+              <span class="font-semibold text-gray-900">{{ formattedActiveDate }}</span>
             </div>
-            <div class="flex justify-between items-center py-2">
-              <span class="text-sm text-gray-600">Valid Until</span>
+            <div class="flex justify-between items-center py-3">
+              <span class="text-gray-600 font-medium">Valid Until</span>
               <span
                 :class="[
-                  'text-sm font-medium',
+                  'font-semibold',
                   {
-                    'text-red-600': isExpired,
-                    'text-yellow-600': isExpiringSoon && !isExpired,
+                    'text-red-700': isExpired,
+                    'text-yellow-700': isExpiringSoon && !isExpired,
                     'text-gray-900': !isExpired && !isExpiringSoon
                   }
                 ]">
@@ -194,89 +205,149 @@
         </div>
 
         <!-- Institute Information -->
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center">
-            <svg class="w-5 h-5 text-gray-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-            </svg>
+        <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-8">
+          <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+            <div class="bg-gradient-to-r from-purple-500 to-pink-600 rounded-lg p-2 mr-3">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+            </div>
             Institute Information
           </h3>
-          <div class="space-y-4">
-            <div class="flex justify-between items-center py-2 border-b border-gray-100">
-              <span class="text-sm text-gray-600">Contact Person</span>
-              <span class="text-sm font-medium text-gray-900">{{ instituteData.full_name }}</span>
+          <div class="space-y-6">
+            <div class="flex justify-between items-center py-3 border-b border-gray-100">
+              <span class="text-gray-600 font-medium">Contact Person</span>
+              <span class="font-semibold text-gray-900">{{ instituteData.full_name }}</span>
             </div>
-            <div class="flex justify-between items-center py-2 border-b border-gray-100">
-              <span class="text-sm text-gray-600">Location</span>
-              <span class="text-sm font-medium text-gray-900">{{ instituteData.dzongkhag }}, {{ instituteData.gewog }}</span>
+            <div class="flex justify-between items-center py-3 border-b border-gray-100">
+              <span class="text-gray-600 font-medium">Location</span>
+              <span class="font-semibold text-gray-900">{{ instituteData.dzongkhag }}, {{ instituteData.gewog }}</span>
             </div>
-            <div class="flex justify-between items-center py-2 border-b border-gray-100">
-              <span class="text-sm text-gray-600">Contact</span>
-              <span class="text-sm font-medium text-gray-900">{{ instituteData.contact_no }}</span>
+            <div class="flex justify-between items-center py-3 border-b border-gray-100">
+              <span class="text-gray-600 font-medium">Contact</span>
+              <span class="font-semibold text-gray-900">{{ instituteData.contact_no }}</span>
             </div>
-            <div class="flex justify-between items-center py-2">
-              <span class="text-sm text-gray-600">Email</span>
-              <span class="text-sm font-medium text-gray-900 truncate">{{ instituteData.email_address }}</span>
+            <div class="flex justify-between items-center py-3">
+              <span class="text-gray-600 font-medium">Email</span>
+              <span class="font-semibold text-gray-900 truncate">{{ instituteData.email_address }}</span>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Action Section -->
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <div v-if="isRenewalWindowOpen && !isRenewalPending" class="space-y-4">
-          <div class="border border-blue-200 bg-blue-50 rounded-lg p-4">
-            <div class="flex items-start space-x-3">
-              <svg class="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
-              </svg>
-              <div>
-                <h4 class="text-sm font-semibold text-blue-900 mb-1">Ready to Renew</h4>
-                <p class="text-sm text-blue-700">Submit your renewal application to maintain your engineering institute's registration status.</p>
+      <div class="bg-white rounded-xl shadow-xl border border-gray-200 p-8">
+        <!-- ======================= ENHANCED CAPA MESSAGE SECTION ======================= -->
+        <div v-if="isRenewalWindowOpen && !isRenewalPending">
+
+          <!-- State 1: CAPA Pending - Enhanced UI -->
+          <div v-if="isCapaPending" class="text-center py-12">
+            <div class="relative mx-auto w-24 h-24 mb-8">
+              <!-- Animated background circle -->
+              <div class="absolute inset-0 bg-gradient-to-r from-orange-400 to-red-500 rounded-full animate-pulse opacity-20"></div>
+              <!-- Icon container -->
+              <div class="relative w-24 h-24 bg-gradient-to-r from-orange-500 to-red-600 rounded-full flex items-center justify-center shadow-2xl">
+                <svg class="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clip-rule="evenodd" />
+                </svg>
               </div>
+              <!-- Warning badge -->
+              <div class="absolute -top-2 -right-2 w-8 h-8 bg-red-600 rounded-full flex items-center justify-center shadow-lg">
+                <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                </svg>
+              </div>
+            </div>
+
+            <div class="max-w-2xl mx-auto">
+              <h4 class="text-2xl font-bold text-gray-900 mb-4">Renewal Application Blocked</h4>
+              <div class="bg-gradient-to-r from-orange-50 to-red-50 border-l-4 border-orange-500 rounded-lg p-6 mb-6">
+                <div class="flex items-start space-x-3">
+                  <div class="flex-shrink-0 bg-orange-100 rounded-full p-2">
+                    <svg class="w-5 h-5 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                    </svg>
+                  </div>
+                  <div class="text-left">
+                    <h5 class="text-lg font-semibold text-orange-900 mb-2">Pending CAPA Resolution Required</h5>
+                    <p class="text-orange-800 leading-relaxed">
+                      Your institute has an unresolved <strong>Corrective and Preventive Action (CAPA)</strong> that must be addressed before proceeding with the renewal application.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+                <h6 class="font-semibold text-gray-900 mb-3">Next Steps:</h6>
+                <div class="space-y-3 text-gray-700">
+                  <div class="flex items-start space-x-3">
+                    <div class="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mt-0.5">
+                      <span class="text-xs font-bold text-blue-600">1</span>
+                    </div>
+                    <p>Review and resolve all pending CAPA items</p>
+                  </div>
+                  <div class="flex items-start space-x-3">
+                    <div class="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center mt-0.5">
+                      <span class="text-xs font-bold text-blue-600">2</span>
+                    </div>
+                    <p>Return to complete your renewal application</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Optional: Add action button if CAPA management page exists -->
+              <!-- <div class="mt-8">
+                <button class="inline-flex items-center px-6 py-3 border border-orange-300 text-base font-medium rounded-lg text-orange-700 bg-orange-50 hover:bg-orange-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-all duration-200 transform hover:scale-105">
+                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  View CAPA Details
+                </button>
+              </div> -->
             </div>
           </div>
 
-          <div v-if="isCapaPending" class="border border-yellow-200 bg-yellow-50 rounded-lg p-4">
-            <div class="flex items-start space-x-3">
-              <svg class="w-5 h-5 text-yellow-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-              </svg>
-              <div>
-                <h4 class="text-sm font-semibold text-yellow-900 mb-1">CAPA Pending</h4>
-                <p class="text-sm text-yellow-700">Cannot submit renewal application as a CAPA for {{ instituteData.name_of_institution }} is not resolved.</p>
+          <!-- State 2: Ready to Renew - Enhanced UI -->
+          <div v-else class="space-y-6">
+            <div class="border border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-100 rounded-xl p-6">
+              <div class="flex items-start space-x-4">
+                <div class="flex-shrink-0 bg-blue-500 rounded-full p-2">
+                  <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+                <div>
+                  <h4 class="text-lg font-bold text-blue-900 mb-2">Ready to Renew</h4>
+                  <p class="text-blue-800">Submit your renewal application to maintain your engineering institute's registration status.</p>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div class="flex justify-center pt-4">
-            <button
-              @click="submitRenewalApplication"
-              :disabled="isCapaPending"
-              :class="[
-                'inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2',
-                {
-                  'text-white bg-blue-600 hover:bg-blue-700 focus:ring-blue-500': !isCapaPending,
-                  'text-gray-500 bg-gray-300 cursor-not-allowed': isCapaPending
-                }
-              ]">
-              <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
-              </svg>
-              Submit Renewal Application
-            </button>
+            <div class="flex justify-center pt-4">
+              <button
+                @click="submitRenewalApplication"
+                class="inline-flex items-center px-8 py-4 border border-transparent text-lg font-semibold rounded-xl shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 text-white bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 focus:ring-blue-500 transform hover:scale-105 hover:shadow-xl">
+                <svg class="w-6 h-6 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+                </svg>
+                Submit Renewal Application
+              </button>
+            </div>
           </div>
         </div>
+        <!-- ======================== END: ENHANCED CAPA SECTION ======================== -->
 
-        <div v-else-if="isRenewalPending && isRenewalApproved" class="space-y-4">
-          <div class="border border-green-200 bg-green-50 rounded-lg p-4">
-            <div class="flex items-start space-x-3">
-              <svg class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-              </svg>
+        <div v-else-if="isRenewalPending && isRenewalApproved" class="space-y-6">
+          <div class="border border-green-200 bg-gradient-to-r from-green-50 to-emerald-100 rounded-xl p-6">
+            <div class="flex items-start space-x-4">
+              <div class="flex-shrink-0 bg-green-500 rounded-full p-2">
+                <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+              </div>
               <div>
-                <h4 class="text-sm font-semibold text-green-900 mb-1">Renewal Approved</h4>
-                <p class="text-sm text-green-700">Your renewal application has been approved. Please proceed with payment to complete the process.</p>
+                <h4 class="text-lg font-bold text-green-900 mb-2">Renewal Approved</h4>
+                <p class="text-green-800">Your renewal application has been approved. Please proceed with payment to complete the process.</p>
               </div>
             </div>
           </div>
@@ -284,8 +355,8 @@
           <div class="flex justify-center pt-4">
             <button
               @click="openPaymentDialog"
-              class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 shadow-sm transition-all duration-200">
-              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              class="inline-flex items-center px-8 py-4 border border-transparent text-lg font-semibold rounded-xl text-white bg-gradient-to-r from-green-600 to-emerald-700 hover:from-green-700 hover:to-emerald-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 shadow-lg transition-all duration-200 transform hover:scale-105 hover:shadow-xl">
+              <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
               </svg>
               Proceed to Payment
@@ -293,61 +364,68 @@
           </div>
         </div>
 
-        <div v-else-if="isRenewalPending" class="text-center py-8">
-          <div class="mx-auto w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-            <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+        <div v-else-if="isRenewalPending" class="text-center py-12">
+          <div class="mx-auto w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mb-6 shadow-lg">
+            <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
             </svg>
           </div>
-          <h4 class="text-lg font-medium text-gray-900 mb-2">Awaiting Approval</h4>
-          <p class="text-gray-600">Your renewal application is being reviewed by the dealing officer. You will be notified once approved.</p>
+          <h4 class="text-xl font-bold text-gray-900 mb-3">Awaiting Approval</h4>
+          <p class="text-gray-600 text-lg max-w-lg mx-auto">Your renewal application is being reviewed by the dealing officer. You will be notified once approved.</p>
         </div>
 
-        <div v-else class="text-center py-8">
-          <div class="mx-auto w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-            <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+        <div v-else class="text-center py-12">
+          <div class="mx-auto w-16 h-16 bg-gradient-to-r from-gray-400 to-gray-500 rounded-full flex items-center justify-center mb-6 shadow-lg">
+            <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
             </svg>
           </div>
-          <h4 class="text-lg font-medium text-gray-900 mb-2">Renewal Window Not Open</h4>
-          <p class="text-gray-600">You can renew your registration starting 90 days before expiration. Please check back later.</p>
+          <h4 class="text-xl font-bold text-gray-900 mb-3">Renewal Window Not Open</h4>
+          <p class="text-gray-600 text-lg max-w-lg mx-auto">You can renew your registration starting 90 days before expiration. Please check back later.</p>
         </div>
 
         <!-- Fee Information -->
-        <div class="mt-6 pt-6 border-t border-gray-200">
-          <div class="bg-gray-50 rounded-lg p-4">
+        <div class="mt-8 pt-8 border-t border-gray-200">
+          <div class="bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl p-6 border border-gray-200">
             <div class="flex items-center justify-between">
-              <div class="flex items-center space-x-2">
-                <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                </svg>
-                <span class="text-sm font-medium text-gray-900">Renewal Fee</span>
+              <div class="flex items-center space-x-3">
+                <div class="bg-gradient-to-r from-yellow-500 to-orange-600 rounded-lg p-2">
+                  <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                  </svg>
+                </div>
+                <span class="text-lg font-bold text-gray-900">Renewal Fee</span>
               </div>
-              <span class="text-sm font-semibold text-gray-900">Nu. 1,000</span>
+              <span class="text-xl font-bold text-gray-900">Nu. 1,000</span>
             </div>
-            <p class="text-xs text-gray-600 mt-2">Valid for one year from the date of approval</p>
+            <p class="text-sm text-gray-600 mt-3 ml-12">Valid for one year from the date of approval</p>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Renewal Confirmation Modal -->
-    <div v-if="showRenewalDialog" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-      <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-lg bg-white">
-        <div class="mt-3">
-          <h3 class="text-lg font-semibold text-gray-900 mb-4">Submit Renewal Application</h3>
-          <p class="text-sm text-gray-700 mb-6">
+    <!-- Enhanced Renewal Confirmation Modal -->
+    <div v-if="showRenewalDialog" class="fixed inset-0 bg-black bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4">
+      <div class="relative bg-white rounded-xl shadow-2xl w-full max-w-md transform transition-all">
+        <div class="p-8">
+          <div class="flex items-center justify-center w-16 h-16 mx-auto bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full mb-6">
+            <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <h3 class="text-2xl font-bold text-gray-900 mb-4 text-center">Submit Renewal Application</h3>
+          <p class="text-gray-700 mb-8 text-center leading-relaxed">
             Are you sure you want to submit a renewal application for your engineering institute? The application will be reviewed by the dealing officer.
           </p>
-          <div class="flex justify-end space-x-3">
+          <div class="flex justify-end space-x-4">
             <button
               @click="closeRenewalDialog"
-              class="px-4 py-2 bg-gray-200 text-gray-800 text-sm font-medium rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-colors duration-200">
+              class="px-6 py-3 bg-gray-200 text-gray-800 font-medium rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-all duration-200">
               Cancel
             </button>
             <button
               @click="submitRenewalApplicationConfirmed"
-              class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200">
+              class="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-medium rounded-lg hover:from-blue-700 hover:to-indigo-800 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200 shadow-lg">
               Submit Application
             </button>
           </div>
@@ -355,23 +433,28 @@
       </div>
     </div>
 
-    <!-- Payment Confirmation Modal -->
-    <div v-if="showPaymentDialog" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-      <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-lg bg-white">
-        <div class="mt-3">
-          <h3 class="text-lg font-semibold text-gray-900 mb-4">Confirm Payment</h3>
-          <p class="text-sm text-gray-700 mb-6">
-            Your renewal application has been approved. Please proceed with the payment of Nu. 1,000 to complete the renewal process.
+    <!-- Enhanced Payment Confirmation Modal -->
+    <div v-if="showPaymentDialog" class="fixed inset-0 bg-black bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4">
+      <div class="relative bg-white rounded-xl shadow-2xl w-full max-w-md transform transition-all">
+        <div class="p-8">
+          <div class="flex items-center justify-center w-16 h-16 mx-auto bg-gradient-to-r from-green-500 to-emerald-600 rounded-full mb-6">
+            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+            </svg>
+          </div>
+          <h3 class="text-2xl font-bold text-gray-900 mb-4 text-center">Confirm Payment</h3>
+          <p class="text-gray-700 mb-8 text-center leading-relaxed">
+            Your renewal application has been approved. Please proceed with the payment of <span class="font-bold text-green-600">Nu. 1,000</span> to complete the renewal process.
           </p>
-          <div class="flex justify-end space-x-3">
+          <div class="flex justify-end space-x-4">
             <button
               @click="closePaymentDialog"
-              class="px-4 py-2 bg-gray-200 text-gray-800 text-sm font-medium rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-colors duration-200">
+              class="px-6 py-3 bg-gray-200 text-gray-800 font-medium rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-all duration-200">
               Cancel
             </button>
             <button
               @click="initiatePayment"
-              class="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors duration-200">
+              class="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-700 text-white font-medium rounded-lg hover:from-green-700 hover:to-emerald-800 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-200 shadow-lg">
               Proceed to Payment
             </button>
           </div>

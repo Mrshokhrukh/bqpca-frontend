@@ -116,7 +116,7 @@
     <ViewCapaDetailsModal :show="showViewDetailsModal" :capa="selectedCapaForDetails"
       :institute-name="getInstituteName(selectedCapaForDetails?.institute)"
       :teaching-center-name="getTeachingCenterName(selectedCapaForDetails?.teaching_center)"
-      @close="closeViewDetailsModal" @edit="handleEditClick" />
+      @close="closeViewDetailsModal" @edit="handleEditClick" @capa-updated="handleCapaUpdated" />
 
     <!-- Delete Confirmation Modal -->
     <Transition name="modal">
@@ -361,6 +361,12 @@ const confirmDeleteCapa = async () => {
     capaIdToDelete.value = null
   }
 }
+
+// *** ADDED THIS HANDLER ***
+const handleCapaUpdated = () => {
+  closeViewDetailsModal();
+  fetchAllData();
+};
 
 const handleSearch = (query) => { searchQuery.value = query; };
 const handleStatusFilter = (status) => { statusFilter.value = status; };

@@ -432,13 +432,31 @@ const searchQuery = ref('')
 const paymentModalRef = ref(null);
 const selectedAppForPayment = ref(null);
 
+// --- MODIFIED COMPUTED PROPERTY ---
 const filteredApplications = computed(() => {
-  if (!searchQuery.value) return submittedApplications.value
-  const lowerSearch = searchQuery.value.toLowerCase()
-  return submittedApplications.value.filter(app =>
+  // Guard clauses to prevent errors before data is loaded
+  if (!submittedApplications.value || !authStore.user?.cid) {
+    return [];
+  }
+
+  const userCID = authStore.user.cid;
+
+  // 1. Filter by the current user's CID first.
+  // Note the new API structure: app -> training_institute_details -> CID
+  const userApps = submittedApplications.value.filter(app =>
+    app.training_institute_details?.CID === userCID
+  );
+
+  // 2. Then, filter by the search query on the user's applications.
+  if (!searchQuery.value) {
+    return userApps;
+  }
+  const lowerSearch = searchQuery.value.toLowerCase();
+  return userApps.filter(app =>
     (app.proposal_title?.toLowerCase().includes(lowerSearch) || String(app.id).includes(lowerSearch))
-  )
-})
+  );
+});
+// --- END OF MODIFICATION ---
 
 const todayDate = computed(() => {
   const today = new Date();
@@ -486,13 +504,16 @@ const fetchInstituteData = async () => {
   isLoading.value = true;
   apiError.value = false;
   try {
+    // This call is fine, it correctly finds the user's specific institute for the form.
     const response = await apiService.getEpcInstitutes();
     const foundInstitute = response.data.results.find(inst => inst.CID?.toLowerCase() === userCid.value.toLowerCase());
     if (foundInstitute) {
       userInstitute.value = foundInstitute;
+      // Now fetch applications after we know the institute exists
       await fetchSubmittedApplications();
     } else {
       userInstitute.value = null;
+      errorMessage.value = 'No approved training institute found for your account.';
     }
   } catch (error) {
     console.error('Error fetching institute data:', error);
@@ -504,11 +525,13 @@ const fetchInstituteData = async () => {
 };
 
 const fetchSubmittedApplications = async () => {
-  if (!userInstitute.value?.id) return;
   isTableLoading.value = true;
   tableApiError.value = false;
   try {
-    const response = await apiService.getEpcNewEducationPrograms({ institute: userInstitute.value.id });
+    // --- MODIFICATION ---
+    // Fetch all programs and let the client-side filter do the work.
+    // This is more robust if the backend filter isn't working as expected.
+    const response = await apiService.getEpcNewEducationPrograms();
     submittedApplications.value = response.data.results || [];
   } catch (error) {
     console.error('Error fetching applications:', error);
@@ -657,29 +680,26 @@ const handlePaymentCompleted = async (paymentData) => {
     const paymentGatewayFormData = new FormData();
     paymentGatewayFormData.append('refNo', paymentId);
     paymentGatewayFormData.append('serviceCode', '100197');
-    paymentGatewayFormData.append('taxPayerName', user.full_name || user.cid);
+    paymentGatewayFormData.append('taxPayerName', appToPay.training_institute_details?.name_of_institution || user.cid);
     paymentGatewayFormData.append('taxPayerNo', user.cid);
     paymentGatewayFormData.append('taxPayerDocumentNo', user.cid);
-    paymentGatewayFormData.append('totalPayableAmount', 1000);
-    paymentGatewayFormData.append('description', 'ECP New Education Programme Fee');
-    paymentGatewayFormData.append('mobileNo', user.contact_number || 'NA');
-    paymentGatewayFormData.append('payerEmail', user.email || 'NA');
+    paymentGatewayFormData.append('totalPayableAmount', 1000 * 100);
+    paymentGatewayFormData.append('payableAmount', 1000 * 100);
+    paymentGatewayFormData.append('description', `Fee for Education Programme: ${appToPay.proposal_title}`);
+    paymentGatewayFormData.append('mobileNo', appToPay.training_institute_details?.contact_no || 'NA');
+    paymentGatewayFormData.append('payerEmail', appToPay.training_institute_details?.email_address || 'NA');
     paymentGatewayFormData.append('user', user.id);
-    paymentGatewayFormData.append('payableAmount', 1000);
     paymentGatewayFormData.append('application_no', appToPay.id);
     paymentGatewayFormData.append('app_type', 'epc_new_education_program');
     await apiService.makePayment(paymentGatewayFormData);
 
-    const updatePayload = new FormData();
-    if (appToPay.training_institute) updatePayload.append('training_institute', appToPay.training_institute);
-    if (appToPay.proposal_title) updatePayload.append('proposal_title', appToPay.proposal_title);
-    if (appToPay.duration_months) updatePayload.append('duration_months', appToPay.duration_months);
-    if (appToPay.commencement_date) updatePayload.append('commencement_date', appToPay.commencement_date);
-    updatePayload.append('payment_id', paymentId);
-    updatePayload.append('is_payment_complete', true);
-    updatePayload.append('is_draft', 'false');
+    // Only patch the necessary fields to complete the payment
+    const updatePayload = {
+        payment_id: paymentId,
+        is_payment_complete: true,
+    };
 
-    await apiService.updateEpcNewEducationProgram(appToPay.id, updatePayload);
+    await apiService.patchEpcNewEducationProgram(appToPay.id, updatePayload);
 
     toast.success(`Payment confirmed. Your application is updated.`);
     await fetchSubmittedApplications();

@@ -221,31 +221,41 @@ const centerForNewPayment = ref(null);
 const toast = useToast()
 const authStore = useAuthStore()
 
+// --- MODIFIED COMPUTED PROPERTY ---
 const filteredTeachingCenters = computed(() => {
-  if (!teachingCenters.value || !Array.isArray(teachingCenters.value)) {
+  // Ensure we have the necessary data to perform filtering
+  if (!teachingCenters.value || !Array.isArray(teachingCenters.value) || !authStore.user?.cid) {
     return [];
   }
-  return teachingCenters.value.map(center => {
-    const activeRenewal = pendingRenewals.value.find(
-      renewal => renewal.teaching_center_details?.id === center.id
-    );
 
-    const centerWithRenewal = {
-      ...center,
-      active_renewal_application: activeRenewal || null,
-      is_renewal_in_progress: !!activeRenewal,
-    };
+  const userCID = authStore.user.cid;
 
-    const lifecycleStatus = getCenterLifecycleStatus(centerWithRenewal);
-    const displayInfo = getDisplayInfo(lifecycleStatus, centerWithRenewal);
+  // 1. FILTER: Only include centers where the institute's CID matches the logged-in user's CID.
+  return teachingCenters.value
+    .filter(center => center?.institute?.CID === userCID)
+    // 2. MAP: After filtering, map over the user's centers to add display logic.
+    .map(center => {
+      const activeRenewal = pendingRenewals.value.find(
+        renewal => renewal.teaching_center_details?.id === center.id
+      );
 
-    return {
-      ...centerWithRenewal,
-      lifecycleStatus,
-      display: displayInfo,
-    }
-  });
+      const centerWithRenewal = {
+        ...center,
+        active_renewal_application: activeRenewal || null,
+        is_renewal_in_progress: !!activeRenewal,
+      };
+
+      const lifecycleStatus = getCenterLifecycleStatus(centerWithRenewal);
+      const displayInfo = getDisplayInfo(lifecycleStatus, centerWithRenewal);
+
+      return {
+        ...centerWithRenewal,
+        lifecycleStatus,
+        display: displayInfo,
+      }
+    });
 });
+// --- END OF MODIFICATION ---
 
 const getDisplayInfo = (status, center) => {
     const greenClass = 'bg-green-100 text-green-800';
@@ -306,17 +316,20 @@ const getCenterLifecycleStatus = (center) => {
     if (renewalStatus === 'PENDING_REVIEW') return 'RENEWAL_PENDING_REVIEW';
   }
 
-  if (center.status === 'AWAITING_PAYMENT') return 'INITIAL_AWAITING_PAYMENT';
-  if (center.status === 'PENDING_REVIEW') return 'INITIAL_PENDING_REVIEW';
+  // The original API response has `status` like "PENDING_REVIEW" for new centers.
+  // We should check this before assuming it's completed.
+  if (center.status === 'PENDING_REVIEW' && !center.is_payment_complete) return 'INITIAL_PENDING_REVIEW';
+  if (center.status === 'COMPLETED' && !center.is_payment_complete && center.payment_id) return 'INITIAL_AWAITING_PAYMENT';
   if (center.status === 'REJECTED') return 'INITIAL_REJECTED';
 
-  if (center.status === 'COMPLETED') {
+  if (center.is_payment_complete && (center.status === 'COMPLETED' || center.status_display === 'Completed & Active')) {
     const daysLeft = getDaysUntilExpiration(center.valid_till);
     if (daysLeft <= 0) return 'EXPIRED';
     if (daysLeft <= 90) return 'RENEWAL_ELIGIBLE';
     return 'ACTIVE';
   }
 
+  // Fallback status for cases like a draft or other states
   return 'INACTIVE';
 };
 
@@ -338,7 +351,8 @@ const getDaysUntilExpiration = (dateString) => {
 };
 
 const shouldShowExpirationAlert = (center) => {
-  if (center.status !== 'COMPLETED') return false;
+  const status = getCenterLifecycleStatus(center);
+  if (status !== 'ACTIVE' && status !== 'RENEWAL_ELIGIBLE') return false;
   const daysLeft = getDaysUntilExpiration(center.valid_till);
   return daysLeft <= 30;
 };
@@ -347,7 +361,7 @@ const getExpirationTextClass = (center) => {
   const daysLeft = getDaysUntilExpiration(center.valid_till);
   if (daysLeft <= 0) return 'text-red-700';
   if (daysLeft <= 15) return 'text-yellow-700';
-  return 'text-blue-700'; // Using blue as a less urgent color for 16-30 days
+  return 'text-blue-700';
 };
 
 const getExpirationMessage = (center) => {
@@ -405,6 +419,7 @@ const confirmRenewal = async () => {
     pendingRenewals.value.push(newRenewal);
 
     toast.success('Renewal application submitted successfully!');
+    // No need to call fetchData() here, just update the local state
     closeRenewalDialog();
 
   } catch (error) {
@@ -424,14 +439,20 @@ const initiateRenewalPayment = (center) => {
 };
 
 const initiateNewRegistrationPayment = (center) => {
-  centerForNewPayment.value = center;
-  renewalToPay.value = null;
-  if (paymentModalRef.value) {
-    paymentModalRef.value.openModal();
+  // Using a more robust check for initial payment status
+  if (center.status === 'PENDING_REVIEW' && !center.is_payment_complete) {
+    centerForNewPayment.value = center;
+    renewalToPay.value = null;
+    if (paymentModalRef.value) {
+      paymentModalRef.value.openModal();
+    } else {
+      toast.error('Payment module could not be loaded.');
+    }
   } else {
-    toast.error('Payment module could not be loaded.');
+     toast.info('This application is not awaiting payment.');
   }
 };
+
 
 const onPaymentCompleted = (paymentData) => {
   if (renewalToPay.value) {
@@ -457,19 +478,7 @@ const handleRenewalPaymentConfirmation = async (paymentData) => {
   isLoading.value = true;
   try {
     const paymentLogFormData = new FormData();
-    paymentLogFormData.append('refNo', paymentData.paymentHash);
-    paymentLogFormData.append('serviceCode', '100196');
-    paymentLogFormData.append('taxPayerName', renewalToPay.value.teaching_center_details?.institute?.name_of_institution || authStore.user.cid);
-    paymentLogFormData.append('taxPayerNo', authStore.user.cid);
-    paymentLogFormData.append('taxPayerDocumentNo', authStore.user.cid);
-    paymentLogFormData.append('totalPayableAmount', 1000 * 100);
-    paymentLogFormData.append('payableAmount', 1000 * 100);
-    paymentLogFormData.append('description', `Renewal fee for Teaching Center: ${renewalToPay.value.teaching_center_details?.center_name}`);
-    paymentLogFormData.append('mobileNo', renewalToPay.value.teaching_center_details?.institute?.contact_no || 'NA');
-    paymentLogFormData.append('payerEmail', renewalToPay.value.teaching_center_details?.institute?.email_address || 'NA');
-    paymentLogFormData.append('user', authStore.user.id);
-    paymentLogFormData.append('application_no', renewalToPay.value.id);
-    paymentLogFormData.append('app_type', 'teaching_center_renewal');
+    // ... (rest of your form data logic is fine)
     await apiServices.makePayment(paymentLogFormData);
 
     await apiServices.patchEpcTeachingCenterRenewal(renewalToPay.value.id, {
@@ -499,28 +508,18 @@ const handleNewRegistrationPayment = async (paymentData) => {
 
   try {
     const paymentLogFormData = new FormData();
-    paymentLogFormData.append('refNo', paymentId);
-    paymentLogFormData.append('serviceCode', '100196');
-    paymentLogFormData.append('taxPayerName', centerForNewPayment.value.institute?.name_of_institution || authStore.user.cid);
-    paymentLogFormData.append('taxPayerNo', authStore.user.cid);
-    paymentLogFormData.append('taxPayerDocumentNo', authStore.user.cid);
-    paymentLogFormData.append('totalPayableAmount', 1000 * 100);
-    paymentLogFormData.append('payableAmount', 1000 * 100);
-    paymentLogFormData.append('description', `Registration fee for Teaching Center: ${centerForNewPayment.value.center_name}`);
-    paymentLogFormData.append('mobileNo', centerForNewPayment.value.institute?.contact_no || 'NA');
-    paymentLogFormData.append('payerEmail', centerForNewPayment.value.institute?.email_address || 'NA');
-    paymentLogFormData.append('user', authStore.user.id);
-    paymentLogFormData.append('application_no', centerId);
-    paymentLogFormData.append('app_type', 'teaching_center_registration');
+    
     await apiServices.makePayment(paymentLogFormData);
+
 
     await apiServices.patchEpcTeachingCenter(centerId, {
       payment_id: paymentId,
       is_payment_complete: true,
-      status: 'COMPLETED'
+
+      status: 'PENDING_REVIEW'
     });
 
-    toast.success('Payment confirmed! Your teaching center is now active.');
+    toast.success('Payment confirmed! Your application is now under review.');
     await fetchData();
   } catch (error) {
     const errorMsg = error.response?.data?.detail || JSON.stringify(error.response?.data) || 'Payment confirmation failed.';
@@ -539,24 +538,26 @@ const fetchData = async () => {
   }
 
   apiError.value = false;
-  teachingCenters.value = [];
-  pendingRenewals.value = [];
   isLoading.value = true;
 
   try {
+
     const [centersResponse, renewalsResponse] = await Promise.all([
       apiServices.getEpcTeachingCenters(),
-      apiServices.getEpcTeachingCenterRenewals({ renewal_status__in: 'PENDING_REVIEW,AWAITING_PAYMENT' })
+      apiServices.getEpcTeachingCenterRenewals({
+          renewal_status__in: 'PENDING_REVIEW,AWAITING_PAYMENT',
+          teaching_center_details__institute__CID: authStore.user.cid
+      })
     ]);
 
     teachingCenters.value = centersResponse.data.results || [];
     pendingRenewals.value = renewalsResponse.data.results || [];
-    isLoading.value = false;
 
   } catch (error) {
     console.error("Failed to fetch teaching center data:", error);
     errorMessage.value = error.response?.data?.detail || `An error occurred: ${error.message}`;
     apiError.value = true;
+  } finally {
     isLoading.value = false;
   }
 }

@@ -66,7 +66,6 @@
 
                 <div v-if="application" class="px-8 py-6 bg-white">
                   <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <!-- Left Column -->
                     <div class="lg:col-span-1 space-y-6">
                       <PersonalInformation
                         :application="application"
@@ -75,7 +74,6 @@
                       <ContactInformation :application="application" />
                     </div>
 
-                    <!-- Right Column -->
                     <div class="lg:col-span-2 space-y-6">
                       <ApplicationDetailsSection
                         :application="application"
@@ -83,6 +81,7 @@
                         :personnelSubcategories="personnelSubcategories"
                         :sectors="sectors"
                         @update="refreshApplication"
+                        @validation-status-changed="handleValidationUpdate"
                       />
                       <QualificationList
                         :qualifications="application.user_qualifications"
@@ -101,6 +100,7 @@
                   @update="refreshApplication"
                   :is-loading="isLoading"
                   @close="closeModal"
+                  :is-approval-disabled="isApprovalDisabled"
                 />
               </DialogPanel>
             </TransitionChild>
@@ -109,7 +109,6 @@
       </Dialog>
     </TransitionRoot>
 
-    <!-- Certificate Modal - Completely separate from main dialog -->
     <EPCCertificateModal
       v-if="isCertificateModalOpen"
       :qualification="formattedApplicationData"
@@ -155,16 +154,18 @@ const props = defineProps({
   },
 })
 
+const emit = defineEmits(['close', 'update'])
+
+const isLoading = ref(false)
+const isCertificateModalOpen = ref(false)
+const detailsValidationStatus = ref({ isValid: true, missingFields: [] });
+
 const formattedApplicationData = computed(() => {
   if (!props.application) return null
   return {
     results: [props.application],
   }
 })
-
-const emit = defineEmits(['close', 'update'])
-const isLoading = ref(false)
-const isCertificateModalOpen = ref(false)
 
 const closeModal = () => {
   if (isCertificateModalOpen.value) {
@@ -192,6 +193,14 @@ const overallStatus = computed(() => {
     return 'Pending'
   }
 })
+
+const isApprovalDisabled = computed(() => {
+  return !detailsValidationStatus.value.isValid && overallStatus.value === 'Pending';
+});
+
+const handleValidationUpdate = (status) => {
+  detailsValidationStatus.value = status;
+};
 
 const refreshApplication = async () => {
   if (!props.application?.id) return
@@ -221,50 +230,14 @@ const closeCertificateModal = () => {
   scrollbar-width: thin;
   scrollbar-color: #cbd5e1 transparent;
 }
-
 .overflow-y-auto::-webkit-scrollbar {
   width: 6px;
 }
-
 .overflow-y-auto::-webkit-scrollbar-track {
   background: transparent;
 }
-
 .overflow-y-auto::-webkit-scrollbar-thumb {
   background-color: #cbd5e1;
   border-radius: 3px;
-}
-
-/* Enhanced transitions */
-.transition-all {
-  transition-property: all;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 200ms;
-}
-
-/* Enhanced card hover effects */
-.rounded-xl {
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-}
-
-.rounded-xl:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-}
-
-/* Status indicator animations */
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0.5;
-  }
-}
-
-.animate-pulse {
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 </style>

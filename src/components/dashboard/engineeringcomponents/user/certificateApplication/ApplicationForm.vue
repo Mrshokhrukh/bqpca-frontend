@@ -157,6 +157,15 @@
               />
               <span v-if="errors.village" class="text-xs text-red-500 mt-1">{{ errors.village }}</span>
             </div>
+             <div class="col-span-1">
+                <label class="block text-sm font-medium text-gray-700">Email Address (Optional)</label>
+                <input
+                    v-model="localFormData.email_address"
+                    type="email"
+                    class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
+                    placeholder="Email Address"
+                />
+             </div>
           </template>
 
           <template v-else>
@@ -211,7 +220,7 @@
             </div>
 
             <div class="col-span-1">
-              <label class="block text-sm font-medium text-gray-700">City / Town</label>
+              <label class="block text-sm font-medium text-gray-700 required">City / Town</label>
               <input
                 v-model="localFormData.city"
                 type="text"
@@ -222,7 +231,7 @@
             </div>
 
             <div class="col-span-1">
-              <label class="block text-sm font-medium text-gray-700">State / Province</label>
+              <label class="block text-sm font-medium text-gray-700 required">State / Province</label>
               <input
                 v-model="localFormData.state"
                 type="text"
@@ -698,199 +707,7 @@ const updateFormDocuments = () => {
 }
 
 const countries = [
-  'Afghanistan',
-  'Albania',
-  'Algeria',
-  'Andorra',
-  'Angola',
-  'Antigua and Barbuda',
-  'Argentina',
-  'Armenia',
-  'Australia',
-  'Austria',
-  'Azerbaijan',
-  'Bahamas',
-  'Bahrain',
-  'Bangladesh',
-  'Barbados',
-  'Belarus',
-  'Belgium',
-  'Belize',
-  'Benin',
-  'Bhutan',
-  'Bolivia',
-  'Bosnia and Herzegovina',
-  'Botswana',
-  'Brazil',
-  'Brunei',
-  'Bulgaria',
-  'Burkina Faso',
-  'Burundi',
-  'Cambodia',
-  'Cameroon',
-  'Canada',
-  'Cape Verde',
-  'Central African Republic',
-  'Chad',
-  'Chile',
-  'China',
-  'Colombia',
-  'Comoros',
-  'Congo',
-  'Costa Rica',
-  'Croatia',
-  'Cuba',
-  'Cyprus',
-  'Czech Republic',
-  'Denmark',
-  'Djibouti',
-  'Dominica',
-  'Dominican Republic',
-  'East Timor',
-  'Ecuador',
-  'Egypt',
-  'El Salvador',
-  'Equatorial Guinea',
-  'Eritrea',
-  'Estonia',
-  'Ethiopia',
-  'Fiji',
-  'Finland',
-  'France',
-  'Gabon',
-  'Gambia',
-  'Georgia',
-  'Germany',
-  'Ghana',
-  'Greece',
-  'Grenada',
-  'Guatemala',
-  'Guinea',
-  'Guinea-Bissau',
-  'Guyana',
-  'Haiti',
-  'Honduras',
-  'Hungary',
-  'Iceland',
-  'India',
-  'Indonesia',
-  'Iran',
-  'Iraq',
-  'Ireland',
-  'Israel',
-  'Italy',
-  'Ivory Coast',
-  'Jamaica',
-  'Japan',
-  'Jordan',
-  'Kazakhstan',
-  'Kenya',
-  'Kiribati',
-  'Korea, North',
-  'Korea, South',
-  'Kuwait',
-  'Kyrgyzstan',
-  'Laos',
-  'Latvia',
-  'Lebanon',
-  'Lesotho',
-  'Liberia',
-  'Libya',
-  'Liechtenstein',
-  'Lithuania',
-  'Luxembourg',
-  'Macedonia',
-  'Madagascar',
-  'Malawi',
-  'Malaysia',
-  'Maldives',
-  'Mali',
-  'Malta',
-  'Marshall Islands',
-  'Mauritania',
-  'Mauritius',
-  'Mexico',
-  'Micronesia',
-  'Moldova',
-  'Monaco',
-  'Mongolia',
-  'Montenegro',
-  'Morocco',
-  'Mozambique',
-  'Myanmar',
-  'Namibia',
-  'Nauru',
-  'Nepal',
-  'Netherlands',
-  'New Zealand',
-  'Nicaragua',
-  'Niger',
-  'Nigeria',
-  'Norway',
-  'Oman',
-  'Pakistan',
-  'Palau',
-  'Panama',
-  'Papua New Guinea',
-  'Paraguay',
-  'Peru',
-  'Philippines',
-  'Poland',
-  'Portugal',
-  'Qatar',
-  'Romania',
-  'Russia',
-  'Saint Kitts and Nevis',
-  'Saint Lucia',
-  'Saint Vincent',
-  'Samoa',
-  'San Marino',
-  'Sao Tome and Principe',
-  'Saudi Arabia',
-  'Senegal',
-  'Serbia',
-  'Seychelles',
-  'Sierra Leone',
-  'Singapore',
-  'Slovakia',
-  'Slovenia',
-  'Solomon Islands',
-  'Somalia',
-  'South Africa',
-  'South Sudan',
-  'Spain',
-  'Sri Lanka',
-  'Sudan',
-  'Suriname',
-  'Swaziland',
-  'Sweden',
-  'Switzerland',
-  'Syria',
-  'Taiwan',
-  'Tajikistan',
-  'Tanzania',
-  'Thailand',
-  'Togo',
-  'Tonga',
-  'Trinidad and Tobago',
-  'Tunisia',
-  'Turkey',
-  'Turkmenistan',
-  'Tuvalu',
-  'Uganda',
-  'Ukraine',
-  'United Arab Emirates',
-  'United Kingdom',
-  'United States',
-  'Uruguay',
-  'Uzbekistan',
-  'Vanuatu',
-  'Vatican City',
-  'Venezuela',
-  'Vietnam',
-  'Yemen',
-  'Zambia',
-  'Zimbabwe',
+  'Afghanistan', 'Albania', 'Algeria', 'Andorra', 'Angola', 'Antigua and Barbuda', 'Argentina', 'Armenia', 'Australia', 'Austria', 'Azerbaijan', 'Bahamas', 'Bahrain', 'Bangladesh', 'Barbados', 'Belarus', 'Belgium', 'Belize', 'Benin', 'Bhutan', 'Bolivia', 'Bosnia and Herzegovina', 'Botswana', 'Brazil', 'Brunei', 'Bulgaria', 'Burkina Faso', 'Burundi', 'Cambodia', 'Cameroon', 'Canada', 'Cape Verde', 'Central African Republic', 'Chad', 'Chile', 'China', 'Colombia', 'Comoros', 'Congo', 'Costa Rica', 'Croatia', 'Cuba', 'Cyprus', 'Czech Republic', 'Denmark', 'Djibouti', 'Dominica', 'Dominican Republic', 'East Timor', 'Ecuador', 'Egypt', 'El Salvador', 'Equatorial Guinea', 'Eritrea', 'Estonia', 'Ethiopia', 'Fiji', 'Finland', 'France', 'Gabon', 'Gambia', 'Georgia', 'Germany', 'Ghana', 'Greece', 'Grenada', 'Guatemala', 'Guinea', 'Guinea-Bissau', 'Guyana', 'Haiti', 'Honduras', 'Hungary', 'Iceland', 'India', 'Indonesia', 'Iran', 'Iraq', 'Ireland', 'Israel', 'Italy', 'Ivory Coast', 'Jamaica', 'Japan', 'Jordan', 'Kazakhstan', 'Kenya', 'Kiribati', 'Korea, North', 'Korea, South', 'Kuwait', 'Kyrgyzstan', 'Laos', 'Latvia', 'Lebanon', 'Lesotho', 'Liberia', 'Libya', 'Liechtenstein', 'Lithuania', 'Luxembourg', 'Macedonia', 'Madagascar', 'Malawi', 'Malaysia', 'Maldives', 'Mali', 'Malta', 'Marshall Islands', 'Mauritania', 'Mauritius', 'Mexico', 'Micronesia', 'Moldova', 'Monaco', 'Mongolia', 'Montenegro', 'Morocco', 'Mozambique', 'Myanmar', 'Namibia', 'Nauru', 'Nepal', 'Netherlands', 'New Zealand', 'Nicaragua', 'Niger', 'Nigeria', 'Norway', 'Oman', 'Pakistan', 'Palau', 'Panama', 'Papua New Guinea', 'Paraguay', 'Peru', 'Philippines', 'Poland', 'Portugal', 'Qatar', 'Romania', 'Russia', 'Saint Kitts and Nevis', 'Saint Lucia', 'Saint Vincent', 'Samoa', 'San Marino', 'Sao Tome and Principe', 'Saudi Arabia', 'Senegal', 'Serbia', 'Seychelles', 'Sierra Leone', 'Singapore', 'Slovakia', 'Slovenia', 'Solomon Islands', 'Somalia', 'South Africa', 'South Sudan', 'Spain', 'Sri Lanka', 'Sudan', 'Suriname', 'Swaziland', 'Sweden', 'Switzerland', 'Syria', 'Taiwan', 'Tajikistan', 'Tanzania', 'Thailand', 'Togo', 'Tonga', 'Trinidad and Tobago', 'Tunisia', 'Turkey', 'Turkmenistan', 'Tuvalu', 'Uganda', 'Ukraine', 'United Arab Emirates', 'United Kingdom', 'United States', 'Uruguay', 'Uzbekistan', 'Vanuatu', 'Vatican City', 'Venezuela', 'Vietnam', 'Yemen', 'Zambia', 'Zimbabwe'
 ]
 
 const qualificationTypes = ref([])
@@ -905,26 +722,8 @@ const REGISTRATION_TYPE_KEYWORDS = {
 }
 
 const MANDATORY_DOC_KEYWORDS = {
-  provisional: [
-    'graduation certificate',
-    'provisional certificate',
-    'course completion certificate',
-    'marksheet',
-    'internship completion',
-    'class x',
-    'class xii',
-    'citizenship identity card',
-    'security clearance',
-    'recognition of qualification',
-  ],
-  temporary: [
-    'graduation certificate',
-    'work offer letter',
-    'request letter',
-    'passport copy',
-    'visa copy',
-    'permit copy',
-  ],
+  provisional: [ 'graduation certificate', 'provisional certificate', 'course completion certificate', 'marksheet', 'internship completion', 'class x', 'class xii', 'citizenship identity card', 'security clearance', 'recognition of qualification' ],
+  temporary: [ 'graduation certificate', 'work offer letter', 'request letter', 'passport copy', 'visa copy', 'permit copy' ],
 }
 
 onMounted(async () => {
@@ -943,7 +742,6 @@ onMounted(async () => {
     universities.value = responses[2]?.data?.results || []
     allRegistrationTypesFromAPI.value = responses[3]?.data?.results || []
     const allDocs = responses[4]?.data?.results || []
-    // Filter documents to only show those for the initial applicant stage
     fetchedDocumentTypes.value = allDocs.filter(doc => doc.application_type === 'Applicant')
 
     const fullType = filteredRegistrationTypes.value.find((rt) =>
@@ -956,9 +754,7 @@ onMounted(async () => {
     }
   } catch (error) {
     console.error('Error fetching master data:', error)
-    toast.error(
-      'Failed to fetch master data. Some dropdowns or options may not populate correctly. Please try refreshing.',
-    )
+    toast.error( 'Failed to fetch master data. Some dropdowns or options may not populate correctly. Please try refreshing.' )
   } finally {
     isLoadingMasters.value = false
   }
@@ -1002,6 +798,13 @@ const isSubmitting = ref(false)
 const toast = useToast()
 const isLoadingDCRC = ref(false)
 
+// Function to clear all validation errors
+const clearAllErrors = () => {
+    Object.keys(errors).forEach(key => {
+        delete errors[key];
+    });
+};
+
 const getRegistrationTypeName = (typeId) => {
   const type = allRegistrationTypesFromAPI.value.find((rt) => rt.id === typeId)
   return type ? type.name : 'Selected Registration'
@@ -1013,9 +816,7 @@ const getRegistrationTypeCategory = (typeId) => {
   const nameLower = type.name.toLowerCase()
   if (REGISTRATION_TYPE_KEYWORDS.full.some((keyword) => nameLower.includes(keyword))) {
     return 'full'
-  } else if (
-    REGISTRATION_TYPE_KEYWORDS.provisional.some((keyword) => nameLower.includes(keyword))
-  ) {
+  } else if ( REGISTRATION_TYPE_KEYWORDS.provisional.some((keyword) => nameLower.includes(keyword)) ) {
     return 'provisional'
   } else if (REGISTRATION_TYPE_KEYWORDS.temporary.some((keyword) => nameLower.includes(keyword))) {
     return 'temporary'
@@ -1028,10 +829,7 @@ const filteredDocTypes = computed(() => {
   const defaultDocs = fetchedDocumentTypes.value.filter(doc => doc.application_type === 'Applicant');
 
   if (!category) return defaultDocs;
-
-  if (category === 'full') {
-    return defaultDocs;
-  }
+  if (category === 'full') return defaultDocs;
 
   const keywords = MANDATORY_DOC_KEYWORDS[category] || [];
   if (!keywords.length) return defaultDocs;
@@ -1061,7 +859,6 @@ const filteredQualifications = computed(() => {
   if (!localFormData.qualification_type) {
     return []
   }
-  // Using == to handle potential type mismatch (string vs number) from the select input
   return qualifications.value.filter(
     (q) => q.qualification_type == localFormData.qualification_type,
   )
@@ -1096,22 +893,8 @@ watch(
 )
 
 const validateFormStageOne = () => {
-  Object.keys(errors).forEach((key) => {
-    if (
-      !key.startsWith('document_') &&
-      key !== 'mandatory_documents' &&
-      key !== 'declaration' &&
-      ![
-        'qualification_type',
-        'qualification_name',
-        'other_qualification_name_specify',
-        'institute',
-        'year_of_completion',
-      ].includes(key)
-    ) {
-      delete errors[key]
-    }
-  })
+  // Clear previous errors before re-validating
+  clearAllErrors();
   let isValid = true
 
   if (!localFormData.full_name) {
@@ -1147,6 +930,7 @@ const validateFormStageOne = () => {
       isValid = false
     }
   }
+
   if (props.selectedType === 'cid') {
     if (!localFormData.cid_no) {
       errors.cid_no = 'CID is required.'
@@ -1155,17 +939,11 @@ const validateFormStageOne = () => {
       errors.cid_no = 'CID must be exactly 11 digits.'
       isValid = false
     }
-    if (!localFormData.dzongkhag && isCIDValid.value)
-      errors.dzongkhag = 'Dzongkhag should auto-fill; try re-entering CID.'
-    if (!localFormData.gewog && isCIDValid.value)
-      errors.gewog = 'Gewog should auto-fill; try re-entering CID.'
-    if (!localFormData.village && isCIDValid.value)
-      errors.village = 'Village should auto-fill; try re-entering CID.'
-    if (
-      (!localFormData.dzongkhag || !localFormData.gewog || !localFormData.village) &&
-      isCIDValid.value
-    )
-      isValid = false
+    if (!localFormData.dzongkhag) errors.dzongkhag = 'Dzongkhag is required.';
+    if (!localFormData.gewog) errors.gewog = 'Gewog is required.';
+    if (!localFormData.village) errors.village = 'Village is required.';
+    if ( !localFormData.dzongkhag || !localFormData.gewog || !localFormData.village )
+      isValid = false;
   } else {
     if (!localFormData.nationality) {
       errors.nationality = 'Nationality is required.'
@@ -1186,22 +964,24 @@ const validateFormStageOne = () => {
       errors.country = 'Country of residence is required.'
       isValid = false
     }
+    if (!localFormData.city) {
+        errors.city = 'City / Town is required.';
+        isValid = false;
+    }
+    if (!localFormData.state) {
+        errors.state = 'State / Province is required.';
+        isValid = false;
+    }
     if (!localFormData.mobileNumber) {
       errors.mobileNumber = 'Mobile number is required.'
       isValid = false
     } else {
       const bhutaneseMobilePattern = /^[17]\d{7}$/
       const internationalMobilePattern = /^\+?\d{7,15}$/
-      if (
-        localFormData.nationality === 'Bhutanese' &&
-        !bhutaneseMobilePattern.test(localFormData.mobileNumber)
-      ) {
+      if ( localFormData.nationality === 'Bhutanese' && !bhutaneseMobilePattern.test(localFormData.mobileNumber) ) {
         errors.mobileNumber = 'Bhutanese mobile numbers must be 8 digits and start with 1 or 7.'
         isValid = false
-      } else if (
-        localFormData.nationality !== 'Bhutanese' &&
-        !internationalMobilePattern.test(localFormData.mobileNumber)
-      ) {
+      } else if ( localFormData.nationality !== 'Bhutanese' && !internationalMobilePattern.test(localFormData.mobileNumber) ) {
         errors.mobileNumber = 'Please enter a valid mobile number (7-15 digits, can start with +).'
         isValid = false
       }
@@ -1211,8 +991,9 @@ const validateFormStageOne = () => {
 }
 
 const validateForm = () => {
+  // Clear previous Step 2 errors
+  clearAllErrors();
   let isValid = true
-  Object.keys(errors).forEach((key) => delete errors[key])
 
   if (!localFormData.qualification_type) {
     errors.qualification_type = 'Qualification type is required.'
@@ -1222,10 +1003,7 @@ const validateForm = () => {
     errors.qualification_name = 'Qualification name is required.'
     isValid = false
   }
-  if (
-    localFormData.qualification_name === 'OTHERS' &&
-    !localFormData.other_qualification_name_specify
-  ) {
+  if ( localFormData.qualification_name === 'OTHERS' && !localFormData.other_qualification_name_specify ) {
     errors.other_qualification_name_specify = 'Please specify the qualification name.'
     isValid = false
   }
@@ -1243,9 +1021,7 @@ const validateForm = () => {
       (uploadedDoc) => uploadedDoc.type === docId && uploadedDoc.files.length > 0,
     )
     if (!isUploaded) {
-      const docName =
-        fetchedDocumentTypes.value.find((dt) => dt.id === docId)?.document_name ||
-        'Unknown Document'
+      const docName = fetchedDocumentTypes.value.find((dt) => dt.id === docId)?.document_name || 'Unknown Document'
       errors.mandatory_documents = `Missing mandatory document: "${docName}". Please upload all required documents.`
       isValid = false
       break
@@ -1259,14 +1035,11 @@ const validateForm = () => {
     if (doc.type && doc.files.length === 0) {
       const isMandatory = currentMandatoryDocIds.value.includes(doc.type)
       if (isMandatory) {
-        const docName =
-          fetchedDocumentTypes.value.find((dt) => dt.id === doc.type)?.document_name ||
-          'Selected Document'
+        const docName = fetchedDocumentTypes.value.find((dt) => dt.id === doc.type)?.document_name || 'Selected Document'
         errors[`document_file_${index}`] = `File missing for mandatory document type: ${docName}.`
         isValid = false
       } else {
-        errors[`document_file_${index}`] =
-          'Please upload file(s) for the selected document type or remove the row.'
+        errors[`document_file_${index}`] = 'Please upload file(s) for the selected document type or remove the row.'
         isValid = false
       }
     }
@@ -1319,9 +1092,7 @@ const fetchDCRCData = async () => {
     toast.success('Citizen details fetched successfully.')
   } catch (error) {
     console.error('Error fetching DCRC data:', error.response?.data || error.message)
-    const errorMessage =
-      error.response?.data?.error ||
-      'Failed to fetch citizen details. Please enter details manually.'
+    const errorMessage = error.response?.data?.error || 'Failed to fetch citizen details. Please enter details manually.'
     toast.error(errorMessage)
     localFormData.full_name = ''
     localFormData.date_of_birth = ''
@@ -1377,82 +1148,83 @@ const formatDateForAPI = (dateInput) => {
 }
 
 const handleNext = async () => {
-  if (validateFormStageOne()) {
-    isSubmitting.value = true
-    const formDataStageOne = { ...localFormData }
-    if (props.selectedType !== 'cid') {
-      formDataStageOne.cid_no = formDataStageOne.workPermitNo
-      formDataStageOne.village = formDataStageOne.city
-      formDataStageOne.gewog = formDataStageOne.state
-      formDataStageOne.dzongkhag = formDataStageOne.country
-      delete formDataStageOne.city
-      delete formDataStageOne.state
-      delete formDataStageOne.workPermitNo
-      delete formDataStageOne.mobileNumber
-    }
-    const fieldsToRemove = [
-      'documents',
-      'remarks',
-      'declaration',
-      'payment_status',
-      'payment_id',
-      'qualification_type',
-      'qualification_name',
-      'other_qualification_name_specify',
-      'institute',
-      'year_of_completion',
-      'is_active',
-      'application',
-      'cid_holder',
-    ]
-    if (props.selectedType === 'cid') {
-      delete formDataStageOne.mobileNumber
-      delete formDataStageOne.country
-    }
-    fieldsToRemove.forEach((field) => delete formDataStageOne[field])
-    const today = new Date()
-    const expiry = new Date(today)
-    expiry.setFullYear(today.getFullYear() + 5)
-    formDataStageOne.registration_date = formatDateForAPI(today)
-    formDataStageOne.expiry_date = formatDateForAPI(expiry)
-    const apiFormData = new FormData()
-    for (const key in formDataStageOne) {
-      if (
-        Object.prototype.hasOwnProperty.call(formDataStageOne, key) &&
-        formDataStageOne[key] !== null &&
-        formDataStageOne[key] !== undefined &&
-        formDataStageOne[key] !== ''
-      ) {
-        if (key === 'passport_photo' && formDataStageOne[key] instanceof File) {
-          apiFormData.append('passport_photo', formDataStageOne[key], formDataStageOne[key].name)
+    // **CRITICAL FIX:** Clear all stale errors from previous attempts at the very beginning.
+    // This prevents "ghost" error messages on a successful submission.
+    clearAllErrors();
+
+    // 1. Validate the form with the now-cleared error object
+    if (validateFormStageOne()) {
+        isSubmitting.value = true;
+
+        const payload = {
+            cid_holder: props.selectedType === 'cid',
+            full_name: localFormData.full_name,
+            gender: localFormData.gender,
+            date_of_birth: localFormData.date_of_birth,
+            contact_no: localFormData.contact_no,
+            passport_photo: localFormData.passport_photo,
+            registration_type: localFormData.registration_type,
+            applicant: user.id,
+            is_draft: 'False',
+        };
+
+        if (props.selectedType === 'cid') {
+            payload.cid_no = localFormData.cid_no;
+            payload.dzongkhag = localFormData.dzongkhag;
+            payload.gewog = localFormData.gewog;
+            payload.village = localFormData.village;
+            payload.nationality = 'Bhutanese';
+            payload.email_address = localFormData.email_address || user?.email || '';
         } else {
-          apiFormData.append(key, formDataStageOne[key])
+            payload.cid_no = localFormData.workPermitNo;
+            payload.dzongkhag = localFormData.country;
+            payload.gewog = localFormData.state;
+            payload.village = localFormData.city;
+            payload.nationality = localFormData.nationality;
+            payload.email_address = localFormData.email_address;
         }
-      }
+
+        const today = new Date();
+        const expiry = new Date(today);
+        expiry.setFullYear(today.getFullYear() + 5);
+        payload.registration_date = formatDateForAPI(today);
+        payload.expiry_date = formatDateForAPI(expiry);
+
+        const apiFormData = new FormData();
+        for (const key in payload) {
+            if (Object.prototype.hasOwnProperty.call(payload, key) && payload[key] !== null && payload[key] !== undefined) {
+                if (key === 'passport_photo' && payload[key] instanceof File) {
+                    apiFormData.append(key, payload[key], payload[key].name);
+                } else {
+                    apiFormData.append(key, payload[key]);
+                }
+            }
+        }
+
+        try {
+            const response = await apiService.createEpcNewApplication(apiFormData);
+            applicationId.value = response.data.id;
+            localFormData.application = response.data.id;
+            toast.success('Personal information saved successfully!');
+            stage.value = 2;
+        } catch (error) {
+            console.error('Error submitting personal information:', error.response?.data || error.message);
+
+            // This is where the errors object gets populated on a FAILED attempt
+            const responseErrors = error.response?.data || {};
+            Object.keys(responseErrors).forEach(key => {
+                errors[key] = Array.isArray(responseErrors[key]) ? responseErrors[key].join(', ') : responseErrors[key];
+            });
+
+            const errorMessages = Object.values(errors).join('; ');
+            toast.error(`Failed to save personal information: ${errorMessages || 'An unknown error occurred.'}`);
+        } finally {
+            isSubmitting.value = false;
+        }
+    } else {
+        toast.error('Please correct the errors in Step 1 before proceeding.');
     }
-    apiFormData.append('applicant', user.id)
-    apiFormData.append('is_draft', 'False')
-    try {
-      const response = await apiService.createEpcNewApplication(apiFormData)
-      applicationId.value = response.data.id
-      localFormData.application = response.data.id
-      toast.success('Personal information saved successfully!')
-      stage.value = 2
-    } catch (error) {
-      console.error('Error submitting personal information:', error.response?.data || error.message)
-      const errorMessages = Object.entries(
-        error.response?.data || { 'API Error': [error.message || 'Unknown error'] },
-      )
-        .map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(', ') : value}`)
-        .join('; ')
-      toast.error(`Failed to save personal information: ${errorMessages}`)
-    } finally {
-      isSubmitting.value = false
-    }
-  } else {
-    toast.error('Please correct the errors in Step 1 before proceeding.')
-  }
-}
+};
 
 const openConfirmationModal = () => {
   updateFormDocuments()
@@ -1471,9 +1243,7 @@ const handleSubmitActual = async () => {
     return
   }
   if (!localFormData.application) {
-    toast.error(
-      'Application ID is missing. Cannot submit qualification details. Please go back to Step 1.',
-    )
+    toast.error( 'Application ID is missing. Cannot submit qualification details. Please go back to Step 1.' )
     isSubmitting.value = false
     return
   }
@@ -1483,10 +1253,7 @@ const handleSubmitActual = async () => {
     qualificationFormData.append('application', localFormData.application)
     qualificationFormData.append('registration_type', localFormData.registration_type)
     if (localFormData.qualification_name === 'OTHERS') {
-      qualificationFormData.append(
-        'qualification_name_text',
-        localFormData.other_qualification_name_specify,
-      )
+      qualificationFormData.append( 'qualification_name_text', localFormData.other_qualification_name_specify, )
     } else {
       qualificationFormData.append('qualification_name', localFormData.qualification_name)
     }
@@ -1503,13 +1270,8 @@ const handleSubmitActual = async () => {
     qualificationFormData.append('is_primary_qualification', 'True')
     localFormData.documents.forEach((doc, index) => {
       if (doc.files && doc.files.length > 0 && doc.type) {
-        // The backend expects indexed fields. We'll send the first file for each type.
-        const fileObject = doc.files[0]; 
-        qualificationFormData.append(
-          `attachments-${index}-file`,
-          fileObject,
-          fileObject.name,
-        )
+        const fileObject = doc.files[0];
+        qualificationFormData.append( `attachments-${index}-file`, fileObject, fileObject.name, )
         qualificationFormData.append(`attachments-${index}-file_type`, doc.type)
       }
     })
@@ -1518,22 +1280,12 @@ const handleSubmitActual = async () => {
     emit('submit', { ...localFormData })
     router.push('/admin/user/engineering_certification/my_applications')
   } catch (error) {
-    console.error(
-      'Error submitting qualification and documents:',
-      error.response?.data || error.message,
-    )
-    const errorMessages = Object.entries(
-      error.response?.data || { 'API Error': [error.message || 'Unknown error'] },
-    )
+    console.error( 'Error submitting qualification and documents:', error.response?.data || error.message, )
+    const errorMessages = Object.entries( error.response?.data || { 'API Error': [error.message || 'Unknown error'] }, )
       .map(([key, value]) => {
         if (typeof value === 'object' && value !== null) {
           return Object.entries(value)
-            .map(
-              ([nestedKey, nestedValue]) =>
-                `${key}.${nestedKey}: ${
-                  Array.isArray(nestedValue) ? nestedValue.join(', ') : nestedValue
-                }`,
-            )
+            .map( ([nestedKey, nestedValue]) => `${key}.${nestedKey}: ${ Array.isArray(nestedValue) ? nestedValue.join(', ') : nestedValue }`, )
             .join('; ')
         }
         return `${key}: ${Array.isArray(value) ? value.join(', ') : value}`

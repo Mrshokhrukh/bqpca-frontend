@@ -1,4 +1,5 @@
 <template>
+  <!-- Main Details Modal -->
   <Transition enter-active-class="transition ease-out duration-300"
     enter-from-class="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
     enter-to-class="opacity-100 translate-y-0 sm:scale-100" leave-active-class="transition ease-in duration-200"
@@ -7,14 +8,11 @@
     <div v-if="show" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="view-details-modal-title" role="dialog"
       aria-modal="true">
       <div class="flex items-center justify-center min-h-screen px-4 text-center sm:p-0">
-        <!-- Improved background overlay with blur effect -->
         <div class="fixed inset-0 bg-gray-800 bg-opacity-75 backdrop-blur-sm transition-opacity" @click="$emit('close')"
           aria-hidden="true"></div>
 
-        <!-- Modal panel with improved shadow and positioning -->
         <div
           class="inline-block align-bottom bg-white rounded-lg overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl w-full">
-          <!-- Enhanced Modal header with better spacing and typography -->
           <div class="bg-indigo-50 border-b border-indigo-100 px-6 py-4 flex items-center justify-between">
             <div>
               <h3 class="text-xl leading-6 font-semibold text-indigo-900" id="view-details-modal-title">
@@ -30,9 +28,8 @@
             </button>
           </div>
 
-          <!-- Modal body with improved layout and spacing -->
           <div class="px-6 py-5">
-            <!-- Physical Verification Status with improved badge design -->
+            <!-- ... (rest of the details view is the same) ... -->
             <div class="mb-6 pb-4 border-b border-gray-200">
               <label class="block text-sm font-medium text-gray-700 mb-2">
                 Physical Verification Status:
@@ -54,9 +51,7 @@
               </div>
             </div>
 
-            <!-- CAPA Details with improved grid layout -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <!-- Status Field with enhanced styling -->
               <div class="col-span-1">
                 <dt class="text-sm font-medium text-gray-500 mb-1">Status</dt>
                 <dd>
@@ -67,7 +62,6 @@
                 </dd>
               </div>
 
-              <!-- Timeline Fields Side by Side -->
               <div class="col-span-1">
                 <dt class="text-sm font-medium text-gray-500 mb-1">Inspection Period</dt>
                 <dd class="text-sm text-gray-900">
@@ -76,7 +70,6 @@
                 </dd>
               </div>
 
-              <!-- Full width fields for longer text content -->
               <div class="col-span-2">
                 <dt class="text-sm font-medium text-gray-500 mb-1">Observation Description</dt>
                 <dd class="text-sm text-gray-900 bg-gray-50 p-3 rounded-md border border-gray-200">
@@ -112,7 +105,6 @@
                 </dd>
               </div>
 
-              <!-- User Remarks -->
               <div class="col-span-2">
                 <dt class="text-sm font-medium text-gray-500 mb-1">User Remarks</dt>
                 <dd class="text-sm text-gray-900 bg-gray-50 p-3 rounded-md border border-gray-200">
@@ -120,7 +112,6 @@
                 </dd>
               </div>
 
-              <!-- DO Remarks: Show only when resolved -->
               <div class="col-span-2" v-if="capa.status === 'R'">
                 <dt class="text-sm font-medium text-gray-500 mb-1">Dealing Officer Remarks</dt>
                 <dd>
@@ -138,9 +129,9 @@
             </div>
           </div>
 
-          <!-- Modal footer with improved button styling -->
           <div class="bg-gray-50 border-t border-gray-200 px-6 py-4 sm:flex sm:flex-row-reverse">
-            <button v-if="capa?.status !== 'R'" type="button" @click="resolveCapa"
+            <!-- UPDATED: This button now opens the resolve dialog -->
+            <button v-if="capa?.status !== 'R'" type="button" @click="openResolveDialog"
               class="w-full sm:w-auto inline-flex justify-center items-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors">
               <BadgeCheck class="h-4 w-4 mr-2" />
               Resolve CAPA
@@ -154,12 +145,47 @@
       </div>
     </div>
   </Transition>
+
+  <!-- NEW: Resolve CAPA Confirmation Dialog -->
+  <Transition enter-active-class="transition ease-out duration-300" enter-from-class="opacity-0"
+    enter-to-class="opacity-100" leave-active-class="transition ease-in duration-200" leave-from-class="opacity-100"
+    leave-to-class="opacity-0">
+    <div v-if="showResolveDialog" class="fixed inset-0 z-[60] overflow-y-auto">
+      <div class="flex items-center justify-center min-h-screen px-4">
+        <div class="fixed inset-0 bg-gray-800 bg-opacity-75" @click="showResolveDialog = false"></div>
+        <div class="bg-white rounded-lg shadow-xl transform transition-all sm:max-w-lg w-full p-6 z-10">
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">Resolve CAPA</h3>
+          <p class="text-sm text-gray-600 mb-4">Please provide the remarks for resolving this CAPA. This action cannot
+            be undone.</p>
+          <div>
+            <label for="resolve-remarks" class="block text-sm font-medium text-gray-700">Dealing Officer
+              Remarks</label>
+            <div class="mt-1">
+              <textarea v-model="resolveRemarks" id="resolve-remarks" name="resolve-remarks" rows="3"
+                class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"></textarea>
+            </div>
+          </div>
+          <div class="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
+            <button @click="confirmResolve" type="button"
+              class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:col-start-2 sm:text-sm">
+              Confirm & Resolve
+            </button>
+            <button @click="showResolveDialog = false" type="button"
+              class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:col-start-1 sm:text-sm">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Transition>
 </template>
 
 <script setup>
 import { XIcon, BadgeCheck, BadgeX } from 'lucide-vue-next'
 import apiService from '@/services/services'
 import { toRefs, ref, watch } from 'vue'
+import { useToast } from 'vue-toastification'
 
 const props = defineProps({
   show: Boolean,
@@ -168,13 +194,13 @@ const props = defineProps({
 })
 
 const { capa } = toRefs(props)
-
 const emits = defineEmits(['close', 'capa-updated'])
+const toast = useToast()
 
-// Editable remarks
 const editableRemarks = ref('')
+const showResolveDialog = ref(false)
+const resolveRemarks = ref('')
 
-// Initialize editableRemarks when capa changes
 watch(
   capa,
   (newCapa) => {
@@ -193,11 +219,7 @@ const getStatusClass = (status) => {
 }
 
 const getStatusText = (status) => {
-  const statusTexts = {
-    P: 'Pending',
-    R: 'Resolved',
-    A: 'Approved',
-  }
+  const statusTexts = { P: 'Pending', R: 'Resolved', A: 'Approved' }
   return statusTexts[status] || 'Unknown'
 }
 
@@ -207,15 +229,12 @@ const togglePhysicalVerification = async () => {
     await apiService.patchEpcCapa(capa.value.id, {
       physical_verification_status: newStatus,
     })
-
     capa.value.physical_verification_status = newStatus
+    toast.success('Physical verification status updated.')
     emits('capa-updated')
   } catch (error) {
-    console.error(
-      'Error updating physical verification:',
-      error.response ? error.response.data : error.message,
-    )
-    alert('Failed to update physical verification.')
+    console.error('Error updating physical verification:', error.response ? error.response.data : error.message)
+    toast.error('Failed to update physical verification.')
   }
 }
 
@@ -224,51 +243,55 @@ const updateRemarks = async () => {
     try {
       await apiService.patchEpcCapa(capa.value.id, { DO_remarks: editableRemarks.value })
       capa.value.DO_remarks = editableRemarks.value
+      toast.success('Remarks updated successfully.')
       emits('capa-updated')
     } catch (error) {
       console.error('Error updating remarks:', error)
-      alert('Failed to update remarks.')
+      toast.error('Failed to update remarks.')
       editableRemarks.value = capa.value.DO_remarks
     }
   }
 }
 
-const resolveCapa = async () => {
-  const remarks = prompt('Please enter Dealing Officer Remarks/Reason for Resolved:')
-  if (remarks) {
-    try {
-      await apiService.patchEpcCapa(capa.value.id, {
-        status: 'R',
-        DO_remarks: remarks,
-        physical_verification_status: true,
-      })
+const openResolveDialog = () => {
+  resolveRemarks.value = ''
+  showResolveDialog.value = true
+}
 
-      capa.value.status = 'R'
-      capa.value.DO_remarks = remarks
-      capa.value.physical_verification_status = true
+const confirmResolve = async () => {
+  if (!resolveRemarks.value || resolveRemarks.value.trim() === '') {
+    toast.warning('Dealing Officer Remarks are required to resolve the CAPA.')
+    return
+  }
 
-      alert('CAPA resolved successfully.')
-      emits('capa-updated')
-    } catch (error) {
-      console.error('Error resolving CAPA:', error.response ? error.response.data : error.message)
-      alert('Failed to resolve CAPA.')
-    }
+  try {
+    await apiService.patchEpcCapa(capa.value.id, {
+      status: 'R',
+      DO_remarks: resolveRemarks.value,
+      physical_verification_status: true,
+    })
+
+    toast.success('CAPA resolved successfully.')
+    showResolveDialog.value = false
+    emits('capa-updated') // Signal parent to refetch and close
+    emits('close');
+
+  } catch (error) {
+    console.error('Error resolving CAPA:', error.response ? error.response.data : error.message)
+    toast.error('Failed to resolve CAPA.')
   }
 }
 </script>
 
 <style scoped>
-/* Add subtle card effect on the modal */
 .transform {
   transform-origin: center;
 }
 
-/* Subtle animation for status badges */
 [class*='bg-'] {
   transition: all 0.2s ease-in-out;
 }
 
-/* Improve text readability */
 .text-gray-900 {
   line-height: 1.5;
 }

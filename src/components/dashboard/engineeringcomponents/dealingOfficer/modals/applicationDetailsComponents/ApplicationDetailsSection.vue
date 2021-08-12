@@ -3,14 +3,11 @@
     class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden max-w-4xl mx-auto"
   >
     <div class="p-6 space-y-6">
-      <!-- Header Section -->
       <div class="flex items-center justify-between border-b pb-4">
         <div class="flex items-center space-x-3">
           <FileText class="h-6 w-6 text-blue-600" />
           <h2 class="text-xl font-semibold text-gray-900">Application Details</h2>
         </div>
-
-        <!-- Edit/Save Controls -->
         <div class="flex items-center space-x-2">
           <template v-if="!isEditing">
             <button
@@ -26,6 +23,7 @@
               @click="saveChanges"
               class="btn-icon-success hover:bg-green-50 transition-colors"
               title="Save Changes"
+              :disabled="!validationState.isValid"
             >
               <Check class="h-5 w-5 text-green-600 hover:text-green-800" />
             </button>
@@ -40,9 +38,7 @@
         </div>
       </div>
 
-      <!-- Main Content Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- Application-Level Details -->
         <div class="grid grid-cols-2 gap-4">
           <detail-card
             icon="FileCheck"
@@ -66,14 +62,11 @@
           />
         </div>
 
-        <!-- Qualification Selection Section -->
         <div class="space-y-4">
-          <!-- Qualification Dropdown -->
           <div class="bg-gray-50 rounded-lg p-4">
             <label class="block text-sm font-medium text-gray-600 mb-2">
               Select Qualification to Edit
             </label>
-            <!-- Conditionally render input -->
             <template v-if="isEditing">
               <select
                 v-model="selectedQualificationId"
@@ -100,9 +93,7 @@
             </template>
           </div>
 
-          <!-- Primary Qualification Toggle -->
           <div class="bg-gray-50 rounded-lg p-4">
-            <!-- Conditionally enable/disable button -->
             <button
               @click="togglePrimaryQualification"
               :disabled="!selectedQualification || !isEditing"
@@ -127,79 +118,107 @@
         </div>
       </div>
 
-      <!-- Qualification-Specific Details -->
       <template v-if="selectedQualification">
-        <div class="grid md:grid-cols-2 gap-4">
-          <!-- Personnel Category -->
-          <editable-field
-            :label="'Personnel Category'"
-            :value="selectedCategoryName"
-            :is-editing="isEditing"
-          >
-            <select v-model="editableData.personnel_category" class="form-select">
-              <option value="" disabled>Select Category</option>
-              <option
-                v-for="category in personnelCategories"
-                :key="category.id"
-                :value="category.id"
-              >
-                {{ category.category_name }}
-              </option>
-            </select>
-          </editable-field>
+        <div class="grid md:grid-cols-2 gap-x-4 gap-y-5 pt-4 border-t">
+          <div class="flex flex-col space-y-1">
+            <label class="block text-sm font-medium text-gray-600">
+              Personnel Category
+              <span v-if="validationState.missingFields.includes('Personnel Category')" class="text-red-500 font-bold ml-1">*</span>
+            </label>
+            <div class="text-sm">
+              <template v-if="isEditing">
+                <select v-model="editableData.personnel_category" class="form-select" :class="{'form-invalid': isEditing && !editableData.personnel_category}">
+                  <option value="" disabled>Select Category</option>
+                  <option v-for="category in personnelCategories" :key="category.id" :value="category.id">
+                    {{ category.category_name }}
+                  </option>
+                </select>
+              </template>
+              <template v-else>
+                <p class="px-3 py-2 rounded-lg bg-gray-50">
+                  {{ selectedCategoryName || 'N/A' }}
+                </p>
+              </template>
+            </div>
+          </div>
 
-          <!-- Personnel Subcategory -->
-          <editable-field
-            :label="'Personnel Subcategory'"
-            :value="selectedSubcategoryName"
-            :is-editing="isEditing"
-          >
-            <select v-model="editableData.personnel_sub_category" class="form-select">
-              <option value="" disabled>Select Subcategory</option>
-              <option
-                v-for="subcategory in personnelSubcategories"
-                :key="subcategory.id"
-                :value="subcategory.id"
-              >
-                {{ subcategory.sub_category_name }}
-              </option>
-            </select>
-          </editable-field>
+          <div class="flex flex-col space-y-1">
+            <label class="block text-sm font-medium text-gray-600">
+              Personnel Subcategory
+              <span v-if="validationState.missingFields.includes('Personnel Subcategory')" class="text-red-500 font-bold ml-1">*</span>
+            </label>
+            <div class="text-sm">
+              <template v-if="isEditing">
+                 <select v-model="editableData.personnel_sub_category" class="form-select" :class="{'form-invalid': isEditing && !editableData.personnel_sub_category}">
+                  <option value="" disabled>Select Subcategory</option>
+                  <option v-for="subcategory in personnelSubcategories" :key="subcategory.id" :value="subcategory.id">
+                    {{ subcategory.sub_category_name }}
+                  </option>
+                </select>
+              </template>
+              <template v-else>
+                 <p class="px-3 py-2 rounded-lg bg-gray-50">
+                  {{ selectedSubcategoryName || 'N/A' }}
+                </p>
+              </template>
+            </div>
+          </div>
 
-          <!-- Practice Address -->
-          <editable-field
-            :label="'Practice Address'"
-            :value="selectedQualification.practice_address"
-            :is-editing="isEditing"
-          >
-            <input
-              type="text"
-              v-model="editableData.practice_address"
-              class="form-input"
-              placeholder="Enter Practice Address"
-            />
-          </editable-field>
+           <div class="flex flex-col space-y-1">
+            <label class="block text-sm font-medium text-gray-600">
+              Practice Address
+              <span v-if="validationState.missingFields.includes('Practice Address')" class="text-red-500 font-bold ml-1">*</span>
+            </label>
+            <div class="text-sm">
+              <template v-if="isEditing">
+                 <input
+                  type="text"
+                  v-model="editableData.practice_address"
+                  class="form-input"
+                  :class="{'form-invalid': isEditing && validationState.missingFields.includes('Practice Address')}"
+                  placeholder="Enter Practice Address"
+                />
+              </template>
+              <template v-else>
+                 <p class="px-3 py-2 rounded-lg bg-gray-50">
+                  {{ selectedQualification.practice_address || 'N/A' }}
+                </p>
+              </template>
+            </div>
+          </div>
 
-          <!-- Sector -->
-          <editable-field :label="'Sector'" :value="selectedSectorName" :is-editing="isEditing">
-            <select v-model="editableData.select_sector" class="form-select">
-              <option value="" disabled>Select Sector</option>
-              <option v-for="sector in sectors" :key="sector.id" :value="sector.id">
-                {{ sector.name }}
-                <!-- Changed this line -->
-              </option>
-            </select>
-          </editable-field>
+          <div class="flex flex-col space-y-1">
+            <label class="block text-sm font-medium text-gray-600">
+              Sector
+              <span v-if="validationState.missingFields.includes('Sector')" class="text-red-500 font-bold ml-1">*</span>
+            </label>
+            <div class="text-sm">
+              <template v-if="isEditing">
+                 <select v-model="editableData.select_sector" class="form-select" :class="{'form-invalid': isEditing && !editableData.select_sector}">
+                  <option value="" disabled>Select Sector</option>
+                  <option v-for="sector in sectors" :key="sector.id" :value="sector.id">
+                    {{ sector.name }}
+                  </option>
+                </select>
+              </template>
+              <template v-else>
+                 <p class="px-3 py-2 rounded-lg bg-gray-50">
+                  {{ selectedSectorName || 'N/A' }}
+                </p>
+              </template>
+            </div>
+          </div>
         </div>
       </template>
 
-      <!-- Error Message -->
       <div
-        v-if="errorMessage"
+        v-if="errorMessage || (isEditing && !validationState.isValid)"
         class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-center space-x-2"
       >
         <AlertTriangle class="h-5 w-5 text-red-500" />
-        <span>{{ errorMessage }}</span>
+        <span>
+          {{ errorMessage || (isEditing && !validationState.isValid ? `Cannot save: Please fill all required fields (${validationState.missingFields.join(', ')})` : '') }}
+        </span>
       </div>
     </div>
   </div>
@@ -210,83 +229,95 @@ import { ref, computed, watch } from 'vue'
 import { FileText, Pencil, Check, X, AlertTriangle } from 'lucide-vue-next'
 import apiServices from '@/services/services'
 import isEqual from 'lodash/isEqual'
-
-// Component imports
 import DetailCard from './DetailCard.vue'
-import EditableField from './EditableField.vue'
+import { useToast } from 'vue-toastification'
 
 const props = defineProps({
-  application: {
-    type: Object,
-    required: true,
-  },
-  personnelCategories: {
-    type: Array,
-    default: () => [],
-  },
-  personnelSubcategories: {
-    type: Array,
-    default: () => [],
-  },
-  sectors: {
-    type: Array,
-    default: () => [],
-  },
+  application: { type: Object, required: true },
+  personnelCategories: { type: Array, default: () => [] },
+  personnelSubcategories: { type: Array, default: () => [] },
+  sectors: { type: Array, default: () => [] },
 })
 
-const emit = defineEmits(['update'])
+const emit = defineEmits(['update', 'validation-status-changed'])
 
 const isEditing = ref(false)
-const selectedQualificationId = ref(null) // ID of the selected qualification
+const selectedQualificationId = ref(null)
 const editableData = ref({})
-const originalData = ref({}) // For the *selected* qualification
+const originalData = ref({})
 const errorMessage = ref('')
+const toast = useToast()
 
-// Computed property for the *selected* qualification object
 const selectedQualification = computed(() => {
   if (!selectedQualificationId.value) return null
   return props.application.user_qualifications.find((q) => q.id === selectedQualificationId.value)
 })
 
-// Watch for changes in the selected qualification
-watch(
-  selectedQualification,
-  (newVal) => {
-    if (newVal) {
-      originalData.value = JSON.parse(JSON.stringify(newVal))
-      editableData.value = { ...newVal }
-    } else {
-      originalData.value = {}
-      editableData.value = {}
-    }
-    isEditing.value = false // Reset editing state when qualification changes
-  },
-  { deep: true },
-)
+const validationState = computed(() => {
+  const missing = []
+  if (!selectedQualification.value) {
+    return { isValid: false, missingFields: [] }
+  }
+  const q = editableData.value // Use editableData for validation during editing
 
-// Watch for changes in props.application (to set the initial primary qualification)
-watch(
-  () => props.application,
-  (newVal) => {
-    if (newVal && newVal.user_qualifications) {
-      // Find the primary qualification or default to the first one
-      const primary = newVal.user_qualifications.find((q) => q.is_primary_qualification)
-      selectedQualificationId.value = primary
-        ? primary.id
-        : newVal.user_qualifications[0]?.id || null
+  if (q.personnel_category === null || q.personnel_category === undefined || q.personnel_category === '') {
+    missing.push('Personnel Category')
+  }
+  if (q.personnel_sub_category === null || q.personnel_sub_category === undefined || q.personnel_sub_category === '') {
+    missing.push('Personnel Subcategory')
+  }
+  if (q.practice_address === null || q.practice_address === undefined || q.practice_address.trim() === '' || q.practice_address.trim().toLowerCase() === 'n/a') {
+    missing.push('Practice Address')
+  }
+  if (q.select_sector === null || q.select_sector === undefined || q.select_sector === '') {
+    missing.push('Sector')
+  }
+
+  return {
+    isValid: missing.length === 0,
+    missingFields: missing,
+  }
+})
+
+watch(validationState, (newStatus) => {
+  emit('validation-status-changed', newStatus)
+}, { deep: true, immediate: true })
+
+watch(selectedQualification, (newVal) => {
+  if (newVal) {
+    originalData.value = JSON.parse(JSON.stringify(newVal))
+    editableData.value = {
+      ...newVal,
+      practice_address: newVal.practice_address === 'N/A' ? '' : newVal.practice_address
     }
-  },
-  { deep: true, immediate: true },
-)
+  } else {
+    originalData.value = {}
+    editableData.value = {}
+  }
+  isEditing.value = false
+}, { deep: true })
+
+watch(() => props.application, (newVal) => {
+  if (newVal && newVal.user_qualifications) {
+    const primary = newVal.user_qualifications.find((q) => q.is_primary_qualification)
+    selectedQualificationId.value = primary
+      ? primary.id
+      : newVal.user_qualifications[0]?.id || null
+  }
+}, { deep: true, immediate: true })
 
 const startEditing = () => {
   if (!selectedQualificationId.value) {
     errorMessage.value = 'Please select a qualification to edit.'
+    toast.error(errorMessage.value)
     return
   }
   errorMessage.value = ''
   isEditing.value = true
-  editableData.value = { ...originalData.value }
+  editableData.value = {
+    ...originalData.value,
+    practice_address: originalData.value.practice_address === 'N/A' ? '' : originalData.value.practice_address
+  }
 }
 
 const cancelEditing = () => {
@@ -299,8 +330,15 @@ const saveChanges = async () => {
   errorMessage.value = ''
   if (!selectedQualificationId.value) {
     errorMessage.value = 'Please select a qualification to edit.'
+    toast.error(errorMessage.value)
     return
   }
+  if (!validationState.value.isValid) {
+    errorMessage.value = `Please fill all required fields: ${validationState.value.missingFields.join(', ')}`
+    toast.error(errorMessage.value)
+    return
+  }
+
   const changedFields = {}
   for (const key in editableData.value) {
     if (!isEqual(editableData.value[key], originalData.value[key])) {
@@ -310,6 +348,7 @@ const saveChanges = async () => {
 
   if (Object.keys(changedFields).length === 0) {
     isEditing.value = false
+    toast.info('No changes to save.')
     return
   }
 
@@ -322,21 +361,21 @@ const saveChanges = async () => {
       }
     }
 
-    // PATCH to the *qualification* endpoint, not the application
     await apiServices.patchEpcNewQualification(selectedQualificationId.value, formData)
-    originalData.value = JSON.parse(JSON.stringify(editableData.value))
     isEditing.value = false
-    emit('update') // Refresh the main application data
+    toast.success('Changes saved successfully.')
+    emit('update')
   } catch (error) {
     console.error('Error saving changes:', error)
     errorMessage.value = 'Failed to save changes.'
+    toast.error(errorMessage.value)
   }
 }
 
-// Toggle Primary Qualification (NEW)
 const togglePrimaryQualification = async () => {
   if (!selectedQualificationId.value) {
     errorMessage.value = 'Please select a qualification first.'
+    toast.error(errorMessage.value)
     return
   }
   errorMessage.value = ''
@@ -345,44 +384,15 @@ const togglePrimaryQualification = async () => {
     const formData = new FormData()
     formData.append('is_primary_qualification', newValue)
     await apiServices.patchEpcNewQualification(selectedQualificationId.value, formData)
-
-    // Update ALL qualifications (not just the selected one)
-    props.application.user_qualifications.forEach((q) => {
-      q.is_primary_qualification = q.id === selectedQualificationId.value ? newValue : false
-    })
-    emit('update') // Refresh the main application
+    toast.success('Primary qualification updated.')
+    emit('update')
   } catch (error) {
     console.error('Error toggling primary qualification:', error)
     errorMessage.value = 'Failed to update primary qualification.'
+    toast.error(errorMessage.value)
   }
 }
 
-// const overallStatus = computed(() => {
-//   if (!props.application.user_qualifications?.[0]) return "Pending";
-//   const appReview =
-//     props.application.user_qualifications[0].application_review_status;
-//   const physReview =
-//     props.application.user_qualifications[0].physical_review_status;
-//   const endorse = props.application.user_qualifications[0].endorsement_decision;
-
-//   if (
-//     appReview === "Regretted" ||
-//     physReview === "Regretted" ||
-//     endorse === "Regretted"
-//   ) {
-//     return "Regretted";
-//   } else if (
-//     appReview === "Approved" &&
-//     physReview === "Approved" &&
-//     endorse === "Approved"
-//   ) {
-//     return "Approved";
-//   } else {
-//     return "Pending";
-//   }
-// });
-
-// Use selectedQualification to get the correct names
 const selectedCategoryName = computed(() => {
   if (!selectedQualification.value || !selectedQualification.value.personnel_category) {
     return ''
@@ -426,17 +436,18 @@ const formatDate = (date) => {
 </script>
 
 <style scoped>
-/* Custom Utility Classes */
 .btn-icon-subtle {
   @apply p-2 rounded-full hover:bg-gray-100 transition-colors;
 }
-
 .btn-icon-success {
   @apply p-2 rounded-full hover:bg-green-100 transition-colors;
+  @apply disabled:opacity-50 disabled:cursor-not-allowed;
 }
-
 .form-select,
 .form-input {
   @apply w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 ease-in-out;
+}
+.form-invalid {
+  @apply border-red-500 ring-1 ring-red-500 focus:border-red-500 focus:ring-red-500;
 }
 </style>
