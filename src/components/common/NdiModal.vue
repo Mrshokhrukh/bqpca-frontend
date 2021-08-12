@@ -177,6 +177,7 @@ const props = defineProps({
   username: { type: String, required: false },
   actionType: { type: String, required: true }, // 'login' or 'registration'
   showNdiLogoInQr: { type: Boolean, default: true },
+  serviceType: { type: String, required: false }, // Added serviceType prop
 })
 
 const emit = defineEmits(['close', 'ndi-login-success', 'ndi-registration-success'])
@@ -196,7 +197,10 @@ const generateQrCode = async () => {
   ndiErrorMessage.value = ''
 
   try {
-    const response = await apiService.generateNdiQrCode({ username: props.username })
+    const response = await apiService.generateNdiQrCode({
+      username: props.username,
+      service_type: props.serviceType,
+    })
     if (response.status >= 200 && response.status < 300 && response.data) {
       qrCodeData.value = response.data.qr_code_url
       deepLinkUrl.value = response.data.deep_link_url || '' // Expect backend to return this
