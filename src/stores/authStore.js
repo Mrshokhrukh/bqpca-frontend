@@ -10,6 +10,8 @@ export const useAuthStore = defineStore('auth', () => {
   const toast = useToast()
 
   // State (remains largely the same)
+
+  // State (remains largely the same)
   const accessToken = ref(localStorage.getItem('accessToken') || null)
   const refreshToken = ref(localStorage.getItem('refreshToken') || null)
   const user = ref(JSON.parse(localStorage.getItem('user')) || null)
@@ -30,7 +32,9 @@ export const useAuthStore = defineStore('auth', () => {
     let fullNameString = firstName
     if (middleName) {
       fullNameString += ' ' + middleName
+      fullNameString += ' ' + middleName
     }
+    fullNameString += ' ' + lastName
     fullNameString += ' ' + lastName
 
     fullNameString = fullNameString.trim()
@@ -48,6 +52,7 @@ export const useAuthStore = defineStore('auth', () => {
   const isSuperuser = computed(() => user.value?.is_superuser || false)
   const isActive = computed(() => user.value?.is_active || false)
 
+  // Fetch and set tokens from localStorage
   // Fetch and set tokens from localStorage
   const initializeAuth = () => {
     try {
@@ -93,9 +98,13 @@ export const useAuthStore = defineStore('auth', () => {
       })
 
       // Update state
+
+      // Update state
       accessToken.value = response.data.access
       refreshToken.value = response.data.refresh
       user.value = response.data.user
+
+      // Save to localStorage
 
       // Save to localStorage
       localStorage.setItem('accessToken', response.data.access)
@@ -133,6 +142,13 @@ export const useAuthStore = defineStore('auth', () => {
           localStorage.removeItem('accessToken')
           localStorage.removeItem('refreshToken')
           localStorage.removeItem('user')
+          // Clear state and storage
+          accessToken.value = null
+          refreshToken.value = null
+          user.value = null
+          localStorage.removeItem('accessToken')
+          localStorage.removeItem('refreshToken')
+          localStorage.removeItem('user')
           router.push('/admin/login')
           return
         }
@@ -143,6 +159,13 @@ export const useAuthStore = defineStore('auth', () => {
           user.value.role === 'institutions'
         ) {
           toast.error('User role access is not permitted from the previous page.')
+          // Clear state and storage
+          accessToken.value = null
+          refreshToken.value = null
+          user.value = null
+          localStorage.removeItem('accessToken')
+          localStorage.removeItem('refreshToken')
+          localStorage.removeItem('user')
           // Clear state and storage
           accessToken.value = null
           refreshToken.value = null
@@ -167,6 +190,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   const logout = () => {
     // Clear state
+    // Clear state
     accessToken.value = null
     refreshToken.value = null
     user.value = null
@@ -179,6 +203,8 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.removeItem('registrationNo')
 
     toast.success('Logged out successfully!')
+
+    // Force a full page reload to reset all component states
 
     // Force a full page reload to reset all component states
     window.location.href = '/'
@@ -210,14 +236,18 @@ export const useAuthStore = defineStore('auth', () => {
       const response = await apiService.getUserDetails(userId.value)
       if (response.data) {
         // Preserve the existing tokens while updating user data
+        // Preserve the existing tokens while updating user data
         const currentTokens = {
           access: accessToken.value,
           refresh: refreshToken.value,
         }
 
         // Update user data
+
+        // Update user data
         user.value = {
           ...response.data,
+          // Ensure critical auth-related fields are preserved
           // Ensure critical auth-related fields are preserved
           access_token: currentTokens.access,
           refresh_token: currentTokens.refresh,
@@ -229,7 +259,9 @@ export const useAuthStore = defineStore('auth', () => {
     } catch (error) {
       console.error('Error updating user details:', error)
       // Don't logout on error, just show error message
+      // Don't logout on error, just show error message
       toast.error('Failed to update user details. Please try again.')
+      // Only logout if it's an authentication error (401)
       // Only logout if it's an authentication error (401)
       if (error.response?.status === 401) {
         logout()
@@ -268,3 +300,5 @@ export const useAuthStore = defineStore('auth', () => {
     fetchAndSetRegistrationNo,
   }
 })
+
+
