@@ -91,10 +91,11 @@
           <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <MagnifyingGlassIcon class="h-5 w-5 text-gray-400" aria-hidden="true" />
           </div>
+          <!-- MODIFIED: Updated placeholder text for search -->
           <input
             v-model="searchQuery"
             type="text"
-            placeholder="Search faculty by name, ID, designation, type..."
+            placeholder="Search faculty by name, ID, remarks..."
             class="form-input pl-10"
           />
         </div>
@@ -183,6 +184,8 @@
                     :direction="sortDirection"
                   />
                 </th>
+                <!-- MODIFIED: Renamed Remarks column header -->
+                <th scope="col" class="table-header-cell">Officer Remarks</th>
                 <th
                   scope="col"
                   class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -217,6 +220,21 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 capitalize">
                   {{ faculty.faculty_type || 'N/A' }}
+                </td>
+                <!-- MODIFIED: Replaced icon with truncated text and a tooltip -->
+                <td class="px-6 py-4 text-sm text-gray-600 max-w-xs">
+                  <div
+                    v-if="faculty.officer_remarks && faculty.officer_remarks.trim()"
+                    class="group relative"
+                  >
+                    <p class="truncate">{{ faculty.officer_remarks }}</p>
+                    <span
+                      class="absolute bottom-full z-10 mb-2 hidden w-auto max-w-sm p-2 text-xs text-white bg-gray-900 rounded-md group-hover:block"
+                    >
+                      {{ faculty.officer_remarks }}
+                    </span>
+                  </div>
+                  <span v-else class="text-gray-400 italic">N/A</span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                   <div class="flex justify-center items-center space-x-3">
@@ -413,6 +431,25 @@
               </div>
 
               <div
+                v-if="form.officer_remarks && form.officer_remarks.trim() !== ''"
+                class="mt-6 pt-6 border-t border-gray-200"
+              >
+                <div class="flex items-start">
+                  <div class="flex-shrink-0">
+                    <InformationCircleIcon class="h-6 w-6 text-yellow-500" />
+                  </div>
+                  <div class="ml-3">
+                    <h3 class="text-base font-semibold text-gray-800">Officer Remarks</h3>
+                    <div class="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+                      <p class="text-sm text-yellow-900 whitespace-pre-wrap">
+                        {{ form.officer_remarks }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div
                 v-if="form.faculty_type"
                 class="mt-8 pt-6 border-t border-gray-200 flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-3"
               >
@@ -591,6 +628,7 @@ const initialFormState = () => ({
   registration_type_name: '',
   registration_date: '',
   expiry_date: '',
+  officer_remarks: '',
 })
 
 const form = ref(initialFormState())
@@ -750,6 +788,7 @@ const validateForm = () => {
 
 const notification = ref({ show: false, type: 'info', title: '', message: '', timeoutId: null })
 
+// MODIFIED: Added officer_remarks to the search filter
 const filteredFaculty = computed(() => {
   if (!searchQuery.value.trim()) return facultyList.value
   const query = searchQuery.value.toLowerCase()
@@ -758,7 +797,8 @@ const filteredFaculty = computed(() => {
       (faculty.staff_name && faculty.staff_name.toLowerCase().includes(query)) ||
       (faculty.identifier && String(faculty.identifier).toLowerCase().includes(query)) ||
       (faculty.designation && faculty.designation.toLowerCase().includes(query)) ||
-      (faculty.faculty_type && faculty.faculty_type.toLowerCase().includes(query))
+      (faculty.faculty_type && faculty.faculty_type.toLowerCase().includes(query)) ||
+      (faculty.officer_remarks && faculty.officer_remarks.toLowerCase().includes(query))
   )
 })
 
@@ -852,6 +892,7 @@ const fetchFaculty = async (page = 1) => {
           f.passport_photo && typeof f.passport_photo === 'string'
             ? f.passport_photo.split('/').pop()
             : '',
+        officer_remarks: f.officer_remarks || '',
       }))
       totalFaculty.value = response.data.count || 0
       nextPageUrl.value = response.data.next
@@ -1060,6 +1101,7 @@ const populateFormForModal = (faculty) => {
       (faculty.passport_photo && typeof faculty.passport_photo === 'string'
         ? faculty.passport_photo.split('/').pop()
         : ''),
+    officer_remarks: faculty.officer_remarks || '',
   }
   validation.errors = {}
 }
@@ -1169,7 +1211,9 @@ const saveFaculty = async () => {
     ) {
       formDataPayload.append('application_profile', value)
     } else if (
-      !['id', 'cv_name', 'passport_photo_name', 'isDataFetched'].includes(key) &&
+      !['id', 'cv_name', 'passport_photo_name', 'isDataFetched', 'officer_remarks'].includes(
+        key
+      ) &&
       value !== null &&
       value !== undefined &&
       value !== ''
