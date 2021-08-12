@@ -1207,6 +1207,7 @@ const handleNext = async () => {
             localFormData.application = response.data.id;
             toast.success('Personal information saved successfully!');
             stage.value = 2;
+            clearAllErrors();
         } catch (error) {
             console.error('Error submitting personal information:', error.response?.data || error.message);
 

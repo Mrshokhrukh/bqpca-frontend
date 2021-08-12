@@ -338,7 +338,7 @@
     </div>
 
     <!-- NDI Login Modal -->
-    <NdiModal v-if="isNdiModalOpen" @close="isNdiModalOpen = false" />
+    <NdiModal v-if="isNdiModalOpen" @close="isNdiModalOpen = false" :serviceType="serviceType" />
   </div>
 </template>
 
