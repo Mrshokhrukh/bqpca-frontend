@@ -593,12 +593,10 @@ onMounted(async () => {
     const matchedInstitute = institutes.find((institute) => institute.CID === userCID)
 
     if (!matchedInstitute) {
-      engineeringStore.setDprStatus(false);
       console.error("No institute found matching the user's CID.")
       isLoading.value = false
       return
     }
-    engineeringStore.setDprStatus(true);
 
     instituteId.value = matchedInstitute.id
     reviewDecision.value = matchedInstitute.review_decision

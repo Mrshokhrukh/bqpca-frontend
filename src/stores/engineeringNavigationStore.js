@@ -341,12 +341,6 @@ export const useEngineeringCertificationStore = defineStore('engineeringCertific
     fetchApplicationDetails,
     initialize,
     resetStore,
-    refreshMenuState,
-    setEoiStatus(status) {
-      hasEoiApplication.value = status
-    },
-    setDprStatus(status) {
-      hasDprApplication.value = status
-    },
+    refreshMenuState
   }
 })

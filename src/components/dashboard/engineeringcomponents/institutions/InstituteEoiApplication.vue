@@ -566,7 +566,6 @@ onMounted(async () => {
         (app) => app.CID === authStore.user.cid
       );
       if (userApplication) {
-        engineeringStore.setEoiStatus(true)
         existingApplication.value = userApplication;
         if (userApplication.review_decision && userApplication.review_decision.toLowerCase() === 'approved') {
           showForm.value = false;
@@ -575,7 +574,6 @@ onMounted(async () => {
           showForm.value = true;
         }
       } else {
-        engineeringStore.setEoiStatus(false)
         showForm.value = true;
       }
     } catch (err) {
