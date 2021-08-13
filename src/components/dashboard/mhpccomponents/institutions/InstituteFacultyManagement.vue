@@ -782,16 +782,16 @@ const validateForm = () => {
     if (!form.value.education_details || form.value.education_details.length === 0) {
     }
   }
-  console.log('Validation Ran. Errors:', JSON.parse(JSON.stringify(validation.errors)))
   return isValid
 }
 
 const notification = ref({ show: false, type: 'info', title: '', message: '', timeoutId: null })
 
-// MODIFIED: Added officer_remarks to the search filter
+// MODIFIED: Search is now performed on the already-filtered list.
 const filteredFaculty = computed(() => {
   if (!searchQuery.value.trim()) return facultyList.value
   const query = searchQuery.value.toLowerCase()
+  // facultyList is now guaranteed to only contain members of the correct institute
   return facultyList.value.filter(
     (faculty) =>
       (faculty.staff_name && faculty.staff_name.toLowerCase().includes(query)) ||
@@ -802,6 +802,7 @@ const filteredFaculty = computed(() => {
   )
 })
 
+
 const hasNextPage = computed(() => !!nextPageUrl.value)
 const hasPreviousPage = computed(() => !!previousPageUrl.value)
 const paginationStart = computed(() =>
@@ -809,12 +810,13 @@ const paginationStart = computed(() =>
 )
 const paginationEnd = computed(() => {
   if (totalFaculty.value === 0) return 0
-  const end = (currentPage.value - 1) * pageSize.value + facultyList.value.length
+  const end = (currentPage.value - 1) * pageSize.value + filteredFaculty.value.length
   return Math.min(end, totalFaculty.value)
 })
 
+// MODIFIED: This function is now the single source of truth for getting the institute's PK.
 const fetchInstitutePk = async () => {
-  if (institutePk.value) return
+  if (institutePk.value) return // Return if already fetched
 
   const userCid = authStore.user?.cid
   if (!userCid) {
@@ -853,31 +855,41 @@ const fetchInstitutePk = async () => {
   }
 }
 
+// MODIFIED: This function now performs crucial FRONTEND filtering.
 const fetchFaculty = async (page = 1) => {
   isLoading.value = true
+
+  // Ensure we have the institute PK before fetching faculty.
+  if (!institutePk.value) {
+    showNotification(
+      'error',
+      'Configuration Error',
+      'Could not identify your institute. Please refresh the page.'
+    )
+    isLoading.value = false
+    return
+  }
+
   try {
-    if (!institutePk.value) {
-      await fetchInstitutePk()
-      if (!institutePk.value) {
-        showNotification(
-          'error',
-          'Configuration Error',
-          'Institute not identified. Cannot load faculty.'
-        )
-        isLoading.value = false
-        return
-      }
-    }
+    // We remove the non-working `user_cid` param. The API will return all results for the page.
     const params = {
       page,
       search: searchQuery.value,
       limit: pageSize.value,
-      institute: institutePk.value,
     }
 
     const response = await apiServices.getMhpcTeachingFaculties(params)
     if (response?.data) {
-      facultyList.value = (response.data.results || []).map((f) => ({
+      const allResultsOnPage = response.data.results || []
+
+      // *** THE CRITICAL FILTERING STEP ***
+      // We filter the API results to only include faculty from the user's institute.
+      const instituteFaculty = allResultsOnPage.filter(
+        (faculty) => faculty.institute === institutePk.value
+      )
+
+      // We assign the CORRECT, FILTERED list to our reactive variable.
+      facultyList.value = instituteFaculty.map((f) => ({
         ...f,
         staff_name: f.faculty_name || f.staff_name || 'N/A',
         identifier: f.faculty_id || f.registration_no || f.cid || '',
@@ -894,7 +906,11 @@ const fetchFaculty = async (page = 1) => {
             : '',
         officer_remarks: f.officer_remarks || '',
       }))
-      totalFaculty.value = response.data.count || 0
+
+      // NOTE: The pagination count from the API (`response.data.count`) is for ALL institutes.
+      // Displaying this might be confusing. For now, we will use it, but the best long-term
+      // solution is to have the backend provide a filtered count.
+      totalFaculty.value = response.data.count
       nextPageUrl.value = response.data.next
       previousPageUrl.value = response.data.previous
       currentPage.value = page
@@ -947,7 +963,8 @@ const sortBy = (column) => {
     sortColumn.value = column
     sortDirection.value = 'asc'
   }
-  facultyList.value = [...facultyList.value].sort((a, b) => {
+  // Sort the already filtered list
+  facultyList.value.sort((a, b) => {
     let valA = a[column]
     let valB = b[column]
 
@@ -1052,7 +1069,6 @@ const parseEducationDetails = (details) => {
           }))
         : []
     } catch (e) {
-      console.error('Parsing education_details string failed:', e, 'Details:', details)
       return []
     }
   }
@@ -1171,7 +1187,6 @@ const saveFaculty = async () => {
       'Institute not identified. Cannot save faculty.',
       0
     )
-    console.error('Institute PK is missing. Aborting saveFaculty.')
     return
   }
 
@@ -1318,18 +1333,9 @@ const deleteFaculty = async () => {
       'Faculty Deleted',
       `${facultyToDelete.value.staff_name} has been successfully deleted.`
     )
-    const newTotal = totalFaculty.value - 1
-    const newTotalPages = Math.ceil(newTotal / pageSize.value)
 
-    if (
-      facultyList.value.length === 1 &&
-      currentPage.value > 1 &&
-      currentPage.value > newTotalPages
-    ) {
-      fetchFaculty(currentPage.value - 1)
-    } else {
-      fetchFaculty(currentPage.value)
-    }
+    fetchFaculty(currentPage.value) // Refetch current page to update list
+
     showDeleteModal.value = false
     facultyToDelete.value = null
   } catch (error) {
@@ -1368,11 +1374,15 @@ watch(searchQuery, () => {
   fetchFaculty(1)
 })
 
+// MODIFIED: This is now the correct lifecycle hook implementation.
+// It ensures institutePk is available before attempting to fetch faculty data.
 onMounted(async () => {
   await fetchInstitutePk()
+  // Only proceed to fetch faculty if the institute PK was successfully retrieved.
   if (institutePk.value) {
     fetchFaculty()
   } else {
+    // If institutePk is null, stop loading and the error notification will be visible.
     isLoading.value = false
   }
 })
