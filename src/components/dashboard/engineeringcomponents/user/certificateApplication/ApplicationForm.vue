@@ -894,7 +894,7 @@ watch(
 
 const validateFormStageOne = () => {
   // Clear previous errors before re-validating
-  clearAllErrors();
+  // clearAllErrors();
   let isValid = true
 
   if (!localFormData.full_name) {
@@ -992,7 +992,7 @@ const validateFormStageOne = () => {
 
 const validateForm = () => {
   // Clear previous Step 2 errors
-  clearAllErrors();
+  // clearAllErrors();
   let isValid = true
 
   if (!localFormData.qualification_type) {
@@ -1148,82 +1148,85 @@ const formatDateForAPI = (dateInput) => {
 }
 
 const handleNext = async () => {
-    // **CRITICAL FIX:** Clear all stale errors from previous attempts at the very beginning.
-    // This prevents "ghost" error messages on a successful submission.
+    // 1. Clear all errors at the beginning of the submission attempt.
     clearAllErrors();
 
-    // 1. Validate the form with the now-cleared error object
-    if (validateFormStageOne()) {
-        isSubmitting.value = true;
+    // 2. Validate the form. If it fails, show a toast and stop.
+    // The `errors` object is now populated for the user to see.
+    if (!validateFormStageOne()) {
+        toast.error('Please correct the errors in Step 1 before proceeding.');
+        return;
+    }
 
-        const payload = {
-            cid_holder: props.selectedType === 'cid',
-            full_name: localFormData.full_name,
-            gender: localFormData.gender,
-            date_of_birth: localFormData.date_of_birth,
-            contact_no: localFormData.contact_no,
-            passport_photo: localFormData.passport_photo,
-            registration_type: localFormData.registration_type,
-            applicant: user.id,
-            is_draft: 'False',
-        };
+    // 3. If validation passes, proceed with the API call.
+    isSubmitting.value = true;
 
-        if (props.selectedType === 'cid') {
-            payload.cid_no = localFormData.cid_no;
-            payload.dzongkhag = localFormData.dzongkhag;
-            payload.gewog = localFormData.gewog;
-            payload.village = localFormData.village;
-            payload.nationality = 'Bhutanese';
-            payload.email_address = localFormData.email_address || user?.email || '';
-        } else {
-            payload.cid_no = localFormData.workPermitNo;
-            payload.dzongkhag = localFormData.country;
-            payload.gewog = localFormData.state;
-            payload.village = localFormData.city;
-            payload.nationality = localFormData.nationality;
-            payload.email_address = localFormData.email_address;
-        }
+    // Create the payload (your existing code for this is fine)
+    const payload = {
+        cid_holder: props.selectedType === 'cid',
+        full_name: localFormData.full_name,
+        gender: localFormData.gender,
+        date_of_birth: localFormData.date_of_birth,
+        contact_no: localFormData.contact_no,
+        passport_photo: localFormData.passport_photo,
+        registration_type: localFormData.registration_type,
+        applicant: user.id,
+        is_draft: 'False',
+    };
 
-        const today = new Date();
-        const expiry = new Date(today);
-        expiry.setFullYear(today.getFullYear() + 5);
-        payload.registration_date = formatDateForAPI(today);
-        payload.expiry_date = formatDateForAPI(expiry);
+    if (props.selectedType === 'cid') {
+        payload.cid_no = localFormData.cid_no;
+        payload.dzongkhag = localFormData.dzongkhag;
+        payload.gewog = localFormData.gewog;
+        payload.village = localFormData.village;
+        payload.nationality = 'Bhutanese';
+        payload.email_address = localFormData.email_address || user?.email || '';
+    } else {
+        payload.cid_no = localFormData.workPermitNo;
+        payload.dzongkhag = localFormData.country;
+        payload.gewog = localFormData.state;
+        payload.village = localFormData.city;
+        payload.nationality = localFormData.nationality;
+        payload.email_address = localFormData.email_address;
+    }
 
-        const apiFormData = new FormData();
-        for (const key in payload) {
-            if (Object.prototype.hasOwnProperty.call(payload, key) && payload[key] !== null && payload[key] !== undefined) {
-                if (key === 'passport_photo' && payload[key] instanceof File) {
-                    apiFormData.append(key, payload[key], payload[key].name);
-                } else {
-                    apiFormData.append(key, payload[key]);
-                }
+    const today = new Date();
+    const expiry = new Date(today);
+    expiry.setFullYear(today.getFullYear() + 5);
+    payload.registration_date = formatDateForAPI(today);
+    payload.expiry_date = formatDateForAPI(expiry);
+
+    const apiFormData = new FormData();
+    for (const key in payload) {
+        if (Object.prototype.hasOwnProperty.call(payload, key) && payload[key] !== null && payload[key] !== undefined) {
+            if (key === 'passport_photo' && payload[key] instanceof File) {
+                apiFormData.append(key, payload[key], payload[key].name);
+            } else {
+                apiFormData.append(key, payload[key]);
             }
         }
+    }
 
-        try {
-            const response = await apiService.createEpcNewApplication(apiFormData);
-            applicationId.value = response.data.id;
-            localFormData.application = response.data.id;
-            toast.success('Personal information saved successfully!');
-            stage.value = 2;
-            clearAllErrors();
-        } catch (error) {
-            console.error('Error submitting personal information:', error.response?.data || error.message);
 
-            // This is where the errors object gets populated on a FAILED attempt
-            const responseErrors = error.response?.data || {};
-            Object.keys(responseErrors).forEach(key => {
-                errors[key] = Array.isArray(responseErrors[key]) ? responseErrors[key].join(', ') : responseErrors[key];
-            });
+    try {
+        const response = await apiService.createEpcNewApplication(apiFormData);
+        applicationId.value = response.data.id;
+        localFormData.application = response.data.id;
+        toast.success('Personal information saved successfully!');
 
-            const errorMessages = Object.values(errors).join('; ');
-            toast.error(`Failed to save personal information: ${errorMessages || 'An unknown error occurred.'}`);
-        } finally {
-            isSubmitting.value = false;
-        }
-    } else {
-        toast.error('Please correct the errors in Step 1 before proceeding.');
+        // 4. On success, move to the next stage. The errors object is already clean.
+        stage.value = 2;
+
+    } catch (error) {
+        console.error('Error submitting personal information:', error.response?.data || error.message);
+        const responseErrors = error.response?.data || {};
+        Object.keys(responseErrors).forEach(key => {
+            errors[key] = Array.isArray(responseErrors[key]) ? responseErrors[key].join(', ') : responseErrors[key];
+        });
+        const errorMessages = Object.values(errors).join('; ');
+        toast.error(`Failed to save personal information: ${errorMessages || 'An unknown error occurred.'}`);
+    } finally {
+        isSubmitting.value = false;
     }
 };
 

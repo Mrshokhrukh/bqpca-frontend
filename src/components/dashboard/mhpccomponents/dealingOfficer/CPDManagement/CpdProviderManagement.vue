@@ -138,19 +138,6 @@
         </template>
       </DOPageHeader>
 
-      <!-- Removed Old Header -->
-      <!-- Removed Old Add Provider Button Section -->
-
-      <!-- Search and Filter (Handled by DOPageHeader now) -->
-      <!-- Add optional additional filters here if needed, separate from the header -->
-      <!-- Example:
-      <div class="bg-white rounded-lg shadow-sm p-4 mb-6 border border-gray-200">
-         <h3 class="text-lg font-medium text-gray-800 mb-3">Filters</h3>
-         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-           </div>
-      </div>
-      -->
-
       <!-- Loading State -->
       <div
         v-if="isLoading"
