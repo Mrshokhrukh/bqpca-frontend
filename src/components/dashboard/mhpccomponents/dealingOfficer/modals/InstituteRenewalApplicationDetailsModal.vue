@@ -190,22 +190,17 @@ const showRejectDialog = ref(false)
 const approveMessage = ref('')
 const rejectMessage = ref('')
 
-// Reset form when modal opens with new details
 watch(
   () => props.applicationDetails,
   (newDetails) => {
     if (newDetails) {
-      approveMessage.value = newDetails.officerRemarks || ''
-      rejectMessage.value = newDetails.officerRemarks || ''
-    } else {
       approveMessage.value = ''
-      rejectMessage.value = ''
+      rejectMessage.value = newDetails.officerRemarks || ''
     }
   },
   { immediate: true, deep: true },
 )
 
-// Reset dialogs when main modal closes
 watch(
   () => props.isOpen,
   (isOpen) => {
@@ -217,17 +212,17 @@ watch(
 )
 
 const handleApprove = async () => {
-  if (isSubmitting.value) return
+  if (isSubmitting.value || !props.applicationDetails?.renewalId) return;
   isSubmitting.value = true
   try {
-    // FIX: Removed the instituteCID parameter as it's no longer needed in the URL.
     await apiService.approveInstituteRenewal(
       props.applicationDetails.renewalId,
       { remarks: approveMessage.value },
     )
-    toast.success('Renewal application approved successfully!')
+    toast.success('Renewal application approved! Now awaiting payment.')
     showApproveDialog.value = false
     emit('application-updated')
+    close()
   } catch (error) {
     console.error('Error approving application:', error)
     toast.error(error.response?.data?.detail || 'Failed to approve application.')
@@ -237,14 +232,13 @@ const handleApprove = async () => {
 }
 
 const handleReject = async () => {
-  if (isSubmitting.value) return
+  if (isSubmitting.value || !props.applicationDetails?.renewalId) return;
   if (!rejectMessage.value.trim()) {
     toast.error('Please provide a reason for rejection.')
     return
   }
   isSubmitting.value = true
   try {
-    // FIX: Removed the instituteCID parameter as it's no longer needed in the URL.
     await apiService.rejectInstituteRenewal(
       props.applicationDetails.renewalId,
       { remarks: rejectMessage.value },
@@ -252,6 +246,7 @@ const handleReject = async () => {
     toast.warning('Renewal application has been rejected.')
     showRejectDialog.value = false
     emit('application-updated')
+    close()
   } catch (error) {
     console.error('Error rejecting application:', error)
     toast.error(error.response?.data?.detail || 'Failed to reject application.')
