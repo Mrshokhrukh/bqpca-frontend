@@ -670,10 +670,10 @@ export default {
   deleteMhpcInstitute(id) {
     return apiClient.delete(`/mhpc/mhpc-institutes/${id}/`)
   },
-  // -----------------------------------------------------------------------------
-  // --- CORRECTED: INSTITUTE RENEWAL FUNCTIONS ---
-  // -----------------------------------------------------------------------------
-
+  
+  getInstituteRenewalsForInstitute(instituteId) {
+    return apiClient.get(`/mhpc/institutes/${instituteId}/renewals/`);
+  },
   createInstituteRenewal(formData) {
     return apiClient.post('/mhpc/mhpc-institute-renewals/', formData, {
       headers: {
@@ -1036,7 +1036,7 @@ export default {
     // The URL targets a specific assignment ID, e.g., /mhpc/mhpc-faculty-assignment/123/
     return apiClient.patch(`/mhpc/mhpc-faculty-assignment/${assignmentId}/`, data);
   },
-  
+
 
 
   // --- MHPC Program Master Endpoints ---
@@ -1186,5 +1186,20 @@ export default {
   },
   getTeachingHospitalReport(params = {}) {
     return apiClient.get('/mhpc/reports/teaching-hospitals/', { params })
+  },
+  getInstituteRenewals() {
+    return apiClient.get('/mhpc/admin/institute-renewals/')
+  },
+
+  // FIX: New method to approve a specific renewal
+  approveInstituteRenewal(renewalId, payload) {
+    // payload should be { remarks: "some message" }
+    return apiClient.post(`/mhpc/admin/institute-renewals/${renewalId}/approve/`, payload)
+  },
+
+  // FIX: New method to reject a specific renewal
+  rejectInstituteRenewal(renewalId, payload) {
+    // payload must be { remarks: "reason for rejection" }
+    return apiClient.post(`/mhpc/admin/institute-renewals/${renewalId}/reject/`, payload)
   },
 }

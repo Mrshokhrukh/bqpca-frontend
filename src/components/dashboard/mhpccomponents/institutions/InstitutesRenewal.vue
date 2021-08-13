@@ -6,13 +6,11 @@
       :show-actions="false"
     />
 
-    <!-- Loading State -->
     <div v-if="isLoading" class="flex justify-center my-8">
       <Loader class="inline-block animate-spin text-blue-600 w-6 h-6" />
       <p class="ml-2 text-gray-600">Loading institute data...</p>
     </div>
 
-    <!-- Error State -->
     <div
       v-else-if="apiError"
       class="bg-red-50 border border-red-200 text-red-700 p-6 rounded-lg mb-6"
@@ -27,7 +25,6 @@
       </button>
     </div>
 
-    <!-- No Data State -->
     <div
       v-else-if="!instituteData"
       class="bg-gray-50 border border-gray-200 text-gray-700 p-6 rounded-lg mb-6"
@@ -36,9 +33,7 @@
       <p>No institute registration was found for your account.</p>
     </div>
 
-    <!-- Main Content -->
     <div v-else class="bg-white rounded-xl shadow-md overflow-hidden">
-      <!-- Header -->
       <div class="p-6 border-b border-gray-200">
         <div class="flex items-center justify-between">
           <div>
@@ -57,7 +52,6 @@
       </div>
 
       <div class="p-6">
-        <!-- Banners for different states -->
         <div
           v-if="!isRenewalWindowOpen"
           class="mb-6 p-4 rounded-lg border border-green-400 bg-green-50"
@@ -148,7 +142,6 @@
           </div>
         </div>
 
-        <!-- Details Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div>
             <h4 class="text-sm font-medium text-gray-500 mb-1">Registration Details</h4>
@@ -187,7 +180,6 @@
           </div>
         </div>
 
-        <!-- Action Buttons -->
         <div class="flex justify-end mt-8">
           <button
             v-if="showRenewButton"
@@ -215,7 +207,6 @@
       </div>
     </div>
 
-    <!-- Modals and Popups -->
     <InstituteRenewalModal
       v-if="instituteData"
       :show="showRenewalModal"
@@ -282,7 +273,6 @@ import InstituteRenewalModal from './InstituteRenewalModal.vue'
 import InstituteCertificate from './InstituteCertificate.vue'
 import PaymentModal from '@/components/common/PaymentModal.vue'
 
-// --- Component State ---
 const instituteData = ref(null)
 const isLoading = ref(true)
 const apiError = ref(false)
@@ -295,7 +285,6 @@ const authStore = useAuthStore()
 const toast = useToast()
 const userCid = computed(() => authStore.user?.cid || '')
 
-// --- Helper Functions ---
 const formatDateSafely = (dateString) => {
   if (!dateString) return 'N/A'
   const date = new Date(dateString)
@@ -304,7 +293,6 @@ const formatDateSafely = (dateString) => {
     : date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
 }
 
-// --- Computed Properties ---
 const latestRenewal = computed(() => instituteData.value?.latest_renewal || null)
 const formattedActiveDate = computed(() => formatDateSafely(instituteData.value?.valid_since))
 const formattedExpirationDate = computed(() => formatDateSafely(instituteData.value?.valid_till))
@@ -361,7 +349,6 @@ const renewButtonTitle = computed(() =>
   isActive.value ? 'Renew your institute registration' : 'Renew your expired registration',
 )
 
-// --- Color and Style Computed Properties ---
 const getDecisionColor = (decision) => {
   if (!decision) return 'text-gray-600'
   const lowerDecision = decision.toLowerCase()
@@ -396,7 +383,6 @@ const expirationTextColorClass = computed(() => {
 const renewalStatusColorClass = computed(() => getDecisionColor(renewalStatusDisplayText.value))
 const paymentStatusColorClass = computed(() => getDecisionColor(paymentStatusDisplayText.value))
 
-// --- Methods ---
 const fetchInstituteData = async () => {
   isLoading.value = true
   apiError.value = false
@@ -445,15 +431,12 @@ const handlePaymentCompleted = async (paymentData) => {
   }
   isLoading.value = true
   try {
-    // FIX: The API call now sends the correct renewal ID and payment data.
-    // The service function expects (renewalId, paymentData).
     await apiServices.confirmInstituteRenewalPayment(
-      latestRenewal.value.id, // Pass the correct renewal ID (e.g., 2)
-      { payment_id: paymentData.paymentHash } // Pass the payment data object
+      latestRenewal.value.id,
+      { payment_id: paymentData.paymentHash }
     )
-
     toast.success('Payment confirmed! Your certificate has been renewed successfully.')
-    await fetchInstituteData() // Await the fetch to ensure data is updated
+    await fetchInstituteData()
   } catch (error) {
     console.error('Payment confirmation error:', error)
     toast.error('An error occurred while confirming your payment. Please contact support.')
