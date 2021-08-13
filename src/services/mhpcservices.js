@@ -670,10 +670,10 @@ export default {
   deleteMhpcInstitute(id) {
     return apiClient.delete(`/mhpc/mhpc-institutes/${id}/`)
   },
-  // -----------------------------------------------------------------------------
-  // --- CORRECTED: INSTITUTE RENEWAL FUNCTIONS ---
-  // -----------------------------------------------------------------------------
-
+  
+  getInstituteRenewalsForInstitute(instituteId) {
+    return apiClient.get(`/mhpc/institutes/${instituteId}/renewals/`);
+  },
   createInstituteRenewal(formData) {
     return apiClient.post('/mhpc/mhpc-institute-renewals/', formData, {
       headers: {
