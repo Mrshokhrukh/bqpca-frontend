@@ -1,6 +1,5 @@
 <template>
   <div class="w-full mx-auto px-4 py-8">
-    <!-- Header Section -->
     <div class="bg-white rounded-xl shadow-md p-8 mb-10 border border-gray-100">
       <h2 class="text-3xl font-bold text-gray-800 mb-3 text-center">Your Applications</h2>
       <p class="text-gray-500 text-center max-w-2xl mx-auto">
@@ -8,7 +7,6 @@
       </p>
     </div>
 
-    <!-- Loading, Error, and No Results States -->
     <div v-if="isLoading" class="flex justify-center my-12">
       <Loader class="inline-block animate-spin text-indigo-600 w-8 h-8" />
     </div>
@@ -24,12 +22,16 @@
       <p class="mt-1 text-gray-500">You have not submitted any DPR applications yet.</p>
     </div>
 
-    <!-- Applications List -->
+    <div v-else-if="hasApprovedDPR" class="text-center py-16 bg-green-50 rounded-xl border border-green-300">
+      <CheckCircle class="mx-auto h-12 w-12 text-green-400" />
+      <h3 class="mt-4 text-lg font-semibold text-green-800">Application Already Submitted and Approved</h3>
+      <p class="mt-1 text-green-600">You have a valid, approved DPR application. You may view its details below.</p>
+    </div>
+
     <div v-else class="space-y-6">
       <div v-for="app in applications" :key="app.id"
         class="bg-white rounded-xl shadow-sm border border-gray-200 transition-all duration-300"
         :class="{ 'shadow-lg border-indigo-200': expandedApplicationId === app.id }">
-        <!-- Main Collapsed View -->
         <div class="p-6">
           <div class="flex flex-col sm:flex-row justify-between sm:items-start">
             <div class="flex-1">
@@ -46,7 +48,6 @@
             </div>
           </div>
 
-          <!-- Unified Key Info Section -->
           <div class="mt-6 border-t border-gray-100 pt-4 grid grid-cols-2 md:grid-cols-3 gap-6 text-sm">
             <div>
               <p class="text-gray-500">Program Type</p>
@@ -59,7 +60,7 @@
             <div>
               <p class="text-gray-500">Payment</p>
               <p class="font-semibold" :class="app.is_payment_complete ? 'text-green-600' : 'text-amber-600'">
-                 {{ app.payment_status_display || (app.is_payment_complete ? 'Completed' : 'Pending') }}
+                  {{ app.payment_status_display || (app.is_payment_complete ? 'Completed' : 'Pending') }}
               </p>
             </div>
             <div>
@@ -86,14 +87,12 @@
           </div>
         </div>
 
-        <!-- Expanded View (Conditional) -->
         <transition enter-active-class="transition-all ease-out duration-300 overflow-hidden"
           enter-from-class="transform opacity-0 max-h-0" enter-to-class="transform opacity-100 max-h-screen"
           leave-active-class="transition-all ease-in duration-200 overflow-hidden"
           leave-from-class="transform opacity-100 max-h-screen" leave-to-class="transform opacity-0 max-h-0">
           <div v-if="expandedApplicationId === app.id" class="px-6 pb-6">
             <div class="border-t border-gray-200 pt-4">
-              <!-- Tabs Navigation -->
               <div class="border-b border-gray-200">
                 <nav class="-mb-px flex flex-wrap" aria-label="Tabs">
                   <button v-for="tab in tabs" :key="tab.id" @click="activeTab = tab.id" :class="[
@@ -106,7 +105,6 @@
                   </button>
                 </nav>
               </div>
-              <!-- Tab Content -->
               <div class="mt-4">
                 <div v-for="tab in tabs" :key="tab.id">
                   <div v-if="activeTab === tab.id">
@@ -121,19 +119,15 @@
           </div>
         </transition>
 
-        <!-- Footer with Actions and Toggle Button -->
         <div class="p-4 bg-gray-50 rounded-b-xl border-t border-gray-200 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <!-- Action Buttons (Left) -->
           <div class="flex items-center space-x-3">
-             <!-- Make Payment Button -->
-            <button v-if="app.do_dpr_review_decision === 'Approved' && !app.is_payment_complete"
+              <button v-if="app.do_dpr_review_decision === 'Approved' && !app.is_payment_complete"
                     @click="initiatePayment(app)"
                     class="btn btn-primary">
               <CreditCard class="h-4 w-4 mr-2" />
               Make Payment (Nu. 1,000)
             </button>
 
-            <!-- View Certificate Button -->
             <a v-if="app.do_dpr_review_decision === 'Approved' && app.is_payment_complete && app.certificate_url"
                :href="app.certificate_url" target="_blank" rel="noopener noreferrer"
                class="btn btn-success">
@@ -145,7 +139,6 @@
             </p>
           </div>
 
-          <!-- Toggle Details Button (Right) -->
           <button @click="toggleDetails(app.id)" class="w-full sm:w-auto btn btn-secondary">
             <template v-if="expandedApplicationId === app.id">
               <ChevronUp class="h-4 w-4 mr-2" />
@@ -160,7 +153,6 @@
       </div>
     </div>
 
-    <!-- Payment Modal -->
     <PaymentModal
       ref="paymentModalRef"
       :amount="1000"
@@ -176,7 +168,7 @@ import { useAuthStore } from '@/stores/authStore';
 import apiService from '@/services/services';
 import PaymentModal from '@/components/common/PaymentModal.vue';
 import { useToast } from 'vue-toastification';
-import { Loader, FileText, AlertTriangle, ChevronDown, ChevronUp, ExternalLink, CreditCard, Award } from 'lucide-vue-next';
+import { Loader, FileText, AlertTriangle, ChevronDown, ChevronUp, ExternalLink, CreditCard, Award, CheckCircle } from 'lucide-vue-next';
 
 // --- STATE ---
 const applications = ref([]);
@@ -187,6 +179,7 @@ const expandedApplicationId = ref(null);
 const activeTab = ref('vision_mission_strategies');
 const paymentModalRef = ref(null);
 const selectedAppForPayment = ref(null);
+const hasApprovedDPR = ref(false); // New state variable
 
 const authStore = useAuthStore();
 const toast = useToast();
@@ -263,8 +256,15 @@ const fetchApplications = async () => {
       applications.value = response.data.results.filter(
         (app) => app.CID && app.CID.toLowerCase() === userCid.toLowerCase()
       );
+
+      // Check if any application is approved
+      hasApprovedDPR.value = applications.value.some(
+        (app) => app.do_dpr_review_decision === 'Approved'
+      );
+
     } else {
       applications.value = [];
+      hasApprovedDPR.value = false;
     }
   } catch (error) {
     console.error('Error fetching DPR applications:', error);

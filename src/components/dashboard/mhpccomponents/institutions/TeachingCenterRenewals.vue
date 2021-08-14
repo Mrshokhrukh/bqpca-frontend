@@ -540,39 +540,49 @@ const authStore = useAuthStore()
 
 const fetchData = async () => {
   if (!authStore.user?.cid) {
-    isLoading.value = false
-    initialAuthCheckPending.value = false
-    return
+    isLoading.value = false;
+    initialAuthCheckPending.value = false;
+    return;
   }
 
-  isLoading.value = true
-  apiError.value = false
-  initialAuthCheckPending.value = false
-  const userCid = authStore.user?.cid
+  isLoading.value = true;
+  apiError.value = false;
+  initialAuthCheckPending.value = false;
+  const userCid = authStore.user?.cid;
   try {
     const response = await apiServices.getMhpcTeachingCenterByCid(userCid);
     const results = response.data.results || [];
 
-    instituteTeachingCenters.value = results
-      .filter(item => item && (item.teaching_center || item.center_name)) // Ensure it's a valid record
-      .map(item => {
-        // Case 1: The item is a CAPA record containing a teaching_center.
-        if (item.teaching_center) {
-          // The teaching_center object from the API has has_active_capa: true.
-          // We can just return it directly.
-          // Let's also ensure the main 'id' is the teaching center's id for the :key binding.
-          return {
-            ...item.teaching_center,
-            id: item.teaching_center.id, // Explicitly set the id
-          };
-        }
-        // Case 2: The item is a plain Teaching Center object.
-        // We assume it doesn't have an active CAPA by default.
-        return {
-          ...item,
-          has_active_capa: item.has_active_capa || false, // Ensure this property exists
-        };
-      });
+    // --- START OF THE NEW, ROBUST LOGIC ---
+
+    // Use a Map to store the definitive version of each teaching center, keyed by its ID.
+    // This prevents duplicates and allows us to merge information correctly.
+    const centerMap = new Map();
+
+    results.forEach(item => {
+      // Determine the core teaching center data and its ID from the current item.
+      const isCapaRecord = !!item.teaching_center;
+      const tcData = isCapaRecord ? item.teaching_center : item;
+
+      // Skip if the item is malformed and doesn't have an ID.
+      if (!tcData || !tcData.id) return;
+
+      const tcId = tcData.id;
+
+      // Get the existing center object from our map, or use the current one if it's the first time we've seen this ID.
+      const existingCenter = centerMap.get(tcId) || tcData;
+
+
+      existingCenter.has_active_capa = existingCenter.has_active_capa || isCapaRecord;
+
+      // Update the map with the (potentially modified) center object.
+      centerMap.set(tcId, existingCenter);
+    });
+
+    // Convert the values of the map back into an array for rendering.
+    instituteTeachingCenters.value = Array.from(centerMap.values());
+
+    // --- END OF THE NEW LOGIC ---
 
   } catch (error) {
     console.error('Error fetching teaching centers:', error);
@@ -710,81 +720,26 @@ const getPaymentStatusTextClass = (center) => {
   return center.is_payment_complete ? 'text-green-600 font-semibold' : 'text-gray-600'
 }
 
-// UPDATED canRenew function with enhanced CAPA checking and debugging
 const canRenew = (center) => {
   // CAPA blocks all renewals - this is the most important check
   if (center.has_active_capa) {
-    console.log('🚫 Renewal blocked: Active CAPA exists for center:', center.center_name, {
-      centerId: center.id,
-      hasActiveCapa: center.has_active_capa,
-      centerName: center.center_name
-    });
     return false;
   }
 
   // Must be approved first
   const isApproved = center.tc_review_decision === 'Approved';
-  if (!isApproved) {
-    console.log('❌ Renewal blocked: Not approved for center:', center.center_name, {
-      reviewDecision: center.tc_review_decision,
-      isApproved
-    });
-    return false;
-  }
 
   // Must be expiring or expired (within 90 days)
   const daysUntilExpiration = getDaysUntilExpiration(center);
   const isExpiringOrExpired = daysUntilExpiration <= 90;
-  if (!isExpiringOrExpired) {
-    console.log('⏰ Renewal not needed: Still valid for center:', center.center_name, {
-      daysUntilExpiration,
-      validTill: center.valid_till,
-      isExpiringOrExpired
-    });
-    return false;
-  }
 
   // No renewal in progress
   const notRenewing = !isRenewalInProgress(center);
-  if (!notRenewing) {
-    console.log('🔄 Renewal blocked: Already in progress for center:', center.center_name, {
-      renewalStatus: center.latest_renewal?.renewal_status,
-      isRenewalInProgress: isRenewalInProgress(center)
-    });
-    return false;
-  }
 
   // No payment required
   const noPaymentRequired = !isPaymentRequired(center);
-  if (!noPaymentRequired) {
-    console.log('💳 Renewal blocked: Payment required for center:', center.center_name, {
-      paymentStatus: center.payment_status,
-      renewalPaymentStatus: center.latest_renewal?.renewal_status,
-      isPaymentRequired: isPaymentRequired(center)
-    });
-    return false;
-  }
 
-  const canRenewResult = isApproved && isExpiringOrExpired && notRenewing && noPaymentRequired;
-
-  console.log('✅ Renewal check completed for center:', center.center_name, {
-    centerId: center.id,
-    hasActiveCapa: center.has_active_capa,
-    isApproved,
-    isExpiringOrExpired,
-    daysUntilExpiration,
-    notRenewing,
-    noPaymentRequired,
-    finalResult: canRenewResult,
-    centerData: {
-      is_active: center.is_active,
-      tc_review_decision: center.tc_review_decision,
-      valid_till: center.valid_till,
-      payment_status: center.payment_status
-    }
-  });
-
-  return canRenewResult;
+  return isApproved && isExpiringOrExpired && notRenewing && noPaymentRequired;
 }
 
 const handleFileUpload = (event) => {
@@ -801,7 +756,6 @@ const handleFileUpload = (event) => {
 const openRenewalDialog = (center) => {
   // Double-check CAPA status before opening dialog
   if (center.has_active_capa) {
-    console.error('🚫 Attempted to open renewal dialog for center with active CAPA:', center.center_name);
     toast.error('Cannot renew: This teaching center has pending CAPA that must be resolved first.');
     return;
   }
