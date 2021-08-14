@@ -1,6 +1,5 @@
 <template>
   <div class="mx-auto px-4 py-8">
-    <!-- HEADER -->
     <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10">
       <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">
         Teaching Center Tracker & Renewal
@@ -10,13 +9,11 @@
       </p>
     </div>
 
-    <!-- LOADING STATE -->
     <div v-if="isLoading" class="flex justify-center items-center my-8">
       <Loader class="animate-spin text-blue-600 w-6 h-6" />
       <p class="ml-2 text-gray-600">Loading teaching center data...</p>
     </div>
 
-    <!-- ERROR STATE -->
     <div v-else-if="apiError" class="bg-red-50 border border-red-200 text-red-700 p-6 rounded-lg mb-6">
       <h3 class="text-lg font-medium mb-2">Error Loading Data</h3>
       <p>{{ errorMessage }}</p>
@@ -26,7 +23,6 @@
       </button>
     </div>
 
-    <!-- EMPTY STATE -->
     <div v-else-if="!filteredTeachingCenters.length"
       class="bg-yellow-50 border border-yellow-200 text-yellow-700 p-6 rounded-lg mb-6">
       <h3 class="text-lg font-medium mb-2">No Teaching Centers Found</h3>
@@ -34,7 +30,6 @@
       <p class="mt-2">Please ensure you have registered a teaching center under the correct institute.</p>
     </div>
 
-    <!-- TABLE DISPLAY -->
     <div v-else class="bg-white shadow-md rounded-lg overflow-hidden">
       <div class="overflow-x-auto">
         <table class="w-full text-sm text-left text-gray-500">
@@ -76,7 +71,6 @@
                 </div>
               </td>
               <td class="px-6 py-4 text-center">
-                <!-- Action Buttons based on lifecycleStatus -->
                 <div class="flex items-center justify-center space-x-2">
                   <div v-if="center.lifecycleStatus === 'RENEWAL_AWAITING_PAYMENT'">
                     <button @click="initiateRenewalPayment(center)" class="btn btn-primary btn-sm">
@@ -91,10 +85,8 @@
                     </span>
                   </div>
 
-                  <!-- ============================ MODIFICATION: CAPA LOGIC IN TEMPLATE ============================ -->
                   <div
                     v-else-if="center.lifecycleStatus === 'EXPIRED' || center.lifecycleStatus === 'RENEWAL_ELIGIBLE'">
-                    <!-- State 1: Renewal is blocked by a pending CAPA on the parent institute -->
                     <div v-if="center.hasPendingCapa"
                       class="flex items-center text-xs font-medium text-orange-600 cursor-help"
                       title="Resolve the pending CAPA on the parent institute to enable renewal.">
@@ -105,12 +97,10 @@
                       </svg>
                       Blocked by CAPA
                     </div>
-                    <!-- State 2: No CAPA, user can renew -->
                     <button v-else @click="openRenewalDialog(center)" class="btn btn-primary btn-sm">
                       Renew Now
                     </button>
                   </div>
-                  <!-- ========================== END OF TEMPLATE MODIFICATION ========================== -->
 
                   <div v-else-if="center.lifecycleStatus === 'INITIAL_AWAITING_PAYMENT'">
                     <button @click="initiateNewRegistrationPayment(center)" class="btn btn-primary btn-sm">
@@ -138,7 +128,6 @@
       </div>
     </div>
 
-    <!-- RENEWAL DIALOG -->
     <div v-if="showRenewalDialog"
       class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-screen overflow-y-auto">
@@ -226,7 +215,6 @@
       </div>
     </div>
 
-    <!-- PAYMENT MODAL -->
     <PaymentModal ref="paymentModalRef" :amount="1000" @payment-completed="onPaymentCompleted"
       @close="closePaymentModal" />
   </div>
@@ -242,7 +230,7 @@ import { Loader, CreditCard, Award } from 'lucide-vue-next'
 
 const teachingCenters = ref([])
 const pendingRenewals = ref([])
-const capas = ref([]) // <-- MODIFICATION: State to store CAPA records
+const capas = ref([])
 const isLoading = ref(false)
 const apiError = ref(false)
 const errorMessage = ref('')
@@ -270,27 +258,30 @@ const filteredTeachingCenters = computed(() => {
   return teachingCenters.value
     .filter(center => center?.institute?.CID === userCID)
     .map(center => {
-      const activeRenewal = pendingRenewals.value.find(
-        renewal => renewal.teaching_center === center.id
+      const allPendingRenewalsForCenter = pendingRenewals.value.filter(
+        renewal => renewal.teaching_center_details?.id === center.id
       );
 
-      // ============================ MODIFICATION: CAPA CHECK LOGIC ============================
-      // This logic checks if the parent institute of the current center has a pending CAPA.
+      let activeRenewal = null;
+      if (allPendingRenewalsForCenter.length > 0) {
+        activeRenewal =
+          allPendingRenewalsForCenter.find(r => r.renewal_status === 'AWAITING_PAYMENT') ||
+          allPendingRenewalsForCenter.find(r => r.renewal_status === 'PENDING_REVIEW') ||
+          null;
+      }
+
       const hasPendingCapa = capas.value.some(capa => {
-        // This handles cases where capa.institute could be an object {id: 1} or just the number 1.
         const capaInstituteId = typeof capa.institute === 'object' && capa.institute !== null
           ? capa.institute.id
           : capa.institute;
-
         return capaInstituteId === center.institute?.id && capa.status === 'P';
       });
-      // =======================================================================================
 
       const centerWithDetails = {
         ...center,
-        active_renewal_application: activeRenewal || null,
+        active_renewal_application: activeRenewal,
         is_renewal_in_progress: !!activeRenewal,
-        hasPendingCapa, // Attach the CAPA status to each center object
+        hasPendingCapa,
       };
 
       const lifecycleStatus = getCenterLifecycleStatus(centerWithDetails);
@@ -438,9 +429,7 @@ const handleFileUpload = (event) => {
   selectedFileName.value = file.name
 }
 
-// ============================ MODIFICATION: SAFEGUARD FUNCTION ============================
 const openRenewalDialog = (center) => {
-  // Add a safeguard check here to prevent opening the dialog if renewal is blocked.
   if (center.hasPendingCapa) {
     toast.error("Renewal is blocked because the parent institute has a pending CAPA.", {
       timeout: 5000
@@ -450,7 +439,6 @@ const openRenewalDialog = (center) => {
   selectedCenter.value = center;
   showRenewalDialog.value = true;
 }
-// =======================================================================================
 
 const closeRenewalDialog = () => {
   showRenewalDialog.value = false
@@ -570,7 +558,6 @@ const handleNewRegistrationPayment = async (paymentData) => {
   }
 };
 
-// ============================ MODIFICATION: DATA FETCHING ============================
 const fetchData = async () => {
   if (!authStore.user?.cid) {
     apiError.value = true
@@ -582,19 +569,17 @@ const fetchData = async () => {
   isLoading.value = true;
 
   try {
-    // Fetch centers, renewals, and CAPAs all at once for efficiency.
     const [centersResponse, renewalsResponse, capasResponse] = await Promise.all([
       apiServices.getEpcTeachingCenters(),
       apiServices.getEpcTeachingCenterRenewals({
         'teaching_center__institute__CID': authStore.user.cid
       }),
-      apiServices.getEpcCapas(), // Fetch all CAPA records
+      apiServices.getEpcCapas(),
     ]);
 
     teachingCenters.value = centersResponse.data.results || [];
-    capas.value = capasResponse.data.results || []; // Store CAPA data in state
+    capas.value = capasResponse.data.results || [];
 
-    // Filter for only renewals that are still in a pending state.
     pendingRenewals.value = (renewalsResponse.data.results || []).filter(
       r => ['PENDING_REVIEW', 'AWAITING_PAYMENT'].includes(r.renewal_status)
     );
@@ -607,7 +592,6 @@ const fetchData = async () => {
     isLoading.value = false;
   }
 }
-// ========================== END OF DATA FETCHING MODIFICATION ==========================
 
 onMounted(() => {
   fetchData();
