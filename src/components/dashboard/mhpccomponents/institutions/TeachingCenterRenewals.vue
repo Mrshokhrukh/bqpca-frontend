@@ -1,4 +1,3 @@
-<!-- TeachingCenterTracker.vue -->
 <template>
   <div class="w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 bg-gray-50 min-h-screen">
     <InstituteHeader
@@ -143,7 +142,7 @@
                 stroke-linecap="round"
                 stroke-linejoin="round"
               >
-                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0-3.42 0z"></path>
                 <line x1="12" y1="9" x2="12" y2="13"></line>
                 <line x1="12" y1="17" x2="12.01" y2="17"></line>
               </svg>
@@ -154,20 +153,11 @@
                   Preventive Action (CAPA) request. Please resolve all pending CAPAs before
                   proceeding with the renewal.
                 </p>
-                <!-- Optional: Add a button to view CAPAs if you have that page -->
-                <!-- <button class="mt-2 btn btn-outline btn-sm border-red-300 text-red-700 hover:bg-red-200">
-                  View CAPA Details
-                </button> -->
               </div>
             </div>
 
             <div
-              v-if="
-                !center.has_active_capa &&
-                center.is_active &&
-                center.valid_till &&
-                getDaysUntilExpiration(center) <= 90
-              "
+              v-if="!center.has_active_capa && center.valid_till && getDaysUntilExpiration(center) <= 90"
               class="mb-6 p-4 rounded-lg flex items-start"
               :class="[
                 getDaysUntilExpiration(center) <= 0
@@ -241,20 +231,8 @@
                 <h4 class="text-sm font-semibold text-gray-700 mb-2">Registration Details</h4>
                 <InfoItem
                   label="Status"
-                  :value="
-                    center.is_active
-                      ? 'Active'
-                      : center.tc_review_decision === 'Approved'
-                        ? 'Approved (Inactive)'
-                        : 'Pending/Inactive'
-                  "
-                  :valueClass="
-                    center.is_active
-                      ? 'text-green-600'
-                      : center.tc_review_decision === 'Approved'
-                        ? 'text-blue-600'
-                        : 'text-yellow-600'
-                  "
+                  :value="getStatusText(center)"
+                  :valueClass="getStatusTextClass(center)"
                 />
                 <InfoItem label="Valid From" :value="formatDate(center.valid_since)" />
                 <InfoItem
@@ -296,6 +274,7 @@
             </div>
 
             <div class="mt-6 pt-6 border-t border-gray-100">
+              <!-- Renewal In Progress -->
               <div
                 v-if="isRenewalInProgress(center)"
                 class="p-4 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 text-sm"
@@ -305,12 +284,10 @@
                   Your renewal application is under review. You will be notified upon completion.
                 </p>
               </div>
+
+              <!-- Application In Progress -->
               <div
-                v-else-if="
-                  !center.has_active_capa &&
-                  !center.is_active &&
-                  center.tc_review_decision === 'Pending'
-                "
+                v-else-if="!center.has_active_capa && !center.is_active && center.tc_review_decision === 'Pending'"
                 class="p-4 bg-orange-50 border border-orange-200 rounded-lg text-orange-700 text-sm"
               >
                 <h4 class="font-semibold">Application In Progress</h4>
@@ -318,35 +295,52 @@
                   Your application is under review. You will be notified upon completion.
                 </p>
               </div>
+
+              <!-- Application Rejected -->
               <div
                 v-else-if="center.tc_review_decision === 'Rejected' && center.tc_reason_if_rejected"
                 class="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm"
               >
                 <h4 class="font-semibold">Application Rejected</h4>
                 <p class="mt-1">Reason: {{ center.tc_reason_if_rejected }}</p>
+
+                <!-- CAPA Warning for Rejected Applications -->
+                <div
+                  v-if="center.has_active_capa"
+                  class="mt-3 p-3 bg-red-100 rounded-lg border border-red-300 text-red-800 text-xs"
+                >
+                  <h4 class="font-semibold">Cannot Re-apply: CAPA Pending</h4>
+                  <p class="mt-1">
+                    You must resolve the pending Corrective and Preventive Action (CAPA) before
+                    re-applying or renewing this teaching center.
+                  </p>
+                </div>
+
+                <!-- Re-apply button - only if no CAPA -->
                 <button
+                  v-else
                   @click="openRenewalDialog(center)"
                   class="mt-3 btn btn-primary bg-red-600 hover:bg-red-700 focus:ring-red-500 text-xs"
                 >
                   Re-apply / Renew
                 </button>
               </div>
+
+              <!-- No Need to Renew Yet -->
               <div
-                v-else-if="
-                  !center.has_active_capa &&
-                  center.is_active &&
-                  getDaysUntilExpiration(center) > 90
-                "
+                v-else-if="!center.has_active_capa && center.is_active && getDaysUntilExpiration(center) > 90"
                 class="p-4 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm"
               >
-                <h4 class="font-semibold">Sufficient time for renewal</h4>
+                <h4 class="font-semibold">Registration Valid</h4>
                 <p class="mt-1">
-                  Your registration is valid until {{ formatDate(center.valid_till) }}. There is no
-                  need to renew at this time.
+                  Your registration is valid until {{ formatDate(center.valid_till) }}.
+                  Renewal will be available 90 days before expiration.
                 </p>
               </div>
 
+              <!-- Action buttons section -->
               <div class="flex justify-end items-center space-x-3 mt-4">
+                <!-- Payment Button -->
                 <button
                   v-if="isPaymentRequired(center)"
                   @click="initiatePayment(center)"
@@ -365,8 +359,9 @@
                   Make Payment to Activate
                 </button>
 
+                <!-- Certificate Button -->
                 <button
-                  v-if="center.tc_review_decision === 'Approved' && !isPaymentRequired(center)"
+                  v-if="center.is_active && getDaysUntilExpiration(center) > 0"
                   @click="openCertificateDialog(center)"
                   class="btn btn-outline"
                 >
@@ -387,13 +382,13 @@
                   View Certificate
                 </button>
 
+                <!-- Renewal Button - This should be blocked for CAPA -->
                 <button
                   v-if="canRenew(center)"
                   @click="openRenewalDialog(center)"
                   class="btn btn-primary"
                   :class="{
-                    'animate-pulse bg-orange-500 hover:bg-orange-600':
-                      getDaysUntilExpiration(center) <= 30 && getDaysUntilExpiration(center) > 0,
+                    'animate-pulse bg-orange-500 hover:bg-orange-600': getDaysUntilExpiration(center) <= 30 && getDaysUntilExpiration(center) > 0,
                     'bg-red-600 hover:bg-red-700': getDaysUntilExpiration(center) <= 0,
                   }"
                 >
@@ -555,15 +550,37 @@ const fetchData = async () => {
   initialAuthCheckPending.value = false
   const userCid = authStore.user?.cid
   try {
-    const response = await apiServices.getMhpcTeachingCenterByCid(userCid)
-    instituteTeachingCenters.value = response.data || []
+    const response = await apiServices.getMhpcTeachingCenterByCid(userCid);
+    const results = response.data.results || [];
+
+    instituteTeachingCenters.value = results
+      .filter(item => item && (item.teaching_center || item.center_name)) // Ensure it's a valid record
+      .map(item => {
+        // Case 1: The item is a CAPA record containing a teaching_center.
+        if (item.teaching_center) {
+          // The teaching_center object from the API has has_active_capa: true.
+          // We can just return it directly.
+          // Let's also ensure the main 'id' is the teaching center's id for the :key binding.
+          return {
+            ...item.teaching_center,
+            id: item.teaching_center.id, // Explicitly set the id
+          };
+        }
+        // Case 2: The item is a plain Teaching Center object.
+        // We assume it doesn't have an active CAPA by default.
+        return {
+          ...item,
+          has_active_capa: item.has_active_capa || false, // Ensure this property exists
+        };
+      });
+
   } catch (error) {
-    console.error('Error fetching teaching centers:', error)
+    console.error('Error fetching teaching centers:', error);
     errorMessage.value =
-      error.response?.data?.message || 'Error fetching teaching center data. Please try again.'
-    apiError.value = true
+      error.response?.data?.message || 'Error fetching teaching center data. Please try again.';
+    apiError.value = true;
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
 }
 
@@ -626,7 +643,7 @@ const isRenewalInProgress = (center) => {
 }
 
 const getExpirationTextClass = (center) => {
-  if (!center.valid_till || !center.is_active) return 'text-gray-700'
+  if (!center.valid_till) return 'text-gray-700'
   const days = getDaysUntilExpiration(center)
   if (days <= 0) return 'text-red-600 font-semibold'
   if (days <= 30) return 'text-orange-600 font-semibold'
@@ -644,7 +661,7 @@ const getReviewDecisionClass = (decision, type = 'text', isActive = null) => {
     if (type === 'badge') return 'bg-yellow-100 text-yellow-800'
     return 'text-yellow-600 font-semibold'
   }
-  if (decisionStr.includes('regretted')) {
+  if (decisionStr.includes('regretted') || decisionStr.includes('rejected')) {
     if (type === 'badge') return 'bg-red-100 text-red-800'
     return 'text-red-600 font-semibold'
   }
@@ -659,21 +676,24 @@ const isPaymentRequired = (center) => {
 }
 
 const getStatusText = (center) => {
+  if (center.has_active_capa) return 'CAPA Pending'
   if (isPaymentRequired(center)) {
     if (center.latest_renewal?.renewal_status === 'AWAITING_PAYMENT') {
       return 'Renewal Approved - Pending Payment'
     }
     return 'Approved - Pending Payment'
   }
+  if (center.valid_till && getDaysUntilExpiration(center) <= 0) return 'Expired Registration'
   if (center.is_active) return 'Active Registration'
-  if (center.valid_till) return 'Expired Registration'
   return 'Registration Inactive'
 }
 
 const getStatusTextClass = (center) => {
+  if (center.has_active_capa) return 'text-red-600 font-semibold'
   if (isPaymentRequired(center)) return 'text-yellow-600 font-semibold'
+  if (center.valid_till && getDaysUntilExpiration(center) <= 0) return 'text-red-600 font-semibold'
   if (center.is_active) return 'text-green-600'
-  return 'text-red-600 font-semibold'
+  return 'text-gray-600'
 }
 
 const getPaymentStatusText = (center) => {
@@ -690,13 +710,81 @@ const getPaymentStatusTextClass = (center) => {
   return center.is_payment_complete ? 'text-green-600 font-semibold' : 'text-gray-600'
 }
 
+// UPDATED canRenew function with enhanced CAPA checking and debugging
 const canRenew = (center) => {
-  if (center.has_active_capa) return false
-  const isApproved = center.tc_review_decision === 'Approved'
-  const isExpiringOrExpired = getDaysUntilExpiration(center) <= 90
-  return (
-    isApproved && isExpiringOrExpired && !isRenewalInProgress(center) && !isPaymentRequired(center)
-  )
+  // CAPA blocks all renewals - this is the most important check
+  if (center.has_active_capa) {
+    console.log('🚫 Renewal blocked: Active CAPA exists for center:', center.center_name, {
+      centerId: center.id,
+      hasActiveCapa: center.has_active_capa,
+      centerName: center.center_name
+    });
+    return false;
+  }
+
+  // Must be approved first
+  const isApproved = center.tc_review_decision === 'Approved';
+  if (!isApproved) {
+    console.log('❌ Renewal blocked: Not approved for center:', center.center_name, {
+      reviewDecision: center.tc_review_decision,
+      isApproved
+    });
+    return false;
+  }
+
+  // Must be expiring or expired (within 90 days)
+  const daysUntilExpiration = getDaysUntilExpiration(center);
+  const isExpiringOrExpired = daysUntilExpiration <= 90;
+  if (!isExpiringOrExpired) {
+    console.log('⏰ Renewal not needed: Still valid for center:', center.center_name, {
+      daysUntilExpiration,
+      validTill: center.valid_till,
+      isExpiringOrExpired
+    });
+    return false;
+  }
+
+  // No renewal in progress
+  const notRenewing = !isRenewalInProgress(center);
+  if (!notRenewing) {
+    console.log('🔄 Renewal blocked: Already in progress for center:', center.center_name, {
+      renewalStatus: center.latest_renewal?.renewal_status,
+      isRenewalInProgress: isRenewalInProgress(center)
+    });
+    return false;
+  }
+
+  // No payment required
+  const noPaymentRequired = !isPaymentRequired(center);
+  if (!noPaymentRequired) {
+    console.log('💳 Renewal blocked: Payment required for center:', center.center_name, {
+      paymentStatus: center.payment_status,
+      renewalPaymentStatus: center.latest_renewal?.renewal_status,
+      isPaymentRequired: isPaymentRequired(center)
+    });
+    return false;
+  }
+
+  const canRenewResult = isApproved && isExpiringOrExpired && notRenewing && noPaymentRequired;
+
+  console.log('✅ Renewal check completed for center:', center.center_name, {
+    centerId: center.id,
+    hasActiveCapa: center.has_active_capa,
+    isApproved,
+    isExpiringOrExpired,
+    daysUntilExpiration,
+    notRenewing,
+    noPaymentRequired,
+    finalResult: canRenewResult,
+    centerData: {
+      is_active: center.is_active,
+      tc_review_decision: center.tc_review_decision,
+      valid_till: center.valid_till,
+      payment_status: center.payment_status
+    }
+  });
+
+  return canRenewResult;
 }
 
 const handleFileUpload = (event) => {
@@ -711,6 +799,13 @@ const handleFileUpload = (event) => {
 }
 
 const openRenewalDialog = (center) => {
+  // Double-check CAPA status before opening dialog
+  if (center.has_active_capa) {
+    console.error('🚫 Attempted to open renewal dialog for center with active CAPA:', center.center_name);
+    toast.error('Cannot renew: This teaching center has pending CAPA that must be resolved first.');
+    return;
+  }
+
   selectedCenter.value = { ...center }
   renewalFormData.value = {
     renewal_document: null,
@@ -732,15 +827,21 @@ const confirmRenewal = async () => {
     toast.error('Please accept the declaration.')
     return
   }
-  if (!selectedFile.value) {
-    toast.error('A renewal document is required.')
-    return
+
+  // Final CAPA check before submitting
+  if (selectedCenter.value.has_active_capa) {
+    toast.error('Cannot proceed: This teaching center has pending CAPA that must be resolved first.');
+    closeRenewalDialog();
+    return;
   }
+
   isRenewing.value = true
   try {
     const formDataPayload = new FormData()
     formDataPayload.append('user_remarks', renewalFormData.value.user_remarks || '')
-    formDataPayload.append('renewal_document', selectedFile.value)
+    if (selectedFile.value) {
+      formDataPayload.append('renewal_document', selectedFile.value)
+    }
 
     await apiServices.createTeachingCenterRenewal(selectedCenter.value.id, formDataPayload)
 
@@ -813,9 +914,6 @@ const handlePaymentCompleted = async (paymentData) => {
       error.response?.data?.detail ||
       'An error occurred while confirming your payment.'
     toast.error(`${errorMsg} Please contact support.`)
-  } finally {
-    isLoading.value = false
-    selectedCenter.value = null
   }
 }
 </script>
