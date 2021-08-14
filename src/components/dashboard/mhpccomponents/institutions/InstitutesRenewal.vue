@@ -6,11 +6,13 @@
       :show-actions="false"
     />
 
+    <!-- Loading State -->
     <div v-if="isLoading" class="flex justify-center my-8">
       <Loader class="inline-block animate-spin text-blue-600 w-6 h-6" />
       <p class="ml-2 text-gray-600">Loading institute data...</p>
     </div>
 
+    <!-- Error State -->
     <div
       v-else-if="apiError"
       class="bg-red-50 border border-red-200 text-red-700 p-6 rounded-lg mb-6"
@@ -25,6 +27,7 @@
       </button>
     </div>
 
+    <!-- No Data State -->
     <div
       v-else-if="!instituteData"
       class="bg-gray-50 border border-gray-200 text-gray-700 p-6 rounded-lg mb-6"
@@ -33,7 +36,9 @@
       <p>No institute registration was found for your account.</p>
     </div>
 
+    <!-- Main Content -->
     <div v-else class="bg-white rounded-xl shadow-md overflow-hidden">
+      <!-- Header -->
       <div class="p-6 border-b border-gray-200">
         <div class="flex items-center justify-between">
           <div>
@@ -52,8 +57,9 @@
       </div>
 
       <div class="p-6">
+        <!-- Banners for different states -->
         <div
-          v-if="!isRenewalWindowOpen"
+          v-if="!isRenewalWindowOpen && !instituteData.has_active_capa && !isRenewalInProgress"
           class="mb-6 p-4 rounded-lg border border-green-400 bg-green-50"
         >
           <div class="flex items-start">
@@ -83,7 +89,73 @@
           </div>
         </div>
 
-        <div v-if="isExpired" class="mb-6 p-4 rounded-lg border border-red-400 bg-red-50">
+        <!-- <<< NEW BANNER FOR RENEWAL IN PROGRESS >>> -->
+        <div
+          v-if="isRenewalInProgress && !isPaymentRequired"
+          class="mb-6 p-4 rounded-lg border border-blue-400 bg-blue-50"
+        >
+          <div class="flex items-start">
+            <div class="flex-shrink-0 mt-0.5">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 text-blue-500"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </div>
+            <div class="ml-3">
+              <h3 class="text-sm font-medium text-blue-800">Renewal in Progress</h3>
+              <div class="mt-1 text-sm text-blue-700">
+                <p>
+                  Your renewal application has been submitted and is currently under review. The
+                  renew button is disabled. You will be notified once the review is complete.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          v-if="instituteData.has_active_capa"
+          class="mb-6 p-4 rounded-lg border border-rose-400 bg-rose-50"
+        >
+          <div class="flex items-start">
+            <div class="flex-shrink-0 mt-0.5">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 text-rose-500"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M10 1.944A1.944 1.944 0 008.056 0H2.944A1.944 1.944 0 001 1.944v5.112A1.944 1.944 0 002.944 9H8.056A1.944 1.944 0 0010 7.056V1.944zM18.056 0H12.944A1.944 1.944 0 0011 1.944v5.112A1.944 1.944 0 0012.944 9H18.056A1.944 1.944 0 0020 7.056V1.944A1.944 1.944 0 0018.056 0zM10 12.944A1.944 1.944 0 008.056 11H2.944A1.944 1.944 0 001 12.944v5.112A1.944 1.944 0 002.944 20H8.056A1.944 1.944 0 0010 18.056v-5.112zM18.056 11H12.944A1.944 1.944 0 0011 12.944v5.112A1.944 1.944 0 0012.944 20H18.056A1.944 1.944 0 0020 18.056v-5.112A1.944 1.944 0 0018.056 11z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </div>
+            <div class="ml-3">
+              <h3 class="text-sm font-medium text-rose-700">Renewal Blocked</h3>
+              <div class="mt-1 text-sm text-rose-600">
+                <p>
+                  This institute has one or more unresolved Corrective and Preventive Actions
+                  (CAPAs). You must resolve all pending CAPAs before a renewal can be processed.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          v-if="isExpired && !isRenewalInProgress"
+          class="mb-6 p-4 rounded-lg border border-red-400 bg-red-50"
+        >
           <div class="flex items-start">
             <div class="flex-shrink-0 mt-0.5">
               <svg
@@ -142,6 +214,7 @@
           </div>
         </div>
 
+        <!-- Details Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div>
             <h4 class="text-sm font-medium text-gray-500 mb-1">Registration Details</h4>
@@ -180,12 +253,18 @@
           </div>
         </div>
 
+        <!-- Action Buttons -->
         <div class="flex justify-end mt-8">
           <button
             v-if="showRenewButton"
             @click="showRenewalModal = true"
-            :title="renewButtonTitle"
-            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg mr-4"
+            :disabled="instituteData.has_active_capa"
+            :title="
+              instituteData.has_active_capa
+                ? 'Cannot renew: Please resolve pending CAPAs first.'
+                : renewButtonTitle
+            "
+            class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg mr-4 disabled:opacity-60 disabled:cursor-not-allowed"
           >
             Renew Registration
           </button>
@@ -207,6 +286,7 @@
       </div>
     </div>
 
+    <!-- Modals and Popups -->
     <InstituteRenewalModal
       v-if="instituteData"
       :show="showRenewalModal"
@@ -273,6 +353,7 @@ import InstituteRenewalModal from './InstituteRenewalModal.vue'
 import InstituteCertificate from './InstituteCertificate.vue'
 import PaymentModal from '@/components/common/PaymentModal.vue'
 
+// --- Component State ---
 const instituteData = ref(null)
 const isLoading = ref(true)
 const apiError = ref(false)
@@ -285,14 +366,17 @@ const authStore = useAuthStore()
 const toast = useToast()
 const userCid = computed(() => authStore.user?.cid || '')
 
+// --- Helper Functions ---
 const formatDateSafely = (dateString) => {
   if (!dateString) return 'N/A'
   const date = new Date(dateString)
   return isNaN(date.getTime())
     ? 'Invalid Date'
+    // <<< FIX: Corrected method name from toLocaleDate to toLocaleDateString
     : date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
 }
 
+// --- Computed Properties ---
 const latestRenewal = computed(() => instituteData.value?.latest_renewal || null)
 const formattedActiveDate = computed(() => formatDateSafely(instituteData.value?.valid_since))
 const formattedExpirationDate = computed(() => formatDateSafely(instituteData.value?.valid_till))
@@ -320,26 +404,64 @@ const showRenewButton = computed(() => isRenewalWindowOpen.value && !isRenewalIn
 const canViewCertificate = computed(() => isActive.value)
 
 const renewalStatusDisplayText = computed(() => {
-  if (!latestRenewal.value) return 'Not Initiated'
-  const statusMap = {
-    PENDING: 'Pending Review',
-    AWAITING_PAYMENT: 'Approved - Awaiting Payment',
-    COMPLETED: 'Completed & Active',
-    REJECTED: 'Rejected',
+  // Priority 1: A renewal is actively in process. Show its status.
+  if (isRenewalInProgress.value) {
+    const statusMap = {
+      PENDING: 'Pending Review',
+      AWAITING_PAYMENT: 'Approved - Awaiting Payment'
+    }
+    return statusMap[latestRenewal.value.renewal_status] || 'In Progress'
   }
-  return statusMap[latestRenewal.value.renewal_status] || 'Unknown'
+
+  // Priority 2: If not in progress, but expired, show that.
+  if (isExpired.value) {
+    return 'Expired - Renewal Required'
+  }
+
+  // Priority 3: If there's a past renewal, show its completed status.
+  if (latestRenewal.value) {
+    const statusMap = {
+      COMPLETED: 'Completed & Active',
+      REJECTED: 'Rejected'
+    }
+    return statusMap[latestRenewal.value.renewal_status] || 'Not Initiated'
+  }
+
+  // Fallback for new institutes with no renewals yet.
+  return 'Not Initiated'
 })
 
 const paymentStatusDisplayText = computed(() => {
-  if (!latestRenewal.value) return 'N/A'
-  if (isPaymentRequired.value) return 'Pending Payment'
-  const status = latestRenewal.value.payment_status
-  return status ? status.charAt(0).toUpperCase() + status.slice(1) : 'N/A'
+  // Priority 1: Is payment explicitly pending right now?
+  if (isPaymentRequired.value) {
+    return 'Pending Payment'
+  }
+
+  // Priority 2: Is a renewal in progress but not yet at payment stage?
+  if (isRenewalInProgress.value) {
+    return 'N/A' // Payment is not applicable until approval
+  }
+
+  // Priority 3: Is it expired (and not in progress)?
+  if (isExpired.value) {
+    return 'N/A'
+  }
+
+  // Fallback: Show the status from the last completed renewal, if any.
+  if (latestRenewal.value && latestRenewal.value.payment_status) {
+    const status = latestRenewal.value.payment_status
+    return status.charAt(0).toUpperCase() + status.slice(1)
+  }
+
+  return 'N/A'
 })
 
 const mainStatusText = computed(() => {
+  if (instituteData.value?.has_active_capa) return 'Renewal Blocked (Pending CAPA)'
+  // Check for in-progress statuses first, as they are more current than 'Expired'
   if (isPaymentRequired.value) return 'Renewal Approved - Awaiting Payment'
   if (isRenewalInProgress.value) return 'Renewal in Progress'
+  // Then check for terminal statuses
   if (isExpired.value) return 'Registration Expired'
   if (isActive.value) return 'Active Registration'
   return instituteData.value?.application_status || 'Status Unknown'
@@ -349,23 +471,22 @@ const renewButtonTitle = computed(() =>
   isActive.value ? 'Renew your institute registration' : 'Renew your expired registration',
 )
 
+// --- Color and Style Computed Properties ---
 const getDecisionColor = (decision) => {
   if (!decision) return 'text-gray-600'
   const lowerDecision = decision.toLowerCase()
-  if (
-    lowerDecision.includes('active') ||
-    lowerDecision.includes('completed')
-  )
+  if (lowerDecision.includes('active') || lowerDecision.includes('completed'))
     return 'text-green-600'
   if (lowerDecision.includes('payment')) return 'text-yellow-600'
   if (lowerDecision.includes('pending') || lowerDecision.includes('progress'))
     return 'text-blue-600'
-  if (lowerDecision.includes('rejected') || lowerDecision.includes('expired'))
-    return 'text-red-600'
+  if (lowerDecision.includes('rejected') || lowerDecision.includes('expired')) return 'text-red-600'
+  if (lowerDecision.includes('capa')) return 'text-rose-600'
   return 'text-gray-600'
 }
 
 const statusIndicatorClass = computed(() => {
+  if (instituteData.value?.has_active_capa) return 'bg-rose-500'
   if (isPaymentRequired.value) return 'bg-yellow-500 animate-pulse'
   if (isRenewalInProgress.value) return 'bg-blue-500 animate-pulse'
   if (isExpired.value) return 'bg-red-500'
@@ -383,6 +504,7 @@ const expirationTextColorClass = computed(() => {
 const renewalStatusColorClass = computed(() => getDecisionColor(renewalStatusDisplayText.value))
 const paymentStatusColorClass = computed(() => getDecisionColor(paymentStatusDisplayText.value))
 
+// --- Methods ---
 const fetchInstituteData = async () => {
   isLoading.value = true
   apiError.value = false
@@ -404,7 +526,7 @@ const fetchInstituteData = async () => {
 }
 
 const handleRenewalSuccess = () => {
-  toast.info('Refreshing institute status...')
+  toast.info('Renewal submitted! Refreshing institute status...')
   fetchInstituteData()
 }
 
@@ -431,10 +553,10 @@ const handlePaymentCompleted = async (paymentData) => {
   }
   isLoading.value = true
   try {
-    await apiServices.confirmInstituteRenewalPayment(
-      latestRenewal.value.id,
-      { payment_id: paymentData.paymentHash }
-    )
+    await apiServices.confirmInstituteRenewalPayment(latestRenewal.value.id, {
+      payment_id: paymentData.paymentHash
+    })
+
     toast.success('Payment confirmed! Your certificate has been renewed successfully.')
     await fetchInstituteData()
   } catch (error) {
