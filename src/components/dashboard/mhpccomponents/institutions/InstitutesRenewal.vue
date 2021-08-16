@@ -372,8 +372,8 @@ const formatDateSafely = (dateString) => {
   const date = new Date(dateString)
   return isNaN(date.getTime())
     ? 'Invalid Date'
-    // <<< FIX: Corrected method name from toLocaleDate to toLocaleDateString
-    : date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+    :
+    date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
 }
 
 // --- Computed Properties ---
@@ -392,7 +392,7 @@ const daysUntilExpiration = computed(() => {
 
 const isActive = computed(() => instituteData.value?.is_currently_active === true)
 const isExpired = computed(
-  () => instituteData.value?.application_status === 'Fully Approved' && !isActive.value,
+  () => instituteData.value?.application_status === 'Fully Approved' && !isActive.value
 )
 const isRenewalWindowOpen = computed(() => daysUntilExpiration.value <= 90)
 const isRenewalInProgress = computed(() => {
@@ -408,7 +408,7 @@ const renewalStatusDisplayText = computed(() => {
   if (isRenewalInProgress.value) {
     const statusMap = {
       PENDING: 'Pending Review',
-      AWAITING_PAYMENT: 'Approved - Awaiting Payment'
+      AWAITING_PAYMENT: 'Approved - Awaiting Payment',
     }
     return statusMap[latestRenewal.value.renewal_status] || 'In Progress'
   }
@@ -422,7 +422,7 @@ const renewalStatusDisplayText = computed(() => {
   if (latestRenewal.value) {
     const statusMap = {
       COMPLETED: 'Completed & Active',
-      REJECTED: 'Rejected'
+      REJECTED: 'Rejected',
     }
     return statusMap[latestRenewal.value.renewal_status] || 'Not Initiated'
   }
@@ -468,7 +468,7 @@ const mainStatusText = computed(() => {
 })
 
 const renewButtonTitle = computed(() =>
-  isActive.value ? 'Renew your institute registration' : 'Renew your expired registration',
+  isActive.value ? 'Renew your institute registration' : 'Renew your expired registration'
 )
 
 // --- Color and Style Computed Properties ---
@@ -509,7 +509,7 @@ const fetchInstituteData = async () => {
   isLoading.value = true
   apiError.value = false
   try {
-    const response = await apiServices.getMhpcInstitutes({ params: { CID: userCid.value } })
+    const response = await apiServices.getMhpcInstituteByCid(userCid)
     if (response?.data?.results?.length > 0) {
       instituteData.value = response.data.results[0]
     } else {
@@ -554,7 +554,7 @@ const handlePaymentCompleted = async (paymentData) => {
   isLoading.value = true
   try {
     await apiServices.confirmInstituteRenewalPayment(latestRenewal.value.id, {
-      payment_id: paymentData.paymentHash
+      payment_id: paymentData.paymentHash,
     })
 
     toast.success('Payment confirmed! Your certificate has been renewed successfully.')
