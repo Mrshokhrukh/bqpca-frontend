@@ -30,6 +30,7 @@
           <tbody class="bg-white divide-y divide-gray-200">
             <tr v-for="renewal in renewals" :key="renewal.id" class="hover:bg-gray-50 transition-colors">
               <td class="px-6 py-4 whitespace-nowrap">
+                <!-- The data structure from admin-renewals might be different. Adjust if needed. -->
                 <div class="text-sm font-medium text-gray-900">{{ renewal.institute.name_of_institution }}</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ renewal.institute.full_name }}</td>
@@ -90,10 +91,14 @@ onMounted(async () => {
 const fetchRenewals = async () => {
   isLoading.value = true
   try {
-    const response = await apiService.getInstituteRenewals()
-    renewals.value = response.data.results || response.data || []
+    // --- UPDATED LINE ---
+    // Calling the correctly identified and renamed function
+    const response = await apiService.getAdminAllRenewals()
+    // The admin-renewals endpoint might only list institute renewals,
+    // but filtering here ensures you only show what's relevant to this page.
+    renewals.value = response.data.results.filter(r => r.renewal_type === 'institute') || []
   } catch (error) {
-    console.error('Error fetching renewals:', error)
+    console.error('Error fetching admin renewals:', error)
     toast.error('Failed to load renewal applications.')
     renewals.value = []
   } finally {
@@ -103,6 +108,7 @@ const fetchRenewals = async () => {
 
 const openModal = (renewal) => {
   selectedRenewal.value = {
+    ...renewal, // Pass the whole object
     renewalId: renewal.id,
     instituteName: renewal.institute.name_of_institution,
     applicantName: renewal.institute.full_name,

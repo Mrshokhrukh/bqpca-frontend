@@ -22,12 +22,6 @@
       <p class="mt-1 text-gray-500">You have not submitted any DPR applications yet.</p>
     </div>
 
-    <div v-else-if="hasApprovedDPR" class="text-center py-16 bg-green-50 rounded-xl border border-green-300">
-      <CheckCircle class="mx-auto h-12 w-12 text-green-400" />
-      <h3 class="mt-4 text-lg font-semibold text-green-800">Application Already Submitted and Approved</h3>
-      <p class="mt-1 text-green-600">You have a valid, approved DPR application. You may view its details below.</p>
-    </div>
-
     <div v-else class="space-y-6">
       <div v-for="app in applications" :key="app.id"
         class="bg-white rounded-xl shadow-sm border border-gray-200 transition-all duration-300"
@@ -61,12 +55,6 @@
               <p class="text-gray-500">Payment</p>
               <p class="font-semibold" :class="app.is_payment_complete ? 'text-green-600' : 'text-amber-600'">
                   {{ app.payment_status_display || (app.is_payment_complete ? 'Completed' : 'Pending') }}
-              </p>
-            </div>
-            <div>
-              <p class="text-gray-500">Verification</p>
-              <p class="font-semibold" :class="app.is_physical_verification ? 'text-green-600' : 'text-amber-600'">
-                {{ app.is_physical_verification ? 'Verified' : 'Pending' }}
               </p>
             </div>
             <div class="col-span-2 md:col-span-1">
@@ -170,7 +158,6 @@ import PaymentModal from '@/components/common/PaymentModal.vue';
 import { useToast } from 'vue-toastification';
 import { Loader, FileText, AlertTriangle, ChevronDown, ChevronUp, ExternalLink, CreditCard, Award, CheckCircle } from 'lucide-vue-next';
 
-// --- STATE ---
 const applications = ref([]);
 const isLoading = ref(false);
 const apiError = ref(false);
@@ -179,7 +166,6 @@ const expandedApplicationId = ref(null);
 const activeTab = ref('vision_mission_strategies');
 const paymentModalRef = ref(null);
 const selectedAppForPayment = ref(null);
-const hasApprovedDPR = ref(false); // New state variable
 
 const authStore = useAuthStore();
 const toast = useToast();
@@ -207,13 +193,12 @@ const tabs = ref([
   { id: 'other_details', name: 'Other Details' },
 ]);
 
-// --- METHODS ---
 const getStatusColor = (status) => {
   switch (status) {
     case 'Approved': return 'bg-green-100 text-green-800';
     case 'Regretted': return 'bg-red-100 text-red-800';
     case 'Pending': return 'bg-yellow-100 text-yellow-800';
-    default: return 'bg-blue-100 text-blue-700'; // Default for "Submitted" etc.
+    default: return 'bg-blue-100 text-blue-700';
   }
 };
 
@@ -256,15 +241,8 @@ const fetchApplications = async () => {
       applications.value = response.data.results.filter(
         (app) => app.CID && app.CID.toLowerCase() === userCid.toLowerCase()
       );
-
-      // Check if any application is approved
-      hasApprovedDPR.value = applications.value.some(
-        (app) => app.do_dpr_review_decision === 'Approved'
-      );
-
     } else {
       applications.value = [];
-      hasApprovedDPR.value = false;
     }
   } catch (error) {
     console.error('Error fetching DPR applications:', error);
@@ -275,7 +253,6 @@ const fetchApplications = async () => {
   }
 };
 
-// --- PAYMENT LOGIC ---
 const initiatePayment = (app) => {
   selectedAppForPayment.value = app;
   if (paymentModalRef.value) {
@@ -306,10 +283,9 @@ const handlePaymentCompleted = async (paymentData) => {
   appToPay.payment_status_display = 'Processing...';
 
   try {
-    // 1. Prepare and send data to the main payment gateway API
     const paymentGatewayFormData = new FormData();
     paymentGatewayFormData.append('refNo', paymentId);
-    paymentGatewayFormData.append('serviceCode', '100196'); // DPR Service Code
+    paymentGatewayFormData.append('serviceCode', '100196');
     paymentGatewayFormData.append('taxPayerName', user.full_name || user.cid);
     paymentGatewayFormData.append('taxPayerNo', user.cid);
     paymentGatewayFormData.append('taxPayerDocumentNo', user.cid);
@@ -324,7 +300,6 @@ const handlePaymentCompleted = async (paymentData) => {
 
     await apiService.makePayment(paymentGatewayFormData);
 
-    // 2. Patch your application with the payment details
     const updateFormData = new FormData();
     updateFormData.append('payment_id', paymentId);
     updateFormData.append('is_payment_complete', true);

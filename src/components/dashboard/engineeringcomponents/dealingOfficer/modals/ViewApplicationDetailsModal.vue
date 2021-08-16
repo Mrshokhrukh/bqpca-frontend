@@ -76,7 +76,9 @@
 
                     <div class="lg:col-span-2 space-y-6">
                       <ApplicationDetailsSection
-                        :application="application"
+                        v-if="application.user_qualifications && application.user_qualifications.length > 0"
+                        :details="application.user_qualifications[0]"
+                        :application="application" 
                         :personnelCategories="personnelCategories"
                         :personnelSubcategories="personnelSubcategories"
                         :sectors="sectors"
@@ -207,9 +209,22 @@ const refreshApplication = async () => {
   isLoading.value = true
   try {
     const response = await apiServices.getEpcNewApplications(props.application.id)
-    emit('update', response.data)
+
+    // Check if the response has the 'results' key and it's an array
+    if (response.data && Array.isArray(response.data.results) && response.data.results.length > 0) {
+      // Find the specific application from the results array, or just take the first one
+      const updatedApplication = response.data.results.find(app => app.id === props.application.id) || response.data.results[0];
+      emit('update', updatedApplication); // Emit the single object
+    } else if (response.data && typeof response.data === 'object' && !Array.isArray(response.data.results)) {
+      // Fallback in case the API sometimes returns a single object directly
+      emit('update', response.data);
+    } else {
+        console.error('Refresh failed: API response was not in the expected format.', response.data);
+    }
+
     await nextTick()
   } catch (error) {
+
     console.error('Error refreshing application:', error)
   } finally {
     isLoading.value = false

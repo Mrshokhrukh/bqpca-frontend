@@ -670,7 +670,6 @@ export default {
   deleteMhpcInstitute(id) {
     return apiClient.delete(`/mhpc/mhpc-institutes/${id}/`)
   },
-  
   getInstituteRenewalsForInstitute(instituteId) {
     return apiClient.get(`/mhpc/institutes/${instituteId}/renewals/`);
   },
@@ -828,9 +827,14 @@ export default {
   },
 
 
-  getAllTeachingCenterRenewals(params = {}) {
-    return apiClient.get('/mhpc/admin-renewals/', { params })
-  },
+  /**
+ * (RENAMED) Fetches all renewal applications (Institutes, Centers, etc.) for Admin/Dealing Officer review.
+ * @param {object} params - Optional query parameters for filtering/pagination.
+ * @returns {Promise}
+ */
+getAdminAllRenewals(params = {}) {
+  return apiClient.get('/mhpc/admin-renewals/', { params })
+},
 
 
   approveTeachingCenterRenewal(renewalId, data) {
