@@ -2,9 +2,10 @@ import apiClient from './apiClient'
 
 export default {
   // EPC CAPA endpoints
-  getEpcCapas() {
-    return apiClient.get('/epc/epc-capa/')
+  getEpcCapas(queryParams) {
+    return apiClient.get('/epc/epc-capa/', { params: queryParams })
   },
+
   createEpcCapa(data) {
     return apiClient.post('/epc/epc-capa/', data)
   },
@@ -22,8 +23,8 @@ export default {
   },
 
   // EPC COGS endpoints
-  getEpcCogs() {
-    return apiClient.get('/epc/epc-cogs/')
+  getEpcCogs(queryParams) {
+    return apiClient.get('/epc/epc-cogs/', { params: queryParams })
   },
   createEpcCogs(data) {
     return apiClient.post('/epc/epc-cogs/', data)
@@ -140,9 +141,10 @@ export default {
   },
 
   // EPC CPD Records endpoints
-  getEpcCpdRecords() {
-    return apiClient.get('/epc/epc-cpd-records/')
+  getEpcCpdRecords(queryParams) {
+    return apiClient.get('/epc/epc-cpd-records/', { params: queryParams })
   },
+
   createEpcCpdRecord(data) {
     // CPD Records have attachments, use FormData
     return apiClient.post('/epc/epc-cpd-records/', data, {
@@ -254,8 +256,8 @@ export default {
   },
 
   // EPC CPD Tasks endpoints
-  getEpcCpdTasks() {
-    return apiClient.get('/epc/epc-cpd-tasks/')
+  getEpcCpdTasks(queryParams) {
+    return apiClient.get('/epc/epc-cpd-tasks/', { params: queryParams })
   },
   createEpcCpdTask(data) {
     // CPD Tasks have attachments, use FormData
@@ -322,8 +324,8 @@ export default {
   },
 
   // EPC Institutes endpoints
-  getEpcInstitutes() {
-    return apiClient.get('/epc/epc-institutes/')
+  getEpcInstitutes(queryParams) {
+    return apiClient.get('/epc/epc-institutes/', { params: queryParams })
   },
   createEpcInstitute(data) {
     // Institutes have attachments, use FormData
@@ -352,8 +354,9 @@ export default {
 
 
   // EPC New Application endpoints
-  getEpcNewApplications() {
-    return apiClient.get('/epc/epc-new-application/')
+  getEpcNewApplications(queryParams) {
+    // NOTE: Make sure your Django URL for this is `/epc/epc-new-application/`
+    return apiClient.get('/epc/epc-new-application/', { params: queryParams })
   },
   createEpcNewApplication(data) {
     // New Applications have attachments, use FormData
@@ -387,8 +390,8 @@ export default {
   },
 
   // EPC New Qualification endpoints
-  getEpcNewQualifications() {
-    return apiClient.get('/epc/epc-new-qualification/')
+  getEpcNewQualifications(queryParams) {
+    return apiClient.get('/epc/epc-new-qualification/', { params: queryParams })
   },
   createEpcNewQualification(data) {
     // New Qualifications have attachments, use FormData
@@ -469,8 +472,8 @@ export default {
   },
 
   // EPC Renewals endpoints
-  getEpcRenewals() {
-    return apiClient.get('/epc/epc-renewals/')
+  getEpcRenewals(queryParams) {
+    return apiClient.get('/epc/epc-renewals/', { params: queryParams })
   },
   createEpcRenewal(data) {
     return apiClient.post('/epc/epc-renewals/', data)
@@ -520,7 +523,7 @@ export default {
   /**
    * Approves a teaching center application. Calls the custom @action endpoint.
    * @param {number} id
-   * @param {object} data 
+   * @param {object} data
    */
   approveEpcTeachingCenter(id, data) {
 
@@ -1005,6 +1008,7 @@ export default {
   deleteEpcMastersUniversity(id) {
     return apiClient.delete(`/epc/masters-university/${id}/`)
   },
+
 
   // Helper methods for common operations
   getApplicationWithCid(cid) {

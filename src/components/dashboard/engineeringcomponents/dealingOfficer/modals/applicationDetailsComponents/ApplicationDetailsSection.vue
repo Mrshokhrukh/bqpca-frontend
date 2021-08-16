@@ -394,8 +394,8 @@ const togglePrimaryQualification = async () => {
 }
 
 const selectedCategoryName = computed(() => {
-  if (!selectedQualification.value || !selectedQualification.value.personnel_category) {
-    return ''
+  if (!selectedQualification.value || selectedQualification.value.personnel_category === null) {
+    return selectedQualification.value?.personnel_category_name || ''
   }
   const categoryId = parseInt(selectedQualification.value.personnel_category, 10)
   const selected = props.personnelCategories.find((cat) => cat.id === categoryId)
@@ -403,8 +403,8 @@ const selectedCategoryName = computed(() => {
 })
 
 const selectedSubcategoryName = computed(() => {
-  if (!selectedQualification.value || !selectedQualification.value.personnel_sub_category) {
-    return ''
+  if (!selectedQualification.value || selectedQualification.value.personnel_sub_category === null) {
+    return selectedQualification.value?.personnel_sub_category_name || ''
   }
   const subcategoryId = parseInt(selectedQualification.value.personnel_sub_category, 10)
   const selected = props.personnelSubcategories.find((sub) => sub.id === subcategoryId)
@@ -412,8 +412,8 @@ const selectedSubcategoryName = computed(() => {
 })
 
 const selectedSectorName = computed(() => {
-  if (!selectedQualification.value || !selectedQualification.value.select_sector) {
-    return ''
+  if (!selectedQualification.value || selectedQualification.value.select_sector === null) {
+    return selectedQualification.value?.select_sector_name || ''
   }
   const sectorId = parseInt(selectedQualification.value.select_sector, 10)
   const selected = props.sectors.find((sector) => sector.id === sectorId)
