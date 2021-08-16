@@ -1571,7 +1571,7 @@ const openConfirmationModal = () => {
 
 const handleSubmitActual = async () => {
   isConfirmationModalOpen.value = false
-  updateFormDocuments()
+  updateFormDocuments() // This function is fine, it prepares the data
   if (!validateForm()) {
     toast.error('Submission cancelled due to validation errors. Please review the form.')
     return
@@ -1580,12 +1580,15 @@ const handleSubmitActual = async () => {
     toast.error(
       'Application ID is missing. Cannot submit qualification details. Please go back to Step 1.',
     )
-    isSubmitting.value = false
     return
   }
+
   isSubmitting.value = true
   try {
+    // --- The FormData creation is correct ---
     const qualificationFormData = new FormData()
+
+    // --- Appending all the text fields is also correct ---
     qualificationFormData.append('application', localFormData.application)
     if (localFormData.qualification_name === 'OTHERS') {
       qualificationFormData.append(
@@ -1606,22 +1609,31 @@ const handleSubmitActual = async () => {
     qualificationFormData.append('declaration', localFormData.declaration ? 'True' : 'False')
     qualificationFormData.append('remarks', localFormData.remarks || '')
     qualificationFormData.append('is_primary_qualification', 'True')
-    localFormData.documents.forEach((doc) => {
-      if (doc.files && doc.files.length > 0 && doc.type) {
+
+
+    // --- THIS IS THE CORRECTED ATTACHMENT LOOP ---
+    // We loop through the original `supportingDocuments` ref to get the index.
+    supportingDocuments.value.forEach((doc, index) => {
+      // We only process rows that have a selected type AND at least one file.
+      if (doc.type && doc.files && doc.files.length > 0) {
+        // Since your input allows multiple files, we loop through them.
+        // If it only allowed one, you would just use doc.files[0].
         doc.files.forEach((fileObject) => {
-          qualificationFormData.append(
-            'user_qualification_attachment_files',
-            fileObject,
-            fileObject.name,
-          )
-          qualificationFormData.append('user_qualification_attachment_file_types', doc.type)
+          // Use the correct key format the backend expects: `attachments-{index}-file`
+          qualificationFormData.append(`attachments-${index}-file`, fileObject, fileObject.name)
         })
+        // The type for this group of files is sent with the corresponding index.
+        qualificationFormData.append(`attachments-${index}-file_type`, doc.type)
       }
     })
+
+    // Now the API call will work
     await apiService.createEpcNewQualification(qualificationFormData)
+
     toast.success('Registration submitted successfully!')
     emit('submit', { ...localFormData })
     router.push('/admin/user/health_certification/dashboard')
+
   } catch (error) {
     console.error(
       'Error submitting qualification and documents:',

@@ -8,10 +8,8 @@
     </PageHeader>
 
     <form @submit.prevent="submitForm" class="space-y-8 mt-8">
+      <!-- CRITICAL: Only the registration number is needed to identify the user -->
       <input type="hidden" v-model="form.registration_no" />
-      <input type="hidden" v-model="form.cid_no" />
-      <input type="hidden" v-model="form.full_name" />
-      <input type="hidden" v-model="form.gender" />
 
       <!-- Section 1: Supervisor Details -->
       <div
@@ -755,36 +753,41 @@ const submitForm = async () => {
         }
       }
 
+      // =================================================================
+      // START: *** THIS IS THE CORRECTED CODE BLOCK ***
+      // =================================================================
       const requestData = {
+        // --- CRITICAL: Only send the registration number to identify the user ---
         registration_no: form.registration_no,
-        cid_no: form.cid_no,
-        full_name: form.full_name,
-        gender: form.gender,
+
+        // --- DO NOT SEND a full_name, cid_no, or gender. The backend already knows. ---
+
+        // --- Send only the data that is specific to THIS form ---
         reason_for_application: form.reason_for_application,
         supervisor_name: form.supervisor_name,
         supervisor_designation: form.supervisor_designation,
         agency: form.agency,
         department: form.department || null,
         workplace: workplaceId === 'other' ? null : workplaceId,
-        contact_number: form.contact_number,
-        email_address: form.email_address,
-        recipient_name: isRecipientSelf.value ? form.full_name : form.recipient_name,
-        recipient_contact_number: isRecipientSelf.value
-          ? form.user_contact_number
-          : form.recipient_contact_number,
-        recipient_email: isRecipientSelf.value ? form.user_email : form.recipient_email,
+        contact_number: form.contact_number,      // This is the SUPERVISOR's contact
+        email_address: form.email_address,       // This is the SUPERVISOR's email
+
+        // --- Send recipient details ONLY if it's NOT the applicant ---
+        // If it IS the applicant, send `null` to let the backend look up the correct, current info.
+        recipient_name: isRecipientSelf.value ? null : form.recipient_name,
+        recipient_contact_number: isRecipientSelf.value ? null : form.recipient_contact_number,
+        recipient_email: isRecipientSelf.value ? null : form.recipient_email,
+
+        // The rest of the data
         address: isRecipientSelf.value ? null : form.address,
         po_box: isRecipientSelf.value ? null : form.po_box || null,
         zip_code: isRecipientSelf.value ? null : form.zip_code || null,
         declaration: form.declaration,
-        review_status: 'Pending',
-        review_remark: '',
-        endorsement_decision: 'Pending',
-        endorsement_remark: '',
-        is_payment_complete: false,
-        payment_id: '',
-        is_active: true,
       }
+      // =================================================================
+      // END: *** CORRECTED CODE BLOCK ***
+      // =================================================================
+
 
       const response = await apiService.createEpcCogs(requestData)
 
