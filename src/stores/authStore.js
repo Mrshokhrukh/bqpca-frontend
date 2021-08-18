@@ -269,6 +269,52 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  const loginWithNdi = async (threadId) => {
+    try {
+      const response = await apiService.ndiLoginFinalize(threadId)
+
+      // The logic here is nearly identical to the successful email login
+      // 1. Update state
+      accessToken.value = response.data.access
+      refreshToken.value = response.data.refresh
+      user.value = response.data.user
+
+      // 2. Save to localStorage
+      localStorage.setItem('accessToken', response.data.access)
+      localStorage.setItem('refreshToken', response.data.refresh)
+      localStorage.setItem('user', JSON.stringify(user.value))
+
+      // 3. Fetch related application data if necessary (e.g., registrationNo)
+      if (user.value.service_type === 'engineering_certification') {
+        await fetchAndSetRegistrationNo()
+      }
+
+      // 4. Role-based redirection logic
+      // NOTE: We assume NDI login from AuthSection is always for non-admin roles
+      if (
+        user.value.role !== 'user' &&
+        user.value.role !== 'cme_cpd_provider' &&
+        user.value.role !== 'institutions'
+      ) {
+        toast.error('Admin/Internal role access is not permitted via NDI on this page.')
+        // Clear everything and force redirect to admin login
+        logout()
+        router.push('/admin/login')
+        return
+      }
+
+      const redirectRoute = `/admin/${user.value.role}/${user.value.service_type}/dashboard`
+      toast.success('NDI Login successful!')
+      router.push(redirectRoute)
+
+    } catch (error) {
+      console.error('NDI Login Finalization Error:', error)
+      const errorMessage = error.response?.data?.error || 'NDI login failed. Please try again.'
+      toast.error(errorMessage)
+      throw error // Re-throw the error so the component knows it failed
+    }
+  }
+
   return {
     accessToken,
     refreshToken,
@@ -298,6 +344,7 @@ export const useAuthStore = defineStore('auth', () => {
     setNewAccessToken,
     userRegistrationNo,
     fetchAndSetRegistrationNo,
+    loginWithNdi,
   }
 })
 

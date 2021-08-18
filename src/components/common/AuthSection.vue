@@ -338,7 +338,13 @@
     </div>
 
     <!-- NDI Login Modal -->
-    <NdiModal v-if="isNdiModalOpen" @close="isNdiModalOpen = false" :serviceType="serviceType" />
+    <NdiModal
+      v-if="isNdiModalOpen"
+      @close="isNdiModalOpen = false"
+      :serviceType="serviceType"
+      actionType="login"
+      @ndi-login-success="handleNdiLoginSuccess"
+    />
   </div>
 </template>
 
@@ -646,6 +652,22 @@ const handleRegister = async () => {
     toast.error(errorMessage)
   }
 }
+
+const handleNdiLoginSuccess = async (threadId) => {
+  try {
+    // Call the new action in your auth store
+    await authStore.loginWithNdi(threadId);
+
+    // If login is successful, the store will handle redirection.
+    // We can close the modal here.
+    isNdiModalOpen.value = false;
+
+  } catch (error) {
+    // The authStore action already shows a toast, but you could add
+    // additional logic here if the login fails, like keeping the modal open.
+    console.error("NDI login process failed at the final step.");
+  }
+};
 </script>
 
 <style scoped>
