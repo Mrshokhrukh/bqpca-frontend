@@ -73,4 +73,7 @@ export default {
   handleNdiWebhook(data) {
     return apiClient.post('/users/ndi/webhook/', data)
   },
+  ndiLoginFinalize(threadId) {
+    return apiClient.post('/users/ndi/finalize/', { thread_id: threadId });
+  },
 }
