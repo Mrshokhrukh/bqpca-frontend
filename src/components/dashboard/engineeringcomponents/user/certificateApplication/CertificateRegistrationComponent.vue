@@ -14,12 +14,12 @@
     />
 
     <!-- Step 2: Dynamic Form -->
+    <!-- FIX: The @submit listener has been removed. The child component now handles everything. -->
     <DynamicRegistrationForm
       v-if="currentStep === 2"
       :selected-type="selectedType"
       v-model="formData"
       @back="handleBack"
-      @submit="handleSubmit"
     />
 
     <!-- Confirmation Modal -->
@@ -37,7 +37,8 @@ import { ref, computed } from 'vue'
 import RegistrationTypeSelector from './RegistrationTypeSelector.vue'
 import DynamicRegistrationForm from './ApplicationForm.vue'
 import ConfirmationModal from './ConfirmationModal.vue'
-import { useToast } from 'vue-toastification'
+// FIX: The useToast import is no longer needed in this parent component.
+// import { useToast } from 'vue-toastification'
 
 // Step management
 const currentStep = ref(1)
@@ -45,6 +46,7 @@ const selectedType = ref(null)
 const showConfirmationModal = ref(false)
 
 // Form data for CID and non-CID holders
+// This is still needed to pass as a v-model and for the resetForm function.
 const formData = ref({
   cid: '',
   workPermitNo: '',
@@ -93,82 +95,20 @@ function handleBack() {
   resetForm()
 }
 
-const toast = useToast()
+// FIX: The toast instance is no longer needed.
+// const toast = useToast()
 
-// Handle form submission
+// FIX: This entire function was the source of the problem. It has been removed.
+// The child component (`ApplicationForm.vue`) handles its own submission logic,
+// including validation and showing toasts. This parent function was creating
+// a redundant, incorrect validation check.
+/*
 function handleSubmit() {
-  let missingFields = []
-
-  // Common required fields for both types
-  if (!formData.value.full_name) {
-    missingFields.push('Full Name')
-  }
-  if (!formData.value.date_of_birth) {
-    missingFields.push('Date of Birth')
-  }
-  if (!formData.value.gender) {
-    missingFields.push('Gender')
-  }
-  if (!formData.value.contact_number) {
-    missingFields.push('Contact Number')
-  }
-  if (!formData.value.passport_photo) {
-    missingFields.push('Passport Photo')
-  }
-  if (!formData.value.declaration) {
-    missingFields.push('Declaration')
-  }
-
-  // CID-specific required fields
-  if (selectedType.value === 'cid') {
-    if (!formData.value.cid) {
-      missingFields.push('CID Number')
-    }
-    if (!formData.value.permanent_dzongkhag) {
-      missingFields.push('Dzongkhag')
-    }
-    if (!formData.value.permanent_village) {
-      missingFields.push('Village')
-    }
-  }
-  // Non-CID specific required fields
-  else {
-    if (!formData.value.nationality) {
-      missingFields.push('Nationality')
-    }
-    if (!formData.value.email) {
-      missingFields.push('Email')
-    }
-    if (!formData.value.workPermitNo) {
-      missingFields.push('Work Permit Number')
-    }
-    if (!formData.value.country) {
-      missingFields.push('Country')
-    }
-  }
-
-  // Engineering qualification specific validations
-  if (!formData.value.qualification_type) {
-    missingFields.push('Qualification Type')
-  }
-  if (!formData.value.qualification_name) {
-    missingFields.push('Qualification Name')
-  }
-  if (!formData.value.institute) {
-    missingFields.push('Institute/University')
-  }
-  if (!formData.value.year_of_completion) {
-    missingFields.push('Year of Completion')
-  }
-
-  if (missingFields.length > 0) {
-    const missingFieldsString = missingFields.join(', ')
-    toast.error(`Please fill in the following required fields: ${missingFieldsString}`)
-    return // Prevent submission
-  }
+  // ... ALL THE DELETED VALIDATION LOGIC WAS HERE ...
 }
+*/
 
-// Reset form data
+// Reset form data - still needed for the 'handleBack' function
 function resetForm() {
   formData.value = {
     cid: '',
