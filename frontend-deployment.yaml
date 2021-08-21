@@ -1,6 +1,3 @@
-# frontend-deployment.yaml
-
-# --- Deployment ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -19,15 +16,19 @@ spec:
     spec:
       containers:
       - name: bqpca-frontend
-        # IMPORTANT: Updated to use the v1.0.0 tag
-        image: your-docker-registry/bqpca-frontend:v1.0.0
+        image: druksmartdeveloper2024/bqpca-frontend:v1.0.0
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
         ports:
         - containerPort: 80
-
+      imagePullSecrets:
+      - name: regcred 
 ---
-
-# --- Service ---
-# This part does not need to be changed.
 apiVersion: v1
 kind: Service
 metadata:

@@ -2,7 +2,7 @@
 
 # --- Stage 1: Build Stage ---
 # Use the official Bun image to install dependencies and build the Vue app
-FROM oven/bun:1.2.19 as builder
+FROM oven/bun:1.2.19 AS builder
 
 # Set the working directory inside the container
 WORKDIR /app
