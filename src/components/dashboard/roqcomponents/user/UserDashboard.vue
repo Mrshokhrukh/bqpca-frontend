@@ -1,41 +1,44 @@
 <template>
   <div class="p-4 w-full space-y-6">
-    <!-- Error Handling -->
-    <div
-      v-if="error"
-      :class="[
-        error.includes('no application')
-          ? 'bg-blue-50 border-l-4 border-blue-400 p-4 mb-4'
-          : 'bg-red-50 border-l-4 border-red-400 p-4 mb-4',
-      ]"
-    >
-      <div class="flex items-center">
-        <XCircle
-          class="h-5 w-5"
-          :class="[error.includes('no application') ? 'text-blue-400' : 'text-red-400']"
-        />
-        <div>
-          <p
-            class="text-sm"
-            :class="[error.includes('no application') ? 'text-blue-700' : 'text-red-700']"
-          >
-            {{ error }}
-          </p>
-          <router-link
-            v-if="error.includes('no application')"
-            to="/admin/user/roq/my_applications"
-            class="text-blue-700 underline mt-2 inline-block"
-            >Apply Now</router-link
-          >
-        </div>
-      </div>
-    </div>
-
-    <!-- Loading Spinner -->
+    <!-- 1. Loading Spinner (no change) -->
     <div v-if="isLoading" class="flex justify-center items-center h-64">
       <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
     </div>
 
+    <!-- 2. Genuine Error Handling -->
+    <div v-else-if="error" class="bg-red-50 border-l-4 border-red-400 p-4 mb-4">
+      <div class="flex items-center space-x-3">
+        <XCircle class="h-5 w-5 text-red-400" />
+        <div>
+          <p class="text-sm text-red-700">
+            {{ error }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. New "Welcome" / Empty State for New Users -->
+    <div
+      v-else-if="hasNoApplications"
+      class="text-center p-8 bg-slate-50 rounded-lg border border-dashed border-slate-300"
+    >
+      <div class="inline-block p-4 bg-blue-100 rounded-full mb-4">
+        <FileText class="h-8 w-8 text-blue-600" />
+      </div>
+      <h2 class="text-xl font-semibold text-slate-800">Welcome to Your Dashboard!</h2>
+      <p class="mt-2 text-slate-600">
+        It looks like you haven't submitted an application yet. Get started by creating your first
+        one.
+      </p>
+      <router-link
+        to="/admin/user/roq/my_applications"
+        class="mt-6 inline-flex items-center px-6 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-transform transform hover:scale-105"
+      >
+        Apply Now
+      </router-link>
+    </div>
+
+    <!-- 4. Main Dashboard Content (only shows if there's data) -->
     <div v-else>
       <!-- Stats Grid -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -123,6 +126,7 @@
             :series="chartSeries"
             height="100%"
           />
+          <!-- This fallback can likely be removed since the parent `v-else` already ensures there is data -->
           <div
             v-else-if="!isLoading && filteredApplications.length === 0"
             class="flex items-center justify-center h-full text-gray-500"
@@ -146,8 +150,9 @@ import apiService from '@/services/services'
 
 const { user } = useAuthStore()
 const applications = ref([])
-const isLoading = ref(false)
+const isLoading = ref(true) // Set to true initially
 const error = ref(null)
+const hasNoApplications = ref(false) // New state for the empty case
 const chartContainer = ref(null)
 const isChartReady = ref(false)
 
@@ -156,6 +161,7 @@ const filteredApplications = computed(() => {
   return applications.value.filter((app) => !app.is_second_copy)
 })
 
+// ... (rest of the computed properties: stats, avgProcessingTime, successRate remain the same) ...
 // Compute statistics
 const stats = computed(() => {
   return {
@@ -308,10 +314,12 @@ watchEffect(() => {
   }
 })
 
-// Load applications
+// Load applications - UPDATED LOGIC
 const loadApplications = async () => {
   isLoading.value = true
   error.value = null
+  hasNoApplications.value = false // Reset state on each load
+
   try {
     const response = await apiService.getRecognitionOfQualification(user.cid)
     applications.value = response.data.sort(
@@ -319,13 +327,12 @@ const loadApplications = async () => {
     )
   } catch (err) {
     console.error('Error loading applications:', err)
-    if (
-      err.response?.status === 404 &&
-      err.response?.data?.detail === 'No record found with the given ID or CID.'
-    ) {
-      error.value =
-        'There seems to be no application under your user name. Please proceed and apply for a new application.'
+    const detail = err.response?.data?.detail || ''
+    // Check for the specific "no record" scenario
+    if (err.response?.status === 404 && detail.includes('No record found')) {
+      hasNoApplications.value = true
     } else {
+      // Handle all other errors as genuine failures
       error.value = 'Failed to load application data. Please try again later.'
     }
   } finally {

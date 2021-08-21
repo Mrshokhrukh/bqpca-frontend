@@ -1,7 +1,7 @@
 <template>
   <div class="p-4 w-full">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-      <h2 class="text-3xl font-serif font-bold text-slate-900">All ROQ Applications</h2>
+      <h2 class="text-3xl font-serif font-bold text-slate-900">Assigned ROQ Applications</h2>
       <button
         class="inline-flex items-center px-6 py-3 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 active:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transform transition-all duration-200 hover:scale-[1.02] shadow-sm hover:shadow"
         @click="handleApplicationSubmitted"
@@ -13,10 +13,7 @@
     </div>
 
     <div class="bg-white rounded-lg shadow overflow-hidden">
-      <div
-        v-if="loading && applications.length === 0"
-        class="flex justify-center items-center py-12"
-      >
+      <div v-if="loading && applications.length === 0" class="flex justify-center items-center py-12">
         <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
       </div>
       <div v-else class="w-full overflow-x-auto">
@@ -43,6 +40,7 @@
       :show-modal="showModal"
       :modal-type="modalType"
       :application="selectedApplication"
+      :user-role="userRole"
       @close="closeModal"
       @update="handleApplicationUpdate"
     />
@@ -50,6 +48,7 @@
       :show-modal="showRemarksModal"
       :chief-remarks="selectedApplication.chief_remarks"
       :dealing-officer-remarks="selectedApplication.dealing_officer_remarks"
+      :private-remarks="selectedApplication.chief_to_do_remarks"
       @close="closeRemarksModal"
     />
     <ViewCertificateModal
@@ -76,7 +75,6 @@ const toast = useToast()
 const authStore = useAuthStore()
 const userRole = computed(() => authStore.user?.role || null)
 
-const noteText = ref('')
 const showModal = ref(false)
 const loading = ref(false)
 const currentPage = ref(1)
@@ -84,7 +82,6 @@ const perPage = ref(10)
 const applications = ref([])
 const searchQuery = ref('')
 const selectedStatus = ref('')
-const selectedType = ref('')
 const modalType = ref(null)
 const selectedApplication = ref({})
 const showRemarksModal = ref(false)
@@ -93,7 +90,6 @@ const error = ref(null)
 const filteredApplications = computed(() => {
   return applications.value.filter((app) => {
     const matchesStatus = selectedStatus.value ? app.status === selectedStatus.value : true
-    const matchesType = selectedType.value ? app.type_of_course === selectedType.value : true
     const matchesSearch = searchQuery.value
       ? Object.values(app).some((value) =>
           String(value).toLowerCase().includes(searchQuery.value.toLowerCase()),
@@ -102,7 +98,7 @@ const filteredApplications = computed(() => {
     const isNotSecondCopy = !app.is_second_copy
     const isNotDraft = app.status !== 'draft'
 
-    return matchesStatus && matchesType && matchesSearch && isNotSecondCopy && isNotDraft
+    return matchesStatus && matchesSearch && isNotSecondCopy && isNotDraft
   })
 })
 
@@ -114,7 +110,7 @@ const paginatedApplications = computed(() => {
   return filteredApplications.value.slice(start, end)
 })
 
-watch([selectedStatus, selectedType, searchQuery], () => {
+watch([selectedStatus, searchQuery], () => {
   currentPage.value = 1
 })
 
@@ -130,7 +126,9 @@ const loadData = async (showLoadingToast = false) => {
   }
 
   try {
-    const response = await apiService.getRecognitionOfQualifications()
+    const response = await apiService.getRecognitionOfQualifications({
+      assigned_to: authStore.userId,
+    })
     applications.value = response.data.results || []
     if (showLoadingToast) {
       toast.dismiss(loadingToastId)
@@ -158,7 +156,7 @@ const handleApplicationSubmitted = async () => {
 }
 
 const handleRefreshRequest = async () => {
-  await loadData(false) // Refresh data without showing the main loading toast
+  await loadData(false)
   await nextTick()
 }
 
@@ -181,16 +179,10 @@ const handleStatusChange = (newStatus) => {
 
 const handleApplicationAction = ({ action, application }) => {
   selectedApplication.value = { ...application }
-  if (action === 'regretReason') {
+  modalType.value = action
+  if (action === 'viewRemarks' || action === 'viewPrivateRemarks') {
     showRemarksModal.value = true
-  } else if (action === 'viewCertificate') {
-    modalType.value = 'viewCertificate'
-    showModal.value = true
   } else {
-    modalType.value = action
-    if (action === 'addNote') {
-      noteText.value = application.remarks
-    }
     showModal.value = true
   }
 }

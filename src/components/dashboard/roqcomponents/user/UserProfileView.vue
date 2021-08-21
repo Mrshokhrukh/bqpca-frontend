@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen">
-    <div class="w-full max-w-screen-xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <div class="mx-auto py-8 px-4 sm:px-6 lg:px-8">
       <!-- Header with Cover Image & Avatar -->
       <div class="relative mb-16">
         <!-- Cover Image -->
