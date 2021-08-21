@@ -1334,21 +1334,6 @@ const validateForm = () => {
     }
   })
 
-  const stageTwoFields = [
-    'qualification_type',
-    'qualification_name',
-    'other_qualification_name_specify',
-    'institute',
-    'year_of_completion',
-    'mandatory_documents',
-    'declaration',
-  ]
-  Object.keys(errors).forEach((key) => {
-    if (stageTwoFields.includes(key) || key.startsWith('document_')) {
-      delete errors[key]
-    }
-  })
-
   let isValid = true
 
   if (!localFormData.qualification_type) {
@@ -1599,19 +1584,8 @@ const openConfirmationModal = () => {
   const isStepTwoValid = validateForm()
 
   if (isStepOneValid && isStepTwoValid) {
-  const isStepOneValid = validateFormStageOne()
-  const isStepTwoValid = validateForm()
-
-  if (isStepOneValid && isStepTwoValid) {
     isConfirmationModalOpen.value = true
   } else {
-    toast.error('Please correct all errors before submitting.')
-    if (!isStepOneValid) {
-      stage.value = 1
-      toast.error('There are errors in Step 1. Please review your personal information.')
-    } else {
-      toast.error('There are errors in Step 2. Please review your qualification and documents.')
-    }
     toast.error('Please correct all errors before submitting.')
     if (!isStepOneValid) {
       stage.value = 1
@@ -1638,15 +1612,8 @@ const handleSubmitActual = async () => {
     } else {
       toast.error('Please correct the errors in Step 2: Qualification & Documents.')
     }
-    if (!isStepOneValid) {
-      stage.value = 1
-      toast.error('Please correct the errors in Step 1: Personal Information.')
-    } else {
-      toast.error('Please correct the errors in Step 2: Qualification & Documents.')
-    }
     return
   }
-
 
   if (!localFormData.application) {
     toast.error(
