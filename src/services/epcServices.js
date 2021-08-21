@@ -174,7 +174,10 @@ export default {
   getEpcCpdRecordsByCid(cid) {
     return apiClient.get(`/epc/epc-cpd-records/list-my-cpd/?cid=${cid}`)
   },
-
+  getCPDProviderDashboard() {
+    
+    return apiClient.get('/epc/dashboard/cpd-provider/');
+  },
   // EPC CPD Task Learning Methods endpoints
   getEpcCpdTaskLearningMethods() {
     return apiClient.get('/epc/epc-cpd-task-learning-methods/')

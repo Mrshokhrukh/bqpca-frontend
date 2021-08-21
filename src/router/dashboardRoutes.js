@@ -98,7 +98,7 @@ function generateDynamicRoutes() {
 
               // Default route handling
               return {
-                path: routeName === 'application_details' ? ':id' : routeName,
+                path: routeName === 'application_details' || routeName === 'cpd_task_details' ? ':id' : routeName,
                 name: `${role.key}-${serviceType.key}-${routeName}`,
                 component: route,
               }

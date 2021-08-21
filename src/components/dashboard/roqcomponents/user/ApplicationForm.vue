@@ -10,6 +10,7 @@
     />
 
     <form v-if="isCIDHolder !== null" @submit.prevent="handleSubmit" class="space-y-6 mt-6">
+      <!-- Personal Information Section (No changes here) -->
       <div v-if="isCIDHolder" class="bg-white border p-6 rounded-lg shadow-sm">
         <h3 class="text-xl font-semibold text-gray-900 mb-4">Personal Information</h3>
 
@@ -379,6 +380,7 @@
         </div>
       </div>
 
+      <!-- Education Details Section (No changes here) -->
       <EducationTypeSelection v-model="form.from_in_country" />
       <div class="bg-white border p-6 rounded-lg shadow-sm">
         <h3 class="text-xl font-semibold text-gray-900 mb-4">Education Details</h3>
@@ -646,11 +648,13 @@
         </div>
       </div>
 
+      <!-- Supporting Documents Section (Changes are here) -->
       <div class="bg-white border p-6 rounded-lg shadow-sm">
         <h3 class="text-xl font-semibold mb-4 text-gray-900">Supporting Documents</h3>
 
         <div class="space-y-6">
-          <div v-if="!form.from_in_country">
+          <!-- CHANGE: Removed v-if="!form.from_in_country" -->
+          <div>
             <label class="block text-sm font-medium text-gray-700 required"
               >Degree Certificate</label
             >
@@ -674,7 +678,8 @@
             </div>
           </div>
 
-          <div v-if="!form.from_in_country">
+          <!-- CHANGE: Removed v-if="!form.from_in_country" -->
+          <div>
             <label class="block text-sm font-medium text-gray-700 required"
               >Academic Transcript</label
             >
@@ -726,6 +731,7 @@
         </div>
       </div>
 
+      <!-- Remarks and Submission Section (No changes here) -->
       <div class="bg-white border p-6 rounded-lg shadow-sm space-y-6">
         <div>
           <label for="remarks" class="block text-sm font-medium text-gray-700">Remarks</label>
@@ -973,23 +979,15 @@ const validation = reactive({
       if (!value) return 'Country is required'
       return null
     },
+    // CHANGE: Updated validation rule for degree_certificate
     degree_certificate: (value) => {
-      if (
-        !form.from_in_country &&
-        !value &&
-        props.mode === 'create' &&
-        !props.initialData?.degree_certificate
-      )
+      if (!value && props.mode === 'create' && !props.initialData?.degree_certificate)
         return 'Degree certificate is required'
       return null
     },
+    // CHANGE: Updated validation rule for academic_transcript
     academic_transcript: (value) => {
-      if (
-        !form.from_in_country &&
-        !value &&
-        props.mode === 'create' &&
-        !props.initialData?.academic_transcript
-      )
+      if (!value && props.mode === 'create' && !props.initialData?.academic_transcript)
         return 'Academic transcript is required'
       return null
     },
@@ -1019,12 +1017,10 @@ const validateField = (fieldName) => {
 const validateForm = () => {
   validation.errors = {}
   for (const field in validation.rules) {
+    // CHANGE: Removed the condition that skipped file validation for in-country applications
     if (
-      (isCIDHolder.value &&
-        ['gender_non_cid', 'dzongkhag_non_cid', 'gewog_non_cid', 'village_non_cid'].includes(
-          field,
-        )) ||
-      (form.from_in_country && ['degree_certificate', 'academic_transcript'].includes(field))
+      isCIDHolder.value &&
+      ['gender_non_cid', 'dzongkhag_non_cid', 'gewog_non_cid', 'village_non_cid'].includes(field)
     ) {
       delete validation.errors[field]
       continue
@@ -1080,10 +1076,9 @@ watch(
 
       fieldsToReset.forEach((field) => (form[field] = ''))
 
+      // CHANGE: No longer clearing file uploads when switching to in-country
       if (newValue === true) {
         form.country = 'Bhutan'
-        form.degree_certificate = null
-        form.academic_transcript = null
       } else if (newValue === false) {
         form.country = ''
       }
