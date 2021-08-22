@@ -435,7 +435,6 @@
               }}</span>
             </div>
 
-            <!-- MODIFIED: Qualification Name Dropdown -->
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700 required"
                 >Qualification Name</label
@@ -466,7 +465,6 @@
               >
             </div>
 
-            <!-- NEW: "Specify Qualification Name" Input Field -->
             <div class="col-span-1" v-if="localFormData.qualification_name === 'OTHERS'">
               <label class="block text-sm font-medium text-gray-700 required"
                 >Specify Qualification Name</label
@@ -483,7 +481,6 @@
                 >{{ errors.other_qualification_name_specify }}</span
               >
             </div>
-            <!-- END NEW -->
 
             <div
               :class="
@@ -492,7 +489,6 @@
                   : 'col-span-1'
               "
             >
-              <!-- Adjust span if 'OTHERS' is selected to keep layout -->
               <label class="block text-sm font-medium text-gray-700 required"
                 >Institute/University</label
               >
@@ -522,7 +518,6 @@
                   : 'col-span-1'
               "
             >
-              <!-- Adjust span -->
               <label class="block text-sm font-medium text-gray-700 required"
                 >Year of Completion (YYYY-MM)</label
               >
@@ -542,7 +537,7 @@
 
       <div class="mt-6">
         <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
-          <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-3">
+          <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-3 required">
             Supporting Documents
           </h3>
           <p class="text-sm text-gray-600 mb-1">
@@ -550,7 +545,6 @@
             types available are from the master list. (Allowed: .pdf, .doc, .docx, .jpg, .jpeg,
             .png; Max 2MB per file)
           </p>
-          <!-- Message indicating required documents based on registration type -->
           <div
             v-if="currentRequiredDocNames.length > 0 && localFormData.registration_type"
             class="mt-2 mb-3 p-3 bg-blue-50 border border-blue-200 rounded-md"
@@ -592,11 +586,11 @@
               class="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 bg-white p-3 rounded-lg border border-gray-100 shadow-sm"
             >
               <div class="w-full sm:w-1/3">
-                <label :for="'doc_type_' + index" class="sr-only"
+                <label :for="`doc_type_${index}`" class="sr-only"
                   >Document Type {{ index + 1 }}</label
                 >
                 <select
-                  :id="'doc_type_' + index"
+                  :id="`doc_type_${index}`"
                   v-model="doc.type"
                   class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 text-sm"
                 >
@@ -609,22 +603,16 @@
                     {{ docTypeOption.document_name }}
                   </option>
                 </select>
-                <span v-if="errors['document_type_' + index]" class="text-xs text-red-500 mt-1">{{
-                  errors['document_type_' + index]
+                <span v-if="errors[`document_type_${index}`]" class="text-xs text-red-500 mt-1">{{
+                  errors[`document_type_${index}`]
                 }}</span>
-                <p
-                  v-if="!isLoadingMasters && fetchedDocumentTypes.length === 0 && index === 0"
-                  class="text-xs text-yellow-500 mt-1"
-                >
-                  Document types list is empty.
-                </p>
               </div>
               <div class="flex-1 flex items-center space-x-2">
-                <label :for="'doc_file_' + index" class="sr-only"
+                <label :for="`doc_file_${index}`" class="sr-only"
                   >File for Document {{ index + 1 }}</label
                 >
                 <input
-                  :id="'doc_file_' + index"
+                  :id="`doc_file_${index}`"
                   type="file"
                   @change="(e) => handleFileSelect(e, index)"
                   class="block w-full text-sm text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
@@ -642,9 +630,9 @@
                 </button>
               </div>
               <span
-                v-if="errors['document_file_' + index]"
+                v-if="errors[`document_file_${index}`]"
                 class="text-xs text-red-500 mt-1 w-full sm:w-auto sm:flex-initial"
-                >{{ errors['document_file_' + index] }}</span
+                >{{ errors[`document_file_${index}`] }}</span
               >
             </div>
 
@@ -791,7 +779,7 @@ const handleFileSelect = (event, index) => {
   const MAX_SIZE = 2 * 1024 * 1024
   const ALLOWED_EXTENSIONS = ['.pdf', '.doc', '.docx', '.jpg', '.jpeg', '.png']
 
-  delete errors['document_file_' + index]
+  delete errors[`document_file_${index}`]
 
   for (const file of files) {
     if (file.size > MAX_SIZE) {
@@ -804,8 +792,9 @@ const handleFileSelect = (event, index) => {
     }
     const fileExtension = ('.' + file.name.split('.').pop()).toLowerCase()
     if (!ALLOWED_EXTENSIONS.includes(fileExtension)) {
-      errors[`document_file_${index}`] =
-        "File '" + file.name + "' has an invalid type. Allowed: " + ALLOWED_EXTENSIONS.join(', ') + "."
+      errors[`document_file_${index}`] = `File '${
+        file.name
+      }' has an invalid type. Allowed: ${ALLOWED_EXTENSIONS.join(', ')}.`
       toast.error(errors[`document_file_${index}`])
       event.target.value = ''
       supportingDocuments.value[index].files = []
@@ -1028,14 +1017,12 @@ const qualifications = ref([])
 const universities = ref([])
 const allRegistrationTypesFromAPI = ref([])
 
-// Keywords for identifying registration types
 const REGISTRATION_TYPE_KEYWORDS = {
-  full: ['full'],
+  full: ['full', 'new'],
   provisional: ['provisional'],
   temporary: ['temporary'],
 }
 
-// Keywords for mandatory documents for provisional and temporary registration
 const MANDATORY_DOC_KEYWORDS = {
   provisional: [
     'graduation certificate',
@@ -1076,19 +1063,22 @@ onMounted(async () => {
     allRegistrationTypesFromAPI.value = responses[3]?.data?.results || []
     fetchedDocumentTypes.value = responses[4]?.data?.results || []
 
-    // Set default registration_type dynamically
-    const fullType = filteredRegistrationTypes.value.find((rt) =>
-      rt.name.toLowerCase().includes('full'),
-    )
-    if (fullType) {
-      localFormData.registration_type = fullType.id
-    } else if (filteredRegistrationTypes.value.length > 0) {
+    if (filteredRegistrationTypes.value.length === 1) {
       localFormData.registration_type = filteredRegistrationTypes.value[0].id
+    } else {
+      const fullType = filteredRegistrationTypes.value.find(
+        (rt) => rt.name.toLowerCase().includes('full') || rt.name.toLowerCase().includes('new')
+      )
+      if (fullType) {
+        localFormData.registration_type = fullType.id
+      } else if (filteredRegistrationTypes.value.length > 0) {
+        localFormData.registration_type = filteredRegistrationTypes.value[0].id
+      }
     }
   } catch (error) {
     console.error('Error fetching master data:', error)
     toast.error(
-      'Failed to fetch master data. Some dropdowns or options may not populate correctly. Please try refreshing.',
+      'Failed to fetch master data. Some dropdowns or options may not populate correctly. Please try refreshing.'
     )
   } finally {
     isLoadingMasters.value = false
@@ -1138,7 +1128,6 @@ const getRegistrationTypeName = (typeId) => {
   return type ? type.name : 'Selected Registration'
 }
 
-// Helper function to get registration type category dynamically
 const getRegistrationTypeCategory = (typeId) => {
   const type = allRegistrationTypesFromAPI.value.find((rt) => rt.id === typeId)
   if (!type) return null
@@ -1155,7 +1144,6 @@ const getRegistrationTypeCategory = (typeId) => {
   return null
 }
 
-// Computed property for current mandatory document IDs
 const currentMandatoryDocIds = computed(() => {
   const category = getRegistrationTypeCategory(localFormData.registration_type)
   if (category === 'full') {
@@ -1172,7 +1160,6 @@ const currentMandatoryDocIds = computed(() => {
   return []
 })
 
-// Computed property for current mandatory document names (for display)
 const currentRequiredDocNames = computed(() => {
   const mandatoryIds = currentMandatoryDocIds.value
   return fetchedDocumentTypes.value
@@ -1189,7 +1176,7 @@ watch(
   (newData) => {
     emit('update:modelValue', { ...newData })
   },
-  { deep: true },
+  { deep: true }
 )
 
 watch(
@@ -1197,10 +1184,10 @@ watch(
   () => {
     delete errors.mandatory_documents
     supportingDocuments.value.forEach((_, index) => {
-      delete errors['document_type_' + index]
+      delete errors[`document_type_${index}`]
       delete errors[`document_file_${index}`]
     })
-  },
+  }
 )
 
 const validateFormStageOne = () => {
@@ -1359,42 +1346,38 @@ const validateForm = () => {
     errors.year_of_completion = 'Year of completion is required.'
     isValid = false
   }
-  const mandatoryDocIds = currentMandatoryDocIds.value
-  for (const docId of mandatoryDocIds) {
-    const isUploaded = localFormData.documents.some(
-      (uploadedDoc) => uploadedDoc.type === docId && uploadedDoc.files.length > 0,
-    )
-    if (!isUploaded) {
-      const docName =
-        fetchedDocumentTypes.value.find((dt) => dt.id === docId)?.document_name ||
-        'Unknown Document'
-      // FIXED: Used a template literal (backticks) for the string.
-      errors.mandatory_documents = `Missing mandatory document: "${docName}". Please upload all required documents.`
-      isValid = false
-      break
-    }
-  }
+
   supportingDocuments.value.forEach((doc, index) => {
-    if (doc.files.length > 0 && !doc.type) {
-      // FIXED: Corrected syntax for dynamic object key.
-      errors[`document_type_${index}`] = 'Please select a document type for the uploaded file(s).'
-      isValid = false
-    }
     if (doc.type && doc.files.length === 0) {
-      const isMandatory = currentMandatoryDocIds.value.includes(doc.type)
-      if (isMandatory) {
-        const docName =
-          fetchedDocumentTypes.value.find((dt) => dt.id === doc.type)?.document_name ||
-          'Selected Document'
-        errors['document_file_' + index] = 'File missing for mandatory document type: ' + docName + '.'
-        isValid = false
-      } else {
-        errors['document_file_' + index] =
-          'Please upload file(s) for the selected document type or remove the row.'
-        isValid = false
-      }
+      errors[`document_file_${index}`] = 'Please upload a file for this selected document type.'
+      isValid = false
+    } else if (!doc.type && doc.files.length > 0) {
+      errors[`document_type_${index}`] = 'Please select a document type for this uploaded file.'
+      isValid = false
     }
   })
+
+  const mandatoryDocIds = currentMandatoryDocIds.value
+  const validUploadedDocs = supportingDocuments.value.filter((d) => d.type && d.files.length > 0)
+  const uploadedDocTypeIds = new Set(validUploadedDocs.map((d) => d.type))
+
+  const missingMandatoryDocNames = []
+  for (const mandatoryId of mandatoryDocIds) {
+    if (!uploadedDocTypeIds.has(mandatoryId)) {
+      const docType = fetchedDocumentTypes.value.find((dt) => dt.id === mandatoryId)
+      if (docType) {
+        missingMandatoryDocNames.push(docType.document_name)
+      }
+    }
+  }
+
+  if (missingMandatoryDocNames.length > 0) {
+    errors.mandatory_documents = `The following mandatory documents are missing: ${missingMandatoryDocNames.join(
+      ', '
+    )}.`
+    isValid = false
+  }
+
   if (!localFormData.declaration) {
     errors.declaration = 'You must accept the declaration to proceed.'
     isValid = false
@@ -1406,7 +1389,7 @@ const formatDateForInput = (dateString) => {
   if (!dateString) return ''
   const parts = dateString.split('/')
   if (parts.length === 3) {
-    return parts[2] + '-' + parts[1].padStart(2, '0') + '-' + parts[0].padStart(2, '0')
+    return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`
   }
   return dateString
 }
@@ -1497,7 +1480,6 @@ const formatDateForAPI = (dateInput) => {
   const year = dateObj.getFullYear()
   const month = String(dateObj.getMonth() + 1).padStart(2, '0')
   const day = String(dateObj.getDate()).padStart(2, '0')
-  // FIXED: Used a template literal (backticks) for the string.
   return `${year}-${month}-${day}`
 }
 
@@ -1565,9 +1547,9 @@ const handleNext = async () => {
     } catch (error) {
       console.error('Error submitting personal information:', error.response?.data || error.message)
       const errorMessages = Object.entries(
-        error.response?.data || { 'API Error': [error.message || 'Unknown error'] },
+        error.response?.data || { 'API Error': [error.message || 'Unknown error'] }
       )
-        .map(([key, value]) => key + ': ' + (Array.isArray(value) ? value.join(', ') : value))
+        .map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(', ') : value}`)
         .join('; ')
       toast.error(`Failed to save personal information: ${errorMessages}`)
     } finally {
@@ -1597,7 +1579,6 @@ const openConfirmationModal = () => {
 }
 
 const handleSubmitActual = async () => {
-
   isConfirmationModalOpen.value = false
   updateFormDocuments()
 
@@ -1617,7 +1598,7 @@ const handleSubmitActual = async () => {
 
   if (!localFormData.application) {
     toast.error(
-      'Application ID is missing. Cannot submit qualification details. Please go back to Step 1.',
+      'Application ID is missing. Cannot submit qualification details. Please go back to Step 1.'
     )
     return
   }
@@ -1630,7 +1611,7 @@ const handleSubmitActual = async () => {
     if (localFormData.qualification_name === 'OTHERS') {
       qualificationFormData.append(
         'qualification_name_text',
-        localFormData.other_qualification_name_specify,
+        localFormData.other_qualification_name_specify
       )
     } else {
       qualificationFormData.append('qualification_name', localFormData.qualification_name)
@@ -1650,10 +1631,8 @@ const handleSubmitActual = async () => {
     supportingDocuments.value.forEach((doc, index) => {
       if (doc.type && doc.files && doc.files.length > 0) {
         doc.files.forEach((fileObject) => {
-          // FIXED: Used a template literal (backticks) for the string key.
           qualificationFormData.append(`attachments-${index}-file`, fileObject, fileObject.name)
         })
-        // FIXED: Used a template literal (backticks) for the string key.
         qualificationFormData.append(`attachments-${index}-file_type`, doc.type)
       }
     })
@@ -1662,33 +1641,29 @@ const handleSubmitActual = async () => {
 
     toast.success('Registration submitted successfully!')
     emit('submit', { ...localFormData })
-    router.push('/admin/user/health_certification/dashboard')
-
+    router.push('/admin/user/engineering_certification/dashboard')
   } catch (error) {
     console.error(
       'Error submitting qualification and documents:',
-      error.response?.data || error.message,
+      error.response?.data || error.message
     )
     const errorMessages = Object.entries(
-      error.response?.data || { 'API Error': [error.message || 'Unknown error'] },
+      error.response?.data || { 'API Error': [error.message || 'Unknown error'] }
     )
       .map(([key, value]) => {
         if (typeof value === 'object' && value !== null) {
           return Object.entries(value)
             .map(
               ([nestedKey, nestedValue]) =>
-                // FIXED: Used a template literal (backticks) for the string.
                 `${key}.${nestedKey}: ${
                   Array.isArray(nestedValue) ? nestedValue.join(', ') : nestedValue
-                }`,
+                }`
             )
             .join('; ')
         }
-        // FIXED: Used a template literal (backticks) for the string.
         return `${key}: ${Array.isArray(value) ? value.join(', ') : value}`
       })
       .join('; ')
-    // FIXED: Used a template literal (backticks) for the string.
     toast.error(`Submission failed: ${errorMessages}`)
   } finally {
     isSubmitting.value = false

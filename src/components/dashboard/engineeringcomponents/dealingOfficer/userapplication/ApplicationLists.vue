@@ -156,12 +156,15 @@ const sectors = ref([])
 const registrationTypes = ref([])
 const toast = useToast()
 
-const statusFilterOptions = ref([
-  { value: 'all', text: 'All Statuses' },
-  { value: 'Pending', text: 'Pending' },
-  { value: 'Approved', text: 'Approved' },
-  { value: 'Regretted', text: 'Regretted' },
-])
+const statusFilterOptions = computed(() => {
+  const statuses = new Set(applications.value.map(app => getStatus(app)))
+  const options = Array.from(statuses).map(status => ({
+    value: status,
+    text: status,
+  }))
+  // Add the 'All' option to the beginning of the list
+  return [{ value: 'all', text: 'All Statuses' }, ...options]
+})
 
 const pendingCount = computed(() => {
   return applications.value
@@ -304,7 +307,10 @@ const fetchRegistrationTypes = async () => {
 const fetchApplications = async () => {
   try {
     const response = await apiServices.getEpcNewApplications()
-    applications.value = response.data.results || []
+    const results = response.data.results || []
+    // Sort by ID descending to show the latest applications first
+    results.sort((a, b) => b.id - a.id)
+    applications.value = results
   } catch (error) {
     console.error('Error fetching applications:', error)
   }

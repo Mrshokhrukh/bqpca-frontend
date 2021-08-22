@@ -27,6 +27,19 @@
                 />
               </div>
               <div>
+                <label for="categoryCode" class="block text-sm font-medium text-slate-700"
+                  >Category Code</label
+                >
+                <input
+                  type="text"
+                  id="categoryCode"
+                  v-model="formData.category_code"
+                  class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Enter category code"
+                  required
+                />
+              </div>
+              <div>
                 <label for="lateFeePerDay" class="block text-sm font-medium text-slate-700"
                   >Registration Fee</label
                 >
@@ -121,6 +134,9 @@
                     <h3 class="font-medium text-slate-900">
                       {{ personnelCategory.category_name }}
                     </h3>
+                    <p class="text-sm font-semibold text-slate-500 mt-1">
+                      Code: {{ personnelCategory.category_code }}
+                    </p>
                     <p class="text-sm text-slate-600 mt-1">
                       {{ personnelCategory.late_fee_per_day }}
                     </p>
@@ -244,6 +260,7 @@ const personnelCategories = ref([])
 const formData = ref({
   id: null,
   category_name: '',
+  category_code: '',
   late_fee_per_day: '',
   category_description: '',
 })
@@ -271,6 +288,7 @@ const filteredPersonnelCategories = computed(() => {
     const query = searchQuery.value.toLowerCase()
     return (
       personnelCategory.category_name.toLowerCase().includes(query) ||
+      (personnelCategory.category_code && personnelCategory.category_code.toLowerCase().includes(query)) ||
       personnelCategory.category_description.toLowerCase().includes(query)
     )
   })
@@ -348,6 +366,7 @@ const resetForm = () => {
   formData.value = {
     id: null,
     category_name: '',
+    category_code: '',
     late_fee_per_day: '',
     category_description: '',
   }
