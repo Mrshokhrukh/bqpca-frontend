@@ -1,38 +1,71 @@
 <template>
   <div class="p-4 w-full">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-      <h2 class="text-3xl font-serif font-bold text-slate-900">Assigned ROQ Applications</h2>
+      <h2 class="text-3xl font-serif font-bold text-slate-900">ROQ Application Workspace</h2>
       <button
-        class="inline-flex items-center px-6 py-3 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 active:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transform transition-all duration-200 hover:scale-[1.02] shadow-sm hover:shadow"
-        @click="handleApplicationSubmitted"
+        class="inline-flex items-center px-6 py-3 bg-blue-600 text-white ..."
+        @click="loadAllData(true)"
         :disabled="loading"
       >
         <RefreshCw class="w-4 h-4 mr-2" :class="{ 'animate-spin': loading }" />
-        {{ loading ? 'Refreshing...' : 'Refresh Application List' }}
+        {{ loading ? 'Refreshing...' : 'Refresh Lists' }}
       </button>
     </div>
 
-    <div class="bg-white rounded-lg shadow overflow-hidden">
-      <div v-if="loading && applications.length === 0" class="flex justify-center items-center py-12">
-        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+    <div class="mb-12">
+      <h3 class="text-2xl font-serif font-semibold text-slate-800 border-b-2 border-blue-200 pb-2 mb-6">
+        Unclaimed Application Pool
+      </h3>
+      <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div v-if="loading" class="flex justify-center items-center py-12">
+          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        </div>
+        <div v-else class="w-full overflow-x-auto">
+          <ApplicationList
+            :applications="paginatedUnclaimedApplications"
+            :current-page="unclaimedCurrentPage"
+            :total-results="unclaimedFilteredTotal"
+            :per-page="unclaimedPerPage"
+            :search-query="unclaimedSearchQuery"
+            :user-role="userRole"
+            :no-results="unclaimedApplications.length === 0"
+            :show-claim-button="true"
+            @page-change="handleUnclaimedPageChange"
+            @per-page-change="handleUnclaimedPerPageChange"
+            @search-query-change="handleUnclaimedSearchChange"
+            @claim="handleClaimApplication"
+          />
+        </div>
       </div>
-      <div v-else class="w-full overflow-x-auto">
-        <ApplicationList
-          :applications="paginatedApplications"
-          :current-page="currentPage"
-          :total-results="filteredTotal"
-          :per-page="perPage"
-          :search-query="searchQuery"
-          :selected-status="selectedStatus"
-          @page-change="handlePageChange"
-          @action="handleApplicationAction"
-          @per-page-change="handlePerPageChange"
-          @search-query-change="handleSearchChange"
-          @status-filter-change="handleStatusChange"
-          @refresh="handleRefreshRequest"
-          :no-results="filteredApplications.length === 0 && !loading"
-          :user-role="userRole"
-        />
+    </div>
+
+    <div>
+      <h3 class="text-2xl font-serif font-semibold text-slate-800 border-b-2 border-green-200 pb-2 mb-6">
+        My Assigned Applications
+      </h3>
+      <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div v-if="loading" class="flex justify-center items-center py-12">
+          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+        </div>
+        <div v-else class="w-full overflow-x-auto">
+          <ApplicationList
+            :applications="paginatedAssignedApplications"
+            :current-page="assignedCurrentPage"
+            :total-results="assignedFilteredTotal"
+            :per-page="assignedPerPage"
+            :search-query="assignedSearchQuery"
+            :selected-status="assignedSelectedStatus"
+            :user-role="userRole"
+            :no-results="assignedApplications.length === 0"
+            :show-claim-button="false"
+            @page-change="handleAssignedPageChange"
+            @per-page-change="handleAssignedPerPageChange"
+            @search-query-change="handleAssignedSearchChange"
+            @status-filter-change="handleAssignedStatusChange"
+            @action="handleApplicationAction"
+            @refresh="loadAllData"
+          />
+        </div>
       </div>
     </div>
 
@@ -61,7 +94,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch, nextTick } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useAuthStore } from '@/stores/authStore'
 import ApplicationList from '@/components/common/ROQ/ROQAdminApplicationList.vue'
 import ApplicationModal from '@/components/common/ROQ/ROQApplicationModal.vue'
@@ -75,107 +108,120 @@ const toast = useToast()
 const authStore = useAuthStore()
 const userRole = computed(() => authStore.user?.role || null)
 
-const showModal = ref(false)
 const loading = ref(false)
-const currentPage = ref(1)
-const perPage = ref(10)
-const applications = ref([])
-const searchQuery = ref('')
-const selectedStatus = ref('')
+const error = ref(null)
+
+// --- State for UNCLAIMED List ---
+const unclaimedApplications = ref([])
+const unclaimedCurrentPage = ref(1)
+const unclaimedPerPage = ref(5) // Maybe show fewer in the pool
+const unclaimedSearchQuery = ref('')
+
+// --- State for ASSIGNED List ---
+const assignedApplications = ref([])
+const assignedCurrentPage = ref(1)
+const assignedPerPage = ref(10)
+const assignedSearchQuery = ref('')
+const assignedSelectedStatus = ref('')
+
+// --- State for Modals (Shared) ---
+const showModal = ref(false)
 const modalType = ref(null)
 const selectedApplication = ref({})
 const showRemarksModal = ref(false)
-const error = ref(null)
 
-const filteredApplications = computed(() => {
-  return applications.value.filter((app) => {
-    const matchesStatus = selectedStatus.value ? app.status === selectedStatus.value : true
-    const matchesSearch = searchQuery.value
-      ? Object.values(app).some((value) =>
-          String(value).toLowerCase().includes(searchQuery.value.toLowerCase()),
+// --- Computed Properties for UNCLAIMED List ---
+const unclaimedFilteredApplications = computed(() =>
+  unclaimedApplications.value.filter(app =>
+    Object.values(app).some(val =>
+      String(val).toLowerCase().includes(unclaimedSearchQuery.value.toLowerCase())
+    )
+  )
+)
+const unclaimedFilteredTotal = computed(() => unclaimedFilteredApplications.value.length)
+const paginatedUnclaimedApplications = computed(() => {
+  const start = (unclaimedCurrentPage.value - 1) * unclaimedPerPage.value
+  const end = start + unclaimedPerPage.value
+  return unclaimedFilteredApplications.value.slice(start, end)
+})
+watch(unclaimedSearchQuery, () => { unclaimedCurrentPage.value = 1 })
+
+// --- Computed Properties for ASSIGNED List ---
+const assignedFilteredApplications = computed(() =>
+  assignedApplications.value.filter(app => {
+    const matchesStatus = assignedSelectedStatus.value ? app.status === assignedSelectedStatus.value : true
+    const matchesSearch = assignedSearchQuery.value
+      ? Object.values(app).some(val =>
+          String(val).toLowerCase().includes(assignedSearchQuery.value.toLowerCase())
         )
       : true
-    const isNotSecondCopy = !app.is_second_copy
-    const isNotDraft = app.status !== 'draft'
-
-    return matchesStatus && matchesSearch && isNotSecondCopy && isNotDraft
+    return matchesStatus && matchesSearch
   })
+)
+const assignedFilteredTotal = computed(() => assignedFilteredApplications.value.length)
+const paginatedAssignedApplications = computed(() => {
+  const start = (assignedCurrentPage.value - 1) * assignedPerPage.value
+  const end = start + assignedPerPage.value
+  return assignedFilteredApplications.value.slice(start, end)
 })
+watch([assignedSearchQuery, assignedSelectedStatus], () => { assignedCurrentPage.value = 1 })
 
-const filteredTotal = computed(() => filteredApplications.value.length)
-
-const paginatedApplications = computed(() => {
-  const start = (currentPage.value - 1) * perPage.value
-  const end = start + perPage.value
-  return filteredApplications.value.slice(start, end)
-})
-
-watch([selectedStatus, searchQuery], () => {
-  currentPage.value = 1
-})
-
-const loadData = async (showLoadingToast = false) => {
+// --- Data Fetching ---
+const loadAllData = async (showLoadingToast = false) => {
   loading.value = true
   error.value = null
   let loadingToastId = null
   if (showLoadingToast) {
-    loadingToastId = toast.info('Refreshing applications...', {
-      timeout: false,
-      closeButton: false,
-    })
+    loadingToastId = toast.info('Refreshing application lists...', { timeout: false })
   }
 
   try {
-    const response = await apiService.getRecognitionOfQualifications({
-      assigned_to: authStore.userId,
-    })
-    applications.value = response.data.results || []
+    const [unclaimedResponse, assignedResponse] = await Promise.all([
+      apiService.getRecognitionOfQualifications({ unclaimed: true }),
+      apiService.getRecognitionOfQualifications({ assigned_to: authStore.userId }),
+    ])
+    unclaimedApplications.value = unclaimedResponse.data.results || []
+    assignedApplications.value = assignedResponse.data.results || []
+
     if (showLoadingToast) {
       toast.dismiss(loadingToastId)
-      toast.success('Applications refreshed successfully')
+      toast.success('Lists refreshed successfully')
     }
   } catch (err) {
     error.value = err
-    console.error('Failed to load/refresh applications:', err)
-    if (showLoadingToast) {
-      toast.dismiss(loadingToastId)
-      toast.error('Failed to refresh applications. Please try again.')
-    } else {
-      toast.error('Failed to load applications.')
-    }
+    console.error('Failed to load applications:', err)
+    if (loadingToastId) toast.dismiss(loadingToastId)
+    toast.error('Failed to refresh one or more lists.')
   } finally {
     loading.value = false
   }
 }
 
-const handleApplicationSubmitted = async () => {
-  if (loading.value) return
-  showModal.value = false
-  await loadData(true)
-  await nextTick()
-}
+// --- Event Handlers ---
 
-const handleRefreshRequest = async () => {
-  await loadData(false)
-  await nextTick()
-}
+// UNCLAIMED List Handlers
+const handleUnclaimedPageChange = (newPage) => { unclaimedCurrentPage.value = newPage }
+const handleUnclaimedPerPageChange = (newPerPage) => { unclaimedPerPage.value = newPerPage; unclaimedCurrentPage.value = 1 }
+const handleUnclaimedSearchChange = (newQuery) => { unclaimedSearchQuery.value = newQuery }
 
-const handlePageChange = (newPage) => {
-  currentPage.value = newPage
-}
+const handleClaimApplication = async (application) => {
+  const claimToastId = toast.info(`Claiming application for ${application.applicants_name}...`, { timeout: false });
+  try {
+    await apiService.claimApplication(application.id);
+    toast.dismiss(claimToastId);
+    toast.success('Application successfully claimed!');
+    await loadAllData(); // Refresh both lists
+  } catch (err) {
+    toast.dismiss(claimToastId);
+    toast.error(err.response?.data?.detail || 'Failed to claim application.');
+  }
+};
 
-const handlePerPageChange = (newPerPage) => {
-  perPage.value = newPerPage
-  currentPage.value = 1
-}
-
-const handleSearchChange = (newQuery) => {
-  searchQuery.value = newQuery
-}
-
-const handleStatusChange = (newStatus) => {
-  selectedStatus.value = newStatus
-}
+// ASSIGNED List Handlers
+const handleAssignedPageChange = (newPage) => { assignedCurrentPage.value = newPage }
+const handleAssignedPerPageChange = (newPerPage) => { assignedPerPage.value = newPerPage; assignedCurrentPage.value = 1 }
+const handleAssignedSearchChange = (newQuery) => { assignedSearchQuery.value = newQuery }
+const handleAssignedStatusChange = (newStatus) => { assignedSelectedStatus.value = newStatus }
 
 const handleApplicationAction = ({ action, application }) => {
   selectedApplication.value = { ...application }
@@ -187,38 +233,26 @@ const handleApplicationAction = ({ action, application }) => {
   }
 }
 
-const closeModal = () => {
-  showModal.value = false
-  modalType.value = null
-  selectedApplication.value = {}
-}
-
-const closeRemarksModal = () => {
-  showRemarksModal.value = false
-  selectedApplication.value = {}
-}
+// Modal Handlers (Shared)
+const closeModal = () => { showModal.value = false; selectedApplication.value = {}; }
+const closeRemarksModal = () => { showRemarksModal.value = false; selectedApplication.value = {}; }
 
 const handleApplicationUpdate = async (updateData) => {
-  const updateLoadingToast = toast.info('Updating application...', {
-    timeout: false,
-    closeButton: false,
-  })
+  const updateLoadingToast = toast.info('Updating application...', { timeout: false })
   try {
     await apiService.patchRecognitionOfQualification(selectedApplication.value.id, updateData)
     toast.dismiss(updateLoadingToast)
     toast.success('Application updated successfully.')
-    await loadData()
+    await loadAllData() // Refresh both lists to ensure status is up to date
   } catch (e) {
-    console.error('Error updating application:', e)
     toast.dismiss(updateLoadingToast)
-    const errorMsg = e.response?.data?.detail || 'Failed to update application.'
-    toast.error(errorMsg)
+    toast.error(e.response?.data?.detail || 'Failed to update application.')
   } finally {
     closeModal()
   }
 }
 
 onMounted(() => {
-  loadData()
+  loadAllData()
 })
 </script>

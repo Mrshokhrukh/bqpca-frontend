@@ -30,18 +30,6 @@
     <template v-else-if="role === 'user'">
       <component :is="userComponent" />
     </template>
-
-    <!-- Default Section (fallback) -->
-    <template v-else>
-      <StatsGrid :stats="filteredStats" />
-      <ApplicationTable
-        :applications="paginatedApplications"
-        :current-page="currentPage"
-        :total-results="filteredTotal"
-        :per-page="perPage"
-        @page-change="handlePageChange"
-      />
-    </template>
   </div>
 </template>
 
@@ -152,23 +140,11 @@ const chiefComponent = computed(() => {
 
 // Director Route-Based Components
 const directorComponent = computed(() => {
-  // const path = route.path;
-  // Add route-based components for director here
-  // Example:
-  // if (path.endsWith('/roq/dashboard')) {
-  //   return DirectorDashboard;
-  // }
   return null
 })
 
 // Super Admin Route-Based Components
 const superAdminComponent = computed(() => {
-  // const path = route.path;
-  // Add route-based components for super admin here
-  // Example:
-  // if (path.endsWith('/roq/dashboard')) {
-  //   return SuperAdminDashboard;
-  // }
   return null
 })
 
