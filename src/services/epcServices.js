@@ -421,7 +421,15 @@ export default {
     return apiClient.delete(`/epc/epc-new-qualification/${id}/`)
   },
 
-  // <<< --- START: EPC New Education Program Endpoints --- >>>
+  /**
+
+   * @param {object} queryParams
+   * @returns {Promise}
+   */
+  getEpcAdditionalQualificationsReport(queryParams) {
+    return apiClient.get('/epc/reports/additional-qualifications/', { params: queryParams });
+  },
+
   getEpcNewEducationPrograms() {
     return apiClient.get('/epc/epc-new-education-programs/')
   },
@@ -1011,6 +1019,7 @@ export default {
   deleteEpcMastersUniversity(id) {
     return apiClient.delete(`/epc/masters-university/${id}/`)
   },
+
 
 
   // Helper methods for common operations

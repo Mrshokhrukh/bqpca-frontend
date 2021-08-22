@@ -1,4 +1,5 @@
 <template>
+  <!-- Your entire <template> section remains unchanged. -->
   <div class="p-6 bg-gray-50 min-h-screen">
     <!-- Header -->
     <div class="flex justify-between items-center mb-8">
@@ -189,7 +190,8 @@ import { ref, computed, reactive } from 'vue';
 import { useToast } from 'vue-toastification';
 import debounce from 'lodash/debounce';
 import Papa from 'papaparse';
-import apiServices from '@/services/services';
+// Corrected import path assuming services.js is in src/services
+import apiServices from '@/services/services.js';
 
 const toast = useToast();
 
@@ -284,13 +286,17 @@ const headers = {
   ],
 };
 
+// =======================================================================
+// === THIS IS THE ONLY CHANGE IN THE SCRIPT =============================
+// =======================================================================
 const apiMethods = {
   new_applications: {
     fetch: apiServices.getEpcNewApplications,
     transform: (data) => ({ ...data, status: data.is_active ? 'Approved' : (data.user_qualifications?.[0]?.application_review_status || 'Pending Review') }),
   },
   additional_applications: {
-    fetch: apiServices.getEpcNewQualifications,
+    // CORRECTED: Point this to the new, dedicated API service function.
+    fetch: apiServices.getEpcAdditionalQualificationsReport,
     transform: (data) => data,
   },
   renewal_applications: {
@@ -304,6 +310,9 @@ const apiMethods = {
   dpr_applications: { fetch: apiServices.getEpcInstitutes, transform: (data) => data },
   capa_management: { fetch: apiServices.getEpcCapas, transform: (data) => data },
 };
+// =======================================================================
+// =======================================================================
+
 
 const statusOptions = computed(() => {
   const optionsMap = {
@@ -447,7 +456,67 @@ const statusBadge = (status) => {
 };
 
 // --- Export logic (no changes needed) ---
-const exportToCSV = async () => { /* ... */ };
+const exportToCSV = async () => {
+    if (isLoading.value || !reportData.value.length) {
+        toast.warning("No data to export or data is still loading.");
+        return;
+    }
+    isLoadingExport.value = true;
+    try {
+        const allData = [];
+        const totalExportPages = Math.ceil(totalItems.value / 100); // Fetch in chunks of 100
+        toast.info(`Exporting ${totalItems.value} records. This may take a moment...`, { timeout: 5000 });
+
+        const currentApiMethod = apiMethods[activeReport.value];
+        const sortHeader = activeHeaders.value.find((h) => h.key === sortBy.value);
+        const backendSortKey = sortHeader?.backendSortKey || sortBy.value;
+
+        for (let page = 1; page <= totalExportPages; page++) {
+            const params = {
+                page,
+                page_size: 100,
+                ordering: backendSortKey ? `${sortOrder.value === 'desc' ? '-' : ''}${backendSortKey}` : undefined,
+                search: filters.search || undefined,
+                start_date: filters.startDate || undefined,
+                end_date: filters.endDate || undefined,
+                status: filters.status || undefined,
+            };
+            Object.keys(params).forEach((key) => params[key] === undefined && delete params[key]);
+
+            const response = await currentApiMethod.fetch(params);
+            const transformedData = response.data.results.map(item => currentApiMethod.transform ? currentApiMethod.transform(item) : item);
+            allData.push(...transformedData);
+        }
+
+        const dataForCsv = allData.map(item => {
+            const row = {};
+            activeHeaders.value.forEach(header => {
+                const value = getNestedValue(item, header.key);
+                row[header.label] = header.type === 'date' ? formatDate(value) : (value ?? 'N/A');
+            });
+            return row;
+        });
+
+        const csv = Papa.unparse(dataForCsv);
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        const filename = `${activeReport.value}_${new Date().toISOString().slice(0,10)}.csv`;
+        link.setAttribute('download', filename);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        toast.success("Export completed successfully!");
+
+    } catch (err) {
+        console.error("Export failed:", err);
+        toast.error(`Export failed. ${err.response?.data?.detail || err.message}`);
+    } finally {
+        isLoadingExport.value = false;
+    }
+};
 
 </script>
 
