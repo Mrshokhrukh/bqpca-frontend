@@ -326,7 +326,7 @@ export const useAuthStore = defineStore('auth', () => {
         },
       })
 
-      user.value = response.data
+      user.value = { ...user.value, ...response.data };
       localStorage.setItem('user', JSON.stringify(user.value))
 
       console.log('Auth store and local storage updated with new profile info.')

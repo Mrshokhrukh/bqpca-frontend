@@ -1346,9 +1346,9 @@ const handleSubmitActual = async () => {
 
   // This check is redundant as it's done in openConfirmationModal, but good for safety
   if (!validateFormStageOne() || !validateForm()) {
-      toast.error('Submission failed due to validation errors. Please review the form.');
-      isSubmitting.value = false;
-      return;
+    toast.error('Submission failed due to validation errors. Please review the form.')
+    isSubmitting.value = false
+    return
   }
 
   if (!localFormData.application) {
@@ -1361,15 +1361,18 @@ const handleSubmitActual = async () => {
     const qualificationFormData = new FormData()
     qualificationFormData.append('application', localFormData.application)
     if (localFormData.qualification_name === 'OTHERS') {
-      qualificationFormData.append('qualification_name_text', localFormData.other_qualification_name_specify)
+      qualificationFormData.append(
+        'qualification_name_text',
+        localFormData.other_qualification_name_specify
+      )
     } else {
       qualificationFormData.append('qualification_name', localFormData.qualification_name)
     }
     qualificationFormData.append('qualification_type', localFormData.qualification_type)
     qualificationFormData.append('institute_university', localFormData.institute)
     if (localFormData.year_of_completion) {
-        const year = localFormData.year_of_completion.split('-')[0]
-        qualificationFormData.append('completion_year', year)
+      const year = localFormData.year_of_completion.split('-')[0]
+      qualificationFormData.append('completion_year', year)
     }
     qualificationFormData.append('declaration', localFormData.declaration ? 'True' : 'False')
     qualificationFormData.append('remarks', localFormData.remarks || '')
@@ -1391,44 +1394,61 @@ const handleSubmitActual = async () => {
     const profileUpdateData = new FormData()
     let needsUpdate = false
 
-    if (localFormData.village && localFormData.village !== authStore.village) {
+    if (localFormData.village && localFormData.village !== authStore.user.village) {
       profileUpdateData.append('village', localFormData.village)
       needsUpdate = true
     }
-    if (localFormData.gewog && localFormData.gewog !== authStore.gewog) {
+    if (localFormData.gewog && localFormData.gewog !== authStore.user.gewog) {
       profileUpdateData.append('gewog', localFormData.gewog)
       needsUpdate = true
     }
-    if (localFormData.dzongkhag && localFormData.dzongkhag !== authStore.dzongkhag) {
+    if (localFormData.dzongkhag && localFormData.dzongkhag !== authStore.user.dzongkhag) {
       profileUpdateData.append('dzongkhag', localFormData.dzongkhag)
       needsUpdate = true
     }
 
-    // Append existing data to avoid wiping them out on the backend
-    profileUpdateData.append('contact_number', authStore.contactNumber || localFormData.contact_no)
-    profileUpdateData.append('email', authStore.email || localFormData.email_address)
-
     if (needsUpdate) {
       try {
-        await authStore.updateUserProfile(profileUpdateData)
-        toast.info("Your profile location has been updated.")
+        // Append existing data to avoid wiping them out on the backend
+        profileUpdateData.append(
+          'contact_number',
+          authStore.user.contact_number || localFormData.contact_no
+        )
+        profileUpdateData.append('email', authStore.user.email || localFormData.email_address)
+
+        // Assuming you have an apiService method like updateProfile(userId, data)
+        await apiService.updateProfile(authStore.user.id, profileUpdateData)
+
+        // Also update the local store so the UI reflects the change immediately
+        authStore.user.village = localFormData.village
+        authStore.user.gewog = localFormData.gewog
+        authStore.user.dzongkhag = localFormData.dzongkhag
+
+        toast.info('Your profile location has been updated.')
+
       } catch (profileError) {
-        console.error("Could not auto-update profile location:", profileError)
-        toast.warning("Application submitted, but could not auto-update your profile location.")
+        console.error('Could not auto-update profile location:', profileError)
+        toast.warning('Application submitted, but could not auto-update your profile location.')
       }
     }
     // +++ PROFILE UPDATE LOGIC ENDS HERE +++
 
     emit('submit', { ...localFormData })
     router.push('/admin/user/engineering_certification/dashboard')
-
   } catch (error) {
     console.error('Error submitting qualification and documents:', error.response?.data || error.message)
-    const errorMessages = Object.entries(error.response?.data || { 'API Error': [error.message || 'Unknown error'] })
+    const errorMessages = Object.entries(
+      error.response?.data || { 'API Error': [error.message || 'Unknown error'] }
+    )
       .map(([key, value]) => {
         if (typeof value === 'object' && value !== null) {
           return Object.entries(value)
-            .map(([nestedKey, nestedValue]) => `${key}.${nestedKey}: ${Array.isArray(nestedValue) ? nestedValue.join(', ') : nestedValue}`)
+            .map(
+              ([nestedKey, nestedValue]) =>
+                `${key}.${nestedKey}: ${
+                  Array.isArray(nestedValue) ? nestedValue.join(', ') : nestedValue
+                }`
+            )
             .join('; ')
         }
         return `${key}: ${Array.isArray(value) ? value.join(', ') : value}`
@@ -1456,28 +1476,6 @@ const handleSubmitActual = async () => {
   .text-sm {
     font-size: 0.8125rem;
   }
-  .text-xs {
-    font-size: 0.75rem;
-  }
-}
-</style>
-
-<style scoped>
-.required::after {
-  content: ' *';
-  color: #ef4444;
-}
-
-.bg-gray-100[readonly] {
-  background-color: #f3f4f6;
-  cursor: not-allowed;
-}
-
-@media (max-width: 640px) {
-  .text-sm {
-    font-size: 0.8125rem;
-  }
-
   .text-xs {
     font-size: 0.75rem;
   }
