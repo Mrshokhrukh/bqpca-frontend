@@ -2,7 +2,7 @@
   <div class="relative">
     <!-- Notification Bell Button -->
     <button
-      @click="toggleNotifications"
+      @click.stop="toggleNotifications"
       class="relative p-2 rounded-lg hover:bg-slate-100 transition-all duration-200 group"
     >
       <Bell
@@ -22,7 +22,7 @@
     <!-- Notification Panel -->
     <div
       v-if="showNotifications"
-      class="absolute right-0 mt-2 w-96 bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden"
+      class="absolute right-0 mt-2 w-96 bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden z-[99999999]"
       v-click-outside="() => (showNotifications = false)"
     >
       <!-- Header -->
@@ -102,9 +102,9 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
-import { useRouter } from 'vue-router'
-// import { useAuthStore } from '@/stores/authStore'; // Import your authStore
+import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { useAuthStore } from '@/stores/authStore'
 import {
   Bell,
   BellOff,
@@ -116,84 +116,81 @@ import {
   AlertTriangle,
 } from 'lucide-vue-next'
 import { formatDistanceToNow } from 'date-fns'
-import apiService from '@/services/services' // If you have an apiService setup (recommended)
+import apiService from '@/services/services'
 
 // State
 const notifications = ref([])
 const showNotifications = ref(false)
 const loading = ref(false)
-const socket = ref(null)
 const router = useRouter()
-// const authStore = useAuthStore(); // Use authStore
-
-// **Service Type Mapping**
-// const serviceTypeMap = {
-//   roq: 'recognition_of_qualification',
-//   ecpf: 'education_consultancy_placement_firm',
-//   accreditation: 'specification_for_institute_accrediation',
-//   engineering: 'specification_for_engineering_certification',
-//   engineering_certification: 'specification_for_engineering_certification',
-//   health_certification: 'specification_for_health_certification',
-// };
+const route = useRoute()
+const authStore = useAuthStore()
+let pollingInterval = null // To hold the interval ID
 
 // Computed
 const unreadCount = computed(() => {
-  return notifications.value.filter((n) => !n.read).length
+  return notifications.value.filter((n) => n.status === 'UNREAD').length
 })
 
 const hasUnread = computed(() => unreadCount.value > 0)
 
-// WebSocket Setup
-// const setupWebSocket = () => {
-//   if (!authStore.serviceType) {
-//     console.warn("Service type not available. WebSocket not initialized.");
-//     return;
-//   }
+// --- NEW POLLING LOGIC ---
+const fetchNotifications = async () => {
+  if (!authStore.isAuthenticated) {
+    return
+  }
 
-//   const backendAppName = serviceTypeMap[authStore.serviceType];
+  loading.value = true
+  try {
+    const params = {
+      cid: authStore.user.cid, // 'username' holds the CID
+      service_type: authStore.user.service_type,
+    }
+    const response = await apiService.getNotifications(params)
+    notifications.value = response.data.results || []
+  } catch (error) {
+    console.error('Failed to fetch notifications:', error)
+  } finally {
+    loading.value = false
+  }
+}
 
-//   if (!backendAppName) {
-//     console.error(`No backend app name mapping found for service type: ${authStore.serviceType}`);
-//     return; // Or handle the error appropriately, maybe default to a public channel
-//   }
+const startPolling = () => {
+  if (pollingInterval) {
+    clearInterval(pollingInterval)
+  }
+  fetchNotifications()
+  pollingInterval = setInterval(fetchNotifications, 30000) // Poll every 30 seconds
+}
 
-//   const wsChannel = backendAppName.replace(/_/g, '_'); // backend app names are already good for channel. if not replace with '-' to '_'
-//   const wsUrl = `ws://127.0.0.1:8000/ws/notifications/${wsChannel}/`;
-//   socket.value = new WebSocket(wsUrl);
+const stopPolling = () => {
+  clearInterval(pollingInterval)
+}
 
-//   socket.value.onmessage = () => {
-//     fetchNotifications(); // Re-fetch notifications when any event occurs
-//   };
+// Watch for route changes to trigger a fetch
+watch(
+  () => route.fullPath,
+  () => {
+    fetchNotifications()
+  }
+)
 
-//   socket.value.onclose = () => {
-//     // Attempt to reconnect after 30 minutes
-//     setTimeout(setupWebSocket, 1800000);
-//   };
+// --- LIFECYCLE HOOKS ---
+onMounted(() => {
+  if (authStore.isAuthenticated) {
+    startPolling()
+  }
+})
 
-//   socket.value.onerror = (error) => {
-//     console.error('WebSocket error:', error);
-//   };
-// };
+onBeforeUnmount(() => {
+  stopPolling()
+})
 
 // Methods
 const toggleNotifications = () => {
   showNotifications.value = !showNotifications.value
-  if (showNotifications.value && !notifications.value.length) {
-    fetchNotifications()
-  }
-}
-
-const fetchNotifications = async () => {
-  loading.value = true
-  try {
-    // **Fetch notifications using API - No email needed if backend uses token auth**
-    const response = await apiService.getNotificationn()
-    notifications.value = response.data || [] // Assuming your API response has 'results' array
-  } catch (error) {
-    console.error('Failed to fetch notifications:', error)
-    // Handle error appropriately, maybe show a toast notification to the user
-  } finally {
-    loading.value = false
+  if (showNotifications.value) {
+    fetchNotifications() // Fetch fresh data when opening
   }
 }
 
@@ -202,7 +199,7 @@ const markAsRead = async (id) => {
     await apiService.markNotificationAsRead(id)
     const notification = notifications.value.find((n) => n.id === id)
     if (notification) {
-      notification.read = true
+      notification.status = 'READ'
     }
   } catch (error) {
     console.error('Failed to mark notification as read:', error)
@@ -212,14 +209,14 @@ const markAsRead = async (id) => {
 const markAllAsRead = async () => {
   try {
     await apiService.markAllNotificationsAsRead()
-    notifications.value = notifications.value.map((n) => ({ ...n, read: true }))
+    notifications.value.forEach((n) => (n.status = 'READ'))
   } catch (error) {
     console.error('Failed to mark all notifications as read:', error)
   }
 }
 
 const handleNotificationClick = (notification) => {
-  if (!notification.read) {
+  if (notification.status !== 'READ') {
     markAsRead(notification.id)
   }
   if (notification.link) {
@@ -229,12 +226,13 @@ const handleNotificationClick = (notification) => {
 }
 
 const viewAllNotifications = () => {
-  router.push('/notifications')
+  router.push('/admin/notifications') // Assuming you will create this page
   showNotifications.value = false
 }
 
-// Helper Functions (remain the same)
+// Helper Functions
 const formatTimestamp = (timestamp) => {
+  if (!timestamp) return ''
   return formatDistanceToNow(new Date(timestamp), { addSuffix: true })
 }
 
@@ -257,22 +255,6 @@ const getNotificationIconColor = (type) => {
   }
   return colors[type] || colors.info
 }
-
-// Lifecycle Hooks
-onMounted(() => {
-  // Initialize auth first to get serviceType reliably
-  // authStore.initializeAuth(); // Make sure auth is initialized
-  // if (authStore.serviceType) {
-  //   setupWebSocket();
-  // } else {
-  console.warn('Service type not yet available on mount. WebSocket setup deferred.')
-})
-
-onBeforeUnmount(() => {
-  if (socket.value) {
-    socket.value.close()
-  }
-})
 </script>
 
 <style scoped>

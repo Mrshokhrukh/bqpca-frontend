@@ -42,7 +42,7 @@
     </template>
 
     <!-- Default Section (fallback) -->
-    <template v-else>
+    <!-- <template v-else>
       <ApplicationTable
         :applications="paginatedApplications"
         :current-page="currentPage"
@@ -50,7 +50,7 @@
         :per-page="perPage"
         @page-change="handlePageChange"
       />
-    </template>
+    </template> -->
   </div>
 </template>
 

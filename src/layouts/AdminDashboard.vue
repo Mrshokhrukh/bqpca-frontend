@@ -14,7 +14,11 @@
         :service-type-label="serviceTypeLabel"
         @toggle-sidebar="toggleSidebar"
       />
-      <MainDisplayArea :current-year="currentYear" />
+      
+      <main class="flex-1 overflow-y-auto">
+        <MainDisplayArea :current-year="currentYear" />
+      </main>
+
     </div>
   </div>
 </template>
@@ -60,27 +64,6 @@ onBeforeMount(async () => {
   }
 
   navigationItems.value = generateNavigationItems(authStore.role, authStore.serviceType)
-})
-
-onMounted(async () => {
-  if (authStore.serviceType === 'health_certification' && authStore.role === 'user') {
-    const healthStore = useHealthCertificationStore()
-    await healthStore.initialize()
-    navigationItems.value = generateNavigationItems(authStore.role, authStore.serviceType)
-  }
-
-  if (authStore.serviceType === 'health_certification' && authStore.role === 'institutions') {
-    const institutionStore = useInstitutionStore()
-    await institutionStore.initialize()
-    navigationItems.value = generateNavigationItems(authStore.role, authStore.serviceType)
-  }
-
-  //epc
-  if (authStore.serviceType === 'engineering_certification' && authStore.role === 'user') {
-    const engineeringStore = useEngineeringCertificationStore()
-    await engineeringStore.initialize()
-    navigationItems.value = generateNavigationItems(authStore.role, authStore.serviceType)
-  }
 })
 
 // Custom mapping for service type display names

@@ -32,9 +32,7 @@ export const useAuthStore = defineStore('auth', () => {
     let fullNameString = firstName
     if (middleName) {
       fullNameString += ' ' + middleName
-      fullNameString += ' ' + middleName
     }
-    fullNameString += ' ' + lastName
     fullNameString += ' ' + lastName
 
     fullNameString = fullNameString.trim()

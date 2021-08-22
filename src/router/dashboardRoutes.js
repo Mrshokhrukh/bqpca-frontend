@@ -3,6 +3,8 @@ import ModuleContainer from '@/components/ModuleContainer.vue'
 import { useAuthStore } from '@/stores/authStore'
 import { ROLE_CHOICES, SERVICE_TYPE_CHOICES } from './constants'
 import routeMap from './routeMap'
+import NotificationsPage from '@/views/NotificationsPage.vue'
+
 
 function generateDynamicRoutes() {
   const routes = []
@@ -117,7 +119,19 @@ const dashboardRoutes = [
     path: '/admin',
     component: () => import('@/layouts/AdminDashboard.vue'),
     meta: { requiresAuth: true },
-    children: generateDynamicRoutes(),
+    children: [
+      ...generateDynamicRoutes(),
+      {
+        path: '/admin/notifications', // This will create the URL: /admin/notifications
+        name: 'AllNotifications', // The name we used in the NotificationBell component
+        component: NotificationsPage,
+        meta: {
+          title: 'All Notifications',
+          description: 'View all your notifications from the BQPCA system.',
+          // This route is already protected by the parent's `requiresAuth: true`
+        },
+      },
+    ]
   },
 ]
 

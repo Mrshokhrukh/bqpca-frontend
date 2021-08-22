@@ -1,87 +1,51 @@
 <template>
-  <div
-    class="overflow-hidden rounded-xl bg-white shadow-lg transition-shadow duration-300 hover:shadow-xl"
-  >
-    <div class="p-6">
-      <div
-        v-if="qualificationStatus.theme === 'danger' || qualificationStatus.theme === 'warning'"
-        class="mb-4 flex items-center gap-3 rounded-lg p-3"
-        :class="{
-          'bg-red-50 text-red-800': qualificationStatus.theme === 'danger',
-          'bg-yellow-50 text-yellow-800': qualificationStatus.theme === 'warning',
-        }"
-      >
-        <ExclamationTriangleIcon
-          v-if="qualificationStatus.theme === 'warning'"
-          class="h-6 w-6 flex-shrink-0 text-yellow-500"
-        />
-        <ExclamationCircleIcon
-          v-if="qualificationStatus.theme === 'danger'"
-          class="h-6 w-6 flex-shrink-0 text-red-500"
-        />
-        <p class="text-sm font-semibold">
-          {{ qualificationStatus.text }}
-          <span v-if="!isExpired && (isExpiringSoon || isExpiredPast)"
-            >Please renew your license.</span
-          >
-        </p>
-      </div>
+  <div class="overflow-hidden bg-white rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl">
+    <div class="p-6 sm:p-8">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:gap-6">
 
-      <div class="grid grid-cols-[auto_1fr_auto] items-center gap-6">
-        <div class="flex-shrink-0">
-          <div
-            class="relative rounded-full bg-gradient-to-br from-blue-500 to-blue-600 p-1.5 shadow"
-          >
-            <div class="flex h-16 w-16 items-center justify-center rounded-full bg-white">
-              <UserIcon class="h-9 w-9 text-blue-600" />
-            </div>
-          </div>
-        </div>
-
-        <div class="min-w-0">
-          <h2 class="truncate text-2xl font-bold tracking-tight text-gray-800">
-            {{ userDetail.username }}
-          </h2>
-          <p class="mt-1 text-sm text-gray-500">
-            Registration No: <span class="font-mono">{{ userDetail.registration_no }}</span>
-          </p>
-          <div class="mt-3">
+        <div class="flex-shrink-0 self-start">
+          <div class="relative p-2 bg-blue-100 rounded-full">
             <div
-              class="inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium"
-              :class="qualificationStatus.chipClasses"
-            >
-              <component :is="qualificationStatus.icon" class="h-4 w-4" />
-              <span>Valid Until: {{ formattedExpiryDate }}</span>
+              class="relative flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full shadow-md">
+              <UserIcon class="w-9 h-9 text-white" />
             </div>
           </div>
         </div>
 
-        <div class="flex flex-col items-end gap-3 sm:flex-row sm:items-center">
-          <button
-            v-if="!isExpiredPast"
-            @click="$emit('view-certificate', props.qualification)"
-            class="relative inline-flex items-center justify-center rounded-full px-6 py-2.5 text-sm font-semibold text-white transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2"
-            :class="{
-              'bg-gradient-to-r from-blue-500 to-blue-600 hover:-translate-y-0.5 hover:shadow-lg focus:ring-blue-500':
-                !isExpiringSoon,
-              'bg-gradient-to-r from-blue-300 to-blue-400 cursor-not-allowed': isExpiringSoon,
-            }"
-          >
-            <EyeIcon class="-ml-1 mr-2 h-5 w-5" />
-            View Certificate
-          </button>
+        <div class="flex-grow min-w-0 mt-4 sm:mt-0">
+          <div>
+            <h2 class="text-2xl font-bold text-slate-800 tracking-tight truncate">
+              {{ userDetail.username }}
+            </h2>
+            <div class="flex items-center gap-2 mt-1 text-sm text-slate-500">
+              <span class="font-medium">Registration No:</span>
+              <span class="font-mono">{{ userDetail.registration_no || 'N/A' }}</span>
+            </div>
+          </div>
 
-          <button
-            v-if="isExpiringSoon || isExpiredPast"
-            @click="navigateToRenewal"
-            class="relative inline-flex items-center justify-center rounded-full px-6 py-2.5 text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-            :class="{
-              'bg-gradient-to-r from-green-500 to-green-600': isExpiringSoon,
-              'bg-gradient-to-r from-red-500 to-red-600': isExpiredPast,
-            }"
-          >
-            <component :is="renewalButtonIcon" class="-ml-1 mr-2 h-5 w-5" />
-            {{ renewalButtonText }}
+          <div class="flex flex-wrap gap-2 sm:gap-4 mt-4 text-xs sm:text-sm">
+            <div class="flex items-center gap-2 px-3 py-1.5 rounded-full" :class="statusBadgeClass">
+              <CheckBadgeIcon class="w-5 h-5" />
+              <span class="font-semibold">Approved</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 text-slate-700">
+              <CalendarDaysIcon class="w-5 h-5 text-slate-500" />
+              <span>Expires on: <span class="font-semibold">{{ formattedExpiryDate }}</span></span>
+            </div>
+
+            <div v-if="daysRemaining !== null" class="flex items-center gap-2 px-3 py-1.5 rounded-full"
+              :class="daysRemainingBadgeClass">
+              <ClockIcon class="w-5 h-5" />
+              <span class="font-semibold">{{ daysRemainingText }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex-shrink-0 mt-4 sm:mt-0 sm:ml-auto">
+          <button @click="handleActionButtonClick" :class="actionButtonClass"
+            class="relative w-full sm:w-auto overflow-hidden font-semibold py-2.5 px-6 rounded-full transition-all duration-300 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
+            <span class="relative z-10">{{ actionButtonText }}</span>
           </button>
         </div>
       </div>
@@ -90,128 +54,98 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import dayjs from 'dayjs'
-import relativeTime from 'dayjs/plugin/relativeTime'
-import { useRouter } from 'vue-router' // Import useRouter
-
+// Import all necessary icons, including the new ones for the badges
 import {
   UserIcon,
-  EyeIcon,
-  CheckCircleIcon,
-  ExclamationTriangleIcon,
-  ExclamationCircleIcon,
-  InformationCircleIcon,
-  ArrowPathIcon, // Icon for renewal
-  ClipboardDocumentCheckIcon, // Icon for re-registration
+  CheckBadgeIcon,
+  CalendarDaysIcon,
+  ClockIcon
 } from '@heroicons/vue/24/solid'
+import { computed } from 'vue'
+import { useRouter } from 'vue-router'
+import dayjs from 'dayjs'
 
-dayjs.extend(relativeTime)
-
-// Initialize router
-const router = useRouter()
-
-// --- PROPS ---
 const props = defineProps({
   userDetail: {
     type: Object,
     required: true,
   },
+  // The target component used 'qualification', we keep it for consistency
   qualification: {
     type: Object,
     required: true,
   },
 })
 
+const router = useRouter()
 defineEmits(['view-certificate'])
 
-// --- COMPUTED PROPERTIES ---
+// --- COMPUTED PROPERTIES (Adopting the referral's pattern) ---
+
+const expiryDate = computed(() => props.qualification?.expiry_date || null)
 
 const formattedExpiryDate = computed(() => {
-  return props.qualification.expiry_date
-    ? dayjs(props.qualification.expiry_date).format('MMM DD,YYYY')
-    : 'N/A'
+  if (!expiryDate.value) return 'N/A'
+  return dayjs(expiryDate.value).format('DD MMM YYYY')
 })
 
-const now = dayjs()
-
-const expiry = computed(() => {
-  return props.qualification.expiry_date ? dayjs(props.qualification.expiry_date) : null
+const daysRemaining = computed(() => {
+  if (!expiryDate.value) return null
+  const expiry = dayjs(expiryDate.value)
+  const now = dayjs()
+  // The diff gives the number of full days between, so we add 1 for inclusive counting on the expiry day
+  return expiry.isValid() ? expiry.diff(now, 'day') : null
 })
 
-const daysUntilExpiry = computed(() => {
-  if (!expiry.value) return Infinity
-  return expiry.value.diff(now, 'day')
+// Text for the days remaining badge (e.g., "30 days remaining", "Expires today", "5 days ago")
+const daysRemainingText = computed(() => {
+  if (daysRemaining.value === null) return 'N/A'
+  if (daysRemaining.value < 0) return `${Math.abs(daysRemaining.value)} days ago`
+  if (daysRemaining.value === 0) return 'Expires today'
+  return `${daysRemaining.value + 1} days remaining`
 })
 
-const isExpiredPast = computed(() => {
-  return expiry.value ? now.isAfter(expiry.value, 'day') : false
+// Dynamic class for the main status badge (always success in this context)
+const statusBadgeClass = computed(() => {
+  return 'bg-emerald-100 text-emerald-800'
+});
+
+// Dynamic class for the 'days remaining' badge (changes color based on urgency)
+const daysRemainingBadgeClass = computed(() => {
+  if (daysRemaining.value === null) return 'bg-slate-100 text-slate-700'
+  if (daysRemaining.value <= 0) return 'bg-red-100 text-red-800' // Expired or expires today
+  if (daysRemaining.value <= 30) return 'bg-amber-100 text-amber-800' // Expires within 30 days
+  return 'bg-slate-100 text-slate-700' // More than 30 days left
 })
 
-const isExpiringSoon = computed(() => {
-  // Within the next 3 months (90 days) but not already expired
-  return !isExpiredPast.value && daysUntilExpiry.value <= 90 && daysUntilExpiry.value >= 0
+// Determines the text for the single action button
+const actionButtonText = computed(() => {
+  if (daysRemaining.value === null) return 'View Certificate'
+  if (daysRemaining.value < 0) return 'Re-register'
+  if (daysRemaining.value <= 90) return 'Renew License'
+  return 'View Certificate'
 })
 
-/**
- * Centralized Status Logic
- * This single computed property derives all status-related information (theme, text, icons, classes).
- * It makes the template cleaner and the logic easier to manage.
- */
-const qualificationStatus = computed(() => {
-  if (!props.qualification.expiry_date) {
-    return {
-      theme: 'info',
-      text: 'Expiry date not available.',
-      icon: InformationCircleIcon,
-      chipClasses: 'bg-gray-100 text-gray-700',
-    }
-  }
-
-  if (isExpiredPast.value) {
-    return {
-      theme: 'danger',
-      text: `Your license has expired.`,
-      icon: ExclamationCircleIcon,
-      chipClasses: 'bg-red-100 text-red-800',
-    }
-  }
-  if (daysUntilExpiry.value <= 30) {
-    // 1 month or less
-    return {
-      theme: 'danger',
-      text: `Your license expires in ${daysUntilExpiry.value + 1} days.`,
-      icon: ExclamationCircleIcon,
-      chipClasses: 'bg-red-100 text-red-800 animate-pulse',
-    }
-  }
-  if (daysUntilExpiry.value <= 90) {
-    // 3 months or less
-    return {
-      theme: 'warning',
-      text: `Your license expires ${dayjs().to(expiry.value)}.`,
-      icon: ExclamationTriangleIcon,
-      chipClasses: 'bg-yellow-100 text-yellow-800',
-    }
-  }
-  return {
-    theme: 'success',
-    text: `Your license is valid.`,
-    icon: CheckCircleIcon,
-    chipClasses: 'bg-green-100 text-green-800',
-  }
+// Determines the gradient color class for the single action button
+const actionButtonClass = computed(() => {
+  const text = actionButtonText.value
+  if (text === 'Re-register') return 'bg-gradient-to-r from-red-500 to-red-600 text-white focus:ring-red-500'
+  if (text === 'Renew License') return 'bg-gradient-to-r from-orange-400 to-orange-500 text-white focus:ring-orange-500'
+  return 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white focus:ring-blue-500'
 })
 
-const renewalButtonText = computed(() => {
-  return isExpiredPast.value ? 'Re-Register Application' : 'Renew Now'
-})
-
-const renewalButtonIcon = computed(() => {
-  return isExpiredPast.value ? ClipboardDocumentCheckIcon : ArrowPathIcon
-})
 
 // --- METHODS ---
-const navigateToRenewal = () => {
-  router.push('/admin/user/health_certification/renewal')
+
+// Single handler for the action button, directs based on computed text
+const handleActionButtonClick = () => {
+  const buttonText = actionButtonText.value;
+  if (buttonText === 'View Certificate') {
+    // Emitting the original event to the parent
+    emit('view-certificate', props.qualification);
+  } else if (buttonText === 'Renew License' || buttonText === 'Re-register') {
+    // Using the original navigation logic
+    router.push('/admin/user/health_certification/renewal');
+  }
 }
 </script>
