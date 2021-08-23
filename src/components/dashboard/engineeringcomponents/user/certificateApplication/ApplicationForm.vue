@@ -725,9 +725,11 @@ import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } fro
 import PageHeader from '@/components/common/MHPC/PageHeader.vue'
 import { UserPlus } from 'lucide-vue-next'
 
+// Initialize the store and router
 const authStore = useAuthStore()
 const user = authStore.user
 const router = useRouter()
+const toast = useToast()
 
 const props = defineProps({
   selectedType: {
@@ -817,203 +819,11 @@ const updateFormDocuments = () => {
 }
 
 const countries = [
-  'Afghanistan',
-  'Albania',
-  'Algeria',
-  'Andorra',
-  'Angola',
-  'Antigua and Barbuda',
-  'Argentina',
-  'Armenia',
-  'Australia',
-  'Austria',
-  'Azerbaijan',
-  'Bahamas',
-  'Bahrain',
-  'Bangladesh',
-  'Barbados',
-  'Belarus',
-  'Belgium',
-  'Belize',
-  'Benin',
-  'Bhutan',
-  'Bolivia',
-  'Bosnia and Herzegovina',
-  'Botswana',
-  'Brazil',
-  'Brunei',
-  'Bulgaria',
-  'Burkina Faso',
-  'Burundi',
-  'Cambodia',
-  'Cameroon',
-  'Canada',
-  'Cape Verde',
-  'Central African Republic',
-  'Chad',
-  'Chile',
-  'China',
-  'Colombia',
-  'Comoros',
-  'Congo',
-  'Costa Rica',
-  'Croatia',
-  'Cuba',
-  'Cyprus',
-  'Czech Republic',
-  'Denmark',
-  'Djibouti',
-  'Dominica',
-  'Dominican Republic',
-  'East Timor',
-  'Ecuador',
-  'Egypt',
-  'El Salvador',
-  'Equatorial Guinea',
-  'Eritrea',
-  'Estonia',
-  'Ethiopia',
-  'Fiji',
-  'Finland',
-  'France',
-  'Gabon',
-  'Gambia',
-  'Georgia',
-  'Germany',
-  'Ghana',
-  'Greece',
-  'Grenada',
-  'Guatemala',
-  'Guinea',
-  'Guinea-Bissau',
-  'Guyana',
-  'Haiti',
-  'Honduras',
-  'Hungary',
-  'Iceland',
-  'India',
-  'Indonesia',
-  'Iran',
-  'Iraq',
-  'Ireland',
-  'Israel',
-  'Italy',
-  'Ivory Coast',
-  'Jamaica',
-  'Japan',
-  'Jordan',
-  'Kazakhstan',
-  'Kenya',
-  'Kiribati',
-  'Korea, North',
-  'Korea, South',
-  'Kuwait',
-  'Kyrgyzstan',
-  'Laos',
-  'Latvia',
-  'Lebanon',
-  'Lesotho',
-  'Liberia',
-  'Libya',
-  'Liechtenstein',
-  'Lithuania',
-  'Luxembourg',
-  'Macedonia',
-  'Madagascar',
-  'Malawi',
-  'Malaysia',
-  'Maldives',
-  'Mali',
-  'Malta',
-  'Marshall Islands',
-  'Mauritania',
-  'Mauritius',
-  'Mexico',
-  'Micronesia',
-  'Moldova',
-  'Monaco',
-  'Mongolia',
-  'Montenegro',
-  'Morocco',
-  'Mozambique',
-  'Myanmar',
-  'Namibia',
-  'Nauru',
-  'Nepal',
-  'Netherlands',
-  'New Zealand',
-  'Nicaragua',
-  'Niger',
-  'Nigeria',
-  'Norway',
-  'Oman',
-  'Pakistan',
-  'Palau',
-  'Panama',
-  'Papua New Guinea',
-  'Paraguay',
-  'Peru',
-  'Philippines',
-  'Poland',
-  'Portugal',
-  'Qatar',
-  'Romania',
-  'Russia',
-  'Saint Kitts and Nevis',
-  'Saint Lucia',
-  'Saint Vincent',
-  'Samoa',
-  'San Marino',
-  'Sao Tome and Principe',
-  'Saudi Arabia',
-  'Senegal',
-  'Serbia',
-  'Seychelles',
-  'Sierra Leone',
-  'Singapore',
-  'Slovakia',
-  'Slovenia',
-  'Solomon Islands',
-  'Somalia',
-  'South Africa',
-  'South Sudan',
-  'Spain',
-  'Sri Lanka',
-  'Sudan',
-  'Suriname',
-  'Swaziland',
-  'Sweden',
-  'Switzerland',
-  'Syria',
-  'Taiwan',
-  'Tajikistan',
-  'Tanzania',
-  'Thailand',
-  'Togo',
-  'Tonga',
-  'Trinidad and Tobago',
-  'Tunisia',
-  'Turkey',
-  'Turkmenistan',
-  'Tuvalu',
-  'Uganda',
-  'Ukraine',
-  'United Arab Emirates',
-  'United Kingdom',
-  'United States',
-  'Uruguay',
-  'Uzbekistan',
-  'Vanuatu',
-  'Vatican City',
-  'Venezuela',
-  'Vietnam',
-  'Yemen',
-  'Zambia',
-  'Zimbabwe',
+  'Afghanistan', 'Albania', 'Algeria', 'Andorra', 'Angola', 'Antigua and Barbuda', 'Argentina', 'Armenia', 'Australia', 'Austria', 'Azerbaijan', 'Bahamas', 'Bahrain', 'Bangladesh', 'Barbados', 'Belarus', 'Belgium', 'Belize', 'Benin', 'Bhutan', 'Bolivia', 'Bosnia and Herzegovina', 'Botswana', 'Brazil', 'Brunei', 'Bulgaria', 'Burkina Faso', 'Burundi', 'Cambodia', 'Cameroon', 'Canada', 'Cape Verde', 'Central African Republic', 'Chad', 'Chile', 'China', 'Colombia', 'Comoros', 'Congo', 'Costa Rica', 'Croatia', 'Cuba', 'Cyprus', 'Czech Republic', 'Denmark', 'Djibouti', 'Dominica', 'Dominican Republic', 'East Timor', 'Ecuador', 'Egypt', 'El Salvador', 'Equatorial Guinea', 'Eritrea', 'Estonia', 'Ethiopia', 'Fiji', 'Finland', 'France', 'Gabon', 'Gambia', 'Georgia', 'Germany', 'Ghana', 'Greece', 'Grenada', 'Guatemala', 'Guinea', 'Guinea-Bissau', 'Guyana', 'Haiti', 'Honduras', 'Hungary', 'Iceland', 'India', 'Indonesia', 'Iran', 'Iraq', 'Ireland', 'Israel', 'Italy', 'Ivory Coast', 'Jamaica', 'Japan', 'Jordan', 'Kazakhstan', 'Kenya', 'Kiribati', 'Korea, North', 'Korea, South', 'Kuwait', 'Kyrgyzstan', 'Laos', 'Latvia', 'Lebanon', 'Lesotho', 'Liberia', 'Libya', 'Liechtenstein', 'Lithuania', 'Luxembourg', 'Macedonia', 'Madagascar', 'Malawi', 'Malaysia', 'Maldives', 'Mali', 'Malta', 'Marshall Islands', 'Mauritania', 'Mauritius', 'Mexico', 'Micronesia', 'Moldova', 'Monaco', 'Mongolia', 'Montenegro', 'Morocco', 'Mozambique', 'Myanmar', 'Namibia', 'Nauru', 'Nepal', 'Netherlands', 'New Zealand', 'Nicaragua', 'Niger', 'Nigeria', 'Norway', 'Oman', 'Pakistan', 'Palau', 'Panama', 'Papua New Guinea', 'Paraguay', 'Peru', 'Philippines', 'Poland', 'Portugal', 'Qatar', 'Romania', 'Russia', 'Saint Kitts and Nevis', 'Saint Lucia', 'Saint Vincent', 'Samoa', 'San Marino', 'Sao Tome and Principe', 'Saudi Arabia', 'Senegal', 'Serbia', 'Seychelles', 'Sierra Leone', 'Singapore', 'Slovakia', 'Slovenia', 'Solomon Islands', 'Somalia', 'South Africa', 'South Sudan', 'Spain', 'Sri Lanka', 'Sudan', 'Suriname', 'Swaziland', 'Sweden', 'Switzerland', 'Syria', 'Taiwan', 'Tajikistan', 'Tanzania', 'Thailand', 'Togo', 'Tonga', 'Trinidad and Tobago', 'Tunisia', 'Turkey', 'Turkmenistan', 'Tuvalu', 'Uganda', 'Ukraine', 'United Arab Emirates', 'United Kingdom', 'United States', 'Uruguay', 'Uzbekistan', 'Vanuatu', 'Vatican City', 'Venezuela', 'Vietnam', 'Yemen', 'Zambia', 'Zimbabwe',
 ]
 
 const qualificationTypes = ref([])
-const qualifications = ref([])
+const allQualifications = ref([])
 const universities = ref([])
 const allRegistrationTypesFromAPI = ref([])
 
@@ -1024,26 +834,8 @@ const REGISTRATION_TYPE_KEYWORDS = {
 }
 
 const MANDATORY_DOC_KEYWORDS = {
-  provisional: [
-    'graduation certificate',
-    'provisional certificate',
-    'course completion certificate',
-    'marksheet',
-    'internship completion',
-    'class x',
-    'class xii',
-    'citizenship identity card',
-    'security clearance',
-    'recognition of qualification',
-  ],
-  temporary: [
-    'graduation certificate',
-    'work offer letter',
-    'request letter',
-    'passport copy',
-    'visa copy',
-    'permit copy',
-  ],
+  provisional: ['graduation certificate', 'provisional certificate', 'course completion certificate', 'marksheet', 'internship completion', 'class x', 'class xii', 'citizenship identity card', 'security clearance', 'recognition of qualification',],
+  temporary: ['graduation certificate', 'work offer letter', 'request letter', 'passport copy', 'visa copy', 'permit copy',],
 }
 
 onMounted(async () => {
@@ -1058,7 +850,7 @@ onMounted(async () => {
     ])
 
     qualificationTypes.value = responses[0]?.data?.results || []
-    qualifications.value = responses[1]?.data?.results || []
+    allQualifications.value = responses[1]?.data?.results || []
     universities.value = responses[2]?.data?.results || []
     allRegistrationTypesFromAPI.value = responses[3]?.data?.results || []
     fetchedDocumentTypes.value = responses[4]?.data?.results || []
@@ -1077,9 +869,7 @@ onMounted(async () => {
     }
   } catch (error) {
     console.error('Error fetching master data:', error)
-    toast.error(
-      'Failed to fetch master data. Some dropdowns or options may not populate correctly. Please try refreshing.'
-    )
+    toast.error('Failed to fetch master data. Some dropdowns or options may not populate correctly. Please try refreshing.')
   } finally {
     isLoadingMasters.value = false
   }
@@ -1117,10 +907,27 @@ const localFormData = reactive({
   registration_type: '',
 })
 
+const qualifications = computed(() => {
+  if (!localFormData.qualification_type) {
+    return []
+  }
+  return allQualifications.value.filter(
+    (qual) => qual.qualification_type === localFormData.qualification_type
+  )
+})
+
+watch(
+  () => localFormData.qualification_type,
+  (newType, oldType) => {
+    if (newType !== oldType) {
+      localFormData.qualification_name = ''
+    }
+  }
+)
+
 const errors = reactive({})
 const isConfirmationModalOpen = ref(false)
 const isSubmitting = ref(false)
-const toast = useToast()
 const isLoadingDCRC = ref(false)
 
 const getRegistrationTypeName = (typeId) => {
@@ -1134,9 +941,7 @@ const getRegistrationTypeCategory = (typeId) => {
   const nameLower = type.name.toLowerCase()
   if (REGISTRATION_TYPE_KEYWORDS.full.some((keyword) => nameLower.includes(keyword))) {
     return 'full'
-  } else if (
-    REGISTRATION_TYPE_KEYWORDS.provisional.some((keyword) => nameLower.includes(keyword))
-  ) {
+  } else if (REGISTRATION_TYPE_KEYWORDS.provisional.some((keyword) => nameLower.includes(keyword))) {
     return 'provisional'
   } else if (REGISTRATION_TYPE_KEYWORDS.temporary.some((keyword) => nameLower.includes(keyword))) {
     return 'temporary'
@@ -1196,13 +1001,7 @@ const validateFormStageOne = () => {
       !key.startsWith('document_') &&
       key !== 'mandatory_documents' &&
       key !== 'declaration' &&
-      ![
-        'qualification_type',
-        'qualification_name',
-        'other_qualification_name_specify',
-        'institute',
-        'year_of_completion',
-      ].includes(key)
+      !['qualification_type', 'qualification_name', 'other_qualification_name_specify', 'institute', 'year_of_completion',].includes(key)
     ) {
       delete errors[key]
     }
@@ -1256,10 +1055,7 @@ const validateFormStageOne = () => {
       errors.gewog = 'Gewog should auto-fill; try re-entering CID.'
     if (!localFormData.village && isCIDValid.value)
       errors.village = 'Village should auto-fill; try re-entering CID.'
-    if (
-      (!localFormData.dzongkhag || !localFormData.gewog || !localFormData.village) &&
-      isCIDValid.value
-    )
+    if ((!localFormData.dzongkhag || !localFormData.gewog || !localFormData.village) && isCIDValid.value)
       isValid = false
   } else {
     if (!localFormData.nationality) {
@@ -1287,16 +1083,10 @@ const validateFormStageOne = () => {
     } else {
       const bhutaneseMobilePattern = /^[17]\d{7}$/
       const internationalMobilePattern = /^\+?\d{7,15}$/
-      if (
-        localFormData.nationality === 'Bhutanese' &&
-        !bhutaneseMobilePattern.test(localFormData.mobileNumber)
-      ) {
+      if (localFormData.nationality === 'Bhutanese' && !bhutaneseMobilePattern.test(localFormData.mobileNumber)) {
         errors.mobileNumber = 'Bhutanese mobile numbers must be 8 digits and start with 1 or 7.'
         isValid = false
-      } else if (
-        localFormData.nationality !== 'Bhutanese' &&
-        !internationalMobilePattern.test(localFormData.mobileNumber)
-      ) {
+      } else if (localFormData.nationality !== 'Bhutanese' && !internationalMobilePattern.test(localFormData.mobileNumber)) {
         errors.mobileNumber = 'Please enter a valid mobile number (7-15 digits, can start with +).'
         isValid = false
       }
@@ -1306,15 +1096,7 @@ const validateFormStageOne = () => {
 }
 
 const validateForm = () => {
-  const stageTwoFields = [
-    'qualification_type',
-    'qualification_name',
-    'other_qualification_name_specify',
-    'institute',
-    'year_of_completion',
-    'mandatory_documents',
-    'declaration',
-  ]
+  const stageTwoFields = ['qualification_type', 'qualification_name', 'other_qualification_name_specify', 'institute', 'year_of_completion', 'mandatory_documents', 'declaration',]
   Object.keys(errors).forEach((key) => {
     if (stageTwoFields.includes(key) || key.startsWith('document_')) {
       delete errors[key]
@@ -1331,10 +1113,7 @@ const validateForm = () => {
     errors.qualification_name = 'Qualification name is required.'
     isValid = false
   }
-  if (
-    localFormData.qualification_name === 'OTHERS' &&
-    !localFormData.other_qualification_name_specify
-  ) {
+  if (localFormData.qualification_name === 'OTHERS' && !localFormData.other_qualification_name_specify) {
     errors.other_qualification_name_specify = 'Please specify the qualification name.'
     isValid = false
   }
@@ -1372,9 +1151,7 @@ const validateForm = () => {
   }
 
   if (missingMandatoryDocNames.length > 0) {
-    errors.mandatory_documents = `The following mandatory documents are missing: ${missingMandatoryDocNames.join(
-      ', '
-    )}.`
+    errors.mandatory_documents = `The following mandatory documents are missing: ${missingMandatoryDocNames.join(', ')}.`
     isValid = false
   }
 
@@ -1427,8 +1204,7 @@ const fetchDCRCData = async () => {
   } catch (error) {
     console.error('Error fetching DCRC data:', error.response?.data || error.message)
     const errorMessage =
-      error.response?.data?.error ||
-      'Failed to fetch citizen details. Please enter details manually.'
+      error.response?.data?.error || 'Failed to fetch citizen details. Please enter details manually.'
     toast.error(errorMessage)
     localFormData.full_name = ''
     localFormData.date_of_birth = ''
@@ -1497,21 +1273,7 @@ const handleNext = async () => {
       delete formDataStageOne.workPermitNo
       delete formDataStageOne.mobileNumber
     }
-    const fieldsToRemove = [
-      'documents',
-      'remarks',
-      'declaration',
-      'payment_status',
-      'payment_id',
-      'qualification_type',
-      'qualification_name',
-      'other_qualification_name_specify',
-      'institute',
-      'year_of_completion',
-      'is_active',
-      'application',
-      'cid_holder',
-    ]
+    const fieldsToRemove = ['documents', 'remarks', 'declaration', 'payment_status', 'payment_id', 'qualification_type', 'qualification_name', 'other_qualification_name_specify', 'institute', 'year_of_completion', 'is_active', 'application', 'cid_holder',]
     if (props.selectedType === 'cid') {
       delete formDataStageOne.mobileNumber
       delete formDataStageOne.country
@@ -1580,33 +1342,23 @@ const openConfirmationModal = () => {
 
 const handleSubmitActual = async () => {
   isConfirmationModalOpen.value = false
-  updateFormDocuments()
+  isSubmitting.value = true
 
-  const isStepOneValid = validateFormStageOne()
-  const isStepTwoValid = validateForm()
-
-  if (!isStepOneValid || !isStepTwoValid) {
-    toast.error('Submission cancelled due to validation errors. Please review the form.')
-    if (!isStepOneValid) {
-      stage.value = 1
-      toast.error('Please correct the errors in Step 1: Personal Information.')
-    } else {
-      toast.error('Please correct the errors in Step 2: Qualification & Documents.')
-    }
+  // This check is redundant as it's done in openConfirmationModal, but good for safety
+  if (!validateFormStageOne() || !validateForm()) {
+    toast.error('Submission failed due to validation errors. Please review the form.')
+    isSubmitting.value = false
     return
   }
 
   if (!localFormData.application) {
-    toast.error(
-      'Application ID is missing. Cannot submit qualification details. Please go back to Step 1.'
-    )
+    toast.error('Application ID is missing. Cannot proceed. Please go back to Step 1.')
+    isSubmitting.value = false
     return
   }
 
-  isSubmitting.value = true
   try {
     const qualificationFormData = new FormData()
-
     qualificationFormData.append('application', localFormData.application)
     if (localFormData.qualification_name === 'OTHERS') {
       qualificationFormData.append(
@@ -1618,35 +1370,73 @@ const handleSubmitActual = async () => {
     }
     qualificationFormData.append('qualification_type', localFormData.qualification_type)
     qualificationFormData.append('institute_university', localFormData.institute)
-    if (localFormData.year_of_completion && typeof localFormData.year_of_completion === 'string') {
+    if (localFormData.year_of_completion) {
       const year = localFormData.year_of_completion.split('-')[0]
-      if (year && !isNaN(parseInt(year))) {
-        qualificationFormData.append('completion_year', year)
-      }
+      qualificationFormData.append('completion_year', year)
     }
     qualificationFormData.append('declaration', localFormData.declaration ? 'True' : 'False')
     qualificationFormData.append('remarks', localFormData.remarks || '')
     qualificationFormData.append('is_primary_qualification', 'True')
 
     supportingDocuments.value.forEach((doc, index) => {
-      if (doc.type && doc.files && doc.files.length > 0) {
-        doc.files.forEach((fileObject) => {
-          qualificationFormData.append(`attachments-${index}-file`, fileObject, fileObject.name)
+      if (doc.type && doc.files.length > 0) {
+        doc.files.forEach((file) => {
+          qualificationFormData.append(`attachments-${index}-file`, file, file.name)
         })
         qualificationFormData.append(`attachments-${index}-file_type`, doc.type)
       }
     })
 
     await apiService.createEpcNewQualification(qualificationFormData)
-
     toast.success('Registration submitted successfully!')
+
+    // +++ PROFILE UPDATE LOGIC STARTS HERE +++
+    const profileUpdateData = new FormData()
+    let needsUpdate = false
+
+    if (localFormData.village && localFormData.village !== authStore.user.village) {
+      profileUpdateData.append('village', localFormData.village)
+      needsUpdate = true
+    }
+    if (localFormData.gewog && localFormData.gewog !== authStore.user.gewog) {
+      profileUpdateData.append('gewog', localFormData.gewog)
+      needsUpdate = true
+    }
+    if (localFormData.dzongkhag && localFormData.dzongkhag !== authStore.user.dzongkhag) {
+      profileUpdateData.append('dzongkhag', localFormData.dzongkhag)
+      needsUpdate = true
+    }
+
+    if (needsUpdate) {
+      try {
+        // Append existing data to avoid wiping them out on the backend
+        profileUpdateData.append(
+          'contact_number',
+          authStore.user.contact_number || localFormData.contact_no
+        )
+        profileUpdateData.append('email', authStore.user.email || localFormData.email_address)
+
+        // Assuming you have an apiService method like updateProfile(userId, data)
+        await apiService.updateProfile(authStore.user.id, profileUpdateData)
+
+        // Also update the local store so the UI reflects the change immediately
+        authStore.user.village = localFormData.village
+        authStore.user.gewog = localFormData.gewog
+        authStore.user.dzongkhag = localFormData.dzongkhag
+
+        toast.info('Your profile location has been updated.')
+
+      } catch (profileError) {
+        console.error('Could not auto-update profile location:', profileError)
+        toast.warning('Application submitted, but could not auto-update your profile location.')
+      }
+    }
+    // +++ PROFILE UPDATE LOGIC ENDS HERE +++
+
     emit('submit', { ...localFormData })
     router.push('/admin/user/engineering_certification/dashboard')
   } catch (error) {
-    console.error(
-      'Error submitting qualification and documents:',
-      error.response?.data || error.message
-    )
+    console.error('Error submitting qualification and documents:', error.response?.data || error.message)
     const errorMessages = Object.entries(
       error.response?.data || { 'API Error': [error.message || 'Unknown error'] }
     )
@@ -1686,7 +1476,6 @@ const handleSubmitActual = async () => {
   .text-sm {
     font-size: 0.8125rem;
   }
-
   .text-xs {
     font-size: 0.75rem;
   }

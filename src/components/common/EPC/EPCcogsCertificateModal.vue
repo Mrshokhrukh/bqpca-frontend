@@ -62,7 +62,8 @@
                   <div>{{ cogsData.cid_no }}</div>
 
                   <div class="font-semibold">Registration No.:</div>
-                  <div>{{ cogsData.registration_no || 'N/A' }}</div>
+                  <!-- FIX #1: Corrected path to registration_no -->
+                  <div>{{ cogsData.application_details?.registration_no || 'N/A' }}</div>
 
                   <div class="font-semibold">Date of Initial Registration:</div>
                   <div>{{ formatDate(cogsData.date_of_initial_registration) }}</div>
@@ -218,15 +219,15 @@ const formatDate = (dateString) => {
 const qrCodeData = computed(() => {
   if (!cogsData.value) return ''
   const baseUrl = window.location.origin
-  // CORRECTED: Was cogsData.value.registration_no?.registration_no
-  const certIdentifier = cogsData.value.registration_no || cogsData.value.id
+  // FIX #2: Corrected path to get the registration number for the QR Code
+  const certIdentifier = cogsData.value.application_details?.registration_no || cogsData.value.id
   return `${baseUrl}/verify-cogs?cert_number=${certIdentifier}`
 })
 
 const downloadCertificate = () => {
   const element = document.getElementById('cogs-certificate-content')
-  // CORRECTED: Was cogsData.value?.registration_no?.registration_no
-  const regNo = cogsData.value?.registration_no
+  // FIX #3: Corrected path to get the registration number for the filename
+  const regNo = cogsData.value?.application_details?.registration_no
   const id = cogsData.value?.id
   const filename = `cogs-certificate-${regNo || id || 'unknown'}.pdf`
 
