@@ -1019,6 +1019,15 @@ export default {
   deleteEpcMastersUniversity(id) {
     return apiClient.delete(`/epc/masters-university/${id}/`)
   },
+  /**
+   * Fetches the aggregated payment history for the current user.
+   * @returns {Promise} An axios promise with a list of payment records.
+   */
+  getAllPayments() {
+    // This now calls the new, correct endpoint we created in Django.
+    return apiClient.get('/epc/payment-history/');
+  },
+
 
 
 
