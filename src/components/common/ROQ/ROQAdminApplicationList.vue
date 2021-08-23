@@ -176,8 +176,16 @@
                   <td v-if="showRegretColumn" class="px-6 py-5 whitespace-nowrap">
                     <!-- Unchanged code for this column -->
                   </td>
-                  <td class="px-6 py-5 whitespace-nowrap">
-                    <div class="flex flex-col items-center justify-center">
+                  <td class="px-6 py-5 whitespace-nowrap text-center">
+                    <button
+                      v-if="showClaimButton"
+                      @click="$emit('claim', application)"
+                      class="px-5 py-2 bg-green-600 text-white text-sm font-semibold rounded-md shadow-sm hover:bg-green-700 active:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200"
+                    >
+                      Claim Application
+                    </button>
+
+                    <div v-else class="flex flex-col items-center justify-center">
                       <div
                         v-if="userRole === 'dealing_officer' && application.chief_to_do_remarks"
                         class="flex items-center justify-center text-xs text-amber-600 mb-1.5 font-medium"
@@ -252,6 +260,10 @@ const props = defineProps({
   selectedStatus: { type: String, default: '' },
   noResults: { type: Boolean, default: false },
   userRole: { type: String, required: true },
+  showClaimButton: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const localPerPage = ref(props.perPage)
@@ -262,6 +274,7 @@ const emit = defineEmits([
   'search-query-change',
   'status-filter-change',
   'refresh',
+  'claim',
 ])
 const toast = useToast()
 const sortOrder = ref({ field: 'updated_at', direction: 'desc' })
@@ -552,7 +565,7 @@ watch(
   () => props.perPage,
   (newVal) => {
     localPerPage.value = newVal
-  },
+  }
 )
 
 watch(
@@ -561,6 +574,6 @@ watch(
     Object.keys(isSendingStatus).forEach((key) => delete isSendingStatus[key])
     Object.keys(isSendingRegret).forEach((key) => delete isSendingRegret[key])
   },
-  { deep: true },
+  { deep: true }
 )
 </script>

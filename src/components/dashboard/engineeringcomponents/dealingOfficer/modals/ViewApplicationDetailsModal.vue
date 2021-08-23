@@ -58,27 +58,30 @@
                     </p>
                   </div>
                 </div>
+
+                <!-- USE THE LOCAL REACTIVE STATE -->
                 <ApplicationStatus
-                  v-if="application"
+                  v-if="internalApplication"
                   :overallStatus="overallStatus"
                   @close="closeModal"
                 />
 
-                <div v-if="application" class="px-8 py-6 bg-white">
+                <!-- USE THE LOCAL REACTIVE STATE -->
+                <div v-if="internalApplication" class="px-8 py-6 bg-white">
                   <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <div class="lg:col-span-1 space-y-6">
                       <PersonalInformation
-                        :application="application"
+                        :application="internalApplication"
                         @update="refreshApplication"
                       />
-                      <ContactInformation :application="application" />
+                      <ContactInformation :application="internalApplication" />
                     </div>
 
                     <div class="lg:col-span-2 space-y-6">
                       <ApplicationDetailsSection
-                        v-if="application.user_qualifications && application.user_qualifications.length > 0"
-                        :details="application.user_qualifications[0]"
-                        :application="application" 
+                        v-if="internalApplication.user_qualifications && internalApplication.user_qualifications.length > 0"
+                        :details="internalApplication.user_qualifications[0]"
+                        :application="internalApplication"
                         :personnelCategories="personnelCategories"
                         :personnelSubcategories="personnelSubcategories"
                         :sectors="sectors"
@@ -86,18 +89,20 @@
                         @validation-status-changed="handleValidationUpdate"
                       />
                       <QualificationList
-                        :qualifications="application.user_qualifications"
-                        :applicationId="application.id"
-                        :mainApplicationPaymentStatus="application.payment_status"
+                        :qualifications="internalApplication.user_qualifications"
+                        :applicationId="internalApplication.id"
+                        :mainApplicationPaymentStatus="internalApplication.payment_status"
                         :registrationTypes="registrationTypes"
                         @update="refreshApplication"
                       />
                     </div>
                   </div>
                 </div>
+
+                <!-- USE THE LOCAL REACTIVE STATE -->
                 <FooterButtons
-                  v-if="application"
-                  :application="application"
+                  v-if="internalApplication"
+                  :application="internalApplication"
                   @open-certificate-modal="openCertificateModal"
                   @update="refreshApplication"
                   :is-loading="isLoading"
@@ -122,7 +127,7 @@
 
 <script setup>
 import { Dialog, DialogPanel, TransitionRoot, TransitionChild } from '@headlessui/vue'
-import { ref, computed, nextTick } from 'vue'
+import { ref, computed, nextTick, watch } from 'vue' // <-- Import watch
 import apiServices from '@/services/services'
 import EPCCertificateModal from '@/components/common/EPC/EPCCertificateModal.vue'
 import PersonalInformation from './applicationDetailsComponents/PersonalInformation.vue'
@@ -158,14 +163,31 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'update'])
 
+// --- FIX START ---
+// 1. Create a local, reactive copy of the application prop.
+const internalApplication = ref(null)
+
+// 2. Use a watcher to keep the local state in sync with the incoming prop.
+// This runs when the modal is opened.
+watch(() => props.application, (newApp) => {
+  if (newApp) {
+    // Deep copy to prevent mutations affecting the parent's state directly
+    internalApplication.value = JSON.parse(JSON.stringify(newApp))
+  } else {
+    internalApplication.value = null
+  }
+}, { immediate: true, deep: true })
+// --- FIX END ---
+
 const isLoading = ref(false)
 const isCertificateModalOpen = ref(false)
 const detailsValidationStatus = ref({ isValid: true, missingFields: [] });
 
+// Use the local state for computed properties
 const formattedApplicationData = computed(() => {
-  if (!props.application) return null
+  if (!internalApplication.value) return null
   return {
-    results: [props.application],
+    results: [internalApplication.value],
   }
 })
 
@@ -180,12 +202,13 @@ const closeModalHandler = () => {
   closeModal()
 }
 
+// Use the local state for computed properties
 const overallStatus = computed(() => {
-  if (!props.application?.user_qualifications?.[0]) return 'Pending'
+  if (!internalApplication.value?.user_qualifications?.[0]) return 'Pending'
 
-  const appReview = props.application.user_qualifications[0].application_review_status
-  const physReview = props.application.user_qualifications[0].physical_review_status
-  const endorse = props.application.user_qualifications[0].endorsement_decision
+  const appReview = internalApplication.value.user_qualifications[0].application_review_status
+  const physReview = internalApplication.value.user_qualifications[0].physical_review_status
+  const endorse = internalApplication.value.user_qualifications[0].endorsement_decision
 
   if (appReview === 'Regretted' || physReview === 'Regretted' || endorse === 'Regretted') {
     return 'Regretted'
@@ -204,32 +227,40 @@ const handleValidationUpdate = (status) => {
   detailsValidationStatus.value = status;
 };
 
+// --- FIX START ---
+// 3. Modify refreshApplication to update the LOCAL state first.
 const refreshApplication = async () => {
-  if (!props.application?.id) return
+  if (!internalApplication.value?.id) return
   isLoading.value = true
   try {
-    const response = await apiServices.getEpcNewApplications(props.application.id)
+    const response = await apiServices.getEpcNewApplications(internalApplication.value.id)
 
-    // Check if the response has the 'results' key and it's an array
+    let updatedApplication = null;
+    // Handle cases where API returns a list or a single object
     if (response.data && Array.isArray(response.data.results) && response.data.results.length > 0) {
-      // Find the specific application from the results array, or just take the first one
-      const updatedApplication = response.data.results.find(app => app.id === props.application.id) || response.data.results[0];
-      emit('update', updatedApplication); // Emit the single object
+      updatedApplication = response.data.results.find(app => app.id === internalApplication.value.id) || response.data.results[0];
     } else if (response.data && typeof response.data === 'object' && !Array.isArray(response.data.results)) {
-      // Fallback in case the API sometimes returns a single object directly
-      emit('update', response.data);
+      updatedApplication = response.data;
+    }
+
+    if (updatedApplication) {
+      // THIS IS THE KEY: Update the local reactive state.
+      // Vue will now re-render this component and its children with the new data.
+      internalApplication.value = updatedApplication;
     } else {
         console.error('Refresh failed: API response was not in the expected format.', response.data);
     }
 
+    // Also notify the parent page to update its main list
+    emit('update');
     await nextTick()
   } catch (error) {
-
     console.error('Error refreshing application:', error)
   } finally {
     isLoading.value = false
   }
 }
+// --- FIX END ---
 
 const openCertificateModal = () => {
   isCertificateModalOpen.value = true

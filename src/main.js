@@ -5,6 +5,7 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
 import Toast, { POSITION, TYPE as ToastType } from 'vue-toastification'
+import clickOutside from './directives/clickOutside'
 import 'vue-toastification/dist/index.css'
 import 'apexcharts/dist/apexcharts.css'
 
@@ -52,5 +53,6 @@ const toastOptions = {
 }
 
 app.use(Toast, toastOptions)
+app.directive('click-outside', clickOutside)
 
 app.mount('#app')

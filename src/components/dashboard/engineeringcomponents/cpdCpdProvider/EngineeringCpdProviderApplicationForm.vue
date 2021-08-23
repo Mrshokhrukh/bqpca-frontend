@@ -1,5 +1,37 @@
 <template>
   <div class="bg-slate-50 font-sans antialiased">
+    <!-- ===== TOAST NOTIFICATION COMPONENT ===== -->
+    <Transition enter-active-class="transform ease-out duration-300 transition"
+      enter-from-class="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
+      enter-to-class="translate-y-0 opacity-100 sm:translate-x-0" leave-active-class="transition ease-in duration-100"
+      leave-from-class="opacity-100" leave-to-class="opacity-0">
+      <div v-if="toast.show" class="fixed top-0 right-0 mt-6 mr-6 z-[100] w-full max-w-sm">
+        <div class="bg-teal-50 border border-teal-200 rounded-lg shadow-lg p-4 flex items-start">
+          <div class="flex-shrink-0">
+            <svg class="h-6 w-6 text-teal-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+              stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div class="ml-3 w-0 flex-1 pt-0.5">
+            <p class="text-sm font-medium text-teal-800">{{ toast.message }}</p>
+          </div>
+          <div class="ml-4 flex-shrink-0 flex">
+            <button @click="hideToast" type="button"
+              class="rounded-md inline-flex text-teal-500 hover:text-teal-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">
+              <span class="sr-only">Close</span>
+              <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path
+                  d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </Transition>
+    <!-- ===== END OF TOAST ===== -->
+
     <div class="container mx-auto p-4 md:p-6">
       <div class="md:grid md:grid-cols-12 md:gap-12">
         <aside class="md:col-span-3 mb-8 md:mb-0">
@@ -93,9 +125,8 @@
             </div>
           </div>
 
-          <div v-if="validationErrors.length > 0 || successMessage" class="mb-6 space-y-4">
-            <div v-if="validationErrors.length > 0"
-              class="bg-rose-50 border border-rose-200 text-rose-800 p-4 rounded-lg shadow-sm" role="alert">
+          <div v-if="validationErrors.length > 0" class="mb-6">
+            <div class="bg-rose-50 border border-rose-200 text-rose-800 p-4 rounded-lg shadow-sm" role="alert">
               <div class="flex">
                 <div class="flex-shrink-0">
                   <svg class="h-6 w-6 text-rose-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
@@ -113,20 +144,6 @@
                     </li>
                   </ul>
                 </div>
-              </div>
-            </div>
-            <div v-if="successMessage"
-              class="bg-teal-50 border border-teal-200 text-teal-800 p-5 rounded-lg shadow-sm flex items-start space-x-4 transition-all duration-300"
-              role="alert">
-              <svg class="h-7 w-7 text-teal-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                fill="currentColor">
-                <path fill-rule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
-                  clip-rule="evenodd" />
-              </svg>
-              <div>
-                <p class="font-bold text-lg">Success!</p>
-                <p class="text-sm mt-1 text-teal-700">{{ successMessage }}</p>
               </div>
             </div>
           </div>
@@ -636,8 +653,30 @@ const router = useRouter()
 const loading = ref(false)
 const currentAction = ref('')
 const showConfirmation = ref(false)
-const successMessage = ref('')
 const userRegistrations = ref([])
+
+// --- TOAST NOTIFICATION STATE & LOGIC ---
+const toast = reactive({
+  show: false,
+  message: '',
+  type: 'success', // can be 'success', 'error', etc. in a real app
+});
+let toastTimeoutId = null;
+
+const showToast = (message, type = 'success', duration = 4000) => {
+  if (toastTimeoutId) clearTimeout(toastTimeoutId);
+  toast.message = message;
+  toast.type = type;
+  toast.show = true;
+  toastTimeoutId = setTimeout(() => {
+    hideToast();
+  }, duration);
+};
+
+const hideToast = () => {
+  toast.show = false;
+};
+// --- END TOAST ---
 
 
 const applicant = reactive({
@@ -1095,7 +1134,6 @@ const resetFormState = () => {
 
   validationErrors.value = []
 
-  successMessage.value = ''
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
@@ -1114,7 +1152,7 @@ const saveDraft = async () => {
     loading.value = true
     const fd = prepareFormData(true)
     await apiService.createEpcCpdTask(fd)
-    successMessage.value = 'Draft saved successfully! You can find it on your dashboard.'
+    showToast('Draft saved successfully!', 'success');
     resetFormState();
   } catch (error) {
     console.error('Error saving draft:', error)
@@ -1148,7 +1186,7 @@ const confirmSubmit = async () => {
     loading.value = true
     const fd = prepareFormData(false)
     await apiService.createEpcCpdTask(fd)
-    successMessage.value = 'Application submitted successfully! Redirecting to dashboard...'
+    showToast('Application submitted successfully! Redirecting to dashboard...', 'success');
     resetFormState()
     setTimeout(() => {
       router.push('/admin/cme_cpd_provider/engineering_certification/dashboard')

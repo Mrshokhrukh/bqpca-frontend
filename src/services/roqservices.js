@@ -21,6 +21,10 @@ export default {
     return apiClient.delete(`/recognitions/recognition-of-qualifications/${id}/`)
   },
 
+  claimApplication(applicationId) {
+    return apiClient.post(`/recognitions/recognition-of-qualifications/${applicationId}/claim/`);
+  },
+
   /**
    * Sends the ROQ status update notification.
    * @param {number|string} id - The ID of the RecognitionOfQualification record.
@@ -204,4 +208,5 @@ export default {
   deleteESignature(id) {
     return apiClient.delete(`/masters/roq-e-sign/${id}/`)
   },
+
 }

@@ -32,9 +32,7 @@ export const useAuthStore = defineStore('auth', () => {
     let fullNameString = firstName
     if (middleName) {
       fullNameString += ' ' + middleName
-      fullNameString += ' ' + middleName
     }
-    fullNameString += ' ' + lastName
     fullNameString += ' ' + lastName
 
     fullNameString = fullNameString.trim()
@@ -314,6 +312,29 @@ export const useAuthStore = defineStore('auth', () => {
       throw error // Re-throw the error so the component knows it failed
     }
   }
+  const updateUserProfile = async (profileData) => {
+    if (!userId.value) {
+      console.error('Cannot update profile: User ID is missing.')
+      return
+    }
+    try {
+      const response = await apiService.updateProfile(userId.value, profileData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+
+      user.value = { ...user.value, ...response.data };
+      localStorage.setItem('user', JSON.stringify(user.value))
+
+      console.log('Auth store and local storage updated with new profile info.')
+      return response.data
+    } catch (error) {
+      console.error('Failed to update user profile in auth store:', error)
+      throw error
+    }
+  }
+
 
   return {
     accessToken,
@@ -343,6 +364,7 @@ export const useAuthStore = defineStore('auth', () => {
     updateUserAfterFetch,
     setNewAccessToken,
     userRegistrationNo,
+    updateUserProfile,
     fetchAndSetRegistrationNo,
     loginWithNdi,
   }

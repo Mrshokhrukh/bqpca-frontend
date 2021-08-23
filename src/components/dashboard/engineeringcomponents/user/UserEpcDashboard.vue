@@ -24,16 +24,8 @@
           <ApplicationsModal v-if="selectedApplications.length" :applications="selectedApplications" :title="modalTitle"
             @close="closeApplicationsModal" @visit="visitApplication" />
 
-          <!-- ================================================================== -->
-          <!-- START OF CORRECTION                                                -->
-          <!-- The prop name is changed from 'application' to 'qualification' to  -->
-          <!-- match what the CertificateModal component expects.                 -->
-          <!-- ================================================================== -->
           <CertificateModal v-if="showCertificateModal" :qualification="selectedApplication"
             @close="closeCertificateModal" />
-          <!-- ================================================================== -->
-          <!-- END OF CORRECTION                                                  -->
-          <!-- ================================================================== -->
 
         </template>
         <div v-else class="p-10 text-center">

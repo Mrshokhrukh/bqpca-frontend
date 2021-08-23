@@ -175,7 +175,7 @@ export default {
     return apiClient.get(`/epc/epc-cpd-records/list-my-cpd/?cid=${cid}`)
   },
   getCPDProviderDashboard() {
-    
+
     return apiClient.get('/epc/dashboard/cpd-provider/');
   },
   // EPC CPD Task Learning Methods endpoints
@@ -421,7 +421,15 @@ export default {
     return apiClient.delete(`/epc/epc-new-qualification/${id}/`)
   },
 
-  // <<< --- START: EPC New Education Program Endpoints --- >>>
+  /**
+
+   * @param {object} queryParams
+   * @returns {Promise}
+   */
+  getEpcAdditionalQualificationsReport(queryParams) {
+    return apiClient.get('/epc/reports/additional-qualifications/', { params: queryParams });
+  },
+
   getEpcNewEducationPrograms() {
     return apiClient.get('/epc/epc-new-education-programs/')
   },
@@ -1011,6 +1019,16 @@ export default {
   deleteEpcMastersUniversity(id) {
     return apiClient.delete(`/epc/masters-university/${id}/`)
   },
+  /**
+   * Fetches the aggregated payment history for the current user.
+   * @returns {Promise} An axios promise with a list of payment records.
+   */
+  getAllPayments() {
+    // This now calls the new, correct endpoint we created in Django.
+    return apiClient.get('/epc/payment-history/');
+  },
+
+
 
 
   // Helper methods for common operations
@@ -1046,4 +1064,26 @@ export default {
     }
     return apiClient.get(endpoint)
   },
+  // ========================================================================
+  // === ADD THE NEW FUNCTION HERE AT THE END OF THE FILE ===================
+  // ========================================================================
+  /**
+   * Updates the profile for the currently authenticated user.
+   * Sends a PATCH request to the new endpoint we created in the Django `users` app.
+   * @param {number} userId - The user's ID (the backend will ignore this and use request.user, but it's good practice to accept it).
+   * @param {FormData} formData - The profile data to update (e.g., village, gewog, work_address).
+   * @returns {Promise} - The axios promise.
+   */
+  updateProfile(userId, formData) {
+    // The URL '/users/profile/update/' matches the new endpoint created in Django's `users` app.
+    // We use .patch for partial updates.
+    return apiClient.patch(`/users/profile/update/`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+  },
+  // ========================================================================
+  // ========================================================================
+
 }

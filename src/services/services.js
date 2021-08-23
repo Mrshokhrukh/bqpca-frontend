@@ -29,15 +29,16 @@ export default {
     }
   },
 
-  getNotificationn() {
-    return apiClient.get('/notification-events/')
+  getNotifications(params) {
+    return apiClient.get('/users/notifications/', { params })
   },
 
   markNotificationAsRead(id) {
-    return apiClient.patch(`/notification-events/${id}/`, { is_read: true })
+    return apiClient.post(`/users/notifications/${id}/mark-as-read/`)
   },
+
   markAllNotificationsAsRead() {
-    return apiClient.patch(`/notification-events/mark-all-as-read/`)
+    return apiClient.post(`/users/notifications/mark-all-as-read/`)
   },
 
   ...userservices,

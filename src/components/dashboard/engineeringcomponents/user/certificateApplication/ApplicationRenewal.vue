@@ -446,42 +446,18 @@ import { Dialog, DialogPanel, DialogTitle } from '@headlessui/vue'
 import dayjs from 'dayjs'
 import isBetween from 'dayjs/plugin/isBetween'
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
-import relativeTime from 'dayjs/plugin/relativeTime'
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter' // Import for the fix
 
 import PageHeader from '@/components/common/MHPC/PageHeader.vue'
 
 import {
-  User,
-  Users,
-  Calendar,
-  Phone,
-  Mail,
-  Home,
-  MapPin,
-  Map,
-  Clock,
-  AlertCircle,
-  AlertTriangle,
-  AlertOctagon,
-  Loader,
-  CreditCard,
-  ArrowLeft,
-  ArrowRight,
-  RefreshCw,
-  Check,
-  X,
-  Tag,
-  Award,
-  MessageSquare,
-  ClipboardList,
-  FileText,
-  CheckCircle,
-  Info,
+  // ... your other lucide-vue-next imports
+  User, Users, Calendar, Phone, Mail, Home, MapPin, Map, Clock, AlertCircle, AlertTriangle, AlertOctagon, Loader, CreditCard, ArrowLeft, ArrowRight, RefreshCw, Check, X, Tag, Award, MessageSquare, ClipboardList, FileText, CheckCircle, Info
 } from 'lucide-vue-next'
 
 dayjs.extend(isBetween)
 dayjs.extend(isSameOrBefore)
-dayjs.extend(relativeTime)
+dayjs.extend(isSameOrAfter) // Add this plugin
 
 const router = useRouter()
 const toast = useToast()
@@ -516,11 +492,16 @@ const loadError = ref('')
 const declaration = ref(false)
 const remarks = ref('')
 
-const today = computed(() => dayjs())
+const today = computed(() => dayjs().startOf('day')) // Use startOf('day') for consistency
 const expiryDate = computed(() =>
-  formData.value.expiry_date ? dayjs(formData.value.expiry_date) : null
+  formData.value.expiry_date ? dayjs(formData.value.expiry_date).startOf('day') : null
 )
 const threeMonthsFromNow = computed(() => today.value.add(3, 'month'))
+
+// --- FIX #1: Add a computed property to specifically check for today's expiry ---
+const expiresToday = computed(() =>
+  expiryDate.value ? expiryDate.value.isSame(today.value, 'day') : false
+)
 
 const hasExpired = computed(() =>
   expiryDate.value ? expiryDate.value.isBefore(today.value, 'day') : false
@@ -528,7 +509,8 @@ const hasExpired = computed(() =>
 
 const isExpiringWithin3Months = computed(() => {
   if (!expiryDate.value || hasExpired.value) return false
-  return expiryDate.value.isBetween(today.value, threeMonthsFromNow.value, 'day', '[]')
+  // Use isSameOrAfter to include today correctly
+  return expiryDate.value.isSameOrAfter(today.value, 'day') && expiryDate.value.isSameOrBefore(threeMonthsFromNow.value, 'day')
 })
 
 const renewalType = computed(() => {
@@ -547,17 +529,20 @@ const pageHeaderSubtitle = computed(() => {
   return baseSubtitle + (renewalType.value === 're-registration' ? 're-registration.' : 'renewal.')
 })
 
-// --- FIX #2: More precise eligibility logic ---
+// --- FIX #2: Update eligibility logic to handle the "expires today" edge case ---
 const isEligibleForRenewal = computed(() => {
   if (isLoading.value || loadError.value) return false
   if (!formData.value.qualification_id_to_renew) return false
   if (!expiryDate.value || !expiryDate.value.isValid()) return false
 
-  // Condition for regular renewal: Must be expiring soon AND must be currently active.
-  const canRenew = isExpiringWithin3Months.value && formData.value.is_active === true
+  // If it expires today, it's always eligible for renewal.
+  // This gracefully handles cases where a backend might prematurely set is_active to false.
+  if (expiresToday.value) {
+    return true
+  }
 
-  // Condition for re-registration: Must have already expired.
-  // The backend ensures that if it has expired, is_active will be false.
+  // Original logic for other cases
+  const canRenew = isExpiringWithin3Months.value && formData.value.is_active === true
   const canReRegister = hasExpired.value
 
   return canRenew || canReRegister
@@ -572,15 +557,19 @@ const renewalEligibilityMessage = computed(() => {
   if (!expiryDate.value || !expiryDate.value.isValid())
     return 'Cannot determine eligibility without a valid qualification expiry date.'
 
-  if (!isEligibleForRenewal.value) {
-    if (isExpiringWithin3Months.value && !formData.value.is_active) {
-      return 'Your qualification is not eligible for renewal because it is currently inactive. Please contact support for assistance.'
-    }
-    return 'Your qualification is currently not eligible. Renewal is only possible if it is active and expiring within 3 months, or if it has already expired.'
+  if (hasExpired.value) {
+      return 'Your qualification has expired. Please proceed with re-registration.'
   }
-  return 'Your qualification is currently not eligible for renewal. Please review the requirements.'
+
+  if (isExpiringWithin3Months.value && !formData.value.is_active && !expiresToday.value) {
+      return 'Your qualification is not eligible for renewal because it is currently inactive. Please contact support for assistance.'
+  }
+
+  return 'Your qualification is currently not eligible. Renewal is only possible if it is active and expiring within 3 months, or if it has already expired.'
 })
 
+// (The rest of your script from getNewExpiryDate onwards remains the same)
+// ...
 const getNewExpiryDate = computed(() => {
   if (!expiryDate.value) return dayjs().add(5, 'year').toDate()
   const baseDate = hasExpired.value ? dayjs() : expiryDate.value
@@ -715,7 +704,7 @@ const fetchApplicationData = async () => {
     const userCid = authStore.user?.cid
     if (!userCid) throw new Error('User CID not found. Please log in.')
 
-    const response = await apiService.getEpcNewApplications({ params: { cid: userCid } })
+    const response = await apiService.getEpcApplicationsByCid(userCid)
 
     let applications = []
     if (Array.isArray(response.data)) {
@@ -726,30 +715,19 @@ const fetchApplicationData = async () => {
       throw new Error('Unexpected response format fetching applications list.')
     }
 
-    console.log('All applications returned from API for this CID:', applications)
-
     if (applications.length === 0) {
       throw new Error('No existing application found for your CID. Cannot proceed with renewal.')
     }
 
-    // --- FIX #1: REMOVED the filter for `is_active === true` ---
-    // This allows us to find and evaluate expired (inactive) applications for re-registration.
     const sortedApplications = applications.sort((a, b) =>
       dayjs(b.updated_at).isAfter(dayjs(a.updated_at)) ? 1 : -1
     )
-
-    console.log('Sorted all applications (active and inactive):', sortedApplications)
 
     const latestApplication = sortedApplications[0]
 
     if (!latestApplication || !latestApplication.id) {
       throw new Error('Could not find a suitable application record for renewal.')
     }
-
-    console.log(
-      'Selected latest application record (regardless of active status):',
-      latestApplication
-    )
 
     formData.value = {
       id: latestApplication.id,
@@ -799,24 +777,33 @@ const fetchApplicationData = async () => {
       primaryQualification = sortedQualifications[0]
     }
 
-    if (
-      !primaryQualification ||
-      !primaryQualification.id ||
-      !primaryQualification.expiry_date ||
-      !dayjs(primaryQualification.expiry_date).isValid()
-    ) {
+    if (!primaryQualification || !primaryQualification.id) {
+      throw new Error('Could not find a valid primary qualification to renew.')
+    }
+
+    const expiryDateOnQual = primaryQualification.expiry_date
+    const expiryDateOnApp = detailedApplication.expiry_date
+
+    const finalExpiryDate = (expiryDateOnQual && dayjs(expiryDateOnQual).isValid())
+      ? expiryDateOnQual
+      : expiryDateOnApp
+
+    if (!finalExpiryDate || !dayjs(finalExpiryDate).isValid()) {
       throw new Error(
-        'Could not find a valid primary qualification with a valid expiry date for renewal.'
+        'Could not find a valid expiry date on either the qualification or the main application.'
       )
     }
 
-    formData.value.expiry_date = primaryQualification.expiry_date
+    formData.value.expiry_date = finalExpiryDate
     formData.value.qualification_id_to_renew = primaryQualification.id
     if (primaryQualification.registration_date) {
       formData.value.registration_date = primaryQualification.registration_date
     }
+    
     if (typeof primaryQualification.is_active === 'boolean') {
       formData.value.is_active = primaryQualification.is_active
+    } else if (typeof detailedApplication.is_active === 'boolean') {
+      formData.value.is_active = detailedApplication.is_active
     }
 
     await fetchCpdRecords(userCid)
