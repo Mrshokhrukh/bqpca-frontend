@@ -78,7 +78,8 @@ const props = defineProps({
 })
 
 const router = useRouter()
-defineEmits(['view-certificate'])
+// The fix: You need to define the emit function explicitly.
+const emit = defineEmits(['view-certificate'])
 
 // --- COMPUTED PROPERTIES (Adopting the referral's pattern) ---
 

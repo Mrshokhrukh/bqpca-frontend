@@ -261,9 +261,9 @@ const fetchAdditionalApplications = async () => {
 }
 
 const openCertificateModal = (application) => {
-  selectedCertificateData.value = { results: [application] }
-  showCertificateModal.value = true
-}
+  selectedCertificateData.value = application;
+  showCertificateModal.value = true;
+};
 
 const closeCertificateModal = () => {
   showCertificateModal.value = false
