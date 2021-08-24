@@ -343,6 +343,7 @@
             <button
               v-for="regType in filteredRegistrationTypes"
               :key="regType.id"
+              type="button"
               @click="selectRegistrationType(regType.id)"
               :class="[
                 'px-4 py-2 rounded-md text-sm font-medium transition-colors',
@@ -434,7 +435,6 @@
               }}</span>
             </div>
 
-            <!-- MODIFIED: Qualification Name Dropdown -->
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700 required"
                 >Qualification Name</label
@@ -465,7 +465,6 @@
               >
             </div>
 
-            <!-- NEW: "Specify Qualification Name" Input Field -->
             <div class="col-span-1" v-if="localFormData.qualification_name === 'OTHERS'">
               <label class="block text-sm font-medium text-gray-700 required"
                 >Specify Qualification Name</label
@@ -482,7 +481,6 @@
                 >{{ errors.other_qualification_name_specify }}</span
               >
             </div>
-            <!-- END NEW -->
 
             <div
               :class="
@@ -491,7 +489,6 @@
                   : 'col-span-1'
               "
             >
-              <!-- Adjust span if 'OTHERS' is selected to keep layout -->
               <label class="block text-sm font-medium text-gray-700 required"
                 >Institute/University</label
               >
@@ -521,7 +518,6 @@
                   : 'col-span-1'
               "
             >
-              <!-- Adjust span -->
               <label class="block text-sm font-medium text-gray-700 required"
                 >Year of Completion (YYYY-MM)</label
               >
@@ -541,7 +537,7 @@
 
       <div class="mt-6">
         <div class="bg-gray-50 p-4 rounded-xl border border-gray-200">
-          <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-3">
+          <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-3 required">
             Supporting Documents
           </h3>
           <p class="text-sm text-gray-600 mb-1">
@@ -549,7 +545,6 @@
             types available are from the master list. (Allowed: .pdf, .doc, .docx, .jpg, .jpeg,
             .png; Max 2MB per file)
           </p>
-          <!-- Message indicating required documents based on registration type -->
           <div
             v-if="currentRequiredDocNames.length > 0 && localFormData.registration_type"
             class="mt-2 mb-3 p-3 bg-blue-50 border border-blue-200 rounded-md"
@@ -591,11 +586,11 @@
               class="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 bg-white p-3 rounded-lg border border-gray-100 shadow-sm"
             >
               <div class="w-full sm:w-1/3">
-                <label :for="'doc_type_' + index" class="sr-only"
+                <label :for="`doc_type_${index}`" class="sr-only"
                   >Document Type {{ index + 1 }}</label
                 >
                 <select
-                  :id="'doc_type_' + index"
+                  :id="`doc_type_${index}`"
                   v-model="doc.type"
                   class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 text-sm"
                 >
@@ -611,19 +606,13 @@
                 <span v-if="errors[`document_type_${index}`]" class="text-xs text-red-500 mt-1">{{
                   errors[`document_type_${index}`]
                 }}</span>
-                <p
-                  v-if="!isLoadingMasters && fetchedDocumentTypes.length === 0 && index === 0"
-                  class="text-xs text-yellow-500 mt-1"
-                >
-                  Document types list is empty.
-                </p>
               </div>
               <div class="flex-1 flex items-center space-x-2">
-                <label :for="'doc_file_' + index" class="sr-only"
+                <label :for="`doc_file_${index}`" class="sr-only"
                   >File for Document {{ index + 1 }}</label
                 >
                 <input
-                  :id="'doc_file_' + index"
+                  :id="`doc_file_${index}`"
                   type="file"
                   @change="(e) => handleFileSelect(e, index)"
                   class="block w-full text-sm text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
@@ -736,9 +725,11 @@ import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } fro
 import PageHeader from '@/components/common/MHPC/PageHeader.vue'
 import { UserPlus } from 'lucide-vue-next'
 
+// Initialize the store and router
 const authStore = useAuthStore()
 const user = authStore.user
 const router = useRouter()
+const toast = useToast()
 
 const props = defineProps({
   selectedType: {
@@ -803,8 +794,9 @@ const handleFileSelect = (event, index) => {
     }
     const fileExtension = ('.' + file.name.split('.').pop()).toLowerCase()
     if (!ALLOWED_EXTENSIONS.includes(fileExtension)) {
-      errors[`document_file_${index}`] =
-        `File '${file.name}' has an invalid type. Allowed: ${ALLOWED_EXTENSIONS.join(', ')}.`
+      errors[`document_file_${index}`] = `File '${
+        file.name
+      }' has an invalid type. Allowed: ${ALLOWED_EXTENSIONS.join(', ')}.`
       toast.error(errors[`document_file_${index}`])
       event.target.value = ''
       supportingDocuments.value[index].files = []
@@ -1023,18 +1015,16 @@ const countries = [
 ]
 
 const qualificationTypes = ref([])
-const qualifications = ref([])
+const allQualifications = ref([])
 const universities = ref([])
 const allRegistrationTypesFromAPI = ref([])
 
-// Keywords for identifying registration types
 const REGISTRATION_TYPE_KEYWORDS = {
-  full: ['full'],
+  full: ['full', 'new'],
   provisional: ['provisional'],
   temporary: ['temporary'],
 }
 
-// Keywords for mandatory documents for provisional and temporary registration
 const MANDATORY_DOC_KEYWORDS = {
   provisional: [
     'graduation certificate',
@@ -1062,32 +1052,35 @@ onMounted(async () => {
   isLoadingMasters.value = true
   try {
     const responses = await Promise.all([
-      apiService.getMhpcMastersQualificationTypes(),
-      apiService.getMhpcMastersQualifications(),
-      apiService.getMhpcMastersUniversities(),
-      apiService.getMhpcMastersRegistrationTypes(),
-      apiService.getMhpcMastersDocumentTypes(),
+      apiService.getEpcMastersQualificationTypes(),
+      apiService.getEpcMastersQualifications(),
+      apiService.getEpcMastersUniversities(),
+      apiService.getEpcMastersRegistrationTypes(),
+      apiService.getEpcMastersDocumentTypes(),
     ])
 
     qualificationTypes.value = responses[0]?.data?.results || []
-    qualifications.value = responses[1]?.data?.results || []
+    allQualifications.value = responses[1]?.data?.results || []
     universities.value = responses[2]?.data?.results || []
     allRegistrationTypesFromAPI.value = responses[3]?.data?.results || []
     fetchedDocumentTypes.value = responses[4]?.data?.results || []
 
-    // Set default registration_type dynamically
-    const fullType = filteredRegistrationTypes.value.find((rt) =>
-      rt.name.toLowerCase().includes('full'),
-    )
-    if (fullType) {
-      localFormData.registration_type = fullType.id
-    } else if (filteredRegistrationTypes.value.length > 0) {
+    if (filteredRegistrationTypes.value.length === 1) {
       localFormData.registration_type = filteredRegistrationTypes.value[0].id
+    } else {
+      const fullType = filteredRegistrationTypes.value.find(
+        (rt) => rt.name.toLowerCase().includes('full') || rt.name.toLowerCase().includes('new')
+      )
+      if (fullType) {
+        localFormData.registration_type = fullType.id
+      } else if (filteredRegistrationTypes.value.length > 0) {
+        localFormData.registration_type = filteredRegistrationTypes.value[0].id
+      }
     }
   } catch (error) {
     console.error('Error fetching master data:', error)
     toast.error(
-      'Failed to fetch master data. Some dropdowns or options may not populate correctly. Please try refreshing.',
+      'Failed to fetch master data. Some dropdowns or options may not populate correctly. Please try refreshing.'
     )
   } finally {
     isLoadingMasters.value = false
@@ -1126,10 +1119,27 @@ const localFormData = reactive({
   registration_type: '',
 })
 
+const qualifications = computed(() => {
+  if (!localFormData.qualification_type) {
+    return []
+  }
+  return allQualifications.value.filter(
+    (qual) => qual.qualification_type === localFormData.qualification_type
+  )
+})
+
+watch(
+  () => localFormData.qualification_type,
+  (newType, oldType) => {
+    if (newType !== oldType) {
+      localFormData.qualification_name = ''
+    }
+  }
+)
+
 const errors = reactive({})
 const isConfirmationModalOpen = ref(false)
 const isSubmitting = ref(false)
-const toast = useToast()
 const isLoadingDCRC = ref(false)
 
 const getRegistrationTypeName = (typeId) => {
@@ -1137,7 +1147,6 @@ const getRegistrationTypeName = (typeId) => {
   return type ? type.name : 'Selected Registration'
 }
 
-// Helper function to get registration type category dynamically
 const getRegistrationTypeCategory = (typeId) => {
   const type = allRegistrationTypesFromAPI.value.find((rt) => rt.id === typeId)
   if (!type) return null
@@ -1154,7 +1163,6 @@ const getRegistrationTypeCategory = (typeId) => {
   return null
 }
 
-// Computed property for current mandatory document IDs
 const currentMandatoryDocIds = computed(() => {
   const category = getRegistrationTypeCategory(localFormData.registration_type)
   if (category === 'full') {
@@ -1171,7 +1179,6 @@ const currentMandatoryDocIds = computed(() => {
   return []
 })
 
-// Computed property for current mandatory document names (for display)
 const currentRequiredDocNames = computed(() => {
   const mandatoryIds = currentMandatoryDocIds.value
   return fetchedDocumentTypes.value
@@ -1188,7 +1195,7 @@ watch(
   (newData) => {
     emit('update:modelValue', { ...newData })
   },
-  { deep: true },
+  { deep: true }
 )
 
 watch(
@@ -1199,7 +1206,7 @@ watch(
       delete errors[`document_type_${index}`]
       delete errors[`document_file_${index}`]
     })
-  },
+  }
 )
 
 const validateFormStageOne = () => {
@@ -1318,8 +1325,22 @@ const validateFormStageOne = () => {
 }
 
 const validateForm = () => {
+  const stageTwoFields = [
+    'qualification_type',
+    'qualification_name',
+    'other_qualification_name_specify',
+    'institute',
+    'year_of_completion',
+    'mandatory_documents',
+    'declaration',
+  ]
+  Object.keys(errors).forEach((key) => {
+    if (stageTwoFields.includes(key) || key.startsWith('document_')) {
+      delete errors[key]
+    }
+  })
+
   let isValid = true
-  Object.keys(errors).forEach((key) => delete errors[key])
 
   if (!localFormData.qualification_type) {
     errors.qualification_type = 'Qualification type is required.'
@@ -1344,40 +1365,38 @@ const validateForm = () => {
     errors.year_of_completion = 'Year of completion is required.'
     isValid = false
   }
-  const mandatoryDocIds = currentMandatoryDocIds.value
-  for (const docId of mandatoryDocIds) {
-    const isUploaded = localFormData.documents.some(
-      (uploadedDoc) => uploadedDoc.type === docId && uploadedDoc.files.length > 0,
-    )
-    if (!isUploaded) {
-      const docName =
-        fetchedDocumentTypes.value.find((dt) => dt.id === docId)?.document_name ||
-        'Unknown Document'
-      errors.mandatory_documents = `Missing mandatory document: "${docName}". Please upload all required documents.`
-      isValid = false
-      break
-    }
-  }
+
   supportingDocuments.value.forEach((doc, index) => {
-    if (doc.files.length > 0 && !doc.type) {
-      errors[`document_type_${index}`] = 'Please select a document type for the uploaded file(s).'
-      isValid = false
-    }
     if (doc.type && doc.files.length === 0) {
-      const isMandatory = currentMandatoryDocIds.value.includes(doc.type)
-      if (isMandatory) {
-        const docName =
-          fetchedDocumentTypes.value.find((dt) => dt.id === doc.type)?.document_name ||
-          'Selected Document'
-        errors[`document_file_${index}`] = `File missing for mandatory document type: ${docName}.`
-        isValid = false
-      } else {
-        errors[`document_file_${index}`] =
-          'Please upload file(s) for the selected document type or remove the row.'
-        isValid = false
-      }
+      errors[`document_file_${index}`] = 'Please upload a file for this selected document type.'
+      isValid = false
+    } else if (!doc.type && doc.files.length > 0) {
+      errors[`document_type_${index}`] = 'Please select a document type for this uploaded file.'
+      isValid = false
     }
   })
+
+  const mandatoryDocIds = currentMandatoryDocIds.value
+  const validUploadedDocs = supportingDocuments.value.filter((d) => d.type && d.files.length > 0)
+  const uploadedDocTypeIds = new Set(validUploadedDocs.map((d) => d.type))
+
+  const missingMandatoryDocNames = []
+  for (const mandatoryId of mandatoryDocIds) {
+    if (!uploadedDocTypeIds.has(mandatoryId)) {
+      const docType = fetchedDocumentTypes.value.find((dt) => dt.id === mandatoryId)
+      if (docType) {
+        missingMandatoryDocNames.push(docType.document_name)
+      }
+    }
+  }
+
+  if (missingMandatoryDocNames.length > 0) {
+    errors.mandatory_documents = `The following mandatory documents are missing: ${missingMandatoryDocNames.join(
+      ', '
+    )}.`
+    isValid = false
+  }
+
   if (!localFormData.declaration) {
     errors.declaration = 'You must accept the declaration to proceed.'
     isValid = false
@@ -1527,8 +1546,7 @@ const handleNext = async () => {
       if (
         Object.prototype.hasOwnProperty.call(formDataStageOne, key) &&
         formDataStageOne[key] !== null &&
-        formDataStageOne[key] !== undefined &&
-        formDataStageOne[key] !== ''
+        formDataStageOne[key] !== undefined
       ) {
         if (key === 'passport_photo' && formDataStageOne[key] instanceof File) {
           apiFormData.append('passport_photo', formDataStageOne[key], formDataStageOne[key].name)
@@ -1540,7 +1558,7 @@ const handleNext = async () => {
     apiFormData.append('applicant', user.id)
     apiFormData.append('is_draft', 'False')
     try {
-      const response = await apiService.createMhpcNewApplication(apiFormData)
+      const response = await apiService.createEpcNewApplication(apiFormData)
       applicationId.value = response.data.id
       localFormData.application = response.data.id
       toast.success('Personal information saved successfully!')
@@ -1548,7 +1566,7 @@ const handleNext = async () => {
     } catch (error) {
       console.error('Error submitting personal information:', error.response?.data || error.message)
       const errorMessages = Object.entries(
-        error.response?.data || { 'API Error': [error.message || 'Unknown error'] },
+        error.response?.data || { 'API Error': [error.message || 'Unknown error'] }
       )
         .map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(', ') : value}`)
         .join('; ')
@@ -1563,73 +1581,123 @@ const handleNext = async () => {
 
 const openConfirmationModal = () => {
   updateFormDocuments()
-  if (validateForm()) {
+  const isStepOneValid = validateFormStageOne()
+  const isStepTwoValid = validateForm()
+
+  if (isStepOneValid && isStepTwoValid) {
     isConfirmationModalOpen.value = true
   } else {
-    toast.error('Please correct all errors and upload mandatory documents before submitting.')
+    toast.error('Please correct all errors before submitting.')
+    if (!isStepOneValid) {
+      stage.value = 1
+      toast.error('There are errors in Step 1. Please review your personal information.')
+    } else {
+      toast.error('There are errors in Step 2. Please review your qualification and documents.')
+    }
   }
 }
 
 const handleSubmitActual = async () => {
   isConfirmationModalOpen.value = false
-  updateFormDocuments()
-  if (!validateForm()) {
-    toast.error('Submission cancelled due to validation errors. Please review the form.')
-    return
-  }
-  if (!localFormData.application) {
-    toast.error(
-      'Application ID is missing. Cannot submit qualification details. Please go back to Step 1.',
-    )
+  isSubmitting.value = true
+
+  // This check is redundant as it's done in openConfirmationModal, but good for safety
+  if (!validateFormStageOne() || !validateForm()) {
+    toast.error('Submission failed due to validation errors. Please review the form.')
     isSubmitting.value = false
     return
   }
-  isSubmitting.value = true
+
+  if (!localFormData.application) {
+    toast.error('Application ID is missing. Cannot proceed. Please go back to Step 1.')
+    isSubmitting.value = false
+    return
+  }
+
   try {
     const qualificationFormData = new FormData()
     qualificationFormData.append('application', localFormData.application)
     if (localFormData.qualification_name === 'OTHERS') {
       qualificationFormData.append(
         'qualification_name_text',
-        localFormData.other_qualification_name_specify,
+        localFormData.other_qualification_name_specify
       )
     } else {
       qualificationFormData.append('qualification_name', localFormData.qualification_name)
     }
     qualificationFormData.append('qualification_type', localFormData.qualification_type)
     qualificationFormData.append('institute_university', localFormData.institute)
-    if (localFormData.year_of_completion && typeof localFormData.year_of_completion === 'string') {
+    if (localFormData.year_of_completion) {
       const year = localFormData.year_of_completion.split('-')[0]
-      if (year && !isNaN(parseInt(year))) {
-        qualificationFormData.append('completion_year', year)
-      }
+      qualificationFormData.append('completion_year', year)
     }
     qualificationFormData.append('declaration', localFormData.declaration ? 'True' : 'False')
     qualificationFormData.append('remarks', localFormData.remarks || '')
     qualificationFormData.append('is_primary_qualification', 'True')
-    localFormData.documents.forEach((doc) => {
-      if (doc.files && doc.files.length > 0 && doc.type) {
-        doc.files.forEach((fileObject) => {
-          qualificationFormData.append(
-            'user_qualification_attachment_files',
-            fileObject,
-            fileObject.name,
-          )
-          qualificationFormData.append('user_qualification_attachment_file_types', doc.type)
+
+    supportingDocuments.value.forEach((doc, index) => {
+      if (doc.type && doc.files.length > 0) {
+        doc.files.forEach((file) => {
+          qualificationFormData.append(`attachments-${index}-file`, file, file.name)
         })
+        qualificationFormData.append(`attachments-${index}-file_type`, doc.type)
       }
     })
-    await apiService.createMhpcNewQualification(qualificationFormData)
+
+    await apiService.createEpcNewQualification(qualificationFormData)
     toast.success('Registration submitted successfully!')
+
+    // +++ PROFILE UPDATE LOGIC STARTS HERE +++
+    const profileUpdateData = new FormData()
+    let needsUpdate = false
+
+    if (localFormData.village && localFormData.village !== authStore.user.village) {
+      profileUpdateData.append('village', localFormData.village)
+      needsUpdate = true
+    }
+    if (localFormData.gewog && localFormData.gewog !== authStore.user.gewog) {
+      profileUpdateData.append('gewog', localFormData.gewog)
+      needsUpdate = true
+    }
+    if (localFormData.dzongkhag && localFormData.dzongkhag !== authStore.user.dzongkhag) {
+      profileUpdateData.append('dzongkhag', localFormData.dzongkhag)
+      needsUpdate = true
+    }
+
+    if (needsUpdate) {
+      try {
+        // Append existing data to avoid wiping them out on the backend
+        profileUpdateData.append(
+          'contact_number',
+          authStore.user.contact_number || localFormData.contact_no
+        )
+        profileUpdateData.append('email', authStore.user.email || localFormData.email_address)
+
+        // Assuming you have an apiService method like updateProfile(userId, data)
+        await apiService.updateProfile(authStore.user.id, profileUpdateData)
+
+        // Also update the local store so the UI reflects the change immediately
+        authStore.user.village = localFormData.village
+        authStore.user.gewog = localFormData.gewog
+        authStore.user.dzongkhag = localFormData.dzongkhag
+
+        toast.info('Your profile location has been updated.')
+      } catch (profileError) {
+        console.error('Could not auto-update profile location:', profileError)
+        toast.warning('Application submitted, but could not auto-update your profile location.')
+      }
+    }
+    // +++ PROFILE UPDATE LOGIC ENDS HERE +++
+
     emit('submit', { ...localFormData })
-    router.push('/admin/user/health_certification/dashboard')
+    router.push('/admin/user/engineering_certification/dashboard')
   } catch (error) {
     console.error(
       'Error submitting qualification and documents:',
-      error.response?.data || error.message,
+      error.response?.data || error.message
     )
     const errorMessages = Object.entries(
-      error.response?.data || { 'API Error': [error.message || 'Unknown error'] },
+      error.response?.data || { 'API Error': [error.message || 'Unknown error'] }
     )
       .map(([key, value]) => {
         if (typeof value === 'object' && value !== null) {
@@ -1638,7 +1706,7 @@ const handleSubmitActual = async () => {
               ([nestedKey, nestedValue]) =>
                 `${key}.${nestedKey}: ${
                   Array.isArray(nestedValue) ? nestedValue.join(', ') : nestedValue
-                }`,
+                }`
             )
             .join('; ')
         }
@@ -1667,7 +1735,6 @@ const handleSubmitActual = async () => {
   .text-sm {
     font-size: 0.8125rem;
   }
-
   .text-xs {
     font-size: 0.75rem;
   }
