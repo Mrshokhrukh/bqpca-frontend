@@ -301,7 +301,7 @@ const handlePaymentCompleted = async (paymentData) => {
     await apiService.makePayment(paymentInitiationFormData);
 
     const updateFormData = new FormData();
-    updateFormData.append('is_payment_complete', 'true');
+    updateFormData.append('is_payment_complete', 'false');
     updateFormData.append('payment_id', paymentId);
 
     await apiService.patchEpcCogs(applicationId, updateFormData);

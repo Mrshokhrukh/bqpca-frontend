@@ -115,7 +115,7 @@ function handleSubmit() {
   if (missingFields.length > 0) {
     const missingFieldsString = missingFields.join(', ')
     toast.error(`Please fill in the following required fields: ${missingFieldsString}`) // Vue Toast
-    return //  **Crucially, prevent submission**
+    return
   }
 }
 

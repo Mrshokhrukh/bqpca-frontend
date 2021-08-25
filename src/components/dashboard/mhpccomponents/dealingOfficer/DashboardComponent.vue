@@ -578,7 +578,7 @@ const stats = computed(() => {
     selfDirectedCPD: selfDirectedCPD,
     programApprovals: programApprovals,
     cogsRequests: pendingCogsCount.value,
-    cogsCompletionRate: 68, // //TODO: Needs API for dynamic data
+    cogsCompletionRate: 68, 
     cpdPercentage: cpdPercentage,
   }
 })
@@ -618,16 +618,11 @@ onMounted(async () => {
     pendingApplicationCount.value = applicantsData.filter(
       (app) => app.application_review_status === 'Pending',
     ).length
-    // //TODO: Define what pendingPhysicalCount means or fetch relevant data
-    // pendingPhysicalCount.value = applicantsData.filter(
-    //   (app) => app.physical_review_status === 'Pending',
-    // ).length
 
     priorityTasks.value.find((t) => t.id === 1).pending_Counts = pendingApplicationCount.value
-    // priorityTasks.value.find(t => t.id === 3).pending_Counts = pendingPhysicalCount.value;
 
     // Fetch CPD data
-    const cpdRecordsResponse = await apiServices.getEpcCpdRecords({ page_size: 1000 })
+    const cpdRecordsResponse = await apiServices.getMhpcCpdRecords({ page_size: 1000 })
     const cpdData = cpdRecordsResponse.data.results || []
     pendingCpdCount.value = cpdData.filter((cpd) => cpd.review_status === 'Pending').length
     priorityTasks.value.find((t) => t.id === 2).pending_Counts = pendingCpdCount.value
@@ -638,13 +633,9 @@ onMounted(async () => {
     pendingCogsCount.value = cogsData.filter((cogs) => cogs.review_status === 'Pending').length
     priorityTasks.value.find((t) => t.id === 4).pending_Counts = pendingCogsCount.value
 
-    // //TODO: Fetch active practitioners count from an appropriate endpoint
-    // const activePractitionersResponse = await apiServices.getActivePractitioners();
-    // activePractitionersCount.value = activePractitionersResponse.data.count || 0;
     activePractitionersCount.value = 125 // Placeholder
   } catch (error) {
     console.error('Error fetching dashboard data:', error)
-    // //TODO: Show error toast or message to user
   }
 })
 

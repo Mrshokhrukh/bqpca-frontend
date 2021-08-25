@@ -166,7 +166,7 @@
                     </div>
 
                     <!-- Verification Status Card -->
-                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-5">
+                    <!-- <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-4 sm:p-5">
                       <h4 class="text-base sm:text-lg font-medium text-gray-900 mb-4 flex items-center space-x-2">
                         <ShieldCheck class="h-5 w-5 text-gray-500" />
                         <span>Verification Status</span>
@@ -213,7 +213,7 @@
                           {{ verificationMessage }}
                         </p>
                       </div>
-                    </div>
+                    </div> -->
 
                     <!-- Tab Navigation -->
                     <div class="border-b border-gray-200">

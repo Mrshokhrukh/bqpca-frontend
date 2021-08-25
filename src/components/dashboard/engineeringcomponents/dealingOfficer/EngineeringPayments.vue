@@ -257,9 +257,6 @@ const fetchPayments = async () => {
 
 onMounted(fetchPayments)
 
-// **NOTE: Client-side filtering is still active.**
-// If you have thousands of records, you should move filtering to the backend.
-// For a few hundred, this client-side approach is fine.
 const filteredPayments = computed(() => {
   if (!Array.isArray(paymentRecords.value)) {
     return []
@@ -336,7 +333,7 @@ const formatDate = (dateString) => {
   if (!dateString) return '–'
   const options = { year: 'numeric', month: 'short', day: 'numeric' }
   try {
-    return new Date(dateString).toLocaleDateDateString('en-GB', options)
+    return new Date(dateString).toLocaleDateString('en-GB', options)
   } catch (e) {
     return 'Invalid Date'
   }
