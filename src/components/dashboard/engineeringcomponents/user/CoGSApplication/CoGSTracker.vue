@@ -50,12 +50,32 @@
           </div>
           <div class="flex items-center space-x-4 w-full sm:w-auto">
             <status-badge :status="application.review_status" />
-            <button v-if="application.review_status === 'Approved' && !application.is_payment_complete"
-              @click="initiatePayment(application)"
-              class="px-4 py-2 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 transition-colors flex items-center shadow-sm">
-              <CreditCard class="w-4 h-4 mr-2" />
-              <span>{{ getPaymentButtonText(application) }}</span>
-            </button>
+
+            <!-- START: Updated Payment Logic Block -->
+            <div v-if="application.review_status === 'Approved' && !application.is_payment_complete">
+              <!-- STATE 1: Pay now button. Visible when no payment ID exists. -->
+              <button v-if="!application.payment_id"
+                @click="initiatePayment(application)"
+                class="px-4 py-2 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 transition-colors flex items-center shadow-sm">
+                <CreditCard class="w-4 h-4 mr-2" />
+                <span>Proceed to Payment</span>
+              </button>
+
+              <!-- STATE 2: Processing indicator. Visible when a payment ID exists but payment is not yet complete. -->
+              <div v-else-if="application.payment_id"
+                class="px-4 py-2 bg-blue-100 text-blue-700 text-sm font-semibold rounded-lg flex items-center border border-blue-200 cursor-not-allowed">
+                <svg class="animate-spin -ml-1 mr-3 h-4 w-4 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none"
+                  viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                  </path>
+                </svg>
+                <span>Processing Payment...</span>
+              </div>
+            </div>
+            <!-- END: Updated Payment Logic Block -->
+
           </div>
         </div>
 
@@ -249,11 +269,6 @@ const formatDate = (dateString) => {
     month: 'long',
     day: 'numeric',
   });
-};
-
-const getPaymentButtonText = (application) => {
-  if (application.is_payment_complete) return 'Paid';
-  return 'Proceed to Payment';
 };
 
 const initiatePayment = (application) => {

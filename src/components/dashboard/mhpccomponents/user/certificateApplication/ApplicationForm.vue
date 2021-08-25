@@ -1690,7 +1690,7 @@ const handleSubmitActual = async () => {
     // +++ PROFILE UPDATE LOGIC ENDS HERE +++
 
     emit('submit', { ...localFormData })
-    router.push('/admin/user/engineering_certification/dashboard')
+    router.push('/admin/user/health_certification/dashboard')
   } catch (error) {
     console.error(
       'Error submitting qualification and documents:',
