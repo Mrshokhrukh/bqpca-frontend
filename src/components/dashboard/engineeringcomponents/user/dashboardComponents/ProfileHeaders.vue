@@ -57,7 +57,6 @@
 </template>
 
 <script setup>
-// NEW: Import new icons for the status bar
 import { UserIcon, CheckBadgeIcon, CalendarDaysIcon, ClockIcon } from '@heroicons/vue/24/solid'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -79,7 +78,7 @@ const certificateData = ref(null)
 
 defineEmits(['view-certificate'])
 
-// --- COMPUTED PROPERTIES (Most logic remains the same) ---
+// --- COMPUTED PROPERTIES (Unchanged) ---
 
 const userQualifications = computed(() => {
   return props.userDetail?.user_qualifications || []
@@ -87,11 +86,9 @@ const userQualifications = computed(() => {
 
 const firstApprovedQualification = computed(() => {
   if (!userQualifications.value || userQualifications.value.length === 0) return null
-  // Prioritize primary qualification
   let primaryQual = userQualifications.value.find(
     (q) => q?.is_primary_qualification && q.endorsement_decision === 'Approved'
   )
-  // Fallback to any approved qualification if no primary is found
   if (!primaryQual) {
     primaryQual = userQualifications.value.find(q => q?.endorsement_decision === 'Approved')
   }
@@ -99,7 +96,7 @@ const firstApprovedQualification = computed(() => {
 })
 
 const firstApprovedQualificationExpiryDate = computed(() => {
-  return firstApprovedQualification.value?.expiry_date || null
+  return firstApprovedQualification.value?.expiry_date || props.userDetail?.expiry_date || null
 })
 
 const firstApprovedQualificationStatus = computed(() => {
@@ -118,7 +115,6 @@ const daysRemaining = computed(() => {
   return expiry.isValid() ? expiry.diff(now, 'day') : null
 })
 
-// NEW: More descriptive text for the badge
 const daysRemainingText = computed(() => {
   if (daysRemaining.value === null) return 'N/A'
   if (daysRemaining.value < 0) return `${Math.abs(daysRemaining.value)} days ago`
@@ -126,7 +122,6 @@ const daysRemainingText = computed(() => {
   return `${daysRemaining.value} days remaining`
 })
 
-// NEW: Dynamic classes for the new status badges
 const statusBadgeClass = computed(() => {
   const status = firstApprovedQualificationStatus.value
   if (status === 'Approved') return 'bg-emerald-100 text-emerald-800'
@@ -161,7 +156,7 @@ const actionButtonClass = computed(() => {
   return 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white hover:from-blue-600 hover:to-indigo-700 focus:ring-blue-500'
 })
 
-// --- METHODS (Unchanged) ---
+// --- METHODS ---
 
 const handleActionButtonClick = () => {
   const buttonText = actionButtonText.value
@@ -172,24 +167,37 @@ const handleActionButtonClick = () => {
   }
 }
 
+
 const openCertificateModal = () => {
   const approvedQualifications = userQualifications.value.filter(
-    q => q?.endorsement_decision === 'Approved'
+    (q) => q?.endorsement_decision === 'Approved'
   )
 
   if (approvedQualifications.length === 0) {
-    toast.info("There are no approved qualifications to display in a certificate.")
+    toast.info('There are no approved qualifications to display in a certificate.')
     return
   }
-  // Constructing certificate data...
-  const mappedUserDetail = {
-    ...props.userDetail,
-    user_qualifications: approvedQualifications
-  };
-  certificateData.value = { results: [mappedUserDetail] };
-  showCertificateModal.value = true;
-}
 
+  const certificatePayload = {
+    ...props.userDetail,
+
+    full_name: props.userDetail?.name || props.userDetail?.full_name || props.userDetail?.username || 'N/A',
+
+    cid_no: props.userDetail?.id || props.userDetail?.cid_no,
+    passport_photo: props.userDetail?.photo || props.userDetail?.passport_photo,
+
+    registration_no: props.userDetail?.registration_no || props.userDetail?.application?.registration_no,
+
+    registration_date: props.userDetail?.registration_date || firstApprovedQualification.value?.created_at,
+    expiry_date: firstApprovedQualification.value?.expiry_date || props.userDetail?.expiry_date,
+
+    user_qualifications: approvedQualifications,
+  }
+
+  // The modal expects the data inside a `results` array.
+  certificateData.value = { results: [certificatePayload] }
+  showCertificateModal.value = true
+}
 const closeCertificateModal = () => {
   showCertificateModal.value = false
   certificateData.value = null
