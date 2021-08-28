@@ -1,7 +1,6 @@
 <!-- App.vue -->
 <template>
   <div class="min-h-screen">
-    <!-- Force header class reset when shown after dashboard logout -->
     <Header v-if="!isAdminRoute" :key="navigationCounter" />
     <router-view />
     <Footer v-if="!isAdminRoute" />

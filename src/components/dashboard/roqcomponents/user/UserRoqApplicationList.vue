@@ -105,7 +105,7 @@ const filteredApplications = computed(() => {
     const matchesType = selectedType.value ? app.type_of_course?.name === selectedType.value : true
     const matchesSearch = searchQuery.value
       ? Object.values(app).some((value) =>
-          String(value).toLowerCase().includes(searchQuery.value.toLowerCase()),
+          String(value).toLowerCase().includes(searchQuery.value.toLowerCase())
         )
       : true
     const isNotSecondCopy = !app.is_second_copy
@@ -147,6 +147,7 @@ watch([selectedStatus, selectedType, searchQuery], () => {
 })
 
 const handleApplicationSubmitted = async (newApplication) => {
+  applications.value.unshift(newApplication);
   showModal.value = false
   loading.value = true
   try {
@@ -169,17 +170,17 @@ const handleApplicationSubmitted = async (newApplication) => {
 }
 
 const loadData = async () => {
-  loading.value = true
+  loading.value = true;
   try {
-    const response = await apiService.getRecognitionOfQualification(user.cid)
-    applications.value = response.data // Assign the array directly
+    const response = await apiService.getRecognitionOfQualification(user.cid);
+    applications.value = response.data;
   } catch (error) {
-    console.error('Error loading data:', error)
-    applications.value = [] // Fallback to empty array
+    console.error('Error loading data:', error);
+    applications.value = [];
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 const handlePageChange = (newPage) => {
   currentPage.value = newPage
