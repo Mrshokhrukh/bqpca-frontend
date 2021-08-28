@@ -59,10 +59,16 @@
               <div>{{ application.registration_no }}</div>
 
               <div class="font-semibold">Category:</div>
-              <div>Practitioner in Modern Medicine</div>
+              <div v-if="application.user_qualifications?.length">
+                {{ application.user_qualifications[0].personnel_category_name }}
+              </div>
+              <div v-else>N/A</div>
 
               <div class="font-semibold">Sub-category:</div>
-              <div>Ophthalmologist</div>
+              <div v-if="application.user_qualifications?.length">
+                {{ application.user_qualifications[0].personnel_sub_category_name }}
+              </div>
+              <div v-else>N/A</div>
 
               <div class="font-semibold">Date of Initial Registration:</div>
               <div>{{ formatDate(application.registration_date) }}</div>
@@ -74,7 +80,7 @@
               <div>Registered</div>
 
               <div class="font-semibold">Registration Type:</div>
-              <div>Full Registration</div>
+              <div>{{ application.registration_type_name }}</div>
 
               <div class="font-semibold">Qualification(s):</div>
               <div class="space-y-1">
@@ -150,7 +156,7 @@
           </button>
           <button
             type="button"
-            class="inline-flex justify-center rounded-md border border-transparent px-4 py-2 bg-blue-600 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+            class="inline-flex justify-center rounded-md border border-transparent px-4 py-2 bg-blue-600 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-500 transition-colors"
             @click="closeModal"
           >
             Close
@@ -167,7 +173,6 @@ import VueQrcode from '@chenfengyuan/vue-qrcode'
 import html2pdf from 'html2pdf.js'
 import apiServices from '@/services/services'
 
-// --- FIX 1: Define the prop to accept a single, clean application object. ---
 const props = defineProps({
   application: {
     type: Object,
@@ -176,11 +181,10 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['close'])
-const directorName = ref('Dr. Ugyen Tshewang')
-const directorDesignation = ref('Director')
-const directorSignature = ref(null)
 
-// --- FIX 2: Removed the 'certificateData' computed property. We will use `props.application` directly. ---
+const directorName = ref(null)
+const directorDesignation = ref(null)
+const directorSignature = ref(null)
 
 onMounted(async () => {
   try {
@@ -191,9 +195,17 @@ onMounted(async () => {
       directorName.value = activeDirector.name
       directorDesignation.value = activeDirector.designation
       directorSignature.value = activeDirector.signature
+    } else {
+      console.warn('No active director found, or API returned no results for e-signatures.')
+      directorName.value = 'Director Name N/A'
+      directorDesignation.value = 'Designation N/A'
+      directorSignature.value = null
     }
   } catch (error) {
     console.error('Error fetching director information:', error)
+    directorName.value = 'Error fetching name'
+    directorDesignation.value = 'Error fetching designation'
+    directorSignature.value = null
   }
 })
 
@@ -201,10 +213,9 @@ const closeModal = () => {
   emit('close')
 }
 
-// --- FIX 3: All computed properties and functions now use `props.application` directly ---
 const qrCodeData = computed(() => {
   const baseUrl = window.location.origin
-  return props.application
+  return props.application?.registration_no
     ? `${baseUrl}/certification-validity/search?service_type=health_certification&cert_number=${props.application.registration_no}`
     : ''
 })
@@ -234,3 +245,6 @@ const downloadCertificate = () => {
   html2pdf().from(element).set(opt).save()
 }
 </script>
+
+<style scoped>
+</style>

@@ -823,6 +823,8 @@ import PaymentModal from '@/components/common/PaymentModal.vue'
 import CIDSelection from './CIDSelection.vue'
 import EducationTypeSelection from './EducationTypeSelection.vue'
 
+const emit = defineEmits(['application-submitted', 'close-modal', 'submitted'])
+
 const { user } = useAuthStore()
 const toast = useToast()
 const authStore = useAuthStore()
@@ -1084,7 +1086,7 @@ watch(
       }
     }
     validateForm()
-  },
+  }
 )
 
 watch(
@@ -1105,7 +1107,7 @@ watch(
         } else {
           form.cid_no = ''
           toast.warn(
-            "Logged-in user's CID is not available in authStore. This may be an issue if the backend requires a CID for non-CID holder applications.",
+            "Logged-in user's CID is not available in authStore. This may be an issue if the backend requires a CID for non-CID holder applications."
           )
         }
       } else if (newValue === true) {
@@ -1115,7 +1117,7 @@ watch(
         validateForm()
       })
     }
-  },
+  }
 )
 
 onMounted(async () => {
@@ -1179,7 +1181,7 @@ const fetchDCRCData = async () => {
     toast.success(
       response.data.changes_saved
         ? 'DCRC data fetched and user profile updated successfully'
-        : 'DCRC data fetched successfully',
+        : 'DCRC data fetched successfully'
     )
   } catch (error) {
     toast.error('Failed to fetch DCRC data')
@@ -1217,7 +1219,7 @@ const fetchRUBData = async () => {
       let courseTypeId = null
       const newCourseTypeName = response.data.level
       const existingCourseType = courseTypeOptions.value.find(
-        (type) => type.label === newCourseTypeName,
+        (type) => type.label === newCourseTypeName
       )
 
       if (existingCourseType) {
@@ -1359,7 +1361,7 @@ const handleSubmitActual = async (isDraft = false) => {
         console.error('Error making payment:', paymentError)
         toast.error(
           'Payment request failed: ' +
-            (paymentError.response?.data?.message || paymentError.message),
+            (paymentError.response?.data?.message || paymentError.message)
         )
         isSubmitting.value = false
         return
@@ -1371,6 +1373,7 @@ const handleSubmitActual = async (isDraft = false) => {
       response = await apiService.updateRecognitionOfQualification(props.initialData.id, formData)
       if (response.status === 200) {
         toast.success('Application updated successfully')
+        emit('application-submitted', response.data) // Emit updated data
       }
     } else {
       response = await apiService.createRecognitionOfQualification(formData)
@@ -1378,15 +1381,10 @@ const handleSubmitActual = async (isDraft = false) => {
         if (isDraft) {
           toast.success('Application saved as draft')
         } else {
-          toast.success(
-            'Application submitted successfully. Please check your email to complete the payment.',
-          )
+          toast.success('Application submitted successfully.')
         }
+        emit('application-submitted', response.data) // Emit newly created data
       }
-    }
-    emit('submitted', response.data)
-    if (response.status === 200 || response.status === 201) {
-      emit('close-modal')
     }
   } catch (error) {
     console.error('Error submitting form:', error.response?.data || error)
@@ -1414,8 +1412,6 @@ const getFileNameFromUrl = (url) => {
   if (!url) return ''
   return url.substring(url.lastIndexOf('/') + 1)
 }
-
-const emit = defineEmits(['application-submitted', 'close-modal', 'submitted'])
 
 const handleCIDInput = (event) => {
   const input = event.target.value.replace(/\D/g, '')

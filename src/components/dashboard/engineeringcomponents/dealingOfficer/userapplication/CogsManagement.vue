@@ -317,7 +317,6 @@ import {
 import apiServices from '@/services/services' // Adjust path if necessary
 import CogsReviewModal from '../modals/CogsReviewModal.vue' // Adjust path if necessary
 import CogsConfirmationModal from '../modals/CogsConfirmationModal.vue' // Adjust path if necessary
-// ADDED: Import the certificate modal
 import EPCcogsCertificateModal from '@/components/common/EPC/EPCcogsCertificateModal.vue'
 
 const applications = ref([])
@@ -412,7 +411,10 @@ const fetchData = async () => {
     // Replace with your actual API endpoint call
     const response = await apiServices.getEpcCogs()
     // Assuming the API returns data in response.data or response.data.results
-    applications.value = response.data.results || response.data || []
+    const fetchedData = response.data.results || response.data || []
+
+    applications.value = fetchedData.sort((a, b) => b.id - a.id)
+
   } catch (err) {
     error.value = 'Failed to load applications. Please try again later.'
     console.error('Error fetching applications:', err)

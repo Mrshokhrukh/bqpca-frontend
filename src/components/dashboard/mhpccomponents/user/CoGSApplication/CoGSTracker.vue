@@ -61,11 +61,13 @@
                 </p>
               </div>
               <div class="flex items-center space-x-3 flex-shrink-0">
-                <status-badge :status="application.review_status" />
+                <status-badge :status="application.endorsement_decision" />
                 <!-- Payment Button -->
                 <button
                   v-if="
-                    application.review_status === 'Approved' && !application.is_payment_complete
+                    application.review_status === 'Approved' &&
+                    !application.is_payment_complete &&
+                    !application.payment_id
                   "
                   @click="initiatePayment(application)"
                   :disabled="isLoadingPayment"
@@ -74,6 +76,19 @@
                   <CreditCard class="w-4 h-4 mr-1.5" />
                   {{ isLoadingPayment ? 'Processing...' : 'Pay Fee' }}
                 </button>
+
+                <span
+                  v-else-if="
+                    application.review_status === 'Approved' &&
+                    !application.is_payment_complete &&
+                    application.payment_id
+                  "
+                  class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 animate-pulse"
+                >
+                  <Activity class="w-4 h-4 mr-1.5" />
+                  Processing Payment...
+                </span>
+
                 <span
                   v-else-if="
                     application.review_status === 'Approved' && application.is_payment_complete
@@ -275,7 +290,7 @@ const StatusBadge = defineComponent({
           statusClasses[currentStatus] || 'bg-gray-100 text-gray-800 border border-gray-200'
         }`,
       },
-      currentStatus,
+      currentStatus
     )
   },
 })
@@ -369,15 +384,18 @@ const executeMakePayment = async (clientSidePaymentRef, user, application) => {
         'makePayment API response is missing expected content or refNo in responseData:',
         responseData,
         'Full response:',
-        makePaymentFullApiResponse,
+        makePaymentFullApiResponse
       )
       toast.error(
-        'Failed to get a confirmed payment reference from the server during payment submission.',
+        'Failed to get a confirmed payment reference from the server during payment submission.'
       )
       return null
     }
     toast.info(
-      `Payment details submitted to gateway (Client Ref: ${clientSidePaymentRef.substring(0, 8)}). Confirmed Server Ref: ${responseData.content.refNo.substring(0, 8)}.`,
+      `Payment details submitted to gateway (Client Ref: ${clientSidePaymentRef.substring(
+        0,
+        8
+      )}). Confirmed Server Ref: ${responseData.content.refNo.substring(0, 8)}.`
     )
     return responseData.content.refNo
   } catch (error) {
@@ -397,7 +415,7 @@ const executeMakePayment = async (clientSidePaymentRef, user, application) => {
 const updateCogsApplicationWithPayment = async (applicationId, confirmedPaymentServerRefNo) => {
   const updateApplicationData = new FormData()
   updateApplicationData.append('payment_id', confirmedPaymentServerRefNo)
-  updateApplicationData.append('is_payment_complete', 'true')
+  updateApplicationData.append('is_payment_complete', 'false')
 
   try {
     await apiService.patchMhpcCogs(applicationId, updateApplicationData)
@@ -444,37 +462,50 @@ const handlePaymentCompleted = async (paymentData) => {
     const confirmedServerRefNo = await executeMakePayment(
       clientSidePaymentRef,
       user,
-      currentApplicationForProcessing,
+      currentApplicationForProcessing
     )
 
     if (confirmedServerRefNo) {
       toast.info(
-        `Attempting to update application #${applicationRegNo || 'N/A'} with payment ref ${confirmedServerRefNo.substring(0, 8)}...`,
+        `Attempting to update application #${
+          applicationRegNo || 'N/A'
+        } with payment ref ${confirmedServerRefNo.substring(0, 8)}...`
       )
       const updateSuccess = await updateCogsApplicationWithPayment(
         applicationId,
-        confirmedServerRefNo,
+        confirmedServerRefNo
       )
 
       if (updateSuccess) {
         toast.success(
-          `Payment for Application #${applicationRegNo || 'N/A'} (Ref: ${confirmedServerRefNo.substring(0, 8)}) successful and status updated!`,
+          `Payment for Application #${
+            applicationRegNo || 'N/A'
+          } (Ref: ${confirmedServerRefNo.substring(0, 8)}) successful and status updated!`
         )
         await fetchApplications()
       } else {
         toast.warning(
-          `Application #${applicationRegNo || 'N/A'} status might not be updated. Please check or contact support with payment ref ${confirmedServerRefNo.substring(0, 8)}.`,
+          `Application #${
+            applicationRegNo || 'N/A'
+          } status might not be updated. Please check or contact support with payment ref ${confirmedServerRefNo.substring(
+            0,
+            8
+          )}.`
         )
       }
     } else {
       toast.error(
-        `Payment processing failed for Application #${applicationRegNo || 'N/A'}. Application status not updated. Initial Ref: ${clientSidePaymentRef.substring(0, 8)}.`,
+        `Payment processing failed for Application #${
+          applicationRegNo || 'N/A'
+        }. Application status not updated. Initial Ref: ${clientSidePaymentRef.substring(0, 8)}.`
       )
     }
   } catch (error) {
     console.error('Unexpected error in handlePaymentCompleted orchestration:', error)
     toast.error(
-      `An unexpected error occurred during the payment process for Application #${applicationRegNo || 'N/A'}. Please try again.`,
+      `An unexpected error occurred during the payment process for Application #${
+        applicationRegNo || 'N/A'
+      }. Please try again.`
     )
   } finally {
     isLoadingPayment.value = false

@@ -1,6 +1,7 @@
 <!-- src/components/common/NdiModal.vue -->
 <template>
-  <div
+  <Teleport to="body">
+    <div
     class="fixed inset-0 bg-black bg-opacity-80 backdrop-blur-md flex items-center justify-center z-50 transition-opacity duration-300">
     <div
       class="bg-white px-6 rounded-2xl shadow-2xl w-full max-w-[400px] transform transition-all duration-300 scale-100 relative"
@@ -56,8 +57,8 @@
           :style="{ borderColor: '#5AC994' }">
           <img :src="qrCodeData" alt="NDI QR Code" class="w-52 h-52" />
           <div v-if="showNdiLogoInQr" class="absolute inset-0 flex items-center justify-center">
-            <div class="bg-white rounded-full">
-              <img src="@/assets/ndi-logo.png" alt="NDI Logo Overlay" class="w-8 h-8 rounded-full" />
+            <div>
+              <img src="@/assets/QRlogo.png" alt="NDI Logo Overlay" class="w-8 rounded-full" />
             </div>
           </div>
         </div>
@@ -166,6 +167,7 @@
       </div>
     </div>
   </div>
+  </Teleport>
 </template>
 
 <script setup>

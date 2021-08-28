@@ -1344,17 +1344,17 @@ const serviceSpecificMenuItems = {
             route: (serviceType) =>
               `/admin/dealing_officer/${serviceType}/teaching_institute_renewals`,
           },
-          {
-            name: 'Reports',
-            route: (serviceType) => `/admin/dealing_officer/${serviceType}/institute_report`,
-          },
+          // {
+          //   name: 'Reports',
+          //   route: (serviceType) => `/admin/dealing_officer/${serviceType}/institute_report`,
+          // },
         ],
       },
-      {
-        name: 'Professional Profiles',
-        icon: getIconComponent('Users'),
-        route: (serviceType) => `/admin/dealing_officer/${serviceType}/profiles`,
-      },
+      // {
+      //   name: 'Professional Profiles',
+      //   icon: getIconComponent('Users'),
+      //   route: (serviceType) => `/admin/dealing_officer/${serviceType}/profiles`,
+      // },
       {
         name: 'Payments',
         icon: getIconComponent('DollarSign'),

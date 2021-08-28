@@ -1,7 +1,7 @@
 <template>
   <Transition name="modal">
     <div class="fixed z-50 inset-0 overflow-y-auto bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-      <div class="relative w-full w-full mx-auto">
+      <div class="relative  mx-auto">
         <!-- Modal Content -->
         <div class="relative bg-white rounded-xl shadow-2xl overflow-hidden">
           <!-- Modal Header -->

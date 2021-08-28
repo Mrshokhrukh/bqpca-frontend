@@ -1,199 +1,263 @@
 <template>
   <div class="min-h-screen bg-gray-50">
     <div class="mx-auto py-12 px-4 sm:px-6 lg:px-8">
-      <!-- Header -->
-      <div
-        class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10 shadow-md"
-      >
-        <h1 class="text-3xl font-bold text-gray-900 mb-2">Payment History</h1>
-        <p class="text-gray-600">
-          View payment records for EPC certifications, renewals, CPDs, and more.
-        </p>
+      <div class="bg-white border border-gray-200 rounded-xl p-8 mb-10 shadow-sm">
+        <div class="flex items-center space-x-4">
+          <div class="flex-shrink-0 bg-indigo-500 text-white rounded-lg p-3">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+              />
+            </svg>
+          </div>
+          <div>
+            <h1 class="text-3xl font-bold text-gray-900">Payment History</h1>
+            <p class="text-gray-600 mt-1">
+              View and filter all payment records for engineering professionals.
+            </p>
+          </div>
+        </div>
       </div>
 
-      <!-- Filter Controls -->
-      <div class="bg-white rounded-xl shadow-md p-6 mb-6">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div>
             <label for="transaction-search" class="block text-sm font-medium text-gray-700"
               >Search by Payment Advice No</label
             >
-            <div class="mt-1">
+            <div class="mt-1 relative">
+              <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                <svg
+                  class="h-5 w-5 text-gray-400"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </div>
               <input
                 id="transaction-search"
                 v-model="transactionSearch"
                 type="text"
-                class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                class="block w-full rounded-md border-gray-300 pl-10 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2"
                 placeholder="Enter Payment Advice No..."
               />
             </div>
           </div>
+
           <div>
             <label for="payment-type-filter" class="block text-sm font-medium text-gray-700"
               >Payment Type</label
             >
-            <div class="mt-1">
-              <select
-                id="payment-type-filter"
-                v-model="paymentTypeFilter"
-                class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
-              >
-                <option value="all">All Payment Types</option>
-                <option value="certification">Certification</option>
-                <option value="renewal">Renewal</option>
-                <option value="cpd">CPD Activity</option>
-                <option value="cogs">COGS Issuance</option>
-              </select>
-            </div>
+            <select
+              id="payment-type-filter"
+              v-model="paymentTypeFilter"
+              class="mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm shadow-sm"
+            >
+              <option value="all">All Payment Types</option>
+              <option v-for="desc in paymentTypeOptions" :key="desc" :value="desc">
+                {{ desc }}
+              </option>
+            </select>
           </div>
+
+          <div>
+            <label for="status-filter" class="block text-sm font-medium text-gray-700"
+              >Payment Status</label
+            >
+            <select
+              id="status-filter"
+              v-model="statusFilter"
+              class="mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm shadow-sm"
+            >
+              <option value="all">All Statuses</option>
+              <option value="completed">Completed</option>
+              <option value="pending">Pending</option>
+              <option value="failed">Failed</option>
+            </select>
+          </div>
+
           <div>
             <label for="payment-date-range" class="block text-sm font-medium text-gray-700"
               >Payment Date Range</label
             >
-            <div class="mt-1 flex gap-2">
+            <div class="mt-1 flex items-center gap-2">
               <input
                 id="date-start"
                 v-model="dateRange.start"
                 type="date"
-                class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-1/2 sm:text-sm border-gray-300 rounded-md"
+                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2"
               />
+              <span class="text-gray-500">to</span>
               <input
                 id="date-end"
                 v-model="dateRange.end"
                 type="date"
-                class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-1/2 sm:text-sm border-gray-300 rounded-md"
+                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2"
               />
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Payment Records Table -->
-      <div class="bg-white rounded-xl shadow-md overflow-hidden">
+      <div class="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200">
         <div class="overflow-x-auto">
           <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
               <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th
+                  class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                >
                   Payment Advice No
                 </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th
+                  class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                >
                   Payer Name
                 </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th
+                  class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                >
                   Description
                 </th>
-                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th
+                  class="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                >
                   Amount (Nu.)
                 </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th
+                  class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                >
                   Payment Date
                 </th>
-                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th
+                  class="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                >
                   Status
                 </th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-              <!-- Loading State -->
-              <tr v-if="loading">
-                <td colspan="6" class="px-6 py-10 text-center text-gray-500">
-                  Loading payment records...
-                </td>
-              </tr>
-              <!-- Data Rows -->
-              <template v-else-if="paginatedPayments.length > 0">
-                <!-- *** THIS IS THE MAIN FIX: Using v-for to loop through records *** -->
-                <tr v-for="record in paginatedPayments" :key="record.id || record.paymentAdviceNo">
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+              <template v-if="paginatedPayments.length > 0">
+                <tr
+                  v-for="record in paginatedPayments"
+                  :key="record.id + record.source_model"
+                  class="hover:bg-gray-50 transition-colors duration-150"
+                >
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     {{ record.paymentAdviceNo || '-' }}
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                     {{ record.taxPayerName || '-' }}
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
                     {{ record.description || '-' }}
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900">
+                  <td
+                    class="px-6 py-4 whitespace-nowrap text-sm text-right font-medium text-gray-900"
+                  >
                     {{ formatCurrency(record.payableAmount) }}
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                     {{ formatDate(record.paymentRequestDate) }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
                     <span
-                      :class="`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusBadge(record.paymentStatus)}`"
+                      :class="`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusBadge(
+                        record.paymentStatus
+                      )}`"
                     >
                       {{ record.paymentStatus || 'Unknown' }}
                     </span>
                   </td>
                 </tr>
               </template>
-              <!-- Empty State -->
-              <tr v-else>
-                <td colspan="6" class="px-6 py-10 text-center text-gray-500">
-                  No payment records found that match your criteria.
-                </td>
-              </tr>
             </tbody>
           </table>
         </div>
 
-        <!-- Pagination -->
         <div
           v-if="!loading && filteredPayments.length > perPage"
           class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6"
         >
-          <!-- Mobile Pagination -->
-          <div class="flex-1 flex justify-between sm:hidden">
-            <button
-              @click="previousPage"
-              :disabled="currentPage === 1"
-              class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Previous
-            </button>
-            <button
-              @click="nextPage"
-              :disabled="currentPage === totalPages"
-              class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Next
-            </button>
-          </div>
-          <!-- Desktop Pagination -->
           <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
             <div>
               <p class="text-sm text-gray-700">
                 Showing
                 <span class="font-medium">{{ (currentPage - 1) * perPage + 1 }}</span>
                 to
-                <span class="font-medium">{{ Math.min(currentPage * perPage, filteredPayments.length) }}</span>
+                <span class="font-medium">{{
+                  Math.min(currentPage * perPage, filteredPayments.length)
+                }}</span>
                 of
                 <span class="font-medium">{{ filteredPayments.length }}</span>
                 results
               </p>
             </div>
             <div>
-              <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+              <nav
+                class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
+                aria-label="Pagination"
+              >
                 <button
                   @click="previousPage"
                   :disabled="currentPage === 1"
-                  class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
                 >
                   <span class="sr-only">Previous</span>
-                  <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                  <svg
+                    class="h-5 w-5"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
                 </button>
-                <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                <span
+                  class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700"
+                >
                   Page {{ currentPage }} of {{ totalPages }}
                 </span>
                 <button
                   @click="nextPage"
                   :disabled="currentPage === totalPages"
-                  class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
                 >
                   <span class="sr-only">Next</span>
-                  <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg>
+                  <svg
+                    class="h-5 w-5"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
                 </button>
               </nav>
             </div>
@@ -208,48 +272,26 @@
 import { ref, computed, reactive, onMounted, watch } from 'vue'
 import apiServices from '@/services/services'
 
+// --- State for data and UI controls ---
 const paymentRecords = ref([])
-const loading = ref(false)
+const loading = ref(true)
 const transactionSearch = ref('')
 const paymentTypeFilter = ref('all')
 const dateRange = reactive({ start: '', end: '' })
 const currentPage = ref(1)
-const perPage = ref(10) // This now matches a potential backend page size
+const perPage = ref(10)
+const statusFilter = ref('all')
 
-// --- NEW state variables for server-side pagination ---
-const totalRecords = ref(0)
-const nextUrl = ref(null)
-const prevUrl = ref(null)
-
-
+// --- API and data fetching ---
 const fetchPayments = async () => {
   loading.value = true
   try {
-    // This now calls your new '/epc/payment-history/' endpoint
     const response = await apiServices.getAllPayments()
-
-    // --- THIS IS THE KEY FIX ---
-    // Check if the response has a 'results' key, which indicates pagination.
-    if (response && response.data && response.data.results) {
-      paymentRecords.value = response.data.results; // Assign the array from 'results'
-      totalRecords.value = response.data.count;
-      nextUrl.value = response.data.next;
-      prevUrl.value = response.data.previous;
-    }
-    // Fallback for non-paginated or older API versions
-    else if (response && response.data) {
-      paymentRecords.value = Array.isArray(response.data) ? response.data : [response.data];
-      totalRecords.value = paymentRecords.value.length;
-    }
-    else {
-      console.warn('No payment records received from API.')
-      paymentRecords.value = []
-      totalRecords.value = 0;
-    }
+    // CORRECTED: Use the 'results' key from the paginated response
+    paymentRecords.value = response?.data?.results || []
   } catch (error) {
     console.error('Error fetching payments:', error)
     paymentRecords.value = []
-    totalRecords.value = 0;
   } finally {
     loading.value = false
   }
@@ -257,55 +299,70 @@ const fetchPayments = async () => {
 
 onMounted(fetchPayments)
 
-// **NOTE: Client-side filtering is still active.**
-// If you have thousands of records, you should move filtering to the backend.
-// For a few hundred, this client-side approach is fine.
-const filteredPayments = computed(() => {
-  if (!Array.isArray(paymentRecords.value)) {
-    return []
-  }
+// --- DYNAMIC DROPDOWN ---
+const paymentTypeOptions = computed(() => {
+  if (!paymentRecords.value.length) return []
+  const uniqueDescriptions = new Set(paymentRecords.value.map((p) => p.description).filter(Boolean))
+  return Array.from(uniqueDescriptions)
+})
 
+// --- FILTERING & SORTING LOGIC ---
+const filteredPayments = computed(() => {
   let filtered = [...paymentRecords.value]
 
-  // Filter 1: By Payment Advice No (Search Term)
+  // Filter 1: By search term
   if (transactionSearch.value) {
     const searchTerm = transactionSearch.value.toLowerCase()
+    // CORRECTED: Use 'paymentAdviceNo'
     filtered = filtered.filter(
       (p) => p.paymentAdviceNo && p.paymentAdviceNo.toLowerCase().includes(searchTerm)
     )
   }
 
-  // Filter 2: By Payment Type (using the 'description' field)
+  // Filter 2: By payment type
   if (paymentTypeFilter.value !== 'all') {
-    const typeTerm = paymentTypeFilter.value.toLowerCase()
-    filtered = filtered.filter((p) => p.description && p.description.toLowerCase().includes(typeTerm))
+    filtered = filtered.filter((p) => p.description === paymentTypeFilter.value)
   }
 
-  // Filter 3: By Date Range
+  // Filter 3: By payment status
+  if (statusFilter.value !== 'all') {
+    const status = statusFilter.value.toLowerCase()
+    // CORRECTED: Use 'paymentStatus'
+    filtered = filtered.filter(
+      (p) => p.paymentStatus && p.paymentStatus.toLowerCase().includes(status)
+    )
+  }
+
+  // Filter 4: By date range
   if (dateRange.start && dateRange.end) {
     try {
       const startDate = new Date(dateRange.start)
       const endDate = new Date(dateRange.end)
       endDate.setHours(23, 59, 59, 999)
-
       filtered = filtered.filter((p) => {
+        // CORRECTED: Use 'paymentRequestDate'
         if (!p.paymentRequestDate) return false
         const paymentDate = new Date(p.paymentRequestDate)
         return paymentDate >= startDate && paymentDate <= endDate
       })
     } catch (e) {
-      console.error("Invalid date for filtering", e)
+      console.error('Invalid date for filtering', e)
     }
   }
+
+  // SORTING LOGIC
+  filtered.sort((a, b) => {
+    // CORRECTED: Use 'paymentRequestDate'
+    const dateA = new Date(a.paymentRequestDate)
+    const dateB = new Date(b.paymentRequestDate)
+    return dateB - dateA // Descending order
+  })
 
   return filtered
 })
 
-const totalPages = computed(() => {
-  // If using server-side pagination, you might get total pages from the API.
-  // For now, we'll stick to client-side calculation on the filtered data.
-  return Math.ceil(filteredPayments.value.length / perPage.value)
-})
+// --- PAGINATION LOGIC (Unchanged) ---
+const totalPages = computed(() => Math.ceil(filteredPayments.value.length / perPage.value))
 
 const paginatedPayments = computed(() => {
   const start = (currentPage.value - 1) * perPage.value
@@ -313,33 +370,28 @@ const paginatedPayments = computed(() => {
   return filteredPayments.value.slice(start, end)
 })
 
-// Reset to page 1 whenever a filter changes
-watch([transactionSearch, paymentTypeFilter, dateRange], () => {
+watch([transactionSearch, paymentTypeFilter, dateRange, statusFilter], () => {
   currentPage.value = 1
 })
 
-// --- Pagination Methods ---
 const previousPage = () => {
-  if (currentPage.value > 1) {
-    currentPage.value--
-  }
+  if (currentPage.value > 1) currentPage.value--
 }
 
 const nextPage = () => {
-  if (currentPage.value < totalPages.value) {
-    currentPage.value++
-  }
+  if (currentPage.value < totalPages.value) currentPage.value++
 }
 
-// --- Helper Functions (no changes needed here) ---
+// --- HELPER FUNCTIONS (Unchanged) ---
 const formatDate = (dateString) => {
   if (!dateString) return '–'
-  const options = { year: 'numeric', month: 'short', day: 'numeric' }
-  try {
-    return new Date(dateString).toLocaleDateDateString('en-GB', options)
-  } catch (e) {
-    return 'Invalid Date'
-  }
+  return new Date(dateString).toLocaleDateString('en-GB', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
 }
 
 const formatCurrency = (amount) => {
@@ -354,16 +406,10 @@ const formatCurrency = (amount) => {
 
 const statusBadge = (status) => {
   if (!status) return 'bg-gray-100 text-gray-800'
-  const lowerCaseStatus = status.toLowerCase()
-  if (lowerCaseStatus.includes('success') || lowerCaseStatus.includes('completed')) {
-    return 'bg-green-100 text-green-800'
-  }
-  if (lowerCaseStatus.includes('pending')) {
-    return 'bg-yellow-100 text-yellow-800'
-  }
-  if (lowerCaseStatus.includes('failed') || lowerCaseStatus.includes('cancelled') || lowerCaseStatus.includes('rejected')) {
-    return 'bg-red-100 text-red-800'
-  }
+  const s = status.toLowerCase()
+  if (s.includes('completed')) return 'bg-green-100 text-green-800'
+  if (s.includes('pending')) return 'bg-yellow-100 text-yellow-800'
+  if (s.includes('failed')) return 'bg-red-100 text-red-800'
   return 'bg-gray-100 text-gray-800'
 }
 </script>

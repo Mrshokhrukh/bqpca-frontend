@@ -1052,11 +1052,11 @@ onMounted(async () => {
   isLoadingMasters.value = true
   try {
     const responses = await Promise.all([
-      apiService.getEpcMastersQualificationTypes(),
-      apiService.getEpcMastersQualifications(),
-      apiService.getEpcMastersUniversities(),
-      apiService.getEpcMastersRegistrationTypes(),
-      apiService.getEpcMastersDocumentTypes(),
+      apiService.getMhpcMastersQualificationTypes(),
+      apiService.getMhpcMastersQualifications(),
+      apiService.getMhpcMastersUniversities(),
+      apiService.getMhpcMastersRegistrationTypes(),
+      apiService.getMhpcMastersDocumentTypes(),
     ])
 
     qualificationTypes.value = responses[0]?.data?.results || []
@@ -1558,7 +1558,7 @@ const handleNext = async () => {
     apiFormData.append('applicant', user.id)
     apiFormData.append('is_draft', 'False')
     try {
-      const response = await apiService.createEpcNewApplication(apiFormData)
+      const response = await apiService.createMhpcNewApplication(apiFormData)
       applicationId.value = response.data.id
       localFormData.application = response.data.id
       toast.success('Personal information saved successfully!')
@@ -1644,7 +1644,7 @@ const handleSubmitActual = async () => {
       }
     })
 
-    await apiService.createEpcNewQualification(qualificationFormData)
+    await apiService.createMhpcNewQualification(qualificationFormData)
     toast.success('Registration submitted successfully!')
 
     // +++ PROFILE UPDATE LOGIC STARTS HERE +++
@@ -1690,7 +1690,7 @@ const handleSubmitActual = async () => {
     // +++ PROFILE UPDATE LOGIC ENDS HERE +++
 
     emit('submit', { ...localFormData })
-    router.push('/admin/user/engineering_certification/dashboard')
+    router.push('/admin/user/health_certification/dashboard')
   } catch (error) {
     console.error(
       'Error submitting qualification and documents:',
