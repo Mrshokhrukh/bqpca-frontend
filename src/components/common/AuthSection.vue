@@ -79,7 +79,14 @@
               />
               <label class="ml-2 block text-sm text-gray-700">Remember me</label>
             </div>
-            <a href="#" class="text-sm text-primary hover:text-primary/90">Forgot password?</a>
+            <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+              <a
+                @click.prevent="openForgotPasswordModal"
+                href="#"
+                class="text-sm text-primary hover:text-primary/90"
+                >Forgot password?</a
+              >
+            </div>
           </div>
           <button
             type="submit"
@@ -345,21 +352,21 @@
       actionType="login"
       @ndi-login-success="handleNdiLoginSuccess"
     />
+    <ForgotPasswordModal
+      :isVisible="isForgotPasswordModalOpen"
+      @close="isForgotPasswordModalOpen = false"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
 import { useToast } from 'vue-toastification'
-import {
-  // QrCodeIcon, // No longer needed as QR code is removed
-  AlertTriangle as AlertTriangleIcon,
-  ChevronLeft,
-  ChevronRight,
-} from 'lucide-vue-next'
+import { AlertTriangle as AlertTriangleIcon, ChevronLeft, ChevronRight } from 'lucide-vue-next'
 import { useAuthStore } from '@/stores/authStore'
 import apiService from '@/services/services'
-import NdiModal from './NdiModal.vue' // Import the NDI Modal
+import NdiModal from './NdiModal.vue'
+import ForgotPasswordModal from './ForgotPasswordModal.vue'
 
 const props = defineProps({
   serviceType: {
@@ -655,19 +662,27 @@ const handleRegister = async () => {
 
 const handleNdiLoginSuccess = async (threadId) => {
   try {
-    // Call the new action in your auth store
-    await authStore.loginWithNdi(threadId);
+    // Call the centralized action in the auth store
+    await authStore.loginWithNdi(threadId)
 
-    // If login is successful, the store will handle redirection.
-    // We can close the modal here.
-    isNdiModalOpen.value = false;
+    // Close the modal after successful login
+    isNdiModalOpen.value = false
 
   } catch (error) {
-    // The authStore action already shows a toast, but you could add
-    // additional logic here if the login fails, like keeping the modal open.
-    console.error("NDI login process failed at the final step.");
+    // The authStore's loginWithNdi action already handles displaying a toast
+    // with a user-friendly error message. You can simply log the error here.
+    console.error('NDI login finalization failed:', error)
+
+    // You might still want to close the modal if the login failed
+    isNdiModalOpen.value = false
   }
-};
+}
+
+const isForgotPasswordModalOpen = ref(false)
+
+const openForgotPasswordModal = () => {
+  isForgotPasswordModalOpen.value = true
+}
 </script>
 
 <style scoped>
