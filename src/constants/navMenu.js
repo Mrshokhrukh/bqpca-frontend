@@ -1681,23 +1681,12 @@ const serviceSpecificMenuItems = {
         icon: getIconComponent('History'),
         route: (serviceType) => `/admin/user/${serviceType}/appeal`,
       },
+      {
+        name: 'Institutional Quality Assurance Report',
+        icon: getIconComponent('History'),
+        route: (serviceType) => `/admin/user/${serviceType}/iqar`,
+      },
 
-      // {
-      //   name: 'Profile',
-      //   icon: getIconComponent('UserCircle'),
-      //   children: [
-      //     {
-      //       name: 'Institute Profile',
-      //       icon: getIconComponent('Building'),
-      //       route: (serviceType) => `/admin/user/${serviceType}/profile`,
-      //     },
-      //     {
-      //       name: 'User Profile',
-      //       icon: getIconComponent('Users'), // Corrected from User
-      //       route: (serviceType) => `/admin/user/${serviceType}/user_profile`, // Corrected "usser" to "user"
-      //     },
-      //   ],
-      // },
     ],
     dealing_officer: [
       {
@@ -1706,23 +1695,24 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/dashboard`, // Corrected "dealing_Officer"
       },
       {
-        name: 'Institutional Accreditation Schedule Management',
+        name: 'Manage Accreditation Schedule',
         icon: getIconComponent('LayoutDashboard'),
-        route: (serviceType) =>
-          `/admin/dealing_officer/${serviceType}/manage_accreditation_schedule`, // Corrected "dealing_Officer"
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/manage_accreditation_schedule`, // Corrected "dealing_Officer"
       },
       {
-        name: 'Institutional Accreditation',
+        name: 'Accreditation Applications',
         icon: getIconComponent('ClipboardList'),
         children: [
           {
-            name: 'Accreditation Application',
-            route: (serviceType) => `/admin/dealing_officer/${serviceType}/initial_accreditations`,
+            name: 'Initial Accreditation Application',
+            route: (serviceType) =>
+              `/admin/dealing_officer/${serviceType}/initial_accreditations`,
           },
 
           {
-            name: 'Institutional Self Assessment Report',
-            route: (serviceType) => `/admin/dealing_officer/${serviceType}/isar_reports`,
+            name: 'ISAR Report',
+            route: (serviceType) =>
+              `/admin/dealing_officer/${serviceType}/isar_reports`,
           },
           // {
           //   name: 'Assign Assessor',
@@ -1761,6 +1751,7 @@ const serviceSpecificMenuItems = {
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/payment_history`,
       },
     ],
+
     admin: [
       {
         name: 'Dashboard',
