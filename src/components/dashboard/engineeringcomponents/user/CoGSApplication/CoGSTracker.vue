@@ -346,7 +346,7 @@ const handlePaymentCompleted = async (paymentData) => {
 
     const paymentInitiationFormData = new FormData()
     paymentInitiationFormData.append('refNo', paymentId)
-    paymentInitiationFormData.append('serviceCode', '100247')
+    paymentInitiationFormData.append('serviceCode', '100258')
     paymentInitiationFormData.append('taxPayerName', user.cid)
     paymentInitiationFormData.append('taxPayerNo', user.cid)
     paymentInitiationFormData.append('taxPayerDocumentNo', user.cid)

@@ -663,7 +663,7 @@ const handlePaymentCompleted = async (paymentData) => {
   try {
     const paymentLogFormData = new FormData();
     paymentLogFormData.append('refNo', paymentData.paymentHash);
-    paymentLogFormData.append('serviceCode', '100196');
+    paymentLogFormData.append('serviceCode', '100262');
     paymentLogFormData.append('taxPayerName', instituteData.value.full_name || user.cid);
     paymentLogFormData.append('taxPayerNo', user.cid);
     paymentLogFormData.append('taxPayerDocumentNo', user.cid);
