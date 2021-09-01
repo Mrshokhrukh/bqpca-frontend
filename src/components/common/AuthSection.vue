@@ -662,19 +662,23 @@ const handleRegister = async () => {
 
 const handleNdiLoginSuccess = async (threadId) => {
   try {
-    // Call the centralized action in the auth store
-    await authStore.loginWithNdi(threadId)
+    // The authStore action should be modified to return the full response
+    // so we can access the custom message from the backend.
+    const response = await authStore.loginWithNdi(threadId);
 
-    // Close the modal after successful login
-    isNdiModalOpen.value = false
+    // Check for a custom message from the backend and display it
+    if (response && response.message) {
+      toast.success(response.message);
+    } else {
+      toast.success('Login successful!'); // Fallback message
+    }
+
+    isNdiModalOpen.value = false;
 
   } catch (error) {
-    // The authStore's loginWithNdi action already handles displaying a toast
-    // with a user-friendly error message. You can simply log the error here.
-    console.error('NDI login finalization failed:', error)
-
-    // You might still want to close the modal if the login failed
-    isNdiModalOpen.value = false
+    // Error handling is likely done inside the authStore, but we can log it here.
+    console.error('NDI login finalization failed in component:', error);
+    isNdiModalOpen.value = false;
   }
 }
 
