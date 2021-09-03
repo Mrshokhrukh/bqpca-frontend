@@ -41,6 +41,9 @@ export default {
   deleteEpcCogs(id) {
     return apiClient.delete(`/epc/epc-cogs/${id}/`)
   },
+  getEpcCogsByCid(cid) {
+    return apiClient.get(`/epc/epc-cogs/?cid=${cid}`)
+  },
 
   // EPC Counsellors endpoints
   getEpcCounsellors() {
@@ -502,12 +505,12 @@ export default {
     return apiClient.delete(`/epc/epc-renewals/${id}/`)
   },
 
-  // EPC Teaching Centers endpoints
+  // EPC Training Centers endpoints
   getEpcTeachingCenters() {
     return apiClient.get('/epc/epc-teaching-centers/')
   },
   createEpcTeachingCenter(data) {
-    // Teaching Centers have attachments, use FormData
+    // Training Centers have attachments, use FormData
     return apiClient.post('/epc/epc-teaching-centers/', data, {
       headers: { 'Content-Type': 'multipart/form-data' },
     })
@@ -516,13 +519,13 @@ export default {
     return apiClient.get(`/epc/epc-teaching-centers/${id}/`)
   },
   updateEpcTeachingCenter(id, data) {
-    // Teaching Centers have attachments, use FormData
+    // Training Centers have attachments, use FormData
     return apiClient.put(`/epc/epc-teaching-centers/${id}/`, data, {
       headers: { 'Content-Type': 'multipart/form-data' },
     })
   },
   patchEpcTeachingCenter(id, data) {
-    // Teaching Centers have attachments, use FormData
+    // Training Centers have attachments, use FormData
     return apiClient.patch(`/epc/epc-teaching-centers/${id}/`, data, {
       headers: { 'Content-Type': 'multipart/form-data' },
     })
@@ -571,10 +574,10 @@ export default {
   patchEpcTeachingCenterRenewal(id, data) {
     // This will be used by the user's payment confirmation
     return apiClient.patch(`/epc/epc-teaching-center-renewals/${id}/`, data, {
-        headers: {
-            // Ensure correct content type if sending FormData
-            'Content-Type': data instanceof FormData ? 'multipart/form-data' : 'application/json',
-        }
+      headers: {
+        // Ensure correct content type if sending FormData
+        'Content-Type': data instanceof FormData ? 'multipart/form-data' : 'application/json',
+      }
     })
   },
 

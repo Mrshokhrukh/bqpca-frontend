@@ -11,10 +11,7 @@
       ></div>
       <span class="ml-4 text-lg text-gray-500">Loading Applications...</span>
     </div>
-    <div
-      v-else-if="error"
-      class="p-5 bg-red-50 border-l-4 border-red-500 rounded-r-lg shadow-md"
-    >
+    <div v-else-if="error" class="p-5 bg-red-50 border-l-4 border-red-500 rounded-r-lg shadow-md">
       <h3 class="font-bold text-red-800">An Error Occurred</h3>
       <p class="text-red-700 mt-1">{{ error }}</p>
     </div>
@@ -38,7 +35,9 @@
         />
       </svg>
       <h3 class="mt-4 text-lg font-semibold text-gray-800">No Applications Found</h3>
-      <p class="mt-1 text-sm text-gray-500">There are currently no program applications to display.</p>
+      <p class="mt-1 text-sm text-gray-500">
+        There are currently no program applications to display.
+      </p>
     </div>
 
     <div v-else class="flex flex-col">
@@ -64,7 +63,7 @@
                     scope="col"
                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    Teaching Center
+                    Training Center
                   </th>
                   <th
                     scope="col"
@@ -113,7 +112,11 @@
                         'bg-blue-100 text-blue-800': app.status === 'Pending',
                         'bg-green-100 text-green-800': app.status === 'AWAITING_PAYMENT',
                         'bg-red-100 text-red-800': app.status === 'REJECTED',
-                        'bg-gray-100 text-gray-800': !['Pending', 'AWAITING_PAYMENT', 'REJECTED'].includes(app.status),
+                        'bg-gray-100 text-gray-800': ![
+                          'Pending',
+                          'AWAITING_PAYMENT',
+                          'REJECTED',
+                        ].includes(app.status),
                       }"
                     >
                       {{ app.status || 'Unknown' }}
@@ -235,7 +238,7 @@ const fetchApplications = async () => {
     applications.value = (response.data.results || response.data || []).map((app) => {
       return {
         ...app,
-        institute_details: app.institute || { name_of_institution: 'N/A' }, 
+        institute_details: app.institute || { name_of_institution: 'N/A' },
         curriculum_validation_letter: app.curriculum_validation_letter || null,
         curriculum_document: app.curriculum_document || null,
       }
@@ -299,7 +302,9 @@ const promptDelete = (app) => {
   }
   confirmDialog.value = {
     title: 'Confirm Deletion',
-    message: `Are you sure you want to delete application for '${app.specific_program_title || `ID: ${app.id}`}'? This cannot be undone.`,
+    message: `Are you sure you want to delete application for '${
+      app.specific_program_title || `ID: ${app.id}`
+    }'? This cannot be undone.`,
     confirmButtonText: 'Delete',
     confirmButtonClass: 'bg-red-600 hover:bg-red-700',
   }
@@ -315,7 +320,9 @@ const promptApprove = (appFromModal) => {
   }
   confirmDialog.value = {
     title: 'Approve Application',
-    message: `You are about to approve '${appFromModal.specific_program_title || `ID: ${appFromModal.id}`}'. Provide remarks (optional).`,
+    message: `You are about to approve '${
+      appFromModal.specific_program_title || `ID: ${appFromModal.id}`
+    }'. Provide remarks (optional).`,
     confirmButtonText: 'Approve',
     confirmButtonClass: 'bg-green-600 hover:bg-green-700',
   }
@@ -331,7 +338,9 @@ const promptReject = (appFromModal) => {
   }
   confirmDialog.value = {
     title: 'Reject Application',
-    message: `You are about to reject '${appFromModal.specific_program_title || `ID: ${appFromModal.id}`}'. Provide remarks (required).`,
+    message: `You are about to reject '${
+      appFromModal.specific_program_title || `ID: ${appFromModal.id}`
+    }'. Provide remarks (required).`,
     confirmButtonText: 'Reject',
     confirmButtonClass: 'bg-red-600 hover:bg-red-700',
   }
@@ -352,7 +361,7 @@ const executeAction = async () => {
       await apiServices.deleteMhpcProgramOffered(application.id)
       applications.value = applications.value.filter((app) => app.id !== application.id)
       toast.success(
-        `Application '${application.specific_program_title || application.id}' deleted.`,
+        `Application '${application.specific_program_title || application.id}' deleted.`
       )
     } else if (type === 'approve' || type === 'reject') {
       if (type === 'reject' && !remarks.trim()) {
@@ -411,10 +420,12 @@ const executeAction = async () => {
       if (appIndex !== -1) {
         applications.value[appIndex].status = formData.get('status')
         applications.value[appIndex].status_remarks =
-          formData.get('status_remarks') || applications.value[appIndex].status_remarks 
+          formData.get('status_remarks') || applications.value[appIndex].status_remarks
       }
       toast.success(
-        `Application '${application.specific_program_title || application.id}' ${type === 'approve' ? 'approved' : 'rejected'}.`,
+        `Application '${application.specific_program_title || application.id}' ${
+          type === 'approve' ? 'approved' : 'rejected'
+        }.`
       )
     }
   } catch (err) {

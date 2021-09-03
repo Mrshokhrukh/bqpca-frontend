@@ -1,7 +1,7 @@
 <template>
   <div class="w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 bg-gray-50 min-h-screen">
     <InstituteHeader
-      title="Teaching Center Tracker & Renewal"
+      title="Training Center Tracker & Renewal"
       subtitle="Track and renew your teaching center registrations"
       :show-actions="false"
     />
@@ -76,7 +76,7 @@
             d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"
           />
         </svg>
-        <h3 class="mt-2 text-lg font-medium text-gray-900">No Teaching Centers Found</h3>
+        <h3 class="mt-2 text-lg font-medium text-gray-900">No Training Centers Found</h3>
         <p class="mt-1 text-sm text-gray-500">
           No teaching centers associated with your institute are currently registered.
         </p>
@@ -114,7 +114,7 @@
                       getReviewDecisionClass(
                         center.tc_review_decision_display || center.tc_review_decision,
                         'badge',
-                        center.is_active,
+                        center.is_active
                       ),
                     ]"
                   >
@@ -142,7 +142,9 @@
                 stroke-linecap="round"
                 stroke-linejoin="round"
               >
-                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0-3.42 0z"></path>
+                <path
+                  d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0-3.42 0z"
+                ></path>
                 <line x1="12" y1="9" x2="12" y2="13"></line>
                 <line x1="12" y1="17" x2="12.01" y2="17"></line>
               </svg>
@@ -157,14 +159,16 @@
             </div>
 
             <div
-              v-if="!center.has_active_capa && center.valid_till && getDaysUntilExpiration(center) <= 90"
+              v-if="
+                !center.has_active_capa && center.valid_till && getDaysUntilExpiration(center) <= 90
+              "
               class="mb-6 p-4 rounded-lg flex items-start"
               :class="[
                 getDaysUntilExpiration(center) <= 0
                   ? 'bg-red-50 text-red-700 border border-red-200'
                   : getDaysUntilExpiration(center) <= 30
-                    ? 'bg-orange-50 text-orange-700 border border-orange-200'
-                    : 'bg-yellow-50 text-yellow-700 border border-yellow-200',
+                  ? 'bg-orange-50 text-orange-700 border border-orange-200'
+                  : 'bg-yellow-50 text-yellow-700 border border-yellow-200',
               ]"
             >
               <svg
@@ -185,8 +189,8 @@
                     getDaysUntilExpiration(center) <= 0
                       ? 'Registration Expired!'
                       : getDaysUntilExpiration(center) <= 30
-                        ? 'Registration Expiring Soon!'
-                        : 'Registration Renewal Recommended'
+                      ? 'Registration Expiring Soon!'
+                      : 'Registration Renewal Recommended'
                   }}
                 </h3>
                 <p class="mt-1 text-xs">
@@ -194,7 +198,7 @@
                     getDaysUntilExpiration(center) <= 0
                       ? 'Your teaching center registration has expired. Please renew immediately.'
                       : `Expires in ${getDaysUntilExpiration(center)} days (${formatDate(
-                          center.valid_till,
+                          center.valid_till
                         )}). Please renew to maintain status.`
                   }}
                 </p>
@@ -247,7 +251,7 @@
                     getReviewDecisionClass(
                       center.tc_review_decision_display || center.tc_review_decision,
                       'text',
-                      center.is_active,
+                      center.is_active
                     )
                   "
                 />
@@ -287,7 +291,11 @@
 
               <!-- Application In Progress -->
               <div
-                v-else-if="!center.has_active_capa && !center.is_active && center.tc_review_decision === 'Pending'"
+                v-else-if="
+                  !center.has_active_capa &&
+                  !center.is_active &&
+                  center.tc_review_decision === 'Pending'
+                "
                 class="p-4 bg-orange-50 border border-orange-200 rounded-lg text-orange-700 text-sm"
               >
                 <h4 class="font-semibold">Application In Progress</h4>
@@ -328,13 +336,15 @@
 
               <!-- No Need to Renew Yet -->
               <div
-                v-else-if="!center.has_active_capa && center.is_active && getDaysUntilExpiration(center) > 90"
+                v-else-if="
+                  !center.has_active_capa && center.is_active && getDaysUntilExpiration(center) > 90
+                "
                 class="p-4 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm"
               >
                 <h4 class="font-semibold">Registration Valid</h4>
                 <p class="mt-1">
-                  Your registration is valid until {{ formatDate(center.valid_till) }}.
-                  Renewal will be available 90 days before expiration.
+                  Your registration is valid until {{ formatDate(center.valid_till) }}. Renewal will
+                  be available 90 days before expiration.
                 </p>
               </div>
 
@@ -388,7 +398,8 @@
                   @click="openRenewalDialog(center)"
                   class="btn btn-primary"
                   :class="{
-                    'animate-pulse bg-orange-500 hover:bg-orange-600': getDaysUntilExpiration(center) <= 30 && getDaysUntilExpiration(center) > 0,
+                    'animate-pulse bg-orange-500 hover:bg-orange-600':
+                      getDaysUntilExpiration(center) <= 30 && getDaysUntilExpiration(center) > 0,
                     'bg-red-600 hover:bg-red-700': getDaysUntilExpiration(center) <= 0,
                   }"
                 >
@@ -408,7 +419,7 @@
       <div
         class="bg-white rounded-xl shadow-xl p-6 md:p-8 m-4 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
       >
-        <h3 class="text-xl font-bold text-gray-900 mb-6">Teaching Center Renewal Application</h3>
+        <h3 class="text-xl font-bold text-gray-900 mb-6">Training Center Renewal Application</h3>
         <form @submit.prevent="confirmRenewal" class="space-y-6">
           <div v-if="selectedCenter" class="space-y-4">
             <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
@@ -540,57 +551,55 @@ const authStore = useAuthStore()
 
 const fetchData = async () => {
   if (!authStore.user?.cid) {
-    isLoading.value = false;
-    initialAuthCheckPending.value = false;
-    return;
+    isLoading.value = false
+    initialAuthCheckPending.value = false
+    return
   }
 
-  isLoading.value = true;
-  apiError.value = false;
-  initialAuthCheckPending.value = false;
-  const userCid = authStore.user?.cid;
+  isLoading.value = true
+  apiError.value = false
+  initialAuthCheckPending.value = false
+  const userCid = authStore.user?.cid
   try {
-    const response = await apiServices.getMhpcTeachingCenterByCid(userCid);
-    const results = response.data.results || [];
+    const response = await apiServices.getMhpcTeachingCenterByCid(userCid)
+    const results = response.data.results || []
 
     // --- START OF THE NEW, ROBUST LOGIC ---
 
     // Use a Map to store the definitive version of each teaching center, keyed by its ID.
     // This prevents duplicates and allows us to merge information correctly.
-    const centerMap = new Map();
+    const centerMap = new Map()
 
-    results.forEach(item => {
+    results.forEach((item) => {
       // Determine the core teaching center data and its ID from the current item.
-      const isCapaRecord = !!item.teaching_center;
-      const tcData = isCapaRecord ? item.teaching_center : item;
+      const isCapaRecord = !!item.teaching_center
+      const tcData = isCapaRecord ? item.teaching_center : item
 
       // Skip if the item is malformed and doesn't have an ID.
-      if (!tcData || !tcData.id) return;
+      if (!tcData || !tcData.id) return
 
-      const tcId = tcData.id;
+      const tcId = tcData.id
 
       // Get the existing center object from our map, or use the current one if it's the first time we've seen this ID.
-      const existingCenter = centerMap.get(tcId) || tcData;
+      const existingCenter = centerMap.get(tcId) || tcData
 
-
-      existingCenter.has_active_capa = existingCenter.has_active_capa || isCapaRecord;
+      existingCenter.has_active_capa = existingCenter.has_active_capa || isCapaRecord
 
       // Update the map with the (potentially modified) center object.
-      centerMap.set(tcId, existingCenter);
-    });
+      centerMap.set(tcId, existingCenter)
+    })
 
     // Convert the values of the map back into an array for rendering.
-    instituteTeachingCenters.value = Array.from(centerMap.values());
+    instituteTeachingCenters.value = Array.from(centerMap.values())
 
     // --- END OF THE NEW LOGIC ---
-
   } catch (error) {
-    console.error('Error fetching teaching centers:', error);
+    console.error('Error fetching teaching centers:', error)
     errorMessage.value =
-      error.response?.data?.message || 'Error fetching teaching center data. Please try again.';
-    apiError.value = true;
+      error.response?.data?.message || 'Error fetching teaching center data. Please try again.'
+    apiError.value = true
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
   }
 }
 
@@ -604,7 +613,7 @@ watch(
       }
     }
   },
-  { deep: true, immediate: true },
+  { deep: true, immediate: true }
 )
 
 onMounted(async () => {
@@ -723,23 +732,23 @@ const getPaymentStatusTextClass = (center) => {
 const canRenew = (center) => {
   // CAPA blocks all renewals - this is the most important check
   if (center.has_active_capa) {
-    return false;
+    return false
   }
 
   // Must be approved first
-  const isApproved = center.tc_review_decision === 'Approved';
+  const isApproved = center.tc_review_decision === 'Approved'
 
   // Must be expiring or expired (within 90 days)
-  const daysUntilExpiration = getDaysUntilExpiration(center);
-  const isExpiringOrExpired = daysUntilExpiration <= 90;
+  const daysUntilExpiration = getDaysUntilExpiration(center)
+  const isExpiringOrExpired = daysUntilExpiration <= 90
 
   // No renewal in progress
-  const notRenewing = !isRenewalInProgress(center);
+  const notRenewing = !isRenewalInProgress(center)
 
   // No payment required
-  const noPaymentRequired = !isPaymentRequired(center);
+  const noPaymentRequired = !isPaymentRequired(center)
 
-  return isApproved && isExpiringOrExpired && notRenewing && noPaymentRequired;
+  return isApproved && isExpiringOrExpired && notRenewing && noPaymentRequired
 }
 
 const handleFileUpload = (event) => {
@@ -756,8 +765,8 @@ const handleFileUpload = (event) => {
 const openRenewalDialog = (center) => {
   // Double-check CAPA status before opening dialog
   if (center.has_active_capa) {
-    toast.error('Cannot renew: This teaching center has pending CAPA that must be resolved first.');
-    return;
+    toast.error('Cannot renew: This teaching center has pending CAPA that must be resolved first.')
+    return
   }
 
   selectedCenter.value = { ...center }
@@ -784,9 +793,11 @@ const confirmRenewal = async () => {
 
   // Final CAPA check before submitting
   if (selectedCenter.value.has_active_capa) {
-    toast.error('Cannot proceed: This teaching center has pending CAPA that must be resolved first.');
-    closeRenewalDialog();
-    return;
+    toast.error(
+      'Cannot proceed: This teaching center has pending CAPA that must be resolved first.'
+    )
+    closeRenewalDialog()
+    return
   }
 
   isRenewing.value = true
@@ -851,12 +862,18 @@ const handlePaymentCompleted = async (paymentData) => {
       const centerId = selectedCenter.value.id
       await apiServices.confirmTeachingCenterRenewalPayment(centerId, renewalId, payload)
       toast.success(
-        `Renewal payment confirmed (Ref: ${paymentId.substring(0, 8)}...). Status will update shortly.`,
+        `Renewal payment confirmed (Ref: ${paymentId.substring(
+          0,
+          8
+        )}...). Status will update shortly.`
       )
     } else {
       await apiServices.confirmInitialCenterPayment(selectedCenter.value.id, payload)
       toast.success(
-        `Initial payment confirmed (Ref: ${paymentId.substring(0, 8)}...). Status will update shortly.`,
+        `Initial payment confirmed (Ref: ${paymentId.substring(
+          0,
+          8
+        )}...). Status will update shortly.`
       )
     }
 

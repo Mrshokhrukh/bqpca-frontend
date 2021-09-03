@@ -47,12 +47,42 @@
             <table class="min-w-full divide-y divide-gray-200">
               <thead class="bg-gray-50">
                 <tr>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Facility</th>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Teaching Center</th>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Inspection Date</th>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Observation</th>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+                  <th
+                    scope="col"
+                    class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                  >
+                    Facility
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                  >
+                    Training Center
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                  >
+                    Inspection Date
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                  >
+                    Observation
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                  >
+                    Status
+                  </th>
+                  <th
+                    scope="col"
+                    class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+                  >
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody class="bg-white divide-y divide-gray-200">
@@ -66,12 +96,19 @@
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                     <!-- FIX: Check if teaching_center exists before accessing its properties. -->
-                    {{ capaItem.teaching_center ? capaItem.teaching_center.center_name : 'Institute Level' }}
+                    {{
+                      capaItem.teaching_center
+                        ? capaItem.teaching_center.center_name
+                        : 'Institute Level'
+                    }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                     {{ capaItem.inspection_from_date }} - {{ capaItem.inspection_to_date }}
                   </td>
-                  <td class="px-6 py-4 text-sm text-gray-600 max-w-xs truncate" :title="capaItem.observation_description">
+                  <td
+                    class="px-6 py-4 text-sm text-gray-600 max-w-xs truncate"
+                    :title="capaItem.observation_description"
+                  >
                     {{ capaItem.observation_description }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
@@ -116,10 +153,15 @@
                 <span class="font-medium text-gray-700">Center:</span>
                 {{ capaItem.teaching_center.center_name }}
               </p>
-              <p class="text-sm text-gray-500 mb-3"><span class="font-medium text-gray-700">Inspection:</span> {{ capaItem.inspection_from_date }} to {{ capaItem.inspection_to_date }}</p>
+              <p class="text-sm text-gray-500 mb-3">
+                <span class="font-medium text-gray-700">Inspection:</span>
+                {{ capaItem.inspection_from_date }} to {{ capaItem.inspection_to_date }}
+              </p>
               <div class="mb-3">
                 <p class="text-sm font-medium text-gray-700 mb-1">Observation:</p>
-                <p class="text-sm text-gray-600 leading-relaxed max-h-20 overflow-y-auto">{{ capaItem.observation_description }}</p>
+                <p class="text-sm text-gray-600 leading-relaxed max-h-20 overflow-y-auto">
+                  {{ capaItem.observation_description }}
+                </p>
               </div>
             </div>
             <div class="p-6 border-t border-gray-100 bg-gray-50">
@@ -128,7 +170,8 @@
                 <span
                   :class="getStatusClass(capaItem.status)"
                   class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
-                >{{ getStatusText(capaItem.status) }}</span>
+                  >{{ getStatusText(capaItem.status) }}</span
+                >
               </div>
               <button
                 @click="openModal(capaItem)"
@@ -141,10 +184,29 @@
         </div>
       </div>
       <!-- No Data State -->
-      <div v-else class="mt-8 text-center py-16 bg-white rounded-2xl border border-gray-200 shadow-sm">
-        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" /></svg>
+      <div
+        v-else
+        class="mt-8 text-center py-16 bg-white rounded-2xl border border-gray-200 shadow-sm"
+      >
+        <svg
+          class="mx-auto h-12 w-12 text-gray-400"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          aria-hidden="true"
+        >
+          <path
+            vector-effect="non-scaling-stroke"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"
+          />
+        </svg>
         <h3 class="mt-2 text-lg font-medium text-gray-900">No CAPA items found</h3>
-        <p class="mt-1 text-sm text-gray-500">There are currently no CAPA items assigned to your facility.</p>
+        <p class="mt-1 text-sm text-gray-500">
+          There are currently no CAPA items assigned to your facility.
+        </p>
       </div>
     </div>
 
@@ -188,9 +250,8 @@ const fetchCapas = async () => {
     if (response && response.data && Array.isArray(response.data.results)) {
       capas.value = response.data.results
     } else if (response && response.data && Array.isArray(response.data)) {
-        capas.value = response.data;
-    }
-    else {
+      capas.value = response.data
+    } else {
       capas.value = []
       errorMessage.value = 'Received unexpected data format from the server.'
       apiError.value = true

@@ -1,16 +1,27 @@
 <template>
   <Teleport to="body">
-    <div v-if="isOpen" class="fixed z-50 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog"
-      aria-modal="true">
-      <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+    <div
+      v-if="isOpen"
+      class="fixed z-50 inset-0 overflow-y-auto"
+      aria-labelledby="modal-title"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div
+        class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0"
+      >
         <!-- Backdrop overlay -->
-        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity backdrop-blur-sm" aria-hidden="true"
-          @click="closeModal"></div>
+        <div
+          class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity backdrop-blur-sm"
+          aria-hidden="true"
+          @click="closeModal"
+        ></div>
 
         <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true"></span>
 
         <div
-          class="inline-block align-bottom bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+          class="inline-block align-bottom bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full"
+        >
           <!-- Header with sticky positioning -->
           <div class="bg-gradient-to-r from-blue-600 to-indigo-700 px-6 py-4 sticky top-0 z-10">
             <div class="flex justify-between items-center">
@@ -19,7 +30,12 @@
               </h3>
               <button @click="closeModal" class="text-white hover:text-gray-200 focus:outline-none">
                 <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </button>
             </div>
@@ -31,11 +47,17 @@
           <!-- Tabbed navigation -->
           <div class="bg-gray-50 border-b border-gray-200 px-6">
             <div class="flex space-x-4 overflow-x-auto">
-              <button v-for="(tab, index) in tabs" :key="index" @click="activeTab = index"
-                class="py-3 px-2 text-sm font-medium whitespace-nowrap border-b-2 focus:outline-none" :class="activeTab === index
-                  ? 'border-blue-600 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  ">
+              <button
+                v-for="(tab, index) in tabs"
+                :key="index"
+                @click="activeTab = index"
+                class="py-3 px-2 text-sm font-medium whitespace-nowrap border-b-2 focus:outline-none"
+                :class="
+                  activeTab === index
+                    ? 'border-blue-600 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                "
+              >
                 {{ tab }}
               </button>
             </div>
@@ -48,8 +70,12 @@
               <div class="bg-blue-50 p-4 rounded-lg">
                 <h4 class="text-md font-semibold text-blue-800 mb-3 flex items-center">
                   <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
                   </svg>
                   Basic Information
                 </h4>
@@ -88,7 +114,9 @@
                       </div>
                     </div>
                     <div class="bg-white p-3 rounded shadow-sm border border-gray-100">
-                      <label class="block text-xs font-medium text-gray-500">Institution Name</label>
+                      <label class="block text-xs font-medium text-gray-500"
+                        >Institution Name</label
+                      >
                       <div class="mt-1 text-sm font-medium text-gray-900">
                         {{ instituteDetails.name_of_institution || 'Not available' }}
                       </div>
@@ -100,10 +128,18 @@
               <div class="bg-indigo-50 p-4 rounded-lg">
                 <h4 class="text-md font-semibold text-indigo-800 mb-3 flex items-center">
                   <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                    />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
                   </svg>
                   Location Details
                 </h4>
@@ -153,14 +189,20 @@
               <div class="bg-emerald-50 p-4 rounded-lg">
                 <h4 class="text-md font-semibold text-emerald-800 mb-3 flex items-center">
                   <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                    />
                   </svg>
                   Course & Program Details
                 </h4>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div class="bg-white p-3 rounded shadow-sm border border-gray-100">
-                    <label class="block text-xs font-medium text-gray-500">Teaching Institute</label>
+                    <label class="block text-xs font-medium text-gray-500"
+                      >Training Institute</label
+                    >
                     <div class="mt-1 text-sm font-medium text-gray-900">
                       {{ instituteDetails.teaching_institute || 'Not available' }}
                     </div>
@@ -198,8 +240,12 @@
               <div class="bg-amber-50 p-4 rounded-lg">
                 <h4 class="text-md font-semibold text-amber-800 mb-3 flex items-center">
                   <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
                   </svg>
                   Review & Status
                 </h4>
@@ -207,15 +253,18 @@
                   <div class="bg-white p-3 rounded shadow-sm border border-gray-100">
                     <label class="block text-xs font-medium text-gray-500">Review Decision</label>
                     <div class="mt-1">
-                      <span class="px-2 py-1 text-xs font-medium rounded-full" :class="{
-                        'bg-green-100 text-green-800':
-                          instituteDetails.do_dpr_review_decision === 'Approved',
-                        'bg-red-100 text-red-800':
-                          instituteDetails.do_dpr_review_decision === 'Rejected',
-                        'bg-yellow-100 text-yellow-800':
-                          !instituteDetails.do_dpr_review_decision ||
-                          instituteDetails.do_dpr_review_decision === 'Pending',
-                      }">
+                      <span
+                        class="px-2 py-1 text-xs font-medium rounded-full"
+                        :class="{
+                          'bg-green-100 text-green-800':
+                            instituteDetails.do_dpr_review_decision === 'Approved',
+                          'bg-red-100 text-red-800':
+                            instituteDetails.do_dpr_review_decision === 'Rejected',
+                          'bg-yellow-100 text-yellow-800':
+                            !instituteDetails.do_dpr_review_decision ||
+                            instituteDetails.do_dpr_review_decision === 'Pending',
+                        }"
+                      >
                         {{ getStatusText(instituteDetails.do_dpr_review_decision) }}
                       </span>
                     </div>
@@ -223,10 +272,14 @@
                   <div class="bg-white p-3 rounded shadow-sm border border-gray-100">
                     <label class="block text-xs font-medium text-gray-500">Is Active</label>
                     <div class="mt-1">
-                      <span class="px-2 py-1 text-xs font-medium rounded-full" :class="instituteDetails.is_active
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-gray-100 text-gray-800'
-                        ">
+                      <span
+                        class="px-2 py-1 text-xs font-medium rounded-full"
+                        :class="
+                          instituteDetails.is_active
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-gray-100 text-gray-800'
+                        "
+                      >
                         {{ instituteDetails.is_active ? 'Yes' : 'No' }}
                       </span>
                     </div>
@@ -240,16 +293,22 @@
                   <div class="bg-white p-3 rounded shadow-sm border border-gray-100">
                     <label class="block text-xs font-medium text-gray-500">Payment Status</label>
                     <div class="mt-1">
-                      <span class="px-2 py-1 text-xs font-medium rounded-full" :class="instituteDetails.is_payment_complete
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-yellow-100 text-yellow-800'
-                        ">
+                      <span
+                        class="px-2 py-1 text-xs font-medium rounded-full"
+                        :class="
+                          instituteDetails.is_payment_complete
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-yellow-100 text-yellow-800'
+                        "
+                      >
                         {{ instituteDetails.is_payment_complete ? 'Completed' : 'Pending' }}
                       </span>
                     </div>
                   </div>
-                  <div v-if="instituteDetails.do_dpr_review_decision === 'Rejected'"
-                    class="sm:col-span-2 bg-white p-3 rounded shadow-sm border border-red-200">
+                  <div
+                    v-if="instituteDetails.do_dpr_review_decision === 'Rejected'"
+                    class="sm:col-span-2 bg-white p-3 rounded shadow-sm border border-red-200"
+                  >
                     <label class="block text-xs font-medium text-red-500">Rejection Reason</label>
                     <div class="mt-1 text-sm text-red-700">
                       {{ instituteDetails.do_dpr_reason_if_rejected || 'No reason provided' }}
@@ -264,8 +323,12 @@
               <div class="bg-purple-50 p-4 rounded-lg">
                 <h4 class="text-md font-semibold text-purple-800 mb-3 flex items-center">
                   <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"
+                    />
                   </svg>
                   Contact & Website
                 </h4>
@@ -273,19 +336,34 @@
                   <div class="bg-white p-3 rounded shadow-sm border border-gray-100">
                     <label class="block text-xs font-medium text-gray-500">Website</label>
                     <div class="mt-1">
-                      <a v-if="instituteDetails.website" :href="instituteDetails.website" target="_blank"
-                        class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800 hover:underline">
+                      <a
+                        v-if="instituteDetails.website"
+                        :href="instituteDetails.website"
+                        target="_blank"
+                        class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                      >
                         {{ instituteDetails.website }}
-                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        <svg
+                          class="w-4 h-4 ml-1"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                          />
                         </svg>
                       </a>
                       <span v-else class="text-sm text-gray-500">Not available</span>
                     </div>
                   </div>
                   <div class="bg-white p-3 rounded shadow-sm border border-gray-100">
-                    <label class="block text-xs font-medium text-gray-500">Head of Institution</label>
+                    <label class="block text-xs font-medium text-gray-500"
+                      >Head of Institution</label
+                    >
                     <div class="mt-1 text-sm font-medium text-gray-900">
                       {{ instituteDetails.head_of_institution_name || 'Not available' }}
                     </div>
@@ -317,27 +395,51 @@
               <div class="bg-red-50 p-4 rounded-lg">
                 <h4 class="text-md font-semibold text-red-800 mb-3 flex items-center">
                   <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
                   </svg>
                   Documents & Reports
                 </h4>
                 <div class="grid grid-cols-1 gap-4">
-                  <div class="bg-white p-3 rounded shadow-sm border border-gray-100 flex justify-between items-center">
+                  <div
+                    class="bg-white p-3 rounded shadow-sm border border-gray-100 flex justify-between items-center"
+                  >
                     <div>
-                      <label class="block text-xs font-medium text-gray-500">Supporting Documents</label>
+                      <label class="block text-xs font-medium text-gray-500"
+                        >Supporting Documents</label
+                      >
                       <div class="mt-1 text-sm font-medium text-gray-900">
                         {{ instituteDetails.supporting_documents ? 'Available' : 'Not available' }}
                       </div>
                     </div>
-                    <a v-if="instituteDetails.supporting_documents" :href="instituteDetails.supporting_documents"
+                    <a
+                      v-if="instituteDetails.supporting_documents"
+                      :href="instituteDetails.supporting_documents"
                       target="_blank"
-                      class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium hover:bg-blue-200 transition-colors flex items-center">
-                      <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium hover:bg-blue-200 transition-colors flex items-center"
+                    >
+                      <svg
+                        class="w-4 h-4 mr-1"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                        />
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                        />
                       </svg>
                       View
                     </a>
@@ -367,20 +469,41 @@
                     </a>
                   </div> -->
 
-                  <div class="bg-white p-3 rounded shadow-sm border border-gray-100 flex justify-between items-center">
+                  <div
+                    class="bg-white p-3 rounded shadow-sm border border-gray-100 flex justify-between items-center"
+                  >
                     <div>
-                      <label class="block text-xs font-medium text-gray-500">DPR Dealing Officer Report</label>
+                      <label class="block text-xs font-medium text-gray-500"
+                        >DPR Dealing Officer Report</label
+                      >
                       <div class="mt-1 text-sm font-medium text-gray-900">
                         {{ instituteDetails.do_dpr_report ? 'Available' : 'Not available' }}
                       </div>
                     </div>
-                    <a v-if="instituteDetails.do_dpr_report" :href="instituteDetails.do_dpr_report" target="_blank"
-                      class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium hover:bg-blue-200 transition-colors flex items-center">
-                      <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    <a
+                      v-if="instituteDetails.do_dpr_report"
+                      :href="instituteDetails.do_dpr_report"
+                      target="_blank"
+                      class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium hover:bg-blue-200 transition-colors flex items-center"
+                    >
+                      <svg
+                        class="w-4 h-4 mr-1"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                        />
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                        />
                       </svg>
                       View
                     </a>
@@ -414,36 +537,50 @@
               <div class="bg-teal-50 p-4 rounded-lg">
                 <h4 class="text-md font-semibold text-teal-800 mb-3 flex items-center">
                   <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"
+                    />
                   </svg>
                   Remarks & Summaries
                 </h4>
                 <div class="grid grid-cols-1 gap-4">
-                  <div v-if="instituteDetails.remarks" class="bg-white p-3 rounded shadow-sm border border-gray-100">
+                  <div
+                    v-if="instituteDetails.remarks"
+                    class="bg-white p-3 rounded shadow-sm border border-gray-100"
+                  >
                     <label class="block text-xs font-medium text-gray-500">Remarks</label>
                     <div class="mt-1 text-sm text-gray-900">
                       {{ instituteDetails.remarks || 'Not available' }}
                     </div>
                   </div>
-                  <div v-if="instituteDetails.declaration"
-                    class="bg-white p-3 rounded shadow-sm border border-gray-100">
+                  <div
+                    v-if="instituteDetails.declaration"
+                    class="bg-white p-3 rounded shadow-sm border border-gray-100"
+                  >
                     <label class="block text-xs font-medium text-gray-500">Declaration</label>
                     <div class="mt-1 text-sm text-gray-900">
                       {{ instituteDetails.declaration || 'Not available' }}
                     </div>
                   </div>
-                  <div v-if="instituteDetails.executive_summary"
-                    class="bg-white p-3 rounded shadow-sm border border-gray-100">
+                  <div
+                    v-if="instituteDetails.executive_summary"
+                    class="bg-white p-3 rounded shadow-sm border border-gray-100"
+                  >
                     <label class="block text-xs font-medium text-gray-500">Executive Summary</label>
                     <div class="mt-1 text-sm text-gray-900">
                       {{ instituteDetails.executive_summary || 'Not available' }}
                     </div>
                   </div>
-                  <div v-if="instituteDetails.do_dpr_review_summary"
-                    class="bg-white p-3 rounded shadow-sm border border-gray-100">
-                    <label for="dpr-review-summary" class="block text-xs font-medium text-gray-500">DPR Review
-                      Summary</label>
+                  <div
+                    v-if="instituteDetails.do_dpr_review_summary"
+                    class="bg-white p-3 rounded shadow-sm border border-gray-100"
+                  >
+                    <label for="dpr-review-summary" class="block text-xs font-medium text-gray-500"
+                      >DPR Review Summary</label
+                    >
                     <div class="mt-1 text-sm text-gray-900">
                       {{ instituteDetails.do_dpr_review_summary || 'Not available' }}
                     </div>
@@ -457,16 +594,21 @@
               <div class="bg-yellow-50 p-4 rounded-lg">
                 <h4 class="text-md font-semibold text-yellow-800 mb-3 flex items-center">
                   <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7">
-                    </path>
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M4 6h16M4 12h16M4 18h7"
+                    ></path>
                   </svg>
                   Other Details
                 </h4>
 
                 <div class="space-y-4">
                   <div class="bg-white p-3 rounded shadow-sm border border-gray-100">
-                    <label class="block text-xs font-medium text-gray-500">Vision, Mission and Implementation
-                      strategies</label>
+                    <label class="block text-xs font-medium text-gray-500"
+                      >Vision, Mission and Implementation strategies</label
+                    >
                     <div class="mt-1 text-sm text-gray-900">
                       {{
                         instituteDetails.vision_mission_implementation_strategies || 'Not available'
@@ -474,8 +616,9 @@
                     </div>
                   </div>
                   <div class="bg-white p-3 rounded shadow-sm border border-gray-100">
-                    <label class="block text-xs font-medium text-gray-500">Project scheduling, implementation and
-                      management</label>
+                    <label class="block text-xs font-medium text-gray-500"
+                      >Project scheduling, implementation and management</label
+                    >
                     <div class="mt-1 text-sm text-gray-900">
                       {{
                         instituteDetails.project_scheduling_implementation_management ||
@@ -484,7 +627,9 @@
                     </div>
                   </div>
                   <div class="bg-white p-3 rounded shadow-sm border border-gray-100">
-                    <label class="block text-xs font-medium text-gray-500">Values of Gross National Happiness</label>
+                    <label class="block text-xs font-medium text-gray-500"
+                      >Values of Gross National Happiness</label
+                    >
                     <div class="mt-1 text-sm text-gray-900">
                       {{ instituteDetails.values_of_gross_national_happiness || 'Not available' }}
                     </div>
@@ -496,13 +641,17 @@
                     </div>
                   </div>
                   <div class="bg-white p-3 rounded shadow-sm border border-gray-100">
-                    <label class="block text-xs font-medium text-gray-500">Conceptual Master plan</label>
+                    <label class="block text-xs font-medium text-gray-500"
+                      >Conceptual Master plan</label
+                    >
                     <div class="mt-1 text-sm text-gray-900">
                       {{ instituteDetails.conceptual_master_plan || 'Not available' }}
                     </div>
                   </div>
                   <div class="bg-white p-3 rounded shadow-sm border border-gray-100">
-                    <label class="block text-xs font-medium text-gray-500">Academic Plan/Profile</label>
+                    <label class="block text-xs font-medium text-gray-500"
+                      >Academic Plan/Profile</label
+                    >
                     <div class="mt-1 text-sm text-gray-900">
                       {{ instituteDetails.academic_plan_profile || 'Not available' }}
                     </div>
@@ -532,13 +681,17 @@
                     </div>
                   </div>
                   <div class="bg-white p-3 rounded shadow-sm border border-gray-100">
-                    <label class="block text-xs font-medium text-gray-500">Quality Assurance System</label>
+                    <label class="block text-xs font-medium text-gray-500"
+                      >Quality Assurance System</label
+                    >
                     <div class="mt-1 text-sm text-gray-900">
                       {{ instituteDetails.quality_assurance_system || 'Not available' }}
                     </div>
                   </div>
                   <div class="bg-white p-3 rounded shadow-sm border border-gray-100">
-                    <label class="block text-xs font-medium text-gray-500">Governance Structure</label>
+                    <label class="block text-xs font-medium text-gray-500"
+                      >Governance Structure</label
+                    >
                     <div class="mt-1 text-sm text-gray-900">
                       {{ instituteDetails.governance_structure || 'Not available' }}
                     </div>
@@ -550,37 +703,49 @@
                     </div>
                   </div>
                   <div class="bg-white p-3 rounded shadow-sm border border-gray-100">
-                    <label class="block text-xs font-medium text-gray-500">Project cost and Analysis</label>
+                    <label class="block text-xs font-medium text-gray-500"
+                      >Project cost and Analysis</label
+                    >
                     <div class="mt-1 text-sm text-gray-900">
                       {{ instituteDetails.project_cost_and_analysis || 'Not available' }}
                     </div>
                   </div>
                   <div class="bg-white p-3 rounded shadow-sm border border-gray-100">
-                    <label class="block text-xs font-medium text-gray-500">Facilities and Student Services</label>
+                    <label class="block text-xs font-medium text-gray-500"
+                      >Facilities and Student Services</label
+                    >
                     <div class="mt-1 text-sm text-gray-900">
                       {{ instituteDetails.facilities_and_student_services || 'Not available' }}
                     </div>
                   </div>
                   <div class="bg-white p-3 rounded shadow-sm border border-gray-100">
-                    <label class="block text-xs font-medium text-gray-500">Admission Policy and Scholarships</label>
+                    <label class="block text-xs font-medium text-gray-500"
+                      >Admission Policy and Scholarships</label
+                    >
                     <div class="mt-1 text-sm text-gray-900">
                       {{ instituteDetails.admission_policy_and_scholarships || 'Not available' }}
                     </div>
                   </div>
                   <div class="bg-white p-3 rounded shadow-sm border border-gray-100">
-                    <label class="block text-xs font-medium text-gray-500">Service conditions</label>
+                    <label class="block text-xs font-medium text-gray-500"
+                      >Service conditions</label
+                    >
                     <div class="mt-1 text-sm text-gray-900">
                       {{ instituteDetails.service_conditions || 'Not available' }}
                     </div>
                   </div>
                   <div class="bg-white p-3 rounded shadow-sm border border-gray-100">
-                    <label class="block text-xs font-medium text-gray-500">Safety and Security</label>
+                    <label class="block text-xs font-medium text-gray-500"
+                      >Safety and Security</label
+                    >
                     <div class="mt-1 text-sm text-gray-900">
                       {{ instituteDetails.safety_and_security || 'Not available' }}
                     </div>
                   </div>
                   <div class="bg-white p-3 rounded shadow-sm border border-gray-100">
-                    <label class="block text-xs font-medium text-gray-500">Public Information System</label>
+                    <label class="block text-xs font-medium text-gray-500"
+                      >Public Information System</label
+                    >
                     <div class="mt-1 text-sm text-gray-900">
                       {{ instituteDetails.public_information_system || 'Not available' }}
                     </div>
@@ -598,8 +763,10 @@
 
           <!-- Footer -->
           <div class="bg-gray-50 px-6 py-4 flex justify-end">
-            <button @click="closeModal"
-              class="px-4 py-2 bg-gray-100 text-gray-700 rounded-md text-sm font-medium hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors">
+            <button
+              @click="closeModal"
+              class="px-4 py-2 bg-gray-100 text-gray-700 rounded-md text-sm font-medium hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors"
+            >
               Close
             </button>
           </div>

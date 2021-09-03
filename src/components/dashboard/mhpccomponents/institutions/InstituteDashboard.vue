@@ -14,7 +14,8 @@
         <Building2 class="mx-auto h-16 w-16 text-indigo-400" />
         <h2 class="mt-6 text-2xl font-bold text-gray-900">Welcome to BQPCA</h2>
         <p class="mt-2 text-gray-600">
-          To get started, you need to register your institute. This will unlock your dashboard and all management features.
+          To get started, you need to register your institute. This will unlock your dashboard and
+          all management features.
         </p>
         <button @click="redirectToRegistration" class="mt-8 btn btn-primary w-full">
           <PlusCircle class="mr-2 h-5 w-5" />
@@ -42,16 +43,38 @@
     <div v-else-if="institute" class="space-y-8">
       <!-- Header -->
       <header>
-        <h1 class="text-4xl font-extrabold text-gray-900 tracking-tight">{{ institute.name_of_institution }}</h1>
+        <h1 class="text-4xl font-extrabold text-gray-900 tracking-tight">
+          {{ institute.name_of_institution }}
+        </h1>
         <p class="mt-1 text-lg text-gray-600">Welcome back to your dashboard.</p>
       </header>
 
       <!-- KPI Cards -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <KPICard title="Overall Status" :value="institute.application_status_display" :icon="ShieldCheck" icon-color="text-blue-600" />
-        <KPICard title="Active Programs" :value="programs.length" :icon="GraduationCap" icon-color="text-indigo-600" />
-        <KPICard title="Teaching Centers" :value="teachingCenters.length" :icon="Hospital" icon-color="text-green-600" />
-        <KPICard title="Faculty Members" :value="faculty.length" :icon="Users" icon-color="text-purple-600" />
+        <KPICard
+          title="Overall Status"
+          :value="institute.application_status_display"
+          :icon="ShieldCheck"
+          icon-color="text-blue-600"
+        />
+        <KPICard
+          title="Active Programs"
+          :value="programs.length"
+          :icon="GraduationCap"
+          icon-color="text-indigo-600"
+        />
+        <KPICard
+          title="Training Centers"
+          :value="teachingCenters.length"
+          :icon="Hospital"
+          icon-color="text-green-600"
+        />
+        <KPICard
+          title="Faculty Members"
+          :value="faculty.length"
+          :icon="Users"
+          icon-color="text-purple-600"
+        />
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -61,10 +84,27 @@
           <div class="bg-white p-6 rounded-2xl shadow-lg">
             <h3 class="text-xl font-bold text-gray-900 mb-4">Quick Actions</h3>
             <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-              <ActionButton label="New Program" :icon="PlusCircle" @click="navigateToAction('/programs')" />
-              <ActionButton label="Manage Faculty" :icon="Users" @click="navigateToAction('/faculty')" />
-              <ActionButton label="View CAPAs" :icon="ClipboardCheck" @click="navigateToAction('/capa')" />
-              <ActionButton label="Renew Institute" :icon="RefreshCw" @click="renewInstitute" :is-primary="true" />
+              <ActionButton
+                label="New Program"
+                :icon="PlusCircle"
+                @click="navigateToAction('/programs')"
+              />
+              <ActionButton
+                label="Manage Faculty"
+                :icon="Users"
+                @click="navigateToAction('/faculty')"
+              />
+              <ActionButton
+                label="View CAPAs"
+                :icon="ClipboardCheck"
+                @click="navigateToAction('/capa')"
+              />
+              <ActionButton
+                label="Renew Institute"
+                :icon="RefreshCw"
+                @click="renewInstitute"
+                :is-primary="true"
+              />
             </div>
           </div>
 
@@ -72,7 +112,17 @@
           <div class="bg-white p-6 rounded-2xl shadow-lg">
             <div class="border-b border-gray-200">
               <nav class="-mb-px flex space-x-6" aria-label="Tabs">
-                <button v-for="tab in tabs" :key="tab.name" @click="activeTab = tab.name" :class="[activeTab === tab.name ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm']">
+                <button
+                  v-for="tab in tabs"
+                  :key="tab.name"
+                  @click="activeTab = tab.name"
+                  :class="[
+                    activeTab === tab.name
+                      ? 'border-indigo-500 text-indigo-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300',
+                    'whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm',
+                  ]"
+                >
                   {{ tab.label }}
                 </button>
               </nav>
@@ -80,27 +130,55 @@
             <div class="mt-6">
               <div v-if="activeTab === 'programs'">
                 <ul v-if="programs.length" class="space-y-3">
-                  <li v-for="program in programs" :key="program.id" class="p-3 bg-gray-50 rounded-lg flex justify-between items-center">
-                    <span class="font-medium text-gray-800">{{ program.specific_program_title }}</span>
-                    <span :class="getStatusClass(program.status)" class="px-3 py-1 text-xs font-semibold rounded-full">{{ program.status }}</span>
+                  <li
+                    v-for="program in programs"
+                    :key="program.id"
+                    class="p-3 bg-gray-50 rounded-lg flex justify-between items-center"
+                  >
+                    <span class="font-medium text-gray-800">{{
+                      program.specific_program_title
+                    }}</span>
+                    <span
+                      :class="getStatusClass(program.status)"
+                      class="px-3 py-1 text-xs font-semibold rounded-full"
+                      >{{ program.status }}</span
+                    >
                   </li>
                 </ul>
                 <p v-else class="text-gray-500">No programs offered.</p>
               </div>
-               <div v-if="activeTab === 'centers'">
+              <div v-if="activeTab === 'centers'">
                 <ul v-if="teachingCenters.length" class="space-y-3">
-                  <li v-for="center in teachingCenters" :key="center.id" class="p-3 bg-gray-50 rounded-lg flex justify-between items-center">
+                  <li
+                    v-for="center in teachingCenters"
+                    :key="center.id"
+                    class="p-3 bg-gray-50 rounded-lg flex justify-between items-center"
+                  >
                     <span class="font-medium text-gray-800">{{ center.center_name }}</span>
-                    <span :class="getStatusClass(center.tc_review_decision)" class="px-3 py-1 text-xs font-semibold rounded-full">{{ center.tc_review_decision }}</span>
+                    <span
+                      :class="getStatusClass(center.tc_review_decision)"
+                      class="px-3 py-1 text-xs font-semibold rounded-full"
+                      >{{ center.tc_review_decision }}</span
+                    >
                   </li>
                 </ul>
                 <p v-else class="text-gray-500">No teaching centers found.</p>
               </div>
               <div v-if="activeTab === 'capa'">
                 <ul v-if="capas.length" class="space-y-3">
-                  <li v-for="capa in capas" :key="capa.id" class="p-3 bg-gray-50 rounded-lg flex justify-between items-center">
-                    <span class="font-medium text-gray-800 truncate pr-4">{{ capa.observation_description }}</span>
-                    <span :class="getStatusClass(capa.status)" class="px-3 py-1 text-xs font-semibold rounded-full">{{ capa.status }}</span>
+                  <li
+                    v-for="capa in capas"
+                    :key="capa.id"
+                    class="p-3 bg-gray-50 rounded-lg flex justify-between items-center"
+                  >
+                    <span class="font-medium text-gray-800 truncate pr-4">{{
+                      capa.observation_description
+                    }}</span>
+                    <span
+                      :class="getStatusClass(capa.status)"
+                      class="px-3 py-1 text-xs font-semibold rounded-full"
+                      >{{ capa.status }}</span
+                    >
                   </li>
                 </ul>
                 <p v-else class="text-gray-500">No CAPA reports found.</p>
@@ -116,34 +194,43 @@
             <div v-if="institute.is_active" class="space-y-3">
               <div class="flex justify-between items-center text-sm">
                 <span class="text-gray-600">Valid From</span>
-                <span class="font-medium text-gray-800">{{ formatDate(institute.valid_since) }}</span>
+                <span class="font-medium text-gray-800">{{
+                  formatDate(institute.valid_since)
+                }}</span>
               </div>
               <div class="flex justify-between items-center text-sm">
                 <span class="text-gray-600">Valid Until</span>
-                <span class="font-medium text-gray-800">{{ formatDate(institute.valid_till) }}</span>
+                <span class="font-medium text-gray-800">{{
+                  formatDate(institute.valid_till)
+                }}</span>
               </div>
               <div class="pt-3">
-                  <div class="w-full bg-gray-200 rounded-full h-2.5">
-                    <div class="bg-green-600 h-2.5 rounded-full" :style="{ width: validityPercentage + '%' }"></div>
-                  </div>
-                  <p class="text-xs text-center mt-1 text-gray-500">{{ daysUntilExpiration }} days remaining</p>
+                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                  <div
+                    class="bg-green-600 h-2.5 rounded-full"
+                    :style="{ width: validityPercentage + '%' }"
+                  ></div>
+                </div>
+                <p class="text-xs text-center mt-1 text-gray-500">
+                  {{ daysUntilExpiration }} days remaining
+                </p>
               </div>
             </div>
             <div v-else class="text-center py-4">
-                <p class="text-gray-600 font-medium">Institute is currently inactive.</p>
-                <p class="text-sm text-gray-500">Complete registration or renewal to activate.</p>
+              <p class="text-gray-600 font-medium">Institute is currently inactive.</p>
+              <p class="text-sm text-gray-500">Complete registration or renewal to activate.</p>
             </div>
           </div>
-           <div class="bg-white p-6 rounded-2xl shadow-lg">
+          <div class="bg-white p-6 rounded-2xl shadow-lg">
             <h3 class="text-xl font-bold text-gray-900 mb-4">Contact Person</h3>
             <div class="flex items-center space-x-4">
-                <div class="bg-indigo-100 p-3 rounded-full">
-                    <UserCircle class="h-8 w-8 text-indigo-600" />
-                </div>
-                <div>
-                    <p class="font-bold text-gray-800">{{ institute.head_of_institution_name }}</p>
-                    <p class="text-sm text-gray-500">{{ institute.head_of_institution_email }}</p>
-                </div>
+              <div class="bg-indigo-100 p-3 rounded-full">
+                <UserCircle class="h-8 w-8 text-indigo-600" />
+              </div>
+              <div>
+                <p class="font-bold text-gray-800">{{ institute.head_of_institution_name }}</p>
+                <p class="text-sm text-gray-500">{{ institute.head_of_institution_email }}</p>
+              </div>
             </div>
           </div>
         </div>
@@ -170,7 +257,7 @@ import {
   ClipboardCheck,
   RefreshCw,
   UserCircle,
-  FileText
+  FileText,
 } from 'lucide-vue-next'
 
 // Reusable Components (assuming they are created)
@@ -187,7 +274,7 @@ const KPICard = {
       </div>
     </div>
   `,
-  components: { ShieldCheck, GraduationCap, Hospital, Users }
+  components: { ShieldCheck, GraduationCap, Hospital, Users },
 }
 
 const ActionButton = {
@@ -198,7 +285,7 @@ const ActionButton = {
       <span>{{ label }}</span>
     </button>
   `,
-  components: { PlusCircle, Users, ClipboardCheck, RefreshCw }
+  components: { PlusCircle, Users, ClipboardCheck, RefreshCw },
 }
 
 const router = useRouter()
@@ -217,7 +304,7 @@ const activeTab = ref('programs')
 
 const tabs = [
   { name: 'programs', label: 'Programs' },
-  { name: 'centers', label: 'Teaching Centers' },
+  { name: 'centers', label: 'Training Centers' },
   { name: 'capa', label: 'CAPA Reports' },
 ]
 
@@ -256,47 +343,53 @@ const fetchRelatedData = async (instituteId, userCid) => {
     programs.value = programsRes.data?.results || []
     teachingCenters.value = centersRes.data?.results || []
     capas.value = capasRes.data?.results || []
-    faculty.value = (facultyRes.data?.results || []).filter(f => f.institute === instituteId)
+    faculty.value = (facultyRes.data?.results || []).filter((f) => f.institute === instituteId)
   } catch (err) {
     toast.error('Failed to load some dashboard details.')
     console.error('Error fetching related data:', err)
   }
 }
 
-const redirectToRegistration = () => router.push('/admin/institutions/health_certification/track_eoi')
+const redirectToRegistration = () =>
+  router.push('/admin/institutions/health_certification/track_eoi')
 const navigateToAction = (path) => router.push(`/admin/institutions/health_certification${path}`)
 const renewInstitute = () => toast.info('Institute renewal feature coming soon!')
 
 const formatDate = (dateString) => {
   if (!dateString) return 'N/A'
-  return new Date(dateString).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+  return new Date(dateString).toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  })
 }
 
 const getStatusClass = (status) => {
   const s = status?.toLowerCase() || ''
-  if (s.includes('approved') || s.includes('active') || s.includes('resolved')) return 'bg-green-100 text-green-800'
+  if (s.includes('approved') || s.includes('active') || s.includes('resolved'))
+    return 'bg-green-100 text-green-800'
   if (s.includes('pending')) return 'bg-yellow-100 text-yellow-800'
   if (s.includes('rejected') || s.includes('inactive')) return 'bg-red-100 text-red-800'
   return 'bg-gray-100 text-gray-800'
 }
 
 const daysBetween = (date1, date2) => {
-    const d1 = new Date(date1)
-    const d2 = new Date(date2)
-    return Math.round((d2 - d1) / (1000 * 60 * 60 * 24))
+  const d1 = new Date(date1)
+  const d2 = new Date(date2)
+  return Math.round((d2 - d1) / (1000 * 60 * 60 * 24))
 }
 
 const validityPercentage = computed(() => {
-    if (!institute.value?.valid_since || !institute.value?.valid_till) return 0
-    const totalDuration = daysBetween(institute.value.valid_since, institute.value.valid_till)
-    if (totalDuration <= 0) return 100
-    const elapsed = daysBetween(institute.value.valid_since, new Date())
-    return Math.max(0, Math.min(100, (elapsed / totalDuration) * 100))
+  if (!institute.value?.valid_since || !institute.value?.valid_till) return 0
+  const totalDuration = daysBetween(institute.value.valid_since, institute.value.valid_till)
+  if (totalDuration <= 0) return 100
+  const elapsed = daysBetween(institute.value.valid_since, new Date())
+  return Math.max(0, Math.min(100, (elapsed / totalDuration) * 100))
 })
 
 const daysUntilExpiration = computed(() => {
-    if (!institute.value?.valid_till) return 0
-    return Math.max(0, daysBetween(new Date(), institute.value.valid_till))
+  if (!institute.value?.valid_till) return 0
+  return Math.max(0, daysBetween(new Date(), institute.value.valid_till))
 })
 
 onMounted(fetchInstituteData)

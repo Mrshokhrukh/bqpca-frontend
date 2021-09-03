@@ -2,7 +2,7 @@
   <div class="w-full mx-auto px-4 py-8">
     <!-- Page Header -->
     <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10">
-      <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">Teaching Center Renewal ss</h2>
+      <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">Training Center Renewal ss</h2>
       <p class="text-gray-600 text-center max-w-2xl mx-auto">
         Manage and renew your teaching center registration
       </p>
@@ -29,19 +29,19 @@
       </button>
     </div>
 
-    <!-- No Teaching Centers Found -->
+    <!-- No Training Centers Found -->
     <div
       v-else-if="!teachingCenters.length"
       class="bg-yellow-50 border border-yellow-200 text-yellow-700 p-6 rounded-lg mb-6"
     >
-      <h3 class="text-lg font-medium mb-2">No Teaching Centers Found</h3>
+      <h3 class="text-lg font-medium mb-2">No Training Centers Found</h3>
       <p>You don't have any registered teaching centers associated with your institute.</p>
       <p class="mt-2">Please register a teaching center first before attempting to renew.</p>
     </div>
 
-    <!-- Teaching Centers List -->
+    <!-- Training Centers List -->
     <div v-else>
-      <!-- Teaching Center Cards -->
+      <!-- Training Center Cards -->
       <div
         v-for="center in teachingCenters"
         :key="center.id"
@@ -97,8 +97,8 @@
                     getDaysUntilExpiration(center) <= 0
                       ? 'Registration Expired!'
                       : getDaysUntilExpiration(center) <= 30
-                        ? 'Registration Expiring Soon!'
-                        : 'Registration Renewal Recommended'
+                      ? 'Registration Expiring Soon!'
+                      : 'Registration Renewal Recommended'
                   }}
                 </h3>
                 <div class="mt-1 text-sm">
@@ -152,10 +152,10 @@
                         !center.valid_till
                           ? 'text-gray-800'
                           : getDaysUntilExpiration(center) <= 0
-                            ? 'text-red-600'
-                            : getDaysUntilExpiration(center) <= 30
-                              ? 'text-orange-600'
-                              : 'text-gray-800',
+                          ? 'text-red-600'
+                          : getDaysUntilExpiration(center) <= 30
+                          ? 'text-orange-600'
+                          : 'text-gray-800',
                       ]"
                     >
                       {{ formatDate(center.valid_till) }}
@@ -295,7 +295,7 @@
                     d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
                   />
                 </svg>
-                Renew Teaching Center
+                Renew Training Center
               </span>
             </button>
           </div>
@@ -338,12 +338,12 @@
       class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50"
     >
       <div class="bg-white rounded-lg shadow-xl p-6 m-4 max-w-2xl w-full">
-        <h3 class="text-xl font-bold text-gray-900 mb-4">Teaching Center Renewal Application</h3>
+        <h3 class="text-xl font-bold text-gray-900 mb-4">Training Center Renewal Application</h3>
 
         <!-- Renewal Form -->
         <form @submit.prevent="confirmRenewal" class="space-y-6">
           <div v-if="selectedCenter">
-            <!-- Teaching Center Details -->
+            <!-- Training Center Details -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
                 <label class="block text-sm font-medium text-gray-700">Center Name</label>

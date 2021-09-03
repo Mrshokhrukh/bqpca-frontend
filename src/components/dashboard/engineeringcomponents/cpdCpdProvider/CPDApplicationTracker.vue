@@ -545,12 +545,14 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useApplicationStore } from '@/stores/applicationStore'
 import { useRouter } from 'vue-router'
 import apiService from '@/services/services'
 import { useToast } from 'vue-toastification'
 import { useAuthStore } from '@/stores/authStore'
 
 const router = useRouter()
+const applicationStore = useApplicationStore()
 const toast = useToast()
 const authStore = useAuthStore()
 const applications = ref([])
@@ -722,30 +724,41 @@ const hasApprovedApplicationsWithoutParticipants = computed(() => {
 const fetchApplications = async () => {
   loading.value = true
   error.value = null
+  const cid = authStore?.user?.cid
+
+  if (!cid) {
+    error.value = 'User information not found. Cannot load applications.'
+    applications.value = []
+    loading.value = false
+    toast.error(error.value)
+    return 
+  }
+
   try {
     const [response, participantsResponse] = await Promise.all([
-      apiService.getEpcCpdTasks(),
-      apiService.getEpcFullApplicationListByCid('')
+      apiService.getEpcCpdTasks({ cid: cid }),
+      apiService.getEpcFullApplicationListByCid({ cid: cid }),
     ])
 
     if (response.data && Array.isArray(response.data.results)) {
-      applications.value = response.data.results.sort(
-        (a, b) =>
-          new Date(b.updated_at || b.created_at) - new Date(a.updated_at || a.created_at),
+      const validApplications = response.data.results.filter(
+        (app) => app && typeof app === 'object'
+      )
+      applications.value = validApplications.sort(
+        (a, b) => new Date(b.updated_at || b.created_at) - new Date(a.updated_at || a.created_at)
       )
     } else {
       applications.value = []
-      if (response.status === 200 && !response.data?.results) {
-        error.value = 'No applications found for your account.'
-      } else {
-        error.value = 'Received invalid data format from server.'
-      }
     }
 
-    if (participantsResponse.data) {
-      allParticipants.value = participantsResponse.data.results || participantsResponse.data || []
+    const participantsData = participantsResponse.data
+    if (participantsData && Array.isArray(participantsData.results)) {
+      allParticipants.value = participantsData.results.filter((p) => p && typeof p === 'object')
+    } else if (Array.isArray(participantsData)) {
+      allParticipants.value = participantsData.filter((p) => p && typeof p === 'object')
+    } else {
+      allParticipants.value = []
     }
-
   } catch (err) {
     error.value =
       err.response?.data?.detail ||
@@ -805,10 +818,12 @@ const editApplication = (application) => {
     toast.warning('Only applications in Draft status can be edited.')
     return
   }
-  closeViewModal()
-  router.push(
-    `/admin/cpd_cme_provider/engineering_certification/cpd_application_details?id=${application.id}`,
-  )
+  
+  applicationStore.setDraftForEditing(application)
+
+  closeViewModal() 
+  
+  router.push('/admin/cme_cpd_provider/engineering_certification/cpd_application_details')
 }
 
 const addParticipants = (application) => {

@@ -772,7 +772,7 @@ export default {
     return apiClient.delete(`/mhpc/masters-hospital-center-types/${id}/`)
   },
 
-  // MHPC Teaching Center
+  // MHPC Training Center
   getMhpcTeachingCenters() {
     return apiClient.get('/mhpc/mhpc-teaching-centers/')
   },
@@ -832,9 +832,9 @@ export default {
  * @param {object} params - Optional query parameters for filtering/pagination.
  * @returns {Promise}
  */
-getAdminAllRenewals(params = {}) {
-  return apiClient.get('/mhpc/admin-renewals/', { params })
-},
+  getAdminAllRenewals(params = {}) {
+    return apiClient.get('/mhpc/admin-renewals/', { params })
+  },
 
 
   approveTeachingCenterRenewal(renewalId, data) {
