@@ -361,7 +361,7 @@ const handlePaymentCompleted = async (paymentData) => {
     paymentInitiationFormData.append('taxPayerNo', user.cid)
     paymentInitiationFormData.append('taxPayerDocumentNo', user.cid)
     paymentInitiationFormData.append('totalPayableAmount', 500)
-    paymentInitiationFormData.append('description', 'CoGS Application Fee')
+    paymentInitiationFormData.append('description', 'CoGS Application Fee (Engineering)') // Made description more specific
     paymentInitiationFormData.append('mobileNo', user.contact_number)
     paymentInitiationFormData.append('payerEmail', user.email)
     paymentInitiationFormData.append('user', user.id)
@@ -372,12 +372,12 @@ const handlePaymentCompleted = async (paymentData) => {
     await apiService.makePayment(paymentInitiationFormData)
 
     const updateFormData = new FormData()
-    updateFormData.append('is_payment_complete', 'false')
+    updateFormData.append('is_payment_complete', 'false') // This remains false until the webhook confirms
     updateFormData.append('payment_id', paymentId)
 
     await apiService.patchEpcCogs(applicationId, updateFormData)
 
-    toast.success(`Payment successful! Your application status has been updated.`)
+    toast.success(`Payment initiated! Your application status will update shortly.`)
   } catch (error) {
     console.error('Payment update error:', error)
     if (error.response) {

@@ -1750,6 +1750,11 @@ const serviceSpecificMenuItems = {
         icon: getIconComponent('CreditCard'),
         route: (serviceType) => `/admin/dealing_officer/${serviceType}/payment_history`,
       },
+      {
+        name: 'Institutional Quality Assurance Report List',
+        icon: getIconComponent('CreditCard'),
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/iqar_list`,
+      },
     ],
 
     admin: [
