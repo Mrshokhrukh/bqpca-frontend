@@ -1,6 +1,5 @@
 <template>
   <div class="w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-gray-50 min-h-screen">
-    <!-- Header Section -->
     <div
       class="bg-gradient-to-r from-blue-50 via-indigo-50 to-blue-50 rounded-2xl p-8 mb-10 shadow-sm border border-gray-200"
     >
@@ -26,7 +25,7 @@
     </div>
 
     <div
-      v-else-if="filteredApplications.length === 0"
+      v-else-if="applications.length === 0"
       class="text-center py-16 bg-white rounded-2xl border border-gray-200 shadow-sm"
     >
       <FileSearch class="w-16 h-16 mx-auto text-gray-300" />
@@ -36,21 +35,19 @@
       </p>
     </div>
 
-    <!-- Results Section -->
     <div v-else class="space-y-8">
       <div
-        v-for="application in filteredApplications"
+        v-for="application in applications"
         :key="application.id"
         class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-xl"
       >
-        <!-- Card Header -->
         <div
           class="bg-gray-50/70 p-5 border-b border-gray-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
         >
           <div>
             <h3 class="text-xl font-bold text-gray-900 flex items-center">
-              <span class="text-gray-500 font-medium mr-2">Reg #</span
-              >{{ application.registration_no }}
+              <span class="text-gray-500 font-medium mr-2">Reg #</span>
+              {{ application.application_details.registration_no }}
             </h3>
             <p class="text-sm text-gray-500 mt-1">
               Submitted on {{ formatDate(application.created_at) }}
@@ -60,7 +57,11 @@
             <status-badge :status="application.endorsement_decision" />
 
             <button
-              v-if="!application.is_payment_complete && !application.payment_id"
+              v-if="
+                application.review_status === 'Approved' &&
+                !application.is_payment_complete &&
+                !application.payment_id
+              "
               @click="initiatePayment(application)"
               class="px-4 py-2 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 transition-colors flex items-center shadow-sm"
             >
@@ -105,13 +106,10 @@
           </div>
         </div>
 
-        <!-- Card Body -->
         <div class="p-6">
           <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            <!-- Left Side: Applicant and Workplace -->
             <div class="lg:col-span-8 space-y-8">
-              <!-- Recipient Information -->
-              <div>
+              <div v-if="application.recipient_name">
                 <h4
                   class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b flex items-center gap-2"
                 >
@@ -130,8 +128,20 @@
                   <detail-row label="ZIP code" :value="application.zip_code" />
                 </div>
               </div>
+              <div v-else>
+                <h4
+                  class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b flex items-center gap-2"
+                >
+                  <User class="w-5 h-5 text-blue-600" />
+                  Recipient Information
+                </h4>
+                <div
+                  class="bg-blue-50 border border-blue-200 text-blue-800 rounded-lg p-4 text-center"
+                >
+                  <p class="font-semibold">The applicant is the recipient.</p>
+                </div>
+              </div>
 
-              <!-- Workplace & Supervisor Information -->
               <div>
                 <h4
                   class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b flex items-center gap-2"
@@ -140,7 +150,6 @@
                   Workplace & Supervisor
                 </h4>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-                  <!-- NEW: Added Agency, Dept, Workplace with optional chaining for safety -->
                   <detail-row label="Agency" :value="application.agency?.name || 'Not Specified'" />
                   <detail-row
                     label="Department"
@@ -159,7 +168,6 @@
               </div>
             </div>
 
-            <!-- Right Side: Status and Remarks -->
             <div class="lg:col-span-4 bg-gray-50 rounded-xl p-5 border">
               <h4
                 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b flex items-center gap-2"
@@ -193,7 +201,6 @@
         </div>
       </div>
     </div>
-    <!-- Payment Modal -->
     <PaymentModal
       ref="paymentModal"
       :amount="500"
@@ -204,7 +211,7 @@
 </template>
 
 <script setup>
-import { ref, h, defineComponent, onMounted, computed } from 'vue'
+import { ref, h, defineComponent, onMounted } from 'vue'
 import apiService from '@/services/services'
 import { User, CreditCard, FileSearch, Building2, ClipboardList } from 'lucide-vue-next'
 import { useAuthStore } from '@/stores/authStore'
@@ -220,18 +227,21 @@ const authStore = useAuthStore()
 const paymentModal = ref(null)
 const selectedApplication = ref(null)
 
-const filteredApplications = computed(() => {
-  if (!authStore.user || !authStore.user.cid) {
-    return []
-  }
-  return applications.value.filter((app) => app.cid_no === authStore.user.cid)
-})
-
 const fetchApplications = async () => {
   isLoading.value = true
   apiError.value = false
+
+  if (!authStore.user || !authStore.user.cid) {
+    applications.value = []
+    isLoading.value = false
+    toast.warn('User information not found. Cannot fetch applications.')
+    return
+  }
+
   try {
-    const response = await apiService.getEpcCogs()
+    const cid = authStore.user.cid
+    const response = await apiService.getEpcCogsByCid(cid)
+
     if (response.data && Array.isArray(response.data.results)) {
       applications.value = response.data.results.sort(
         (a, b) => new Date(b.created_at) - new Date(a.created_at)
@@ -258,28 +268,28 @@ const StatusBadge = defineComponent({
     const statusClasses = {
       Pending: 'bg-yellow-100 text-yellow-800 border-yellow-200',
       Approved: 'bg-green-100 text-green-800 border-green-200',
-      Regretted: 'bg-red-100 text-red-800 border-red-200',
+      Regretted: 'bg-red-100 text-red-800 border-red-200'
     }
     return h(
       'span',
       {
         class: `px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider border ${
           statusClasses[this.status] || 'bg-gray-100 text-gray-800'
-        }`,
+        }`
       },
       this.status
     )
-  },
+  }
 })
 
 const DetailRow = defineComponent({
-  props: { label: String, value: String },
+  props: { label: String, value: [String, Number] },
   render() {
     return h('div', { class: 'flex flex-col' }, [
       h('p', { class: 'text-xs text-gray-500 font-medium' }, this.label),
-      h('p', { class: 'text-sm text-gray-800 font-semibold' }, this.value || '-'),
+      h('p', { class: 'text-sm text-gray-800 font-semibold' }, this.value || '-')
     ])
-  },
+  }
 })
 
 const StatusDetailRow = defineComponent({
@@ -289,7 +299,7 @@ const StatusDetailRow = defineComponent({
       Pending: 'bg-yellow-100 text-yellow-800',
       Approved: 'bg-green-100 text-green-800',
       Completed: 'bg-green-100 text-green-800',
-      Regretted: 'bg-red-100 text-red-800',
+      Regretted: 'bg-red-100 text-red-800'
     }
     return h('div', { class: 'flex items-center justify-between' }, [
       h('p', { class: 'text-sm font-medium text-gray-700' }, this.label),
@@ -298,12 +308,12 @@ const StatusDetailRow = defineComponent({
         {
           class: `px-2.5 py-0.5 rounded-full text-xs font-semibold ${
             statusClasses[this.status] || 'bg-gray-100 text-gray-800'
-          }`,
+          }`
         },
         this.status
-      ),
+      )
     ])
-  },
+  }
 })
 
 // --- Helper and Handler Functions ---
@@ -313,7 +323,7 @@ const formatDate = (dateString) => {
   return new Date(dateString).toLocaleDateString('en-GB', {
     year: 'numeric',
     month: 'long',
-    day: 'numeric',
+    day: 'numeric'
   })
 }
 
@@ -346,7 +356,7 @@ const handlePaymentCompleted = async (paymentData) => {
 
     const paymentInitiationFormData = new FormData()
     paymentInitiationFormData.append('refNo', paymentId)
-    paymentInitiationFormData.append('serviceCode', '100247')
+    paymentInitiationFormData.append('serviceCode', '100258')
     paymentInitiationFormData.append('taxPayerName', user.cid)
     paymentInitiationFormData.append('taxPayerNo', user.cid)
     paymentInitiationFormData.append('taxPayerDocumentNo', user.cid)
@@ -376,9 +386,8 @@ const handlePaymentCompleted = async (paymentData) => {
       toast.error('A network error occurred. Please try again.')
     }
   } finally {
-    isLoading.value = false
+    await fetchApplications()
     selectedApplication.value = null
-    fetchApplications()
   }
 }
 

@@ -25,7 +25,7 @@
             <div class="mt-3 text-center sm:mt-0 sm:text-left w-full">
               <div class="flex justify-between items-center mb-4 pb-3 border-b">
                 <h3 class="text-xl leading-6 font-semibold text-gray-900" id="modal-title">
-                  Teaching Center Application Review
+                  Training Center Application Review
                 </h3>
                 <span
                   v-if="hospitalDetails.tc_review_decision"
@@ -140,12 +140,12 @@
                   <p v-else class="text-sm text-gray-500">Institute details not available.</p>
                 </section>
 
-                <!-- Proposed Teaching Center Details Section -->
+                <!-- Proposed Training Center Details Section -->
                 <section class="p-4 border border-gray-200 rounded-lg bg-white shadow-sm">
                   <h4
                     class="text-lg font-semibold text-gray-700 mb-4 pb-2 border-b border-gray-200"
                   >
-                    Proposed Teaching Center Details
+                    Proposed Training Center Details
                   </h4>
                   <dl class="text-sm space-y-1">
                     <div
@@ -331,7 +331,7 @@
                           Status:
                           {{
                             formattedVerificationStatus(
-                              hospitalDetails.physical_verification_status,
+                              hospitalDetails.physical_verification_status
                             )
                           }}
                         </p>
@@ -718,7 +718,7 @@ watch(
       actionAttempt.value = null
     }
   },
-  { immediate: true, deep: true },
+  { immediate: true, deep: true }
 )
 
 const todayDate = () => new Date().toISOString().split('T')[0]
@@ -791,7 +791,7 @@ const statusBadgeClass = computed(() => {
 })
 
 const isEffectivelyApproved = computed(
-  () => props.hospitalDetails?.tc_review_decision === 'Approved',
+  () => props.hospitalDetails?.tc_review_decision === 'Approved'
 )
 const isEffectivelyRejected = computed(() => {
   const decision = props.hospitalDetails?.tc_review_decision

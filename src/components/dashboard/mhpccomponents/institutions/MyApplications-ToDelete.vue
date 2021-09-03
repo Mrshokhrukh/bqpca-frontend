@@ -77,10 +77,10 @@
                   application.status === 'Pending'
                     ? 'bg-yellow-100 text-yellow-800'
                     : application.status === 'Approved'
-                      ? 'bg-green-100 text-green-800'
-                      : application.status === 'Rejected'
-                        ? 'bg-red-100 text-red-800'
-                        : 'bg-gray-100 text-gray-800',
+                    ? 'bg-green-100 text-green-800'
+                    : application.status === 'Rejected'
+                    ? 'bg-red-100 text-red-800'
+                    : 'bg-gray-100 text-gray-800',
                   'px-2 inline-flex text-xs leading-5 font-semibold rounded-full',
                 ]"
               >
@@ -111,8 +111,8 @@ const applications = ref([
   {
     id: 'APP-2024-001',
     instituteName: 'Royal Institute of Health Sciences',
-    centerProgramName: 'RIHS Teaching Center',
-    applicationType: 'New Teaching Center',
+    centerProgramName: 'RIHS Training Center',
+    applicationType: 'New Training Center',
     status: 'Pending',
     submissionDate: '2024-07-20',
   },

@@ -316,7 +316,7 @@ const handlePaymentCompleted = async (paymentData) => {
     // 3. Prepare Payment Gateway Data (This is generic for both types)
     const paymentInitiationFormData = new FormData()
     paymentInitiationFormData.append('refNo', paymentId)
-    paymentInitiationFormData.append('serviceCode', '100196')
+    paymentInitiationFormData.append('serviceCode', '100201')
     paymentInitiationFormData.append('taxPayerName', user.cid)
     paymentInitiationFormData.append('taxPayerNo', user.cid)
     paymentInitiationFormData.append('taxPayerDocumentNo', user.cid)

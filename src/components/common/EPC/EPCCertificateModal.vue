@@ -142,7 +142,7 @@
 
               <p class="mt-8 text-sm text-gray-600 text-center px-12">
                 The information contained in this certificate reflects the information held by the
-                Engineering Council of Bhutan as at the above dated.
+                Engineering Professionals Council as at the above dated.
               </p>
             </div>
 

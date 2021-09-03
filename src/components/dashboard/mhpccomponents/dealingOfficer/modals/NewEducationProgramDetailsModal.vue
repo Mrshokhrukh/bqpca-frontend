@@ -92,7 +92,7 @@
               </p>
             </div>
             <div>
-              <p class="text-xs font-medium text-gray-500 uppercase">Teaching Center</p>
+              <p class="text-xs font-medium text-gray-500 uppercase">Training Center</p>
               <p class="text-sm text-gray-800">{{ teachingCenterName || 'N/A' }}</p>
             </div>
             <div>
@@ -306,7 +306,7 @@ watch(
   (newApp) => {
     localApplication.value = { ...newApp }
   },
-  { deep: true },
+  { deep: true }
 )
 
 // FIX: Use computed properties to safely check for File objects

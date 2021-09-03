@@ -12,26 +12,46 @@
             <h2 class="text-xl font-semibold text-gray-900 mb-10">Applicant Information</h2>
             <div class="grid gap-6 md:grid-cols-2">
               <div>
-                <label for="CID" class="block text-sm font-medium text-gray-700 mb-1 required-label">
+                <label
+                  for="CID"
+                  class="block text-sm font-medium text-gray-700 mb-1 required-label"
+                >
                   CID.
                 </label>
-                <input type="text" id="CID" v-model="formData.CID"
+                <input
+                  type="text"
+                  id="CID"
+                  v-model="formData.CID"
                   class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2 bg-gray-100"
-                  readonly />
+                  readonly
+                />
               </div>
               <div>
-                <label for="full_name" class="block text-sm font-medium text-gray-700 mb-1 required-label">
+                <label
+                  for="full_name"
+                  class="block text-sm font-medium text-gray-700 mb-1 required-label"
+                >
                   Full Name
                 </label>
-                <input type="text" id="full_name" v-model.trim="formData.full_name"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2" />
+                <input
+                  type="text"
+                  id="full_name"
+                  v-model.trim="formData.full_name"
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
+                />
               </div>
               <div>
-                <label for="gender" class="block text-sm font-medium text-gray-700 mb-1 required-label">
+                <label
+                  for="gender"
+                  class="block text-sm font-medium text-gray-700 mb-1 required-label"
+                >
                   Gender
                 </label>
-                <select id="gender" v-model="formData.gender"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2">
+                <select
+                  id="gender"
+                  v-model="formData.gender"
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
+                >
                   <option value="">Select Gender</option>
                   <option v-for="option in genderOptions" :key="option.value" :value="option.value">
                     {{ option.label }}
@@ -39,18 +59,32 @@
                 </select>
               </div>
               <div>
-                <label for="contact_no" class="block text-sm font-medium text-gray-700 mb-1 required-label">
+                <label
+                  for="contact_no"
+                  class="block text-sm font-medium text-gray-700 mb-1 required-label"
+                >
                   Contact Number
                 </label>
-                <input type="tel" id="contact_no" v-model.trim="formData.contact_no"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2" />
+                <input
+                  type="tel"
+                  id="contact_no"
+                  v-model.trim="formData.contact_no"
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
+                />
               </div>
               <div>
-                <label for="email_address" class="block text-sm font-medium text-gray-700 mb-1 required-label">
+                <label
+                  for="email_address"
+                  class="block text-sm font-medium text-gray-700 mb-1 required-label"
+                >
                   Email Address
                 </label>
-                <input type="email" id="email_address" v-model.trim="formData.email_address"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2" />
+                <input
+                  type="email"
+                  id="email_address"
+                  v-model.trim="formData.email_address"
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
+                />
               </div>
             </div>
           </div>
@@ -60,30 +94,55 @@
             <h2 class="text-xl font-semibold text-gray-900 mb-10">Institution Details</h2>
             <div class="grid gap-6 md:grid-cols-2">
               <div class="col-span-2">
-                <label for="name_of_institution" class="block text-sm font-medium text-gray-700 mb-1 required-label">
+                <label
+                  for="name_of_institution"
+                  class="block text-sm font-medium text-gray-700 mb-1 required-label"
+                >
                   Name of Institution
                 </label>
-                <input type="text" id="name_of_institution" v-model.trim="formData.name_of_institution"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2" />
+                <input
+                  type="text"
+                  id="name_of_institution"
+                  v-model.trim="formData.name_of_institution"
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
+                />
               </div>
               <div>
-                <label for="dzongkhag" class="block text-sm font-medium text-gray-700 mb-1 required-label">
+                <label
+                  for="dzongkhag"
+                  class="block text-sm font-medium text-gray-700 mb-1 required-label"
+                >
                   Dzongkhag
                 </label>
-                <select id="dzongkhag" v-model="formData.dzongkhag" @change="handleDzongkhagChange"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2">
+                <select
+                  id="dzongkhag"
+                  v-model="formData.dzongkhag"
+                  @change="handleDzongkhagChange"
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
+                >
                   <option value="">Select Dzongkhag</option>
-                  <option v-for="d in bhutanDzongkhagsGewogs" :key="d.dzongkhag" :value="d.dzongkhag">
+                  <option
+                    v-for="d in bhutanDzongkhagsGewogs"
+                    :key="d.dzongkhag"
+                    :value="d.dzongkhag"
+                  >
                     {{ d.dzongkhag }}
                   </option>
                 </select>
               </div>
               <div>
-                <label for="gewog" class="block text-sm font-medium text-gray-700 mb-1 required-label">
+                <label
+                  for="gewog"
+                  class="block text-sm font-medium text-gray-700 mb-1 required-label"
+                >
                   Gewog
                 </label>
-                <select id="gewog" v-model="formData.gewog" :disabled="!formData.dzongkhag"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2 disabled:bg-gray-100 disabled:cursor-not-allowed">
+                <select
+                  id="gewog"
+                  v-model="formData.gewog"
+                  :disabled="!formData.dzongkhag"
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                >
                   <option value="">Select Gewog</option>
                   <option v-for="g in availableGewogs" :key="g" :value="g">
                     {{ g }}
@@ -91,47 +150,85 @@
                 </select>
               </div>
               <div>
-                <label for="village" class="block text-sm font-medium text-gray-700 mb-1 required-label">
+                <label
+                  for="village"
+                  class="block text-sm font-medium text-gray-700 mb-1 required-label"
+                >
                   Village
                 </label>
-                <input type="text" id="village" v-model.trim="formData.village"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2" />
+                <input
+                  type="text"
+                  id="village"
+                  v-model.trim="formData.village"
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
+                />
               </div>
               <div>
-                <label for="chiwog" class="block text-sm font-medium text-gray-700 mb-1 required-label">
+                <label
+                  for="chiwog"
+                  class="block text-sm font-medium text-gray-700 mb-1 required-label"
+                >
                   Chiwog
                 </label>
-                <input type="text" id="chiwog" v-model.trim="formData.chiwog"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2" />
+                <input
+                  type="text"
+                  id="chiwog"
+                  v-model.trim="formData.chiwog"
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
+                />
               </div>
               <div class="col-span-2">
-                <label for="address" class="block text-sm font-medium text-gray-700 mb-1 required-label">
+                <label
+                  for="address"
+                  class="block text-sm font-medium text-gray-700 mb-1 required-label"
+                >
                   Address
                 </label>
-                <textarea id="address" v-model.trim="formData.address"
+                <textarea
+                  id="address"
+                  v-model.trim="formData.address"
                   class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 resize-none px-3 py-2"
-                  rows="3"></textarea>
+                  rows="3"
+                ></textarea>
               </div>
               <div>
-                <label for="teaching_institute" class="block text-sm font-medium text-gray-700 mb-1">
-                  Teaching Institute Name, Engineering Institution (If different from above)
+                <label
+                  for="teaching_institute"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Training Institute Name, Engineering Institution (If different from above)
                 </label>
-                <input type="text" id="teaching_institute" v-model.trim="formData.teaching_institute"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2" />
+                <input
+                  type="text"
+                  id="teaching_institute"
+                  v-model.trim="formData.teaching_institute"
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
+                />
               </div>
               <div>
                 <label for="website" class="block text-sm font-medium text-gray-700 mb-1">
                   Website
                 </label>
-                <input type="url" id="website" v-model.trim="formData.website" placeholder="https://example.com"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2" />
+                <input
+                  type="url"
+                  id="website"
+                  v-model.trim="formData.website"
+                  placeholder="https://example.com"
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
+                />
               </div>
               <div>
-                <label for="country" class="block text-sm font-medium text-gray-700 mb-1 required-label">
+                <label
+                  for="country"
+                  class="block text-sm font-medium text-gray-700 mb-1 required-label"
+                >
                   Country
                 </label>
-                <select id="country" v-model="formData.country"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2">
+                <select
+                  id="country"
+                  v-model="formData.country"
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
+                >
                   <option value="">Select Country</option>
                   <option v-for="c in countryData" :key="c.code" :value="c.name">
                     {{ c.name }}
@@ -146,54 +243,95 @@
             <h2 class="text-xl font-semibold text-gray-900 mb-10">Course Details</h2>
             <div class="grid gap-6 md:grid-cols-2">
               <div class="col-span-2">
-                <label for="title_of_course" class="block text-sm font-medium text-gray-700 mb-1 required-label">
+                <label
+                  for="title_of_course"
+                  class="block text-sm font-medium text-gray-700 mb-1 required-label"
+                >
                   Title of Course
                 </label>
-                <input type="text" id="title_of_course" v-model.trim="formData.title_of_course"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2" />
+                <input
+                  type="text"
+                  id="title_of_course"
+                  v-model.trim="formData.title_of_course"
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
+                />
               </div>
               <div>
-                <label for="course_duration" class="block text-sm font-medium text-gray-700 mb-1 required-label">
+                <label
+                  for="course_duration"
+                  class="block text-sm font-medium text-gray-700 mb-1 required-label"
+                >
                   Course Duration (in months)
                 </label>
-                <input type="number" id="course_duration" v-model="formData.course_duration" min="1"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2" />
+                <input
+                  type="number"
+                  id="course_duration"
+                  v-model="formData.course_duration"
+                  min="1"
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
+                />
               </div>
               <div>
-                <label for="commencement_date" class="block text-sm font-medium text-gray-700 mb-1 required-label">
+                <label
+                  for="commencement_date"
+                  class="block text-sm font-medium text-gray-700 mb-1 required-label"
+                >
                   Proposed Commencement Date
                 </label>
-                <input type="date" id="commencement_date" v-model="formData.commencement_date" :min="todayDate"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2" />
+                <input
+                  type="date"
+                  id="commencement_date"
+                  v-model="formData.commencement_date"
+                  :min="todayDate"
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
+                />
               </div>
               <div class="col-span-2">
                 <label class="block text-sm font-medium text-gray-700 mb-3 required-label">
                   Type of Program
                 </label>
                 <div class="flex items-center space-x-6">
-                  <label v-for="option in programTypeOptions" :key="option.value" class="flex items-center">
-                    <input type="radio" :value="option.value" v-model="formData.type_of_programme"
-                      class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300" />
+                  <label
+                    v-for="option in programTypeOptions"
+                    :key="option.value"
+                    class="flex items-center"
+                  >
+                    <input
+                      type="radio"
+                      :value="option.value"
+                      v-model="formData.type_of_programme"
+                      class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                    />
                     <span class="ml-2 text-sm text-gray-700">{{ option.label }}</span>
                   </label>
                 </div>
               </div>
               <div class="col-span-2">
-                <label for="supporting_documents" class="block text-sm font-medium text-gray-700 mb-1 required-label">
+                <label
+                  for="supporting_documents"
+                  class="block text-sm font-medium text-gray-700 mb-1 required-label"
+                >
                   Supporting Documents (e.g., Curriculum Outline, if available)
                 </label>
-                <input type="file" id="supporting_documents"
-                  @change="(e) => handleFileUpload(e, 'supporting_documents')" accept=".pdf,.doc,.docx"
-                  class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+                <input
+                  type="file"
+                  id="supporting_documents"
+                  @change="(e) => handleFileUpload(e, 'supporting_documents')"
+                  accept=".pdf,.doc,.docx"
+                  class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                />
                 <p class="mt-1 text-xs text-gray-500">PDF, DOC, DOCX files allowed.</p>
               </div>
               <div class="col-span-2">
                 <label for="remarks" class="block text-sm font-medium text-gray-700 mb-1">
                   Remarks (Optional)
                 </label>
-                <textarea id="remarks" v-model="formData.remarks"
+                <textarea
+                  id="remarks"
+                  v-model="formData.remarks"
                   class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 resize-none px-3 py-2"
-                  rows="3"></textarea>
+                  rows="3"
+                ></textarea>
               </div>
             </div>
           </div>
@@ -203,20 +341,31 @@
             <h2 class="text-xl font-semibold text-gray-900 mb-10">Head of Institution Details</h2>
             <div class="grid gap-6 md:grid-cols-2">
               <div>
-                <label for="head_of_institution_name"
-                  class="block text-sm font-medium text-gray-700 mb-1 required-label">
+                <label
+                  for="head_of_institution_name"
+                  class="block text-sm font-medium text-gray-700 mb-1 required-label"
+                >
                   Name
                 </label>
-                <input type="text" id="head_of_institution_name" v-model.trim="formData.head_of_institution_name"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2" />
+                <input
+                  type="text"
+                  id="head_of_institution_name"
+                  v-model.trim="formData.head_of_institution_name"
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
+                />
               </div>
               <div>
-                <label for="head_of_institution_gender"
-                  class="block text-sm font-medium text-gray-700 mb-1 required-label">
+                <label
+                  for="head_of_institution_gender"
+                  class="block text-sm font-medium text-gray-700 mb-1 required-label"
+                >
                   Gender
                 </label>
-                <select id="head_of_institution_gender" v-model="formData.head_of_institution_gender"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2">
+                <select
+                  id="head_of_institution_gender"
+                  v-model="formData.head_of_institution_gender"
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
+                >
                   <option value="">Select Gender</option>
                   <option v-for="option in genderOptions" :key="option.value" :value="option.value">
                     {{ option.label }}
@@ -224,21 +373,32 @@
                 </select>
               </div>
               <div>
-                <label for="head_of_institution_phone_number"
-                  class="block text-sm font-medium text-gray-700 mb-1 required-label">
+                <label
+                  for="head_of_institution_phone_number"
+                  class="block text-sm font-medium text-gray-700 mb-1 required-label"
+                >
                   Phone Number
                 </label>
-                <input type="tel" id="head_of_institution_phone_number"
+                <input
+                  type="tel"
+                  id="head_of_institution_phone_number"
                   v-model.trim="formData.head_of_institution_phone_number"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2" />
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
+                />
               </div>
               <div>
-                <label for="head_of_institution_email"
-                  class="block text-sm font-medium text-gray-700 mb-1 required-label">
+                <label
+                  for="head_of_institution_email"
+                  class="block text-sm font-medium text-gray-700 mb-1 required-label"
+                >
                   Email
                 </label>
-                <input type="email" id="head_of_institution_email" v-model.trim="formData.head_of_institution_email"
-                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2" />
+                <input
+                  type="email"
+                  id="head_of_institution_email"
+                  v-model.trim="formData.head_of_institution_email"
+                  class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 px-3 py-2"
+                />
               </div>
             </div>
           </div>
@@ -255,8 +415,12 @@
                   aware and understand the process and requirements of relevant agencies.
                 </p>
                 <div class="flex items-center">
-                  <input type="checkbox" id="declaration" v-model="formData.declaration"
-                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
+                  <input
+                    type="checkbox"
+                    id="declaration"
+                    v-model="formData.declaration"
+                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
                   <label for="declaration" class="ml-3 block text-sm font-medium text-gray-700">
                     I agree to the above declaration <span class="text-red-600">*</span>
                   </label>
@@ -267,12 +431,19 @@
 
           <!-- Form Actions -->
           <div class="flex justify-end gap-4 pt-6">
-            <button type="button" @click="saveDraft" :disabled="isSubmitting"
-              class="inline-flex justify-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200 disabled:opacity-50">
+            <button
+              type="button"
+              @click="saveDraft"
+              :disabled="isSubmitting"
+              class="inline-flex justify-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200 disabled:opacity-50"
+            >
               Save as Draft
             </button>
-            <button type="submit" :disabled="isSubmitting || !formData.declaration"
-              class="inline-flex justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+            <button
+              type="submit"
+              :disabled="isSubmitting || !formData.declaration"
+              class="inline-flex justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               {{ isSubmitting ? 'Submitting...' : 'Submit Application' }}
             </button>
           </div>
@@ -283,7 +454,9 @@
   <div v-else class="min-h-screen flex items-center justify-center">
     <div class="bg-white rounded-lg shadow-lg p-8 text-center">
       <h2 class="text-2xl font-bold text-green-700 mb-4">Application Already Approved</h2>
-      <p class="text-gray-700">You have already submitted and your application is approved. You cannot submit again.</p>
+      <p class="text-gray-700">
+        You have already submitted and your application is approved. You cannot submit again.
+      </p>
     </div>
   </div>
 </template>
@@ -371,7 +544,6 @@ const handleDzongkhagChange = () => {
 }
 
 const isSubmitting = ref(false)
-
 
 const genderOptions = [
   { value: 'male', label: 'Male' },
@@ -466,7 +638,6 @@ const handleSubmit = async () => {
     }
 
     if (key === 'declaration') {
-
       submitData.append('declaration', value ? 'true' : 'false')
     } else if (value instanceof File) {
       submitData.append(key, value, value.name)
@@ -535,15 +706,15 @@ const handleSubmit = async () => {
 
 const saveDraft = () => {
   const draftData = { ...formData.value }
-    ;['supporting_documents', 'institute_eoi_supporting_documents', 'do_dpr_report'].forEach(
-      (key) => {
-        if (draftData[key] instanceof File) {
-          draftData[key] = { name: draftData[key].name, type: draftData[key].type }
-        } else {
-          draftData[key] = null
-        }
+  ;['supporting_documents', 'institute_eoi_supporting_documents', 'do_dpr_report'].forEach(
+    (key) => {
+      if (draftData[key] instanceof File) {
+        draftData[key] = { name: draftData[key].name, type: draftData[key].type }
+      } else {
+        draftData[key] = null
       }
-    )
+    }
+  )
   localStorage.setItem('epcEoiFormDraft', JSON.stringify(draftData))
   toast.success('Draft saved successfully!')
 }
@@ -554,67 +725,72 @@ const clearDraft = () => {
 
 onMounted(async () => {
   if (authStore.user?.cid) {
-    formData.value.CID = authStore.user.cid;
+    formData.value.CID = authStore.user.cid
 
     try {
-      const response = await apiService.getEpcInstitutes();
-      const applications = response.data.results;
+      const response = await apiService.getEpcInstitutes()
+      const applications = response.data.results
       if (!Array.isArray(applications)) {
-        throw new Error("API response did not contain a 'results' array.");
+        throw new Error("API response did not contain a 'results' array.")
       }
-      const userApplication = applications.find(
-        (app) => app.CID === authStore.user.cid
-      );
+      const userApplication = applications.find((app) => app.CID === authStore.user.cid)
       if (userApplication) {
-        existingApplication.value = userApplication;
-        if (userApplication.review_decision && userApplication.review_decision.toLowerCase() === 'approved') {
-          showForm.value = false;
-          toast.info('Your application has already been approved.');
+        existingApplication.value = userApplication
+        if (
+          userApplication.review_decision &&
+          userApplication.review_decision.toLowerCase() === 'approved'
+        ) {
+          showForm.value = false
+          toast.info('Your application has already been approved.')
         } else {
-          showForm.value = true;
+          showForm.value = true
         }
       } else {
-        showForm.value = true;
+        showForm.value = true
       }
     } catch (err) {
-      console.error('Error fetching EOI applications:', err);
-      toast.error('Could not check your application status. Please try again later.');
-      showForm.value = true;
+      console.error('Error fetching EOI applications:', err)
+      toast.error('Could not check your application status. Please try again later.')
+      showForm.value = true
     }
   } else {
-    console.error('User CID not found in auth store on mount.');
-    toast.error('Could not retrieve user information. Please log in again.', { timeout: 5000 });
+    console.error('User CID not found in auth store on mount.')
+    toast.error('Could not retrieve user information. Please log in again.', { timeout: 5000 })
   }
 
-  const savedDraft = localStorage.getItem('epcEoiFormDraft');
+  const savedDraft = localStorage.getItem('epcEoiFormDraft')
   if (savedDraft) {
     try {
-      const parsedDraft = JSON.parse(savedDraft);
+      const parsedDraft = JSON.parse(savedDraft)
       Object.keys(parsedDraft).forEach((key) => {
         if (key !== 'CID' && Object.prototype.hasOwnProperty.call(formData.value, key)) {
           if (
-            !['supporting_documents', 'institute_eoi_supporting_documents', 'do_dpr_report'].includes(key)
+            ![
+              'supporting_documents',
+              'institute_eoi_supporting_documents',
+              'do_dpr_report',
+            ].includes(key)
           ) {
-            formData.value[key] = parsedDraft[key];
+            formData.value[key] = parsedDraft[key]
           } else {
-            formData.value[key] = null;
+            formData.value[key] = null
           }
         }
-      });
+      })
 
       if (formData.value.dzongkhag) {
         const selectedDzongkhag = bhutanDzongkhagsGewogs.find(
           (d) => d.dzongkhag === formData.value.dzongkhag
-        );
-        availableGewogs.value = selectedDzongkhag ? selectedDzongkhag.gewogs : [];
+        )
+        availableGewogs.value = selectedDzongkhag ? selectedDzongkhag.gewogs : []
       }
-      toast.info('Draft loaded. Please re-select any required files.');
+      toast.info('Draft loaded. Please re-select any required files.')
     } catch (error) {
-      console.error('Error loading draft:', error);
-      clearDraft();
+      console.error('Error loading draft:', error)
+      clearDraft()
     }
   }
-});
+})
 </script>
 
 <style scoped>

@@ -1328,7 +1328,7 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/all_institute_profile`,
           },
           {
-            name: 'Teaching Institute',
+            name: 'Training Institute',
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/teaching_institute`,
           },
           {
@@ -1340,7 +1340,7 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/dealing_officer/${serviceType}/institute_renewals`,
           },
           {
-            name: 'Teaching Institute Renewals',
+            name: 'Training Institute Renewals',
             route: (serviceType) =>
               `/admin/dealing_officer/${serviceType}/teaching_institute_renewals`,
           },
@@ -1583,15 +1583,15 @@ const serviceSpecificMenuItems = {
             icon: getIconComponent('RefreshCw'),
             route: (serviceType) => `/admin/institutions/${serviceType}/institutes_renewal`,
           },
-          // Flattened children of former "Teaching Institutes"
+          // Flattened children of former "Training Institutes"
           {
-            name: 'New Teaching Institute', // R
+            name: 'New Training Institute', // R
             icon: getIconComponent('Building2'),
             route: (serviceType) =>
               `/admin/institutions/${serviceType}/teaching_center_application`,
           },
           {
-            name: 'Track & Renew Teaching Institute', // Renamed for clarity
+            name: 'Track & Renew Training Institute', // Renamed for clarity
             icon: getIconComponent('RefreshCw'),
             route: (serviceType) =>
               `/admin/institutions/${serviceType}/teaching_center_track_and_renew`,
