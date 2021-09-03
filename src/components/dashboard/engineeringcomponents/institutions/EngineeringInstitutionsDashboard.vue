@@ -238,7 +238,7 @@
           </div>
         </div>
 
-        <!-- Teaching Centers Card -->
+        <!-- Training Centers Card -->
         <!-- This section will only show if teachingCenters has data -->
         <div
           v-if="teachingCenters && teachingCenters.length > 0"
@@ -261,7 +261,7 @@
                 <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
                 <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
               </svg>
-              Teaching Centers
+              Training Centers
             </h2>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -323,7 +323,7 @@
           v-else
           class="bg-white rounded-lg p-6 shadow border border-gray-100 mb-8 text-center text-gray-500"
         >
-          No Teaching Centers found.
+          No Training Centers found.
         </div>
 
         <!-- Recent Applications Table -->

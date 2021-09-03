@@ -77,6 +77,7 @@
 
 <script setup>
 import { ref, reactive, onMounted, watch, computed } from 'vue'
+import { useApplicationStore } from '@/stores/applicationStore'
 import { useAuthStore } from '@/stores/authStore'
 import { useRouter } from 'vue-router'
 import apiService from '@/services/services'
@@ -122,6 +123,7 @@ function updateModelValue() {
   })
 }
 
+const applicationStore = useApplicationStore()
 const authStore = useAuthStore()
 const router = useRouter()
 
@@ -199,6 +201,49 @@ const calculatedCredits = computed(() => totalHours.value)
 const isFormValid = computed(() => {
   return performValidation()
 })
+
+const populateFormWithDraft = (draftData) => {
+  if (!draftData) return
+
+  // Applicant Details
+  applicant.cidNumber = draftData.cid_no || ''
+  applicant.fullName = draftData.full_name || ''
+  applicant.agencyTrainingLocation = draftData.proposed_training_location || ''
+
+  // Application Details
+  // Note: Your form uses a string 'true'/'false', but the API sends a boolean.
+  application.isApproved = draftData.is_cpd_approved ? 'true' : 'false'
+  application.title = draftData.title_of_cpd || ''
+  application.venue = draftData.venue || ''
+  application.fromDate = draftData.from_date || ''
+  application.toDate = draftData.to_date || ''
+
+  // CPD Provider
+  cpdProvider.agency = draftData.cpd_providing_agency || ''
+  cpdProvider.otherAgency = draftData.if_others_specify || ''
+  cpdProvider.reason = draftData.reason_for_conducting || ''
+  cpdProvider.reasonDetails = draftData.reason_for_details || ''
+
+  // Teaching & Learning
+  teachingMethod.type = draftData.type_of_cpd || ''
+  teachingMethod.expectedOutcome = draftData.expected_outcome || ''
+  
+  // Participant Details
+  participantDetails.number = draftData.number_of_participants || null
+  participantDetails.relevance = draftData.relevance_to_topic || ''
+
+  // You would continue mapping other fields like resourcePersons, methodologies, etc.
+  // if they can be saved in a draft. For example:
+  if (draftData.resources && draftData.resources.length > 0) {
+    resourcePersons.value = draftData.resources.map(r => ({
+      regNo: r.resource_person_reg_no,
+      name: r.resource_person_name
+    }))
+  }
+
+  // IMPORTANT: Add an ID to the application object so you can perform an UPDATE (PUT/PATCH) instead of a CREATE (POST)
+  application.id = draftData.id
+}
 
 // --- Watchers ---
 
@@ -568,10 +613,23 @@ const saveDraft = async () => {
   }
   validationErrors.value = []
   loading.value = true
+  
   try {
     const formData = prepareFormData(true)
-    await apiService.createEpcCpdTask(formData)
-    successMessage.value = 'Draft saved successfully!'
+    
+    // Check if we are updating an existing draft or creating a new one
+    if (application.id) {
+      await apiService.updateEpcCpdTask(application.id, formData)
+      successMessage.value = 'Draft updated successfully!'
+    } else {
+      const response = await apiService.createEpcCpdTask(formData)
+      
+      if (response.data && response.data.id) {
+        application.id = response.data.id
+      }
+      successMessage.value = 'Draft saved successfully!'
+    }
+    
     setTimeout(() => { successMessage.value = '' }, 3000)
   } catch (error) {
     validationErrors.value = ['An error occurred while saving the draft.']
@@ -599,9 +657,19 @@ const confirmSubmit = async () => {
     return
   }
   loading.value = true
+  
   try {
-    const formData = prepareFormData(false)
-    await apiService.createEpcCpdTask(formData) // No response variable needed if not used
+    const formData = prepareFormData(false) // isDraft is false for final submission
+    
+    // Check if we are updating a final submission or creating a new one
+    if (application.id) {
+      // We have an ID, so we UPDATE (PUT request)
+      await apiService.updateEpcCpdTask(application.id, formData)
+    } else {
+      // No ID, so we CREATE (POST request)
+      await apiService.createEpcCpdTask(formData)
+    }
+    
     successMessage.value = 'CPD application submitted successfully!'
     setTimeout(() => {
       router.push('/engineering_certification/track_cpd_applications')
@@ -624,30 +692,28 @@ const cancelForm = () => {
 
 onMounted(async () => {
   loading.value = true;
-  // Applicant details (cid, fullName) are now populated by the watcher for authStore.user.
-  // The watcher runs with immediate: true, so it will populate on mount if authStore.user is available.
-
-  // Fetch other necessary data
-  await Promise.all([
-    fetchUserRegistrations(), // This might populate applicant.registrationNumber or userRegistrations for lookups
-    loadDropdownOptions()     // Load all dropdowns
-  ]);
-
-  // Initialize form based on modelValue prop (e.g., for editing an existing application)
-  if (props.modelValue) {
-    application.isApproved = props.modelValue.isApproved ? 'true' : 'false'
-    application.title = props.modelValue.title || ''
-    application.venue = props.modelValue.venue || ''
-    application.fromDate = props.modelValue.fromDate || ''
-    application.toDate = props.modelValue.toDate || ''
-    if (props.modelValue.approvalLetter instanceof File) {
-      approvalLetter.value = props.modelValue.approvalLetter
-    }
+  
+  // Check for draft data from the store FIRST
+  const draftToEdit = applicationStore.currentDraft
+  if (draftToEdit) {
+    // We are in "edit mode"
+    await loadDropdownOptions(); // Load options before populating
+    populateFormWithDraft(draftToEdit);
+  } else {
+    // We are in "create new" mode, load options normally
+    await loadDropdownOptions();
   }
 
-  calculateTotalHours(); // Initial calculation
+  // Existing onMounted logic
+  await fetchUserRegistrations();
 
+  // ... rest of your onMounted logic (if any)
+  
+  calculateTotalHours();
   loading.value = false;
-})
 
+  // IMPORTANT: Clean up the store after using the data
+  // This ensures that if the user navigates to the form directly next time, it will be blank.
+  applicationStore.clearDraft();
+})
 </script>

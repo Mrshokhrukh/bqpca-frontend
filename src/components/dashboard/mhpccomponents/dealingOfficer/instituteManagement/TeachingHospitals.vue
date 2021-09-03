@@ -1,7 +1,7 @@
 <template>
   <div class="p-8 min-h-screen bg-gray-50">
     <div class="bg-white rounded-xl p-8 mb-10 shadow-sm border border-gray-100">
-      <h1 class="text-4xl font-bold text-gray-900 mb-3">Teaching Center Applications</h1>
+      <h1 class="text-4xl font-bold text-gray-900 mb-3">Training Center Applications</h1>
       <div class="flex items-center text-gray-600">
         <span class="flex items-center">
           <span class="w-3 h-3 rounded-full bg-blue-500 mr-2"></span>
@@ -12,7 +12,9 @@
 
     <div
       v-if="alert.show"
-      :class="`mb-4 p-4 rounded-md ${alert.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`"
+      :class="`mb-4 p-4 rounded-md ${
+        alert.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'
+      }`"
     >
       <div class="flex">
         <div class="flex-shrink-0">
@@ -180,7 +182,12 @@
                   viewBox="0 0 24 24"
                   stroke="currentColor"
                 >
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
                 <svg
                   v-else-if="confirmModal.action === 'submit-verification'"
@@ -189,21 +196,46 @@
                   viewBox="0 0 24 24"
                   stroke="currentColor"
                 >
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
-                <svg v-else class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                <svg
+                  v-else
+                  class="h-6 w-6 text-red-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                  />
                 </svg>
               </div>
               <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                <h3 class="text-lg leading-6 font-medium text-gray-900">{{ confirmModal.title }}</h3>
+                <h3 class="text-lg leading-6 font-medium text-gray-900">
+                  {{ confirmModal.title }}
+                </h3>
                 <div class="mt-2">
                   <p class="text-sm text-gray-500">{{ confirmModal.message }}</p>
                   <div
-                    v-if="confirmModal.action === 'reject' && !confirmModal.payload?.tc_reason_if_rejected"
+                    v-if="
+                      confirmModal.action === 'reject' &&
+                      !confirmModal.payload?.tc_reason_if_rejected
+                    "
                     class="mt-4"
                   >
-                    <label for="rejectionReasonConfirm" class="block text-sm font-medium text-gray-700">Rejection Reason (Required)</label>
+                    <label
+                      for="rejectionReasonConfirm"
+                      class="block text-sm font-medium text-gray-700"
+                      >Rejection Reason (Required)</label
+                    >
                     <textarea
                       id="rejectionReasonConfirm"
                       v-model="rejectionReasonInput"
@@ -220,7 +252,9 @@
             <button
               type="button"
               @click="confirmAction"
-              :disabled="loading || (confirmModal.action === 'reject' && !rejectionReasonInput.trim())"
+              :disabled="
+                loading || (confirmModal.action === 'reject' && !rejectionReasonInput.trim())
+              "
               :class="`inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm ${
                 confirmModal.action === 'approve'
                   ? 'bg-green-600 hover:bg-green-700 focus:ring-green-500 disabled:bg-green-300'
@@ -278,7 +312,8 @@ const fetchTeachingCenters = async () => {
   teachingCenters.value = []
   try {
     const response = await apiServices.getMhpcTeachingCenters()
-    let applicationsData = response?.data?.results || response?.data || response?.results || response || []
+    let applicationsData =
+      response?.data?.results || response?.data || response?.results || response || []
 
     if (Array.isArray(applicationsData)) {
       teachingCenters.value = applicationsData.map((app) => ({
@@ -308,12 +343,12 @@ const fetchTeachingCenters = async () => {
 }
 
 const getVerificationStatusClass = (statusKey) => {
-    const status = String(statusKey).toLowerCase();
-    if (status.includes('verified')) return 'bg-green-100 text-green-800';
-    if (status.includes('failed') || status.includes('not_verified')) return 'bg-red-100 text-red-800';
-    if (status.includes('progress')) return 'bg-blue-100 text-blue-800';
-    if (status.includes('pending')) return 'bg-yellow-100 text-yellow-800';
-    return 'bg-gray-100 text-gray-800';
+  const status = String(statusKey).toLowerCase()
+  if (status.includes('verified')) return 'bg-green-100 text-green-800'
+  if (status.includes('failed') || status.includes('not_verified')) return 'bg-red-100 text-red-800'
+  if (status.includes('progress')) return 'bg-blue-100 text-blue-800'
+  if (status.includes('pending')) return 'bg-yellow-100 text-yellow-800'
+  return 'bg-gray-100 text-gray-800'
 }
 
 const getReviewStatusClass = (statusKey) => {
@@ -325,7 +360,9 @@ const getReviewStatusClass = (statusKey) => {
 
 const formatReviewStatusText = (statusKey) => {
   if (!statusKey) return 'Pending Review'
-  return String(statusKey).replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())
+  return String(statusKey)
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, (l) => l.toUpperCase())
 }
 
 const getPaymentStatusClass = (statusKey) => {
@@ -337,7 +374,9 @@ const getPaymentStatusClass = (statusKey) => {
 
 const formatPaymentStatusText = (statusKey) => {
   if (!statusKey) return 'N/A'
-  return String(statusKey).replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())
+  return String(statusKey)
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, (l) => l.toUpperCase())
 }
 
 const openApplicationModal = (application) => {
@@ -424,10 +463,10 @@ const confirmAction = async () => {
       case 'submit-verification':
         const formData = new FormData()
         if (payload.verificationStatus) {
-            formData.append('physical_verification_status', payload.verificationStatus)
+          formData.append('physical_verification_status', payload.verificationStatus)
         }
         if (payload.verificationReport) {
-            formData.append('physical_verification_remarks', payload.verificationReport)
+          formData.append('physical_verification_remarks', payload.verificationReport)
         }
         formData.append('send_to_user', payload.sendToUser)
         if (payload.siteVisitScheduleDate) {
@@ -458,9 +497,11 @@ const confirmAction = async () => {
     await fetchTeachingCenters()
 
     if (isModalOpen.value && response.data) {
-        selectedApplication.value = { ...response.data, institute_details: selectedApplication.value.institute_details };
+      selectedApplication.value = {
+        ...response.data,
+        institute_details: selectedApplication.value.institute_details,
+      }
     }
-
   } catch (error) {
     console.error(`Error during action '${action}':`, error)
     let errorMessage = `Failed to ${action} application.`
@@ -468,9 +509,11 @@ const confirmAction = async () => {
       const data = error.response.data
       errorMessage += ` Status ${error.response.status}.`
       if (data && typeof data === 'object') {
-        const errorDetails = Object.entries(data).map(([key, value]) => {
-          return `${key}: ${Array.isArray(value) ? value.join(', ') : value}`
-        }).join('; ')
+        const errorDetails = Object.entries(data)
+          .map(([key, value]) => {
+            return `${key}: ${Array.isArray(value) ? value.join(', ') : value}`
+          })
+          .join('; ')
         errorMessage += ` Details: ${errorDetails}`
       } else if (data && data.detail) {
         errorMessage += ` ${data.detail}`

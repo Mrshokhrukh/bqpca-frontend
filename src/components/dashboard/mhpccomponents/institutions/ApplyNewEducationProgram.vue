@@ -1,83 +1,242 @@
 <template>
   <div>
     <form @submit.prevent="handleSubmit" class="space-y-8">
-
       <fieldset class="p-6 bg-white border border-gray-200 rounded-xl">
         <legend class="text-lg font-semibold text-gray-800 px-2">Institutional Information</legend>
         <div class="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6">
-            <div class="sm:col-span-2">
-                <label for="institute" class="block text-sm font-medium text-gray-700">Institute</label>
-                <input type="text" id="institute" :value="formData.institute_name" disabled class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed" />
-            </div>
-            <div class="sm:col-span-2">
-                <label for="teachingCenter" class="block text-sm font-medium text-gray-700">Teaching Center <span class="text-red-500">*</span></label>
-                <select id="teachingCenter" v-model="formData.teaching_center_id" required class="mt-1 w-full pl-3 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-gray-100">
-                    <option :value="null" disabled>Select a center...</option>
-                    <option v-for="center in availableTeachingCenters" :key="center.id" :value="center.id">
-                        {{ center.center_name }} - {{ center.center_location }}
-                    </option>
-                </select>
-                </div>
+          <div class="sm:col-span-2">
+            <label for="institute" class="block text-sm font-medium text-gray-700">Institute</label>
+            <input
+              type="text"
+              id="institute"
+              :value="formData.institute_name"
+              disabled
+              class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed"
+            />
+          </div>
+          <div class="sm:col-span-2">
+            <label for="teachingCenter" class="block text-sm font-medium text-gray-700"
+              >Training Center <span class="text-red-500">*</span></label
+            >
+            <select
+              id="teachingCenter"
+              v-model="formData.teaching_center_id"
+              required
+              class="mt-1 w-full pl-3 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-gray-100"
+            >
+              <option :value="null" disabled>Select a center...</option>
+              <option
+                v-for="center in availableTeachingCenters"
+                :key="center.id"
+                :value="center.id"
+              >
+                {{ center.center_name }} - {{ center.center_location }}
+              </option>
+            </select>
+          </div>
         </div>
       </fieldset>
 
       <fieldset class="p-6 bg-white border border-gray-200 rounded-xl">
         <legend class="text-lg font-semibold text-gray-800 px-2">Program Details</legend>
         <div class="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-6">
-            <div class="sm:col-span-2">
-                <label for="programMaster" class="block text-sm font-medium text-gray-700">Program Category <span class="text-red-500">*</span></label>
-                <select id="programMaster" v-model="formData.program_master_id" required class="mt-1 w-full pl-3 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-gray-100">
-                    <option :value="null" disabled>Select a category...</option>
-                    <option v-for="program in programMasters" :key="program.id" :value="program.id">{{ program.program_name }}</option>
-                </select>
-            </div>
-            <div v-if="selectedProgramDetails" class="sm:col-span-2 mt-2 p-3 bg-indigo-50 border-l-4 border-indigo-400 rounded-r-md">
-                <p class="text-sm text-indigo-800"><span class="font-medium">Duration:</span> {{ selectedProgramDetails.duration_years }} years. <span class="font-medium">Description:</span> {{ selectedProgramDetails.description }}</p>
-            </div>
-            <div class="sm:col-span-2">
-                <label for="specificProgramTitle" class="block text-sm font-medium text-gray-700">Specific Program Title <span class="text-red-500">*</span></label>
-                <input type="text" id="specificProgramTitle" v-model.trim="formData.specific_program_title" placeholder="e.g., BSc in Clinical Psychology" required class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-            </div>
+          <div class="sm:col-span-2">
+            <label for="programMaster" class="block text-sm font-medium text-gray-700"
+              >Program Category <span class="text-red-500">*</span></label
+            >
+            <select
+              id="programMaster"
+              v-model="formData.program_master_id"
+              required
+              class="mt-1 w-full pl-3 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-gray-100"
+            >
+              <option :value="null" disabled>Select a category...</option>
+              <option v-for="program in programMasters" :key="program.id" :value="program.id">
+                {{ program.program_name }}
+              </option>
+            </select>
+          </div>
+          <div
+            v-if="selectedProgramDetails"
+            class="sm:col-span-2 mt-2 p-3 bg-indigo-50 border-l-4 border-indigo-400 rounded-r-md"
+          >
+            <p class="text-sm text-indigo-800">
+              <span class="font-medium">Duration:</span>
+              {{ selectedProgramDetails.duration_years }} years.
+              <span class="font-medium">Description:</span> {{ selectedProgramDetails.description }}
+            </p>
+          </div>
+          <div class="sm:col-span-2">
+            <label for="specificProgramTitle" class="block text-sm font-medium text-gray-700"
+              >Specific Program Title <span class="text-red-500">*</span></label
+            >
+            <input
+              type="text"
+              id="specificProgramTitle"
+              v-model.trim="formData.specific_program_title"
+              placeholder="e.g., BSc in Clinical Psychology"
+              required
+              class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+          </div>
         </div>
       </fieldset>
 
       <fieldset class="p-6 bg-white border border-gray-200 rounded-xl">
         <legend class="text-lg font-semibold text-gray-800 px-2">Required Documents</legend>
-        <p class="text-sm text-gray-500 mb-4">Upload all required documents in PDF format (max 10MB each).</p>
+        <p class="text-sm text-gray-500 mb-4">
+          Upload all required documents in PDF format (max 10MB each).
+        </p>
         <div class="mt-4 grid grid-cols-1 gap-6">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Curriculum Validation Letter <span v-if="!isEditing || !formData.existing_validation_letter_url" class="text-red-500">*</span></label>
-                <div v-if="isEditing && formData.existing_validation_letter_url && !formData.curriculum_validation_letter_file" class="flex items-center justify-between p-2 text-sm text-gray-600 bg-gray-50 border rounded-lg">
-                    <span>Current file: <a :href="formData.existing_validation_letter_url" target="_blank" class="font-medium text-indigo-600 hover:underline">View Letter</a></span>
-                    <button type="button" @click="removeFile('validationLetter')" class="text-red-500 hover:text-red-700 font-bold text-lg">×</button>
-                </div>
-                <div v-else-if="formData.curriculum_validation_letter_file" class="flex items-center justify-between p-2 text-sm text-gray-600 bg-green-50 border border-green-200 rounded-lg">
-                    <span class="font-medium text-green-800 truncate">📄 {{ formData.curriculum_validation_letter_file.name }}</span>
-                    <button type="button" @click="removeFile('validationLetter')" class="text-red-500 hover:text-red-700 font-bold text-lg">×</button>
-                </div>
-                <input v-else type="file" id="validationLetter" @change="handleFileChange($event, 'validationLetter')" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer"/>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+              >Curriculum Validation Letter
+              <span
+                v-if="!isEditing || !formData.existing_validation_letter_url"
+                class="text-red-500"
+                >*</span
+              ></label
+            >
+            <div
+              v-if="
+                isEditing &&
+                formData.existing_validation_letter_url &&
+                !formData.curriculum_validation_letter_file
+              "
+              class="flex items-center justify-between p-2 text-sm text-gray-600 bg-gray-50 border rounded-lg"
+            >
+              <span
+                >Current file:
+                <a
+                  :href="formData.existing_validation_letter_url"
+                  target="_blank"
+                  class="font-medium text-indigo-600 hover:underline"
+                  >View Letter</a
+                ></span
+              >
+              <button
+                type="button"
+                @click="removeFile('validationLetter')"
+                class="text-red-500 hover:text-red-700 font-bold text-lg"
+              >
+                ×
+              </button>
             </div>
+            <div
+              v-else-if="formData.curriculum_validation_letter_file"
+              class="flex items-center justify-between p-2 text-sm text-gray-600 bg-green-50 border border-green-200 rounded-lg"
+            >
+              <span class="font-medium text-green-800 truncate"
+                >📄 {{ formData.curriculum_validation_letter_file.name }}</span
+              >
+              <button
+                type="button"
+                @click="removeFile('validationLetter')"
+                class="text-red-500 hover:text-red-700 font-bold text-lg"
+              >
+                ×
+              </button>
+            </div>
+            <input
+              v-else
+              type="file"
+              id="validationLetter"
+              @change="handleFileChange($event, 'validationLetter')"
+              class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer"
+            />
+          </div>
 
-            <div>
-                 <label class="block text-sm font-medium text-gray-700 mb-1">Curriculum Document <span v-if="!isEditing || !formData.existing_document_url" class="text-red-500">*</span></label>
-                 <div v-if="isEditing && formData.existing_document_url && !formData.curriculum_document_file" class="flex items-center justify-between p-2 text-sm text-gray-600 bg-gray-50 border rounded-lg">
-                    <span>Current file: <a :href="formData.existing_document_url" target="_blank" class="font-medium text-indigo-600 hover:underline">View Document</a></span>
-                    <button type="button" @click="removeFile('document')" class="text-red-500 hover:text-red-700 font-bold text-lg">×</button>
-                </div>
-                <div v-else-if="formData.curriculum_document_file" class="flex items-center justify-between p-2 text-sm text-gray-600 bg-green-50 border border-green-200 rounded-lg">
-                    <span class="font-medium text-green-800 truncate">📄 {{ formData.curriculum_document_file.name }}</span>
-                    <button type="button" @click="removeFile('document')" class="text-red-500 hover:text-red-700 font-bold text-lg">×</button>
-                </div>
-                <input v-else type="file" id="curriculumDocument" @change="handleFileChange($event, 'document')" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer"/>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+              >Curriculum Document
+              <span v-if="!isEditing || !formData.existing_document_url" class="text-red-500"
+                >*</span
+              ></label
+            >
+            <div
+              v-if="
+                isEditing && formData.existing_document_url && !formData.curriculum_document_file
+              "
+              class="flex items-center justify-between p-2 text-sm text-gray-600 bg-gray-50 border rounded-lg"
+            >
+              <span
+                >Current file:
+                <a
+                  :href="formData.existing_document_url"
+                  target="_blank"
+                  class="font-medium text-indigo-600 hover:underline"
+                  >View Document</a
+                ></span
+              >
+              <button
+                type="button"
+                @click="removeFile('document')"
+                class="text-red-500 hover:text-red-700 font-bold text-lg"
+              >
+                ×
+              </button>
             </div>
+            <div
+              v-else-if="formData.curriculum_document_file"
+              class="flex items-center justify-between p-2 text-sm text-gray-600 bg-green-50 border border-green-200 rounded-lg"
+            >
+              <span class="font-medium text-green-800 truncate"
+                >📄 {{ formData.curriculum_document_file.name }}</span
+              >
+              <button
+                type="button"
+                @click="removeFile('document')"
+                class="text-red-500 hover:text-red-700 font-bold text-lg"
+              >
+                ×
+              </button>
+            </div>
+            <input
+              v-else
+              type="file"
+              id="curriculumDocument"
+              @change="handleFileChange($event, 'document')"
+              class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer"
+            />
+          </div>
         </div>
       </fieldset>
 
       <div class="flex justify-end space-x-4 pt-5 border-t border-gray-200">
-        <button type="button" @click="emit('close')" :disabled="isSubmitting" class="px-6 py-2.5 bg-white text-gray-700 border border-gray-300 rounded-lg font-semibold text-sm shadow-sm hover:bg-gray-100 disabled:opacity-50">Cancel</button>
-        <button type="submit" :disabled="isSubmitting || !isFormValid" class="px-6 py-2.5 bg-indigo-600 text-white rounded-lg font-semibold text-sm shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-400 disabled:cursor-not-allowed">
+        <button
+          type="button"
+          @click="emit('close')"
+          :disabled="isSubmitting"
+          class="px-6 py-2.5 bg-white text-gray-700 border border-gray-300 rounded-lg font-semibold text-sm shadow-sm hover:bg-gray-100 disabled:opacity-50"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          :disabled="isSubmitting || !isFormValid"
+          class="px-6 py-2.5 bg-indigo-600 text-white rounded-lg font-semibold text-sm shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
+        >
           <span v-if="isSubmitting" class="flex items-center">
-            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+            <svg
+              class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              ></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
             Processing...
           </span>
           <span v-else>{{ isEditing ? 'Update Program' : 'Submit Program' }}</span>
@@ -181,7 +340,7 @@ const fetchInstituteAndTeachingCenters = async () => {
     // The filter now checks the 'tc_review_decision' field, which is guaranteed
     // to be in the API response, instead of the missing 'is_active' field.
     availableTeachingCenters.value = allCentersForInstitute
-      .filter(center => center.tc_review_decision === 'Approved')
+      .filter((center) => center.tc_review_decision === 'Approved')
       .sort((a, b) => a.center_name.localeCompare(b.center_name))
 
     if (availableTeachingCenters.value.length === 0) {
@@ -200,7 +359,7 @@ const fetchProgramMastersData = async () => {
   try {
     const response = await apiServices.getMhpcProgramMasters()
     programMasters.value = (response.data.results || response.data || []).sort((a, b) =>
-      a.program_name.localeCompare(b.program_name),
+      a.program_name.localeCompare(b.program_name)
     )
   } catch (error) {
     console.error('Error fetching program masters:', error)
@@ -266,12 +425,12 @@ watch(
               unwatch()
             }
           },
-          { immediate: true },
+          { immediate: true }
         )
       }
     }
   },
-  { immediate: true },
+  { immediate: true }
 )
 
 const handleSubmit = async () => {
@@ -290,7 +449,7 @@ const handleSubmit = async () => {
   if (formData.value.curriculum_validation_letter_file) {
     submissionPayload.append(
       'curriculum_validation_letter',
-      formData.value.curriculum_validation_letter_file,
+      formData.value.curriculum_validation_letter_file
     )
   }
   if (formData.value.curriculum_document_file) {
@@ -313,7 +472,7 @@ const handleSubmit = async () => {
     if (errorData && typeof errorData === 'object') {
       const messages = Object.entries(errorData).map(
         ([key, value]) =>
-          `${key.replace(/_/g, ' ')}: ${Array.isArray(value) ? value.join(', ') : value}`,
+          `${key.replace(/_/g, ' ')}: ${Array.isArray(value) ? value.join(', ') : value}`
       )
       errorMessage = messages.join('\n') || errorMessage
     } else if (errorData?.detail) {

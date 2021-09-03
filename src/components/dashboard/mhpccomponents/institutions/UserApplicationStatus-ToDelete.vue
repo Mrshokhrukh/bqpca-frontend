@@ -121,10 +121,10 @@
         </div>
         <p v-else class="text-gray-600">No programs offered.</p>
 
-        <!-- Teaching Centers -->
+        <!-- Training Centers -->
         <div v-if="app.teaching_centers.length" class="mb-4">
           <div class="flex justify-between items-center mb-2">
-            <h3 class="text-xl font-semibold text-gray-700">Teaching Centers</h3>
+            <h3 class="text-xl font-semibold text-gray-700">Training Centers</h3>
             <button
               @click="openCenterModal(app.id)"
               class="bg-green-600 text-white px-3 py-1 rounded-md hover:bg-green-700"
@@ -299,14 +299,14 @@
       </div>
     </div>
 
-    <!-- Teaching Center Modal -->
+    <!-- Training Center Modal -->
     <div
       v-if="showCenterModal"
       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
     >
       <div class="bg-white p-6 rounded-lg w-full max-w-md">
         <h2 class="text-xl font-semibold mb-4">
-          {{ editingCenter ? 'Edit Teaching Center' : 'Add Teaching Center' }}
+          {{ editingCenter ? 'Edit Training Center' : 'Add Training Center' }}
         </h2>
         <form @submit.prevent="saveCenter">
           <input

@@ -58,8 +58,8 @@ export default {
   },
 
   // NDI Authentication
-  finalizeNdiLogin(data) {
-    return apiClient.post('/users/ndi/finalize-login/', data)
+  finalizeNdiLogin(threadId) {
+    return apiClient.post('/users/ndi/finalize-login/', { thread_id: threadId });
   },
   generateNdiQrCode(data) {
     return apiClient.post('/users/ndi/generate-qr-code/', data)

@@ -25,7 +25,7 @@
             <div class="mt-3 text-center sm:mt-0 sm:text-left w-full">
               <div class="flex justify-between items-center mb-4 pb-3 border-b">
                 <h3 class="text-xl leading-6 font-semibold text-gray-900" id="modal-title">
-                  Teaching Center Application Review
+                  Training Center Application Review
                 </h3>
                 <span
                   v-if="hospitalDetails.tc_review_decision"
@@ -74,7 +74,7 @@
                   <h4
                     class="text-lg font-semibold text-gray-700 mb-4 pb-2 border-b border-gray-200"
                   >
-                    Proposed Teaching Center Details
+                    Proposed Training Center Details
                   </h4>
                   <dl class="text-sm space-y-1">
                     <div

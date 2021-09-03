@@ -196,7 +196,7 @@
                   scope="col"
                   class="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
                 >
-                  Teaching Center
+                  Training Center
                 </th>
                 <th
                   scope="col"
@@ -368,18 +368,18 @@ const toast = useToast()
 const authStore = useAuthStore()
 
 const verifiedCount = computed(
-  () => schedules.value.filter((s) => s.physical_verification_status === 'VERIFIED_PV').length,
+  () => schedules.value.filter((s) => s.physical_verification_status === 'VERIFIED_PV').length
 )
 const pendingVerificationCount = computed(
   () =>
     schedules.value.filter(
       (s) =>
         s.physical_verification_status === 'PENDING_PV' ||
-        s.physical_verification_status === 'IN_PROGRESS_PV',
-    ).length,
+        s.physical_verification_status === 'IN_PROGRESS_PV'
+    ).length
 )
 const failedVerificationCount = computed(
-  () => schedules.value.filter((s) => s.physical_verification_status === 'NOT_VERIFIED_PV').length,
+  () => schedules.value.filter((s) => s.physical_verification_status === 'NOT_VERIFIED_PV').length
 )
 
 const formatDate = (dateString) => {
@@ -503,14 +503,18 @@ const fetchSchedules = async () => {
 
     if (schedules.value.length > 0) {
       toast.success(
-        `Successfully loaded ${schedules.value.length} published schedule${schedules.value.length === 1 ? '' : 's'}.`,
+        `Successfully loaded ${schedules.value.length} published schedule${
+          schedules.value.length === 1 ? '' : 's'
+        }.`
       )
     }
   } catch (error) {
     console.error('Error fetching schedules:', error)
     let msg = 'An unexpected error occurred while loading schedules.'
     if (error.response) {
-      msg = `Error ${error.response.status}: ${error.response.data?.detail || error.response.statusText || 'Server error'}`
+      msg = `Error ${error.response.status}: ${
+        error.response.data?.detail || error.response.statusText || 'Server error'
+      }`
     } else if (error.request) {
       msg = 'No response from server. Check network or if the server is running.'
     } else {
