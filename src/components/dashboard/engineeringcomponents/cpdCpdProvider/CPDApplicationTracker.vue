@@ -545,16 +545,16 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useApplicationStore } from '@/stores/applicationStore'
 import { useRouter } from 'vue-router'
 import apiService from '@/services/services'
 import { useToast } from 'vue-toastification'
 import { useAuthStore } from '@/stores/authStore'
+import { useApplicationStore } from '@/stores/applicationStore'
 
 const router = useRouter()
-const applicationStore = useApplicationStore()
 const toast = useToast()
 const authStore = useAuthStore()
+const applicationStore = useApplicationStore()
 const applications = ref([])
 const loading = ref(false)
 const error = ref(null)
@@ -818,11 +818,10 @@ const editApplication = (application) => {
     toast.warning('Only applications in Draft status can be edited.')
     return
   }
-  
-  applicationStore.setDraftForEditing(application)
 
-  closeViewModal() 
-  
+  closeViewModal()
+
+  applicationStore.setDraftForEditing(application)
   router.push('/admin/cme_cpd_provider/engineering_certification/cpd_application_details')
 }
 

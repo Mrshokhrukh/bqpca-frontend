@@ -644,11 +644,13 @@
 <script setup>
 import { ref, reactive, onMounted, computed } from 'vue'
 import { useAuthStore } from '@/stores/authStore'
+import { useApplicationStore } from '@/stores/applicationStore'
 import { useRouter } from 'vue-router'
 import apiService from '@/services/services' // Your API service
 
 const authStore = useAuthStore()
 const router = useRouter()
+const applicationStore = useApplicationStore()
 
 const loading = ref(false)
 const currentAction = ref('')
@@ -678,6 +680,75 @@ const hideToast = () => {
 };
 // --- END TOAST ---
 
+const populateFormWithDraft = (draftData) => {
+  if (!draftData) return;
+
+  // Set application ID for updates
+  application.id = draftData.id || null;
+
+  // Applicant Details
+  applicant.agencyTrainingLocation = draftData.proposed_training_location || '';
+
+  // Application Details
+  application.isApproved = draftData.is_cpd_approved ? 'true' : 'false';
+  application.title = draftData.title_of_cpd || '';
+  application.venue = draftData.venue || '';
+  // The date format might need adjustment if it's a full datetime string
+  application.fromDate = draftData.from_date ? new Date(draftData.from_date).toISOString().split('T')[0] : '';
+  application.toDate = draftData.to_date ? new Date(draftData.to_date).toISOString().split('T')[0] : '';
+  // Note: approvalLetter is a file and cannot be populated from JSON data. User will have to re-upload.
+
+  // Activities
+  if (draftData.learning_methods && draftData.learning_methods.length > 0) {
+    activities.value = draftData.learning_methods.map(lm => ({
+      name: lm.activities,
+      duration: lm.duration
+    }));
+  } else {
+    activities.value = [{ name: '', duration: null }];
+  }
+
+  // CPD Provider
+  cpdProvider.agency = draftData.cpd_providing_agency || '';
+  cpdProvider.otherAgency = draftData.if_others_specify || '';
+  cpdProvider.reason = draftData.reason_for_conducting || '';
+  cpdProvider.reasonDetails = draftData.reason_for_details || '';
+
+  // Resource Persons
+  if (draftData.resources && draftData.resources.length > 0) {
+    resourcePersons.value = draftData.resources.map(r => {
+      const user = userRegistrations.value.find(u => u.registration_no === r.resource_person_reg_no || u.cid_no === r.resource_person_reg_no);
+      return {
+        selectedPersonId: user ? user.id : '',
+        name: r.resource_person_name,
+        regNo: r.resource_person_reg_no,
+        resourceDocument: null, // User must re-upload
+      };
+    });
+  } else {
+    resourcePersons.value = [{ selectedPersonId: '', name: '', regNo: '', resourceDocument: null }];
+  }
+
+  // Teaching Method
+  teachingMethod.type = draftData.type_of_cpd || '';
+  teachingMethod.expectedOutcome = draftData.expected_outcome || '';
+  if (draftData.methodologies && draftData.methodologies.length > 0) {
+    // The form expects an array of IDs. The draft data has an array of objects.
+    // The objects are {methodology_name: ID}.
+    selectedMethodologies.value = draftData.methodologies.map(m => m.methodology_name);
+  }
+
+  // Participant Details
+  participantDetails.number = draftData.number_of_participants || null;
+  participantDetails.relevance = draftData.relevance_to_topic || '';
+  if (draftData.participation_category && Array.isArray(draftData.participation_category)) {
+    participantDetails.category = draftData.participation_category;
+  }
+  if (draftData.participant_sub_category && Array.isArray(draftData.participant_sub_category)) {
+    participantDetails.subcategory = draftData.participant_sub_category;
+  }
+};
+
 
 const applicant = reactive({
   cidNumber: '',
@@ -687,6 +758,7 @@ const applicant = reactive({
 
 
 const application = reactive({
+  id: null,
   isApproved: 'false',
   title: '',
   venue: '',
@@ -1151,9 +1223,16 @@ const saveDraft = async () => {
   try {
     loading.value = true
     const fd = prepareFormData(true)
-    await apiService.createEpcCpdTask(fd)
-    showToast('Draft saved successfully!', 'success');
-    resetFormState();
+    if (application.id) {
+      await apiService.updateEpcCpdTask(application.id, fd)
+      showToast('Draft updated successfully!', 'success');
+    } else {
+      const response = await apiService.createEpcCpdTask(fd)
+      if (response.data && response.data.id) {
+        application.id = response.data.id; // Store new ID for subsequent saves
+      }
+      showToast('Draft saved successfully!', 'success');
+    }
   } catch (error) {
     console.error('Error saving draft:', error)
     validationErrors.value = ['Failed to save draft. An unexpected error occurred.']
@@ -1185,7 +1264,12 @@ const confirmSubmit = async () => {
   try {
     loading.value = true
     const fd = prepareFormData(false)
-    await apiService.createEpcCpdTask(fd)
+    if (application.id) {
+      await apiService.updateEpcCpdTask(application.id, fd)
+    } else {
+      await apiService.createEpcCpdTask(fd)
+    }
+
     showToast('Application submitted successfully! Redirecting to dashboard...', 'success');
     resetFormState()
     setTimeout(() => {
@@ -1266,7 +1350,7 @@ const fetchLookups = async () => {
 }
 
 // --- Lifecycle Hooks ---
-onMounted(() => {
+onMounted(async () => {
   if (authStore.user) {
     applicant.cidNumber = authStore.user.cid || ''
     applicant.fullName = [authStore.user.first_name, authStore.user.middle_name, authStore.user.last_name]
@@ -1274,7 +1358,13 @@ onMounted(() => {
       .join(' ') || ''
   }
 
-  fetchLookups();
+  await fetchLookups();
+
+  if (applicationStore.currentDraft) {
+    populateFormWithDraft(applicationStore.currentDraft);
+    applicationStore.clearDraft();
+    showToast('Draft loaded successfully. You are now in edit mode.', 'success');
+  }
 })
 </script>
 
