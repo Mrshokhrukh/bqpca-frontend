@@ -1304,6 +1304,8 @@ const handleSaveAsDraft = async () => {
 
 const handleSubmitActual = async (isDraft = false) => {
   isSubmitting.value = true
+  let redirectUrl = null
+
   try {
     const formData = new FormData()
     const formKeysToBackendKeys = {
@@ -1357,6 +1359,9 @@ const handleSubmitActual = async (isDraft = false) => {
         if (paymentResponse.status !== 201 && paymentResponse.status !== 200) {
           throw new Error('Payment request failed with status: ' + paymentResponse.status)
         }
+        if (paymentResponse.data?.content?.redirectUrl) {
+          redirectUrl = paymentResponse.data.content.redirectUrl
+        }
       } catch (paymentError) {
         console.error('Error making payment:', paymentError)
         toast.error(
@@ -1372,7 +1377,17 @@ const handleSubmitActual = async (isDraft = false) => {
     if (props.mode === 'edit' && props.initialData?.id) {
       response = await apiService.updateRecognitionOfQualification(props.initialData.id, formData)
       if (response.status === 200) {
-        toast.success('Application updated successfully')
+        if (isDraft) {
+          toast.success('Draft updated successfully')
+        } else {
+          toast.success(
+            'Application updated successfully, redirecting for payment. A link has also been sent to your email.',
+            { timeout: 8000 }
+          )
+          if (redirectUrl) {
+            window.open(redirectUrl, '_blank')
+          }
+        }
         emit('application-submitted', response.data) // Emit updated data
       }
     } else {
@@ -1381,7 +1396,13 @@ const handleSubmitActual = async (isDraft = false) => {
         if (isDraft) {
           toast.success('Application saved as draft')
         } else {
-          toast.success('Application submitted successfully.')
+          toast.success(
+            'Application submitted successfully, redirecting for payment. A link has also been sent to your email.',
+            { timeout: 8000 }
+          )
+          if (redirectUrl) {
+            window.open(redirectUrl, '_blank')
+          }
         }
         emit('application-submitted', response.data) // Emit newly created data
       }

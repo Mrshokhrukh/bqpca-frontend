@@ -672,9 +672,10 @@ const handlePaymentCompleted = async (paymentData) => {
   const user = authStore.user;
   if (!user?.cid) return toast.error('User information is missing. Please log in again.');
 
-  isSubmitting.value = true;
+  isLoading.value = true;
   const paymentId = paymentData.paymentHash;
   const appToPay = selectedAppForPayment.value;
+  let redirectUrl = null;
 
   try {
     const paymentGatewayFormData = new FormData();
@@ -683,31 +684,42 @@ const handlePaymentCompleted = async (paymentData) => {
     paymentGatewayFormData.append('taxPayerName', appToPay.training_institute_details?.name_of_institution || user.cid);
     paymentGatewayFormData.append('taxPayerNo', user.cid);
     paymentGatewayFormData.append('taxPayerDocumentNo', user.cid);
-    paymentGatewayFormData.append('totalPayableAmount', 1000 * 100);
-    paymentGatewayFormData.append('payableAmount', 1000 * 100);
+    paymentGatewayFormData.append('totalPayableAmount', 1000);
+    paymentGatewayFormData.append('payableAmount', 1000);
     paymentGatewayFormData.append('description', `Fee for Education Programme: ${appToPay.proposal_title}`);
     paymentGatewayFormData.append('mobileNo', appToPay.training_institute_details?.contact_no || 'NA');
     paymentGatewayFormData.append('payerEmail', appToPay.training_institute_details?.email_address || 'NA');
     paymentGatewayFormData.append('user', user.id);
     paymentGatewayFormData.append('application_no', appToPay.id);
     paymentGatewayFormData.append('app_type', 'epc_new_education_program');
-    await apiService.makePayment(paymentGatewayFormData);
+    
+    const paymentResponse = await apiService.makePayment(paymentGatewayFormData);
+    if (paymentResponse.data?.content?.redirectUrl) {
+      redirectUrl = paymentResponse.data.content.redirectUrl;
+    }
 
-    // Only patch the necessary fields to complete the payment
     const updatePayload = {
         payment_id: paymentId,
-        is_payment_complete: true,
+        is_payment_complete: false, // Set to false as payment is initiated, not completed
     };
 
     await apiService.patchEpcNewEducationProgram(appToPay.id, updatePayload);
 
-    toast.success(`Payment confirmed. Your application is updated.`);
+    toast.success(`Payment initiated successfully. Redirecting for payment completion. A link has also been sent to your email.`, { timeout: 8000 });
+
+    if (redirectUrl) {
+        window.open(redirectUrl, '_blank');
+    }
+
     await fetchSubmittedApplications();
   } catch (error) {
     console.error('Payment handling error:', error);
     toast.error(`Payment confirmation failed: ${error.response?.data?.detail || 'Please contact support.'}`);
   } finally {
-    isSubmitting.value = false;
+    isLoading.value = false;
+    if (paymentModalRef.value) {
+        paymentModalRef.value.closeModal();
+    }
     closePaymentModal();
   }
 };

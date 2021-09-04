@@ -781,70 +781,105 @@ const validateForm = () => {
 }
 
 const handleFormSubmit = async () => {
-  if (isSubmitting.value) return
-  if (!validateForm()) return
+  if (isSubmitting.value) return;
+  if (!validateForm()) return;
 
-  isSubmitting.value = true
-
-  try {
-    const formPayloadForApp = createPayload(false)
-    if (authStore.userId) {
-      formPayloadForApp.append('applicant_user_id', authStore.userId)
-    }
-
-    await apiServices.createMhpcTeachingCenter(formPayloadForApp)
-
-    // 1. Clear the local storage draft
-    const draftKey = getDraftKey()
-    if (draftKey) {
-      localStorage.removeItem(draftKey)
-    }
-
-    // 2. Show the success message to the user
-    isShowingSuccessMessage.value = true
-
-    // 3. Set a timer to close the modal AND reset the form's data
-    setTimeout(() => {
-      emit('form-submitted') // Signal parent to close the modal
-      resetForm()          // Reset the form data for the next use
-    }, 3000)
-
-  } catch (error) {
-    console.error('Error during submission process:', error.response?.data || error.message || error)
-    
-    let errorMessage = 'Error submitting application. '
-    if (error.response?.data) {
-      const errors = error.response.data
-      if (typeof errors === 'string') {
-        errorMessage += errors
-      } else if (typeof errors === 'object') {
-        const messages = Object.entries(errors)
-          .map(([key, value]) => {
-            const fieldName = key.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())
-            return `${fieldName}: ${Array.isArray(value) ? value.join(', ') : value}`
-          })
-          .join('\n')
-        if (messages) errorMessage += `Details:\n${messages}`
-        else if (errors.detail) errorMessage += errors.detail
-        else errorMessage += 'An unexpected error occurred.'
-      } else {
-        errorMessage += 'An unexpected error occurred.'
-      }
-    } else {
-      errorMessage += error.message || 'An unexpected network or server error occurred.'
-    }
-    toast.error(errorMessage)
-    isSubmitting.value = false // Ensure submission is re-enabled on error
+  if (paymentModalRef.value) {
+    paymentModalRef.value.openModal();
+  } else {
+    toast.error("Payment module is not available. Please refresh the page.");
   }
-}
+};
 
 const onPaymentModalClose = () => {
   console.log('Payment modal closed.')
 }
 
 const onPaymentCompleted = async ({ paymentHash }) => {
-  console.log('Payment completed with hash:', paymentHash)
-}
+  if (isSubmitting.value) return;
+  isSubmitting.value = true;
+  let redirectUrl = null;
+
+  try {
+    const user = authStore.user;
+    const paymentGatewayFormData = new FormData();
+    paymentGatewayFormData.append('refNo', paymentHash);
+    paymentGatewayFormData.append('serviceCode', '100250'); // Service code for Teaching Center
+    paymentGatewayFormData.append('taxPayerName', formData.value.institute_id ? instituteOptions.value.find(i => i.value === formData.value.institute_id).label : user.cid);
+    paymentGatewayFormData.append('taxPayerNo', user.cid);
+    paymentGatewayFormData.append('taxPayerDocumentNo', user.cid);
+    paymentGatewayFormData.append('totalPayableAmount', MHPC_TEACHING_CENTER_FEE);
+    paymentGatewayFormData.append('description', 'MHPC Teaching Hospital Registration Fee');
+    paymentGatewayFormData.append('mobileNo', formData.value.contactNo || user.contact_number || '17110000');
+    paymentGatewayFormData.append('payerEmail', formData.value.emailAddress || user.email);
+    paymentGatewayFormData.append('user', user.id);
+    paymentGatewayFormData.append('payableAmount', MHPC_TEACHING_CENTER_FEE);
+    paymentGatewayFormData.append('application_no', paymentHash); // Use payment hash as a temporary reference
+    paymentGatewayFormData.append('app_type', 'mhpc_teaching_hospital');
+
+    const paymentResponse = await apiServices.makePayment(paymentGatewayFormData);
+    if (paymentResponse.data?.content?.redirectUrl) {
+      redirectUrl = paymentResponse.data.content.redirectUrl;
+    }
+
+    const formPayloadForApp = createPayload(false);
+    formPayloadForApp.append('payment_id', paymentHash);
+    formPayloadForApp.append('payment_status', 'processing_payment');
+    formPayloadForApp.append('is_payment_complete', false);
+    if (authStore.userId) {
+      formPayloadForApp.append('applicant_user_id', authStore.userId);
+    }
+
+    await apiServices.createMhpcTeachingCenter(formPayloadForApp);
+
+    const draftKey = getDraftKey();
+    if (draftKey) {
+      localStorage.removeItem(draftKey);
+    }
+
+    isShowingSuccessMessage.value = true;
+
+    toast.success(`Payment initiated successfully. Redirecting for payment completion. A link has also been sent to your email.`, { timeout: 8000 });
+    if (redirectUrl) {
+        window.open(redirectUrl, '_blank');
+    }
+
+    setTimeout(() => {
+      emit('form-submitted');
+      resetForm();
+    }, 3000);
+
+  } catch (error) {
+    console.error('Error during submission process:', error.response?.data || error.message || error);
+    let errorMessage = 'Error submitting application. ';
+    if (error.response?.data) {
+      const errors = error.response.data;
+      if (typeof errors === 'string') {
+        errorMessage += errors;
+      } else if (typeof errors === 'object') {
+        const messages = Object.entries(errors)
+          .map(([key, value]) => {
+            const fieldName = key.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase());
+            return `${fieldName}: ${Array.isArray(value) ? value.join(', ') : value}`;
+          })
+          .join('\n');
+        if (messages) errorMessage += `Details:\n${messages}`;
+        else if (errors.detail) errorMessage += errors.detail;
+        else errorMessage += 'An unexpected error occurred.';
+      } else {
+        errorMessage += 'An unexpected error occurred.';
+      }
+    } else {
+      errorMessage += error.message || 'An unexpected network or server error occurred.';
+    }
+    toast.error(errorMessage);
+  } finally {
+    isSubmitting.value = false;
+    if (paymentModalRef.value) {
+        paymentModalRef.value.closeModal();
+    }
+  }
+};
 
 const handleCancel = () => {
   emit('close')

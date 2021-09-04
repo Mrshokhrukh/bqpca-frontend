@@ -971,68 +971,99 @@ const validateForm = (isDraft = false) => {
 
 const handleFormSubmit = async () => {
   if (!validateForm()) {
-    return
+    return;
   }
-  isSubmitting.value = true
-  isShowingSuccessMessage.value = false
-
-  try {
-    const formPayloadForApp = createPayload(false)
-    if (authStore.userId) {
-      formPayloadForApp.append('user_id', authStore.userId)
-    }
-    if (formData.value.id) {
-      await apiServices.updateEpcTeachingCenter(formData.value.id, formPayloadForApp)
-      showToastNotification('Teaching center application updated and submitted successfully!')
-    } else {
-      await apiServices.createEpcTeachingCenter(formPayloadForApp)
-      showToastNotification('Teaching center application submitted successfully!')
-    }
-    isShowingSuccessMessage.value = true
-    resetForm()
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  } catch (error) {
-    console.error(
-      'Error during submission process:',
-      error.response?.data || error.message || error
-    )
-    let errorMessage = 'Error submitting application. '
-    if (error.response?.data) {
-      const errors = error.response.data
-      if (typeof errors === 'string') {
-        errorMessage += errors
-      } else if (typeof errors === 'object') {
-        const messages = Object.entries(errors)
-          .map(([key, value]) => {
-            const fieldName = key.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())
-            return `${fieldName}: ${Array.isArray(value) ? value.join(', ') : value}`
-          })
-          .join('\n')
-        if (messages) errorMessage += `Details:\n${messages}`
-        else if (errors.detail) errorMessage += errors.detail
-        else
-          errorMessage += 'An unexpected error occurred. Please check the console for more details.'
-      } else {
-        errorMessage += 'An unexpected error occurred. Please check the console for more details.'
-      }
-    } else {
-      errorMessage +=
-        error.message ||
-        'An unexpected network or server error occurred. Please check the console for details.'
-    }
-    showToastNotification(errorMessage)
-  } finally {
-    isSubmitting.value = false
+  if (paymentModalRef.value) {
+    paymentModalRef.value.openModal();
+  } else {
+    showToastNotification('Payment module is not available. Please refresh the page.');
   }
-}
+};
 
 const onPaymentModalClose = () => {
   console.log('Payment modal closed.')
 }
 
 const onPaymentCompleted = async ({ paymentHash }) => {
-  console.log('Payment completed with hash:', paymentHash)
-}
+  if (isSubmitting.value) return;
+  isSubmitting.value = true;
+  let redirectUrl = null;
+
+  try {
+    const user = authStore.user;
+    const paymentGatewayFormData = new FormData();
+    paymentGatewayFormData.append('refNo', paymentHash);
+    paymentGatewayFormData.append('serviceCode', '100261'); // EPC Teaching Center Fee
+    paymentGatewayFormData.append('taxPayerName', instituteOptions.value.find(i => i.value === formData.value.institute_id)?.label || user.cid);
+    paymentGatewayFormData.append('taxPayerNo', user.cid);
+    paymentGatewayFormData.append('taxPayerDocumentNo', user.cid);
+    paymentGatewayFormData.append('totalPayableAmount', EPC_TEACHING_CENTER_FEE);
+    paymentGatewayFormData.append('description', 'EPC Teaching Center Registration Fee');
+    paymentGatewayFormData.append('mobileNo', formData.value.contactNo || user.contact_number || '17110000');
+    paymentGatewayFormData.append('payerEmail', formData.value.emailAddress || user.email);
+    paymentGatewayFormData.append('user', user.id);
+    paymentGatewayFormData.append('payableAmount', EPC_TEACHING_CENTER_FEE);
+    paymentGatewayFormData.append('application_no', paymentHash);
+    paymentGatewayFormData.append('app_type', 'epc_teaching_center');
+
+    const paymentResponse = await apiServices.makePayment(paymentGatewayFormData);
+    if (paymentResponse.data?.content?.redirectUrl) {
+      redirectUrl = paymentResponse.data.content.redirectUrl;
+    }
+
+    const formPayloadForApp = createPayload(false);
+    formPayloadForApp.append('payment_id', paymentHash);
+    formPayloadForApp.append('payment_status', 'processing_payment');
+    formPayloadForApp.append('is_payment_complete', false);
+    if (authStore.userId) {
+      formPayloadForApp.append('user_id', authStore.userId);
+    }
+
+    if (formData.value.id) {
+      await apiServices.updateEpcTeachingCenter(formData.value.id, formPayloadForApp);
+    } else {
+      await apiServices.createEpcTeachingCenter(formPayloadForApp);
+    }
+
+    isShowingSuccessMessage.value = true;
+    showToastNotification('Payment initiated successfully. Redirecting for payment completion.');
+    if (redirectUrl) {
+      window.open(redirectUrl, '_blank');
+    }
+    resetForm();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  } catch (error) {
+    console.error('Error during submission process:', error.response?.data || error.message || error);
+    let errorMessage = 'Error submitting application. ';
+    if (error.response?.data) {
+      const errors = error.response.data;
+      if (typeof errors === 'string') {
+        errorMessage += errors;
+      } else if (typeof errors === 'object') {
+        const messages = Object.entries(errors)
+          .map(([key, value]) => {
+            const fieldName = key.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase());
+            return `${fieldName}: ${Array.isArray(value) ? value.join(', ') : value}`;
+          })
+          .join('\n');
+        if (messages) errorMessage += `Details:\n${messages}`;
+        else if (errors.detail) errorMessage += errors.detail;
+        else errorMessage += 'An unexpected error occurred.';
+      } else {
+        errorMessage += 'An unexpected error occurred.';
+      }
+    } else {
+      errorMessage += error.message || 'An unexpected network or server error occurred.';
+    }
+    showToastNotification(errorMessage);
+  } finally {
+    isSubmitting.value = false;
+    if (paymentModalRef.value) {
+      paymentModalRef.value.closeModal();
+    }
+  }
+};
 
 const handleCancel = () => {
   if (

@@ -548,24 +548,60 @@ const initiatePayment = () => {
 
 const handlePaymentCompleted = async (paymentData) => {
   if (!latestRenewal.value) {
-    toast.error('No pending renewal found to apply payment to.')
-    return
+    toast.error('No pending renewal found to apply payment to.');
+    return;
   }
-  isLoading.value = true
+  isLoading.value = true;
+  let redirectUrl = null;
+  const user = authStore.user;
+
+  if (!user || !user.id || !user.cid || !user.email) {
+      toast.error('User information is missing. Please log in again.');
+      isLoading.value = false;
+      return;
+  }
+
   try {
+    const paymentGatewayFormData = new FormData();
+    paymentGatewayFormData.append('refNo', paymentData.paymentHash);
+    paymentGatewayFormData.append('serviceCode', '100251');
+    paymentGatewayFormData.append('taxPayerName', instituteData.value.name_of_institution || user.cid);
+    paymentGatewayFormData.append('taxPayerNo', user.cid);
+    paymentGatewayFormData.append('taxPayerDocumentNo', user.cid);
+    paymentGatewayFormData.append('totalPayableAmount', 100);
+    paymentGatewayFormData.append('payableAmount', 100);
+    paymentGatewayFormData.append('description', `Renewal fee for Institute: ${instituteData.value.name_of_institution}`);
+    paymentGatewayFormData.append('mobileNo', instituteData.value.contact_no || '17110000');
+    paymentGatewayFormData.append('payerEmail', instituteData.value.email_address || user.email);
+    paymentGatewayFormData.append('user', user.id);
+    paymentGatewayFormData.append('application_no', instituteData.value.id);
+    paymentGatewayFormData.append('app_type', 'mhpc_institute_renewal');
+
+    const paymentResponse = await apiServices.makePayment(paymentGatewayFormData);
+    if(paymentResponse.data?.content?.redirectUrl) {
+      redirectUrl = paymentResponse.data.content.redirectUrl;
+    }
+
     await apiServices.confirmInstituteRenewalPayment(latestRenewal.value.id, {
       payment_id: paymentData.paymentHash,
-    })
+    });
 
-    toast.success('Payment confirmed! Your certificate has been renewed successfully.')
-    await fetchInstituteData()
+    toast.success('Payment initiated successfully. Redirecting for payment completion. A link has also been sent to your email.', { timeout: 8000 });
+    if (redirectUrl) {
+      window.open(redirectUrl, '_blank');
+    }
+
+    await fetchInstituteData();
   } catch (error) {
-    console.error('Payment confirmation error:', error)
-    toast.error('An error occurred while confirming your payment. Please contact support.')
+    console.error('Payment confirmation error:', error);
+    toast.error('An error occurred while confirming your payment. Please contact support.');
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
+    if (paymentModalRef.value) {
+        paymentModalRef.value.closeModal();
+    }
   }
-}
+};
 
 onMounted(fetchInstituteData)
 </script>

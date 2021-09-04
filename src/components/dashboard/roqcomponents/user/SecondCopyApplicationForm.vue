@@ -803,6 +803,7 @@ const formatDate = (dateString) => {
 
 const handleSubmitActual = async () => {
   isSubmitting.value = true
+  let redirectUrl = null
 
   try {
     if (!selectedOriginalApplication.value) {
@@ -854,16 +855,13 @@ const handleSubmitActual = async () => {
       user_id: authStore.userId,
     }
 
-    // Log FormData for debugging
-    console.log('FormData contents:')
-    for (const [key, value] of formData.entries()) {
-      console.log(`${key}: ${value} (type: ${typeof value})`)
-    }
-
     try {
       const paymentResponse = await apiService.makePayment(paymentData)
       if (paymentResponse.status !== 201 && paymentResponse.status !== 200) {
         throw new Error('Payment request failed')
+      }
+      if (paymentResponse.data?.content?.redirectUrl) {
+        redirectUrl = paymentResponse.data.content.redirectUrl
       }
       const receivedAmount = paymentResponse.data.content.totalPayableAmount
       if (receivedAmount !== 100.0) {
@@ -899,8 +897,12 @@ const handleSubmitActual = async () => {
     const response = await apiService.createRecognitionOfQualification(formData)
     if (response.status === 201) {
       toast.success(
-        'Second copy application submitted successfully. Please check your email to complete the payment.',
+        'Second copy application submitted successfully, redirecting for payment. A link has also been sent to your email.',
+        { timeout: 8000 }
       )
+      if (redirectUrl) {
+        window.open(redirectUrl, '_blank')
+      }
       emit('application-submitted')
     }
   } catch (error) {

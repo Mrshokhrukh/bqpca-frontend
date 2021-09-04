@@ -307,9 +307,9 @@ const handlePaymentCompleted = async (paymentData) => {
   isLoading.value = true
   const paymentId = paymentData.paymentHash
   const itemForPayment = selectedQualificationForPayment.value
+  let redirectUrl = null
 
   // 2. Differentiate between a Renewal and a regular Qualification.
-  // We check for a field that only exists on Renewal objects.
   const isRenewal = Object.hasOwn(itemForPayment, 'renewal_status')
 
   try {
@@ -321,7 +321,6 @@ const handlePaymentCompleted = async (paymentData) => {
     paymentInitiationFormData.append('taxPayerNo', user.cid)
     paymentInitiationFormData.append('taxPayerDocumentNo', user.cid)
     paymentInitiationFormData.append('totalPayableAmount', 1000)
-    // Use a dynamic description based on the payment type
     paymentInitiationFormData.append(
       'description',
       isRenewal ? 'MHPC Renewal Fee' : 'MHPC Qualification Registration Fee',
@@ -333,66 +332,32 @@ const handlePaymentCompleted = async (paymentData) => {
     paymentInitiationFormData.append('application_no', itemForPayment.id)
     paymentInitiationFormData.append('app_type', 'specification_for_health_certification')
 
-    // This call to the payment gateway is the same for both.
-    await apiService.makePayment(paymentInitiationFormData)
+    const paymentResponse = await apiService.makePayment(paymentInitiationFormData)
+    if (paymentResponse.data?.content?.redirectUrl) {
+      redirectUrl = paymentResponse.data.content.redirectUrl
+    }
 
-    // Prepare the data to update our own backend.
     const updateFormData = new FormData()
     updateFormData.append('payment_id', paymentId)
     updateFormData.append('payment_status', 'processing_payment')
 
-    // 4. Execute different logic based on whether it's a Renewal or not.
     if (isRenewal) {
-      // --- LOGIC FOR RENEWAL ---
-      const renewalId = itemForPayment.id
-
-      // Call the dedicated API endpoint for patching a Renewal
-      await apiService.patchMhpcRenewal(renewalId, updateFormData)
-
-      // Update the local state for immediate UI feedback
-      const renewalIndex = renewalApplications.value.findIndex((r) => r.id === renewalId)
-      if (renewalIndex > -1) {
-        renewalApplications.value[renewalIndex].payment_status = 'processing_payment'
-        renewalApplications.value[renewalIndex].payment_id = paymentId
-      }
+      await apiService.patchMhpcRenewal(itemForPayment.id, updateFormData)
     } else {
-      // --- LOGIC FOR NEW/ADDITIONAL QUALIFICATION ---
-      const qualificationId = itemForPayment.id
-
-      // Call the API endpoint for patching a UserQualification
-      await apiService.patchMhpcNewQualification(qualificationId, updateFormData)
-
-      // Update the local state for immediate UI feedback
-      // This helper function finds the qualification in any of the application lists.
-      const updateLocalQualificationState = (appList) => {
-        const app = appList.value.find((a) =>
-          a.user_qualifications.some((q) => q.id === qualificationId),
-        )
-        if (app) {
-          const qual = app.user_qualifications.find((q) => q.id === qualificationId)
-          if (qual) {
-            qual.payment_id = paymentId
-            qual.payment_status = 'processing_payment'
-          }
-        }
-      }
-      updateLocalQualificationState(newApplications)
-      updateLocalQualificationState(additionalApplications)
+      await apiService.patchMhpcNewQualification(itemForPayment.id, updateFormData)
     }
 
-    // 5. Final Success Handling
-    // Update the object that the payment modal was using.
-    itemForPayment.payment_id = paymentId
-    itemForPayment.payment_status = 'processing_payment'
-
     toast.success(
-      `Payment initiated (Ref: ${paymentId.substring(0, 8)}...). Your application status will update shortly.`,
+      `Payment initiated successfully. Redirecting for payment completion. A link has also been sent to your email.`,
+      { timeout: 8000 },
     )
 
-    // Refresh all data from the server to ensure consistency.
+    if (redirectUrl) {
+      window.open(redirectUrl, '_blank')
+    }
+
     await fetchAllData()
   } catch (error) {
-    // 6. Centralized Error Handling
     console.error('Payment handling error:', error.response || error.request || error)
     let errorMsg = 'An error occurred while processing the payment confirmation.'
     if (error.response?.data) {
@@ -403,13 +368,14 @@ const handlePaymentCompleted = async (paymentData) => {
     }
     toast.error(`${errorMsg} Contact support with payment ref ${paymentId} if the issue persists.`)
 
-    // Update status to failed on error
     if (selectedQualificationForPayment.value) {
       selectedQualificationForPayment.value.payment_status = 'failed'
     }
   } finally {
-    // 7. Cleanup
     isLoading.value = false
+    if (paymentModalRef.value) {
+      paymentModalRef.value.closeModal()
+    }
   }
 }
 

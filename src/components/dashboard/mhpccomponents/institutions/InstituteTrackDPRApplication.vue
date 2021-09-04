@@ -524,6 +524,13 @@ const openPaymentConfirmationModal = (application) => {
 
 const closePaymentModal = () => {
   selectedApplicationForPayment.value = null
+  if (paymentModalRef.value) {
+    paymentModalRef.value.closeModal()
+  }
+}
+
+const closePaymentModal = () => {
+  selectedApplicationForPayment.value = null
 }
 
 const openCertificateModal = () => {
@@ -558,6 +565,7 @@ const handlePaymentCompleted = async (paymentData) => {
   isDataRefreshing.value = true;
   const paymentId = paymentData.paymentHash;
   const appForPayment = selectedApplicationForPayment.value;
+  let redirectUrl = null;
 
   const appIndex = applications.value.findIndex((a) => a.id === appForPayment.id);
   if (appIndex > -1) {
@@ -578,23 +586,29 @@ const handlePaymentCompleted = async (paymentData) => {
     paymentGatewayFormData.append('payableAmount', 5000);
     paymentGatewayFormData.append('application_no', appForPayment.id);
     paymentGatewayFormData.append('app_type', 'dpr_accreditation');
-
-    // --- UPDATED LINE WITH DEFAULT MOBILE NUMBER ---
-    // If user.contact_number exists, use it. If not, use the default value '17110000'.
     paymentGatewayFormData.append('mobileNo', user.contact_number || '17110000');
 
-    await apiServices.makePayment(paymentGatewayFormData);
+    const paymentResponse = await apiServices.makePayment(paymentGatewayFormData);
+    if (paymentResponse.data?.content?.redirectUrl) {
+      redirectUrl = paymentResponse.data.content.redirectUrl;
+    }
 
     const backendUpdateFormData = new FormData();
     backendUpdateFormData.append('payment_id', paymentId);
     backendUpdateFormData.append('payment_status', 'processing_payment');
-    backendUpdateFormData.append('is_payment_complete', true);
+    backendUpdateFormData.append('is_payment_complete', false);
 
     await apiServices.patchMhpcInstitute(appForPayment.id, backendUpdateFormData);
 
     toast.success(
-      `Payment initiated (Ref: ${paymentId.substring(0, 8)}...). Your application status will update shortly.`,
+      `Payment initiated successfully. Redirecting for payment completion. A link has also been sent to your email.`,
+      { timeout: 8000 }
     );
+
+    if (redirectUrl) {
+      window.open(redirectUrl, '_blank');
+    }
+
   } catch (error) {
     console.error('Payment handling error:', error.response || error);
     toast.error('An error occurred while processing the payment. Please contact support.');
@@ -604,7 +618,6 @@ const handlePaymentCompleted = async (paymentData) => {
   } finally {
     await fetchApplications();
     isDataRefreshing.value = false;
-    selectedApplicationForPayment.value = null;
     closePaymentModal();
   }
 };

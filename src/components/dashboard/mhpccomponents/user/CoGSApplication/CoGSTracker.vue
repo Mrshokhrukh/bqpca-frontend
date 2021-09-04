@@ -376,12 +376,11 @@ const executeMakePayment = async (clientSidePaymentRef, user, application) => {
   try {
     const makePaymentFullApiResponse = await apiService.makePayment(paymentInitiationFormData)
 
-    // CHANGE HERE: Access the data payload correctly
-    const responseData = makePaymentFullApiResponse.data // Assuming Axios response
+    const responseData = makePaymentFullApiResponse.data
 
-    if (!responseData || !responseData.content || !responseData.content.refNo) {
+    if (!responseData || !responseData.content) {
       console.error(
-        'makePayment API response is missing expected content or refNo in responseData:',
+        'makePayment API response is missing expected content in responseData:',
         responseData,
         'Full response:',
         makePaymentFullApiResponse
@@ -395,18 +394,17 @@ const executeMakePayment = async (clientSidePaymentRef, user, application) => {
       `Payment details submitted to gateway (Client Ref: ${clientSidePaymentRef.substring(
         0,
         8
-      )}). Confirmed Server Ref: ${responseData.content.refNo.substring(0, 8)}.`
+      )}).`
     )
-    return responseData.content.refNo
+    return responseData.content
   } catch (error) {
-    // Log the full error object from Axios if available
     console.error('Error calling makePayment API:', error.response || error.request || error)
     let errorMsg = 'An error occurred while submitting payment details to the gateway.'
     if (error.response?.data?.detail) errorMsg = `Gateway API Error: ${error.response.data.detail}`
     else if (typeof error.response?.data === 'string')
       errorMsg = `Gateway API Error: ${error.response.data}`
     else if (error.response?.data?.message)
-      errorMsg = `Gateway API Error: ${error.response.data.message}` // Check for message property too
+      errorMsg = `Gateway API Error: ${error.response.data.message}`
     toast.error(errorMsg)
     return null
   }
@@ -434,9 +432,7 @@ const updateCogsApplicationWithPayment = async (applicationId, confirmedPaymentS
 }
 
 const handlePaymentCompleted = async (paymentData) => {
-  // Store application details before it might be nulled
   const currentApplicationForProcessing = selectedApplication.value
-  const applicationRegNo = currentApplicationForProcessing?.registration_no // Safely access
   const applicationId = currentApplicationForProcessing?.id
 
   if (!currentApplicationForProcessing) {
@@ -459,18 +455,16 @@ const handlePaymentCompleted = async (paymentData) => {
   const clientSidePaymentRef = paymentData.paymentHash
 
   try {
-    const confirmedServerRefNo = await executeMakePayment(
+    const paymentResponseContent = await executeMakePayment(
       clientSidePaymentRef,
       user,
       currentApplicationForProcessing
     )
 
-    if (confirmedServerRefNo) {
-      toast.info(
-        `Attempting to update application #${
-          applicationRegNo || 'N/A'
-        } with payment ref ${confirmedServerRefNo.substring(0, 8)}...`
-      )
+    if (paymentResponseContent && paymentResponseContent.refNo) {
+      const confirmedServerRefNo = paymentResponseContent.refNo
+      const redirectUrl = paymentResponseContent.redirectUrl
+
       const updateSuccess = await updateCogsApplicationWithPayment(
         applicationId,
         confirmedServerRefNo
@@ -478,16 +472,16 @@ const handlePaymentCompleted = async (paymentData) => {
 
       if (updateSuccess) {
         toast.success(
-          `Payment for Application #${
-            applicationRegNo || 'N/A'
-          } (Ref: ${confirmedServerRefNo.substring(0, 8)}) successful and status updated!`
+          `Payment initiated successfully. Redirecting for payment completion. A link has also been sent to your email.`,
+          { timeout: 8000 }
         )
+        if (redirectUrl) {
+          window.open(redirectUrl, '_blank')
+        }
         await fetchApplications()
       } else {
         toast.warning(
-          `Application #${
-            applicationRegNo || 'N/A'
-          } status might not be updated. Please check or contact support with payment ref ${confirmedServerRefNo.substring(
+          `Application #${applicationId} status might not be updated. Please check or contact support with payment ref ${confirmedServerRefNo.substring(
             0,
             8
           )}.`
@@ -495,21 +489,20 @@ const handlePaymentCompleted = async (paymentData) => {
       }
     } else {
       toast.error(
-        `Payment processing failed for Application #${
-          applicationRegNo || 'N/A'
-        }. Application status not updated. Initial Ref: ${clientSidePaymentRef.substring(0, 8)}.`
+        `Payment processing failed for Application #${applicationId}. Application status not updated. Initial Ref: ${clientSidePaymentRef.substring(0, 8)}.`
       )
     }
   } catch (error) {
     console.error('Unexpected error in handlePaymentCompleted orchestration:', error)
     toast.error(
-      `An unexpected error occurred during the payment process for Application #${
-        applicationRegNo || 'N/A'
-      }. Please try again.`
+      `An unexpected error occurred during the payment process for Application #${applicationId}. Please try again.`
     )
   } finally {
     isLoadingPayment.value = false
-    selectedApplication.value = null // Clear selected application
+    if (paymentModal.value) {
+      paymentModal.value.closeModal()
+    }
+    selectedApplication.value = null
   }
 }
 
