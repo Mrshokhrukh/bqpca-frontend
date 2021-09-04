@@ -529,9 +529,6 @@ const closePaymentModal = () => {
   }
 }
 
-const closePaymentModal = () => {
-  selectedApplicationForPayment.value = null
-}
 
 const openCertificateModal = () => {
   router.push('/admin/institutions/health_certification/institution_profile')
