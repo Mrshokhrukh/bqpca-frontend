@@ -35,23 +35,26 @@
     </div>
 
     <div v-if="!isLoading">
-      <NewApplicationsTracker
-        v-if="currentTab === 'new' && newApplications.length > 0"
-        :applications="newApplications"
-        @open-certificate="openCertificateModal"
-        @initiate-payment="handleInitiatePaymentEvent"
-      />
-      <RenewalApplicationsTracker
-        v-if="currentTab === 'renewal' && renewalApplications.length > 0"
-        :applications="renewalApplications"
-        @open-certificate="openCertificateModal"
-        @initiate-payment="handleInitiatePaymentEvent"
-      />
+      <div v-if="currentTab === 'new_renewal'" class="space-y-6">
+        <NewApplicationsTracker
+          v-if="newApplications.length > 0"
+          :applications="newApplications"
+          @open-certificate="openCertificateModal"
+          @initiate-payment="initiatePayment($event.application, $event.qualification)"
+        />
+        <RenewalApplicationsTracker
+          v-if="renewalApplications.length > 0"
+          :applications="renewalApplications"
+          @open-certificate="openCertificateModal"
+          @initiate-payment="initiatePayment(null, $event)"
+        />
+      </div>
+
       <AdditionalQualificationsTracker
         v-if="currentTab === 'additional' && additionalApplications.length > 0"
         :applications="additionalApplications"
         @open-certificate="openCertificateModal"
-        @initiate-payment="handleInitiatePaymentEvent"
+        @initiate-payment="initiatePayment($event.application, $event.qualification)"
       />
 
       <div
@@ -121,6 +124,7 @@ import { useAuthStore } from '@/stores/authStore'
 const toast = useToast()
 const authStore = useAuthStore()
 
+// --- State Management ---
 const newApplications = ref([])
 const renewalApplications = ref([])
 const additionalApplications = ref([])
@@ -131,51 +135,55 @@ const showCertificateModal = ref(false)
 const selectedCertificateData = ref(null)
 const paymentModalRef = ref(null)
 const selectedQualificationForPayment = ref(null)
-const currentTab = ref('new')
 
+// --- Tab Configuration (Updated) ---
+const currentTab = ref('new_renewal') // Default to the new combined tab
 const tabs = [
-  { name: 'new', label: 'New Applications' },
-  { name: 'renewal', label: 'Renewals' },
+  { name: 'new_renewal', label: 'New Applications & Renewals' },
   { name: 'additional', label: 'Additional Qualifications' },
 ]
 
 const userCid = computed(() => authStore.user?.cid)
 
+// --- Computed Properties for Dynamic UI Text (Updated) ---
 const pageHeaderTitle = computed(() => {
-  if (currentTab.value === 'new') return 'Track Your Application'
-  if (currentTab.value === 'renewal') return 'Track Your Renewal'
+  if (currentTab.value === 'new_renewal') return 'Track Your Applications & Renewals'
   return 'Track Additional Qualifications'
 })
 
 const pageHeaderSubtitle = computed(() => {
-  if (currentTab.value === 'new') return 'Your application status is displayed below.'
-  if (currentTab.value === 'renewal') return 'Your renewal status is displayed below.'
+  if (currentTab.value === 'new_renewal') return 'Your application and renewal statuses are displayed below.'
   return 'Your additional qualifications status is displayed below.'
 })
 
 const loadingText = computed(() => {
-  if (currentTab.value === 'new') return 'application'
-  if (currentTab.value === 'renewal') return 'renewal'
+  if (currentTab.value === 'new_renewal') return 'application and renewal'
   return 'additional qualifications'
 })
 
 const noResultsText = computed(() => {
-  if (currentTab.value === 'new') return 'Applications'
-  if (currentTab.value === 'renewal') return 'Renewals'
+  if (currentTab.value === 'new_renewal') return 'Applications or Renewals'
   return 'Additional Qualifications'
 })
 
 const currentDataIsEmpty = computed(() => {
   if (!hasAttemptedFetch.value) return false
-  if (currentTab.value === 'new') return newApplications.value.length === 0
-  if (currentTab.value === 'renewal') return renewalApplications.value.length === 0
-  if (currentTab.value === 'additional') return additionalApplications.value.length === 0
+  if (currentTab.value === 'new_renewal') {
+    return newApplications.value.length === 0 && renewalApplications.value.length === 0
+  }
+  if (currentTab.value === 'additional') {
+    return additionalApplications.value.length === 0
+  }
   return true
 })
 
+// --- Methods ---
 const handleTabChange = (tabName) => {
   currentTab.value = tabName
 }
+
+// The following fetch functions remain the same as they correctly segment the data.
+// We will just combine their results in the template.
 
 const fetchNewApplications = async () => {
   if (!userCid.value) return
@@ -183,19 +191,10 @@ const fetchNewApplications = async () => {
   apiError.value = false
   try {
     const response = await apiService.getMhpcFullApplicationListByCid(userCid.value)
-    if (response && response.data && response.data.results) {
-      // Filter for applications that are NOT renewals AND have at least one PRIMARY qualification.
-      newApplications.value = response.data.results.filter((app) => {
-        // Assuming 'is_renewal' is a flag on the application object from this endpoint if it can be a renewal.
-        // If this endpoint *never* returns renewals, you might not need the !app.is_renewal check here.
-        const isNotRenewal = !app.is_renewal // Adjust if is_renewal flag is named differently or not present
-
-        const hasPrimaryQualifications =
-          app.user_qualifications &&
-          app.user_qualifications.some((q) => q.is_primary_qualification === true)
-
-        return isNotRenewal && hasPrimaryQualifications
-      })
+    if (response?.data?.results) {
+      newApplications.value = response.data.results.filter((app) =>
+        app.user_qualifications?.some((q) => q.is_primary_qualification === true),
+      )
     } else {
       newApplications.value = []
     }
@@ -214,8 +213,8 @@ const fetchRenewalApplications = async () => {
   isLoading.value = true
   apiError.value = false
   try {
-    const response = await apiService.getMhpcRenewals() // This endpoint specifically gets renewals
-    if (response && response.data && response.data.results) {
+    const response = await apiService.getMhpcRenewals()
+    if (response?.data?.results) {
       renewalApplications.value = response.data.results
     } else {
       renewalApplications.value = []
@@ -236,17 +235,10 @@ const fetchAdditionalApplications = async () => {
   apiError.value = false
   try {
     const response = await apiService.getMhpcFullApplicationListByCid(userCid.value)
-    if (response && response.data && response.data.results) {
-      // Filter for applications that are NOT renewals AND have at least one NON-PRIMARY qualification.
-      additionalApplications.value = response.data.results.filter((app) => {
-        const isNotRenewal = !app.is_renewal // Adjust if is_renewal flag is named differently or not present
-
-        const hasNonPrimaryQualifications =
-          app.user_qualifications &&
-          app.user_qualifications.some((q) => q.is_primary_qualification === false)
-
-        return isNotRenewal && hasNonPrimaryQualifications
-      })
+    if (response?.data?.results) {
+      additionalApplications.value = response.data.results.filter((app) =>
+        app.user_qualifications?.some((q) => q.is_primary_qualification === false),
+      )
     } else {
       additionalApplications.value = []
     }
@@ -260,20 +252,19 @@ const fetchAdditionalApplications = async () => {
   }
 }
 
+// --- Modal and Payment Logic ---
 const openCertificateModal = (application) => {
-  selectedCertificateData.value = application;
-  showCertificateModal.value = true;
-};
+  selectedCertificateData.value = application
+  showCertificateModal.value = true
+}
 
 const closeCertificateModal = () => {
   showCertificateModal.value = false
   selectedCertificateData.value = null
 }
 
-const handleInitiatePaymentEvent = ({ application, qualification }) => {
-  initiatePayment(application, qualification)
-}
-
+// This handler now takes both application (optional) and the item to be paid for.
+// For renewals, the item itself is passed as the second argument.
 const initiatePayment = (application, qualification) => {
   if (qualification) {
     selectedQualificationForPayment.value = qualification
@@ -284,7 +275,7 @@ const initiatePayment = (application, qualification) => {
       toast.error('Payment modal could not be opened.')
     }
   } else {
-    toast.error('No specific qualification provided for payment.')
+    toast.error('No specific item provided for payment.')
   }
 }
 
@@ -293,7 +284,6 @@ const closePaymentModal = () => {
 }
 
 const handlePaymentCompleted = async (paymentData) => {
-  // 1. Initial Checks: Ensure an item is selected and user data is available.
   if (!selectedQualificationForPayment.value) {
     toast.error('No item selected for payment.')
     return
@@ -308,12 +298,9 @@ const handlePaymentCompleted = async (paymentData) => {
   const paymentId = paymentData.paymentHash
   const itemForPayment = selectedQualificationForPayment.value
   let redirectUrl = null
-
-  // 2. Differentiate between a Renewal and a regular Qualification.
   const isRenewal = Object.hasOwn(itemForPayment, 'renewal_status')
 
   try {
-    // 3. Prepare Payment Gateway Data (This is generic for both types)
     const paymentInitiationFormData = new FormData()
     paymentInitiationFormData.append('refNo', paymentId)
     paymentInitiationFormData.append('serviceCode', '100201')
@@ -348,7 +335,7 @@ const handlePaymentCompleted = async (paymentData) => {
     }
 
     toast.success(
-      `Payment initiated successfully. Redirecting for payment completion. A link has also been sent to your email.`,
+      'Payment initiated successfully. Redirecting for payment completion. A link has also been sent to your email.',
       { timeout: 8000 },
     )
 
@@ -384,6 +371,7 @@ const fetchAllData = async () => {
   apiError.value = false
   hasAttemptedFetch.value = false
   try {
+    // Fetch all data sources concurrently
     await Promise.all([
       fetchNewApplications(),
       fetchRenewalApplications(),
@@ -398,6 +386,7 @@ const fetchAllData = async () => {
   }
 }
 
+// --- Lifecycle Hook ---
 onMounted(async () => {
   if (userCid.value) {
     await fetchAllData()
@@ -421,14 +410,5 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.bg-gradient-to-r.from-indigo-100 {
-  background-image: linear-gradient(to right, var(--tw-gradient-stops));
-  --tw-gradient-from: #e0e7ff;
-  --tw-gradient-to: rgba(224, 231, 255, 0);
-  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-via), var(--tw-gradient-to);
-  --tw-gradient-via: #eff6ff;
-  --tw-gradient-to: #e0e7ff;
 }
 </style>

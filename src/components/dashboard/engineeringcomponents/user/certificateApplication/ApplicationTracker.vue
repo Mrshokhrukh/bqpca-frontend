@@ -190,7 +190,7 @@ const fetchRenewalApplications = async () => {
   isLoading.value = true
   apiError.value = false
   try {
-    const response = await apiService.getEpcRenewals() // EPC renewals endpoint
+    const response = await apiService.getEpcRenewals({ cid: userCid.value }) // EPC renewals endpoint
     if (response && response.data && response.data.results) {
       renewalApplications.value = response.data.results
     } else {
@@ -307,7 +307,7 @@ const handlePaymentCompleted = async (paymentData) => {
     // Prepare payment gateway data
     const paymentInitiationFormData = new FormData()
     paymentInitiationFormData.append('refNo', paymentId)
-    paymentInitiationFormData.append('serviceCode', '100253') 
+    paymentInitiationFormData.append('serviceCode', isRenewal ? '100256' : '100253') 
     paymentInitiationFormData.append('taxPayerName', user.cid)
     paymentInitiationFormData.append('taxPayerNo', user.cid)
     paymentInitiationFormData.append('taxPayerDocumentNo', user.cid)

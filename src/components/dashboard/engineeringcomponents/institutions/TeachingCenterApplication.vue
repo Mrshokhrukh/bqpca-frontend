@@ -95,8 +95,7 @@
         </h3>
         <p class="text-slate-700 leading-relaxed max-w-xl mx-auto text-md">
           Your application for a new teaching center has been received. You will be notified once it
-          has been reviewed and approved by the dealing officer. After approval, you will be able to
-          proceed with the payment. Thank you.
+          has been reviewed.
         </p>
       </div>
 
@@ -596,13 +595,6 @@
           </button>
         </div>
       </form>
-
-      <PaymentModal
-        ref="paymentModalRef"
-        :amount="EPC_TEACHING_CENTER_FEE"
-        @payment-completed="onPaymentCompleted"
-        @close="onPaymentModalClose"
-      />
     </div>
   </div>
 </template>
@@ -610,7 +602,6 @@
 <script setup>
 import { ref, watch, onMounted, computed } from 'vue'
 import apiServices from '@/services/services'
-import PaymentModal from '@/components/common/PaymentModal.vue'
 import { BuildingOffice2Icon, AcademicCapIcon } from '@heroicons/vue/24/outline'
 import { Loader } from 'lucide-vue-next'
 import { bhutanDzongkhagsGewogs } from '@/constants/dzongkhags.js'
@@ -620,11 +611,9 @@ const isLoadingOptions = ref(true)
 const isSubmitting = ref(false)
 const isSubmittingDraft = ref(false)
 const isEditingDraft = ref(false)
-const paymentModalRef = ref(null)
 const authStore = useAuthStore()
 const toastMessage = ref('')
 const showToast = ref(false)
-const EPC_TEACHING_CENTER_FEE = 100
 const isShowingSuccessMessage = ref(false)
 const selectedFileNames = ref([])
 const instituteOptions = ref([])
@@ -973,68 +962,29 @@ const handleFormSubmit = async () => {
   if (!validateForm()) {
     return;
   }
-  if (paymentModalRef.value) {
-    paymentModalRef.value.openModal();
-  } else {
-    showToastNotification('Payment module is not available. Please refresh the page.');
-  }
-};
-
-const onPaymentModalClose = () => {
-  console.log('Payment modal closed.')
-}
-
-const onPaymentCompleted = async ({ paymentHash }) => {
-  if (isSubmitting.value) return;
   isSubmitting.value = true;
-  let redirectUrl = null;
+  isShowingSuccessMessage.value = false;
 
   try {
-    const user = authStore.user;
-    const paymentGatewayFormData = new FormData();
-    paymentGatewayFormData.append('refNo', paymentHash);
-    paymentGatewayFormData.append('serviceCode', '100261'); // EPC Teaching Center Fee
-    paymentGatewayFormData.append('taxPayerName', instituteOptions.value.find(i => i.value === formData.value.institute_id)?.label || user.cid);
-    paymentGatewayFormData.append('taxPayerNo', user.cid);
-    paymentGatewayFormData.append('taxPayerDocumentNo', user.cid);
-    paymentGatewayFormData.append('totalPayableAmount', EPC_TEACHING_CENTER_FEE);
-    paymentGatewayFormData.append('description', 'EPC Teaching Center Registration Fee');
-    paymentGatewayFormData.append('mobileNo', formData.value.contactNo || user.contact_number || '17110000');
-    paymentGatewayFormData.append('payerEmail', formData.value.emailAddress || user.email);
-    paymentGatewayFormData.append('user', user.id);
-    paymentGatewayFormData.append('payableAmount', EPC_TEACHING_CENTER_FEE);
-    paymentGatewayFormData.append('application_no', paymentHash);
-    paymentGatewayFormData.append('app_type', 'epc_teaching_center');
-
-    const paymentResponse = await apiServices.makePayment(paymentGatewayFormData);
-    if (paymentResponse.data?.content?.redirectUrl) {
-      redirectUrl = paymentResponse.data.content.redirectUrl;
-    }
-
     const formPayloadForApp = createPayload(false);
-    formPayloadForApp.append('payment_id', paymentHash);
-    formPayloadForApp.append('payment_status', 'processing_payment');
-    formPayloadForApp.append('is_payment_complete', false);
     if (authStore.userId) {
       formPayloadForApp.append('user_id', authStore.userId);
     }
-
     if (formData.value.id) {
       await apiServices.updateEpcTeachingCenter(formData.value.id, formPayloadForApp);
+      showToastNotification('Teaching center application updated and submitted successfully!');
     } else {
       await apiServices.createEpcTeachingCenter(formPayloadForApp);
+      showToastNotification('Teaching center application submitted successfully!');
     }
-
     isShowingSuccessMessage.value = true;
-    showToastNotification('Payment initiated successfully. Redirecting for payment completion.');
-    if (redirectUrl) {
-      window.open(redirectUrl, '_blank');
-    }
     resetForm();
     window.scrollTo({ top: 0, behavior: 'smooth' });
-
   } catch (error) {
-    console.error('Error during submission process:', error.response?.data || error.message || error);
+    console.error(
+      'Error during submission process:',
+      error.response?.data || error.message || error
+    );
     let errorMessage = 'Error submitting application. ';
     if (error.response?.data) {
       const errors = error.response.data;
@@ -1049,19 +999,19 @@ const onPaymentCompleted = async ({ paymentHash }) => {
           .join('\n');
         if (messages) errorMessage += `Details:\n${messages}`;
         else if (errors.detail) errorMessage += errors.detail;
-        else errorMessage += 'An unexpected error occurred.';
+        else
+          errorMessage += 'An unexpected error occurred. Please check the console for more details.';
       } else {
-        errorMessage += 'An unexpected error occurred.';
+        errorMessage += 'An unexpected error occurred. Please check the console for more details.';
       }
     } else {
-      errorMessage += error.message || 'An unexpected network or server error occurred.';
+      errorMessage += 
+        error.message ||
+        'An unexpected network or server error occurred. Please check the console for details.';
     }
     showToastNotification(errorMessage);
   } finally {
     isSubmitting.value = false;
-    if (paymentModalRef.value) {
-      paymentModalRef.value.closeModal();
-    }
   }
 };
 
@@ -1098,7 +1048,7 @@ const handleSaveDraft = async () => {
     await fetchDraftData()
   } catch (error) {
     console.error('Error saving draft:', error.response?.data || error.message || error)
-    let errorMessage = 'Error saving draft. '
+    let errorMessage = 'Error saving draft. ';
     if (error.response?.data) {
       const errors = error.response.data
       if (typeof errors === 'string') {

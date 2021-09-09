@@ -29,7 +29,7 @@
     </div>
 
     <!-- No Applications State -->
-    <div v-else-if="filteredApplications.length === 0 && userCpdParticipantRecords.length === 0"
+    <div v-else-if="allCpdRecords.length === 0"
       class="bg-white shadow-lg rounded-xl p-8 text-center">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-blue-500 mb-4" fill="none"
         viewBox="0 0 24 24" stroke="currentColor">
@@ -46,7 +46,7 @@
       <div class="bg-white shadow-lg rounded-xl p-6 mb-8 text-center border border-gray-200">
         <h3 class="text-2xl font-bold text-gray-800 mb-2">Total Approved Credits</h3>
         <p class="text-4xl font-extrabold text-blue-600 tracking-tight">
-          {{ totalApprovedCredits }}
+          {{ totalCpdCredits }}
         </p>
         <p class="text-gray-500 mt-2">
           This is the sum of all your approved CPD credits.
@@ -54,36 +54,33 @@
       </div>
 
       <!-- Applications List for SELF CPD-->
-      <transition-group v-if="filteredApplications.length > 0" name="list" tag="div" class="space-y-6">
-        <div v-for="(record, index) in filteredApplications" :key="index"
+      <transition-group v-if="selfCpdRecords.length > 0" name="list" tag="div" class="space-y-6">
+        <div v-for="record in selfCpdRecords" :key="record.id"
           class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden transition-all duration-300 ease-in-out transform hover:-translate-y-2 hover:shadow-xl">
           <!-- Header with Status and Credits -->
           <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 p-6">
             <div class="flex flex-col md:flex-row items-start md:items-center justify-between space-y-4 md:space-y-0">
               <div>
-                <h3 class="text-xl font-bold text-gray-900 mb-2"> CPD Title: {{ record.title_of_cpd }}</h3>
+                <h3 class="text-xl font-bold text-gray-900 mb-2"> CPD Title: {{ record.title }}</h3>
                 <div class="flex items-center space-x-3">
-                  <span class="text-sm text-gray-600">Registration No. # {{
-                    record.registration_no_details.registration_no
-                    ||
-                    'N/A' }}</span>
+                  <span class="text-sm text-gray-600">Registration No. # {{ record.details.registrationNo || 'N/A' }}</span>
                 </div>
               </div>
 
               <div class="flex items-center space-x-3">
                 <!-- Status Badge with Dynamic Coloring -->
                 <span :class="[
-                  record.review_status === 'Approved'
+                  record.status === 'Approved'
                     ? 'bg-green-100 text-green-800'
-                    : record.review_status === 'Rejected'
+                    : record.status === 'Rejected'
                       ? 'bg-red-100 text-red-800'
                       : 'bg-yellow-100 text-yellow-800',
                   'px-4 py-2 rounded-full text-sm font-medium shadow-sm',
                 ]">
-                  {{ record.review_status || 'Pending' }}
+                  {{ record.status || 'Pending' }}
                 </span>
                 <span class="bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-md">
-                  {{ record.cpd_credit }} Credits
+                  {{ record.credits }} Credits
                 </span>
               </div>
             </div>
@@ -103,7 +100,7 @@
                   <div>
                     <p class="text-xs text-gray-600">Full Name</p>
                     <p class="font-medium text-gray-900">
-                      {{ record.full_name || authStore.fullName }}
+                      {{ authStore.fullName }}
                     </p>
                   </div>
                 </div>
@@ -112,7 +109,7 @@
                   <div>
                     <p class="text-xs text-gray-600">CID Number</p>
                     <p class="font-medium text-gray-900">
-                      {{ record.cid_no || authStore.user?.cid }}
+                      {{ authStore.user?.cid }}
                     </p>
                   </div>
                 </div>
@@ -120,7 +117,7 @@
                   <Users class="w-6 h-6 text-gray-500" />
                   <div>
                     <p class="text-xs text-gray-600">Completed Date</p>
-                    <p class="font-medium text-gray-900">{{ formatDate(record.created_at) }}</p>
+                    <p class="font-medium text-gray-900">{{ formatDate(record.date) }}</p>
                   </div>
                 </div>
               </div>
@@ -139,7 +136,7 @@
                   <div>
                     <p class="text-xs text-gray-600">Relevance to Profession</p>
                     <p class="font-medium text-gray-900">
-                      {{ record.relevance_to_profession || 'Not specified' }}
+                      {{ record.details.relevance || 'Not specified' }}
                     </p>
                   </div>
                 </div>
@@ -148,7 +145,7 @@
                   <div>
                     <p class="text-xs text-gray-600">Activity Type</p>
                     <p class="font-medium text-gray-900">
-                      {{ record.type_of_cpd_activity_display || 'Not specified' }}
+                      {{ record.details.activityType || 'Not specified' }}
                     </p>
                   </div>
                 </div>
@@ -157,7 +154,7 @@
                   <div>
                     <p class="text-xs text-gray-600">Submission Date</p>
                     <p class="font-medium text-gray-900">
-                      {{ formatDate(record.created_at) }}
+                      {{ formatDate(record.date) }}
                     </p>
                   </div>
                 </div>
@@ -166,12 +163,12 @@
           </div>
 
           <!-- Remarks Section (if any) -->
-          <div v-if="record.remark" class="px-6 py-4 bg-blue-50 border-t border-blue-100">
+          <div v-if="record.remarks" class="px-6 py-4 bg-blue-50 border-t border-blue-100">
             <h4 class="font-semibold text-gray-900 mb-2 flex items-center">
               <MessageCircle class="w-5 h-5 mr-2 text-blue-600" />
               Reviewer Comments
             </h4>
-            <p class="text-gray-700 italic">{{ record.remark }}</p>
+            <p class="text-gray-700 italic">{{ record.remarks }}</p>
           </div>
 
           <div class="bg-gray-100 p-6 flex items-center justify-between border-t">
@@ -179,7 +176,7 @@
               <FileText class="w-6 h-6 text-blue-600" />
               <span class="font-medium text-gray-900">Supporting Document</span>
             </div>
-            <a v-if="record.attachment" :href="record.attachment" target="_blank"
+            <a v-if="record.attachmentUrl" :href="record.attachmentUrl" target="_blank"
               class="group flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-300 ease-in-out">
               <Download class="w-5 h-5 mr-2 group-hover:animate-bounce" />
               Download
@@ -189,35 +186,35 @@
         </div>
       </transition-group>
 
-      <!-- Applications List for CPD -->
-      <transition-group v-if="userCpdParticipantRecords.length > 0" name="list" tag="div" class="space-y-6 mt-6">
-        <div v-for="({ participant, task }) in userCpdParticipantRecords" :key="participant.id"
+      <!-- Applications List for EVENT CPD -->
+      <transition-group v-if="eventCpdRecords.length > 0" name="list" tag="div" class="space-y-6 mt-6">
+        <div v-for="record in eventCpdRecords" :key="record.id"
           class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden transition-all duration-300 ease-in-out transform hover:-translate-y-2 hover:shadow-xl">
           <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 p-6">
             <div class="flex flex-col md:flex-row items-start md:items-center justify-between space-y-4 md:space-y-0">
               <div>
                 <h3 class="text-xl font-bold text-gray-900 mb-2">
-                  CPD Title: {{ task?.title_of_cpd || 'N/A' }}
+                  CPD Title: {{ record.title || 'N/A' }}
                 </h3>
                 <div class="flex items-center space-x-3">
                   <span class="text-sm text-gray-600">
-                    Registration No. # {{ participant.participant_reg_no || 'N/A' }}
+                    Registration No. # {{ record.details.registrationNo || 'N/A' }}
                   </span>
                 </div>
               </div>
               <div class="flex items-center space-x-3">
                 <span :class="[
-                  participant.review_status === 'Approved'
+                  record.status === 'Approved'
                     ? 'bg-green-100 text-green-800'
-                    : participant.review_status === 'Rejected'
+                    : record.status === 'Rejected'
                       ? 'bg-red-100 text-red-800'
                       : 'bg-yellow-100 text-yellow-800',
                   'px-4 py-2 rounded-full text-sm font-medium shadow-sm',
                 ]">
-                  {{ participant.review_status || 'Pending' }}
+                  {{ record.status || 'Pending' }}
                 </span>
                 <span class="bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-md">
-                  {{ participant.cpd_credits || 0 }} Credits
+                  {{ record.credits || 0 }} Credits
                 </span>
               </div>
             </div>
@@ -258,33 +255,33 @@
                   <BookOpen class="w-6 h-6 text-gray-500" />
                   <div>
                     <p class="text-xs text-gray-600">Venue</p>
-                    <p class="font-medium text-gray-900">{{ task?.venue || 'N/A' }}</p>
+                    <p class="font-medium text-gray-900">{{ record.details.venue || 'N/A' }}</p>
                   </div>
                 </div>
                 <div class="flex items-center space-x-4">
                   <Calendar class="w-6 h-6 text-gray-500" />
                   <div>
                     <p class="text-xs text-gray-600">From Date</p>
-                    <p class="font-medium text-gray-900">{{ formatDate(task?.from_date) }}</p>
+                    <p class="font-medium text-gray-900">{{ formatDate(record.details.fromDate) }}</p>
                   </div>
                 </div>
                 <div class="flex items-center space-x-4">
                   <Calendar class="w-6 h-6 text-gray-500" />
                   <div>
                     <p class="text-xs text-gray-600">To Date</p>
-                    <p class="font-medium text-gray-900">{{ formatDate(task?.to_date) }}</p>
+                    <p class="font-medium text-gray-900">{{ formatDate(record.details.toDate) }}</p>
                   </div>
                 </div>
               </div>
             </div>
           </div>
           <!-- Remarks -->
-          <div v-if="participant.review_remarks" class="px-6 py-4 bg-blue-50 border-t border-blue-100">
+          <div v-if="record.remarks" class="px-6 py-4 bg-blue-50 border-t border-blue-100">
             <h4 class="font-semibold text-gray-900 mb-2 flex items-center">
               <MessageCircle class="w-5 h-5 mr-2 text-blue-600" />
               Reviewer Comments
             </h4>
-            <p class="text-gray-700 italic">{{ participant.review_remarks }}</p>
+            <p class="text-gray-700 italic">{{ record.remarks }}</p>
           </div>
           <!-- Attachments -->
           <div class="bg-gray-100 p-6 flex items-center justify-between border-t">
@@ -292,7 +289,7 @@
               <FileText class="w-6 h-6 text-blue-600" />
               <span class="font-medium text-gray-900">Course Document</span>
             </div>
-            <a v-if="task?.course_document" :href="task.course_document" target="_blank"
+            <a v-if="record.attachmentUrl" :href="record.attachmentUrl" target="_blank"
               class="group flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-300 ease-in-out">
               <Download class="w-5 h-5 mr-2 group-hover:animate-bounce" />
               Download
@@ -306,9 +303,10 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import apiServices from '@/services/services'
+import { computed, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/authStore'
+import { useEpcCpdStore } from '@/stores/epcCpdStore'
+import { storeToRefs } from 'pinia'
 import {
   FileText,
   IdCard,
@@ -324,104 +322,23 @@ import {
 } from 'lucide-vue-next'
 
 // State
-const applications = ref([])
-const isLoading = ref(true)
-const apiError = ref(false)
 const authStore = useAuthStore()
-const cpdTaskParticipants = ref([])
-const cpdTasks = ref([])
+const cpdStore = useEpcCpdStore()
 
-const userRegistrationNo = computed(() => authStore.userRegistrationNo)
+const { 
+  allCpdRecords,
+  isLoading, 
+  error: apiError, 
+  totalCpdCredits 
+} = storeToRefs(cpdStore)
 
+const selfCpdRecords = computed(() => allCpdRecords.value.filter(r => r.type === 'SELF'))
+const eventCpdRecords = computed(() => allCpdRecords.value.filter(r => r.type === 'EVENT'))
 
-const filteredApplications = computed(() => {
-  if (!authStore.user?.cid) {
-    return []
-  }
-  return applications.value.filter(
-    (app) => String(app.cid_no) === String(authStore.user.cid) && !app.is_draft,
-  )
-})
-
-const userCpdParticipantRecords = computed(() => {
-  if (!userRegistrationNo.value) {
-    return []
-  }
-  return (
-    cpdTaskParticipants.value
-      .filter(
-        (p) =>
-          p.participant_reg_no &&
-          p.participant_reg_no.trim() === userRegistrationNo.value.trim(),
-      )
-      .map((participant) => {
-        const task = cpdTasks.value.find((t) => t.id === participant.cpd_task_id)
-        return { participant, task }
-      })
-  )
-})
-
-const totalApprovedCredits = computed(() => {
-  const approvedSelfCpd = filteredApplications.value
-    .filter((app) => app.review_status === 'Approved')
-    .reduce((total, app) => total + (app.cpd_credit || 0), 0)
-  const approvedParticipantCpd = userCpdParticipantRecords.value
-    .filter(({ participant }) => participant.review_status === 'Approved')
-    .reduce((total, { participant }) => total + (participant.cpd_credits || 0), 0)
-
-  return approvedSelfCpd + approvedParticipantCpd
-})
-
-onMounted(async () => {
-
+onMounted(() => {
   authStore.initializeAuth()
-  if (!authStore.userRegistrationNo) {
-    await authStore.fetchAndSetRegistrationNo()
-  }
-  isLoading.value = true
-  apiError.value = false
-
-  try {
-    await Promise.all([
-      fetchApplications(),
-      fetchCpdTaskParticipants(),
-      fetchCpdTasks(),
-    ])
-  } catch (error) {
-    console.error('An error occurred during data fetching:', error)
-    apiError.value = true
-  } finally {
-    isLoading.value = false
-  }
+  cpdStore.fetchCpdRecords()
 })
-const fetchApplications = async () => {
-  if (!authStore.user?.cid) return
-  try {
-    const response = await apiServices.getEpcCpdRecordsByCid(authStore.user.cid)
-    applications.value = response.data?.results || response.data || []
-  } catch (error) {
-    console.error('Error fetching self-CPD applications:', error)
-    throw error
-  }
-}
-const fetchCpdTaskParticipants = async () => {
-  try {
-    const response = await apiServices.getEpcCpdTaskParticipants()
-    cpdTaskParticipants.value = response.data?.results || []
-  } catch (error) {
-    console.error('Error fetching CPD task participants:', error)
-    throw error
-  }
-}
-const fetchCpdTasks = async () => {
-  try {
-    const response = await apiServices.getEpcCpdTasks()
-    cpdTasks.value = response.data?.results || []
-  } catch (error) {
-    console.error('Error fetching CPD tasks:', error)
-    throw error
-  }
-}
 
 const formatDate = (dateString) => {
   if (!dateString) return 'N/A'
@@ -437,6 +354,7 @@ const formatDate = (dateString) => {
   }
 }
 </script>
+
 <style scoped>
 .list-enter-active,
 .list-leave-active {

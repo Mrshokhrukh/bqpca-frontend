@@ -23,18 +23,23 @@
             CPD Task <span class="text-red-500">*</span>
           </label>
           <div class="relative">
-            <select id="pdfCpdTask" v-model="formData.cpdTask"
+            <select
+              id="pdfCpdTask"
+              v-model="formData.cpdTask"
               class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none pr-10"
-              :disabled="isSubmitting" aria-required="true" aria-label="CPD Task">
+              :disabled="isSubmitting"
+              aria-required="true"
+              aria-label="CPD Task"
+            >
               <option value="">Select a CPD task</option>
               <option v-for="task in processedCpdTasks" :key="task.id" :value="task.id">
                 {{ task.title }} - {{ formatDateRange(task.from_date, task.to_date) }}
               </option>
-              <option v-if="processedCpdTasks.length === 0" disabled>
-                No CPD tasks available
-              </option>
+              <option v-if="processedCpdTasks.length === 0" disabled>No CPD tasks available</option>
             </select>
-            <MagnifyingGlassIcon class="absolute right-3 top-2.5 h-5 w-5 text-gray-400 pointer-events-none" />
+            <MagnifyingGlassIcon
+              class="absolute right-3 top-2.5 h-5 w-5 text-gray-400 pointer-events-none"
+            />
           </div>
           <p class="mt-1 text-sm text-gray-500">
             Select the CPD task this attendance sheet is associated with
@@ -42,13 +47,18 @@
         </div>
 
         <!-- Current Attachment Display -->
-        <div v-if="selectedTaskDetails && selectedTaskDetails.attendance_sheet_attachment"
-          class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+        <div
+          v-if="selectedTaskDetails && selectedTaskDetails.attendance_sheet_attachment"
+          class="bg-yellow-50 border border-yellow-200 rounded-lg p-4"
+        >
           <h4 class="text-sm font-medium text-yellow-700 mb-2">Current Attendance Sheet:</h4>
           <div class="flex items-center space-x-2">
             <DocumentIcon class="h-5 w-5 text-yellow-600" />
-            <a :href="selectedTaskDetails.attendance_sheet_attachment" target="_blank"
-              class="text-sm text-yellow-700 hover:text-yellow-800 underline">
+            <a
+              :href="selectedTaskDetails.attendance_sheet_attachment"
+              target="_blank"
+              class="text-sm text-yellow-700 hover:text-yellow-800 underline"
+            >
               View Current Attachment
             </a>
           </div>
@@ -61,20 +71,38 @@
           <label class="block text-sm font-medium text-gray-700 mb-2">
             Attendance Sheet (PDF) <span class="text-red-500">*</span>
           </label>
-          <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg" :class="{
-            'border-blue-300 bg-blue-50': pdfFile,
-            'bg-gray-100 cursor-not-allowed': isSubmitting,
-          }" @dragover.prevent="handleDragOver" @dragleave.prevent="handleDragLeave" @drop.prevent="handleDrop">
+          <div
+            class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg"
+            :class="{
+              'border-blue-300 bg-blue-50': pdfFile,
+              'bg-gray-100 cursor-not-allowed': isSubmitting,
+            }"
+            @dragover.prevent="handleDragOver"
+            @dragleave.prevent="handleDragLeave"
+            @drop.prevent="handleDrop"
+          >
             <div class="space-y-1 text-center">
-              <DocumentArrowUpIcon class="mx-auto h-12 w-12 text-gray-400" :class="{ 'text-blue-500': pdfFile }" />
+              <DocumentArrowUpIcon
+                class="mx-auto h-12 w-12 text-gray-400"
+                :class="{ 'text-blue-500': pdfFile }"
+              />
               <div class="flex text-sm text-gray-600">
-                <label for="pdf-upload"
+                <label
+                  for="pdf-upload"
                   class="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
-                  :class="{ '!text-gray-400 !cursor-not-allowed': isSubmitting }">
+                  :class="{ '!text-gray-400 !cursor-not-allowed': isSubmitting }"
+                >
                   <span v-if="!pdfFile">Upload attendance PDF</span>
                   <span v-else class="text-blue-700">{{ pdfFile.name }}</span>
-                  <input id="pdf-upload" name="pdf-upload" type="file" class="sr-only" accept="application/pdf"
-                    @change="handleFileUpload" :disabled="isSubmitting" />
+                  <input
+                    id="pdf-upload"
+                    name="pdf-upload"
+                    type="file"
+                    class="sr-only"
+                    accept="application/pdf"
+                    @change="handleFileUpload"
+                    :disabled="isSubmitting"
+                  />
                 </label>
                 <p v-if="!pdfFile && !isSubmitting" class="pl-1">or drag and drop</p>
                 <p v-if="isSubmitting" class="pl-1 text-gray-500">Processing...</p>
@@ -86,7 +114,10 @@
             {{ pdfError }}
           </div>
           <div v-if="pdfFile && !isSubmitting" class="mt-2 flex justify-end">
-            <button @click="removeFile" class="text-sm text-red-500 hover:text-red-700 flex items-center">
+            <button
+              @click="removeFile"
+              class="text-sm text-red-500 hover:text-red-700 flex items-center"
+            >
               <TrashIcon class="h-4 w-4 mr-1" />
               Remove
             </button>
@@ -97,10 +128,15 @@
           <label for="pdfDescription" class="block text-sm font-medium text-gray-700 mb-2">
             Description <span class="text-gray-500 text-xs italic">(Optional)</span>
           </label>
-          <textarea id="pdfDescription" v-model="formData.description" rows="3" :disabled="isSubmitting"
+          <textarea
+            id="pdfDescription"
+            v-model="formData.description"
+            rows="3"
+            :disabled="isSubmitting"
             class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
             placeholder="Add a description for this file (e.g., 'Attendance sheet for Workshop, March 12, 2025')"
-            aria-label="File Description"></textarea>
+            aria-label="File Description"
+          ></textarea>
           <p class="mt-1 text-sm text-gray-500">
             Provide context or details about this attendance sheet.
           </p>
@@ -109,8 +145,14 @@
     </div>
 
     <!-- Form Actions -->
-    <FormActions submitLabel="Upload PDF" :disabled="!isFormValid || isSubmitting" :is-submitting="isSubmitting"
-      @submit="submitForm" @reset="resetForm" @cancel="$emit('cancel')" />
+    <FormActions
+      submitLabel="Upload PDF"
+      :disabled="!isFormValid || isSubmitting"
+      :is-submitting="isSubmitting"
+      @submit="submitForm"
+      @reset="resetForm"
+      @cancel="$emit('cancel')"
+    />
   </div>
 </template>
 
@@ -160,17 +202,7 @@ const processedCpdTasks = computed(() => {
   if (!props.cpdTasks || props.cpdTasks.length === 0) {
     return []
   }
-
   return props.cpdTasks
-    .filter((task) => {
-      const isApproved = task.is_cpd_approved === true
-
-      if (props.currentProviderCid) {
-        const belongsToProvider = String(task.cid_no).trim() === String(props.currentProviderCid).trim()
-        return isApproved && belongsToProvider
-      }
-      return isApproved
-    })
     .map((task) => ({
       id: task.id,
       title: task.title || task.title_of_cpd || 'Untitled Task',
@@ -218,7 +250,7 @@ watch(
         toast.error('Failed to load task details')
       }
     }
-  },
+  }
 )
 
 function validateFile(file) {

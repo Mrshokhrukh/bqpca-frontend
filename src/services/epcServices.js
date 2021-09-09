@@ -164,7 +164,6 @@ export default {
     })
   },
   patchEpcCpdRecord(id, data) {
-    // CPD Records have attachments, use FormData
     return apiClient.patch(`/epc/epc-cpd-records/${id}/`, data, {
       headers: { 'Content-Type': 'multipart/form-data' },
     })
@@ -175,7 +174,7 @@ export default {
 
   // get cpd records based on cid
   getEpcCpdRecordsByCid(cid) {
-    return apiClient.get(`/epc/epc-cpd-records/list-my-cpd/?cid=${cid}`)
+    return apiClient.get(`/epc/epc-cpd-records/list_cpd_records/?cid=${cid}`)
   },
   getCPDProviderDashboard() {
 
@@ -224,6 +223,9 @@ export default {
   // EPC CPD Task Participants endpoints
   getEpcCpdTaskParticipants() {
     return apiClient.get('/epc/epc-cpd-task-participants/')
+  },
+  getEpcCpdTaskParticipantsByCid(cid) {
+    return apiClient.get('/epc/epc-cpd-task-participants/', { params: { cid } })
   },
   createEpcCpdTaskParticipant(data) {
     return apiClient.post('/epc/epc-cpd-task-participants/', data)

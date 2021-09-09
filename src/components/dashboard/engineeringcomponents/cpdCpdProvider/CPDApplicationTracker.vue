@@ -737,7 +737,7 @@ const fetchApplications = async () => {
   try {
     const [response, participantsResponse] = await Promise.all([
       apiService.getEpcCpdTasks({ cid: cid }),
-      apiService.getEpcFullApplicationListByCid({ cid: cid }),
+      apiService.getEpcNewApplications(),
     ])
 
     if (response.data && Array.isArray(response.data.results)) {

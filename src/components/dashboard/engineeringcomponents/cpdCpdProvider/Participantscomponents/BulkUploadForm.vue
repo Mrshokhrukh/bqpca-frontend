@@ -126,6 +126,8 @@ const isDragging = ref(false)
 
 const processedCpdTasks = computed(() => {
   if (!props.cpdTasks || props.cpdTasks.length === 0) return []
+
+  // This correctly maps the already-filtered data from the parent
   return props.cpdTasks.map(task => ({
     id: task.id,
     title: task.title || task.title_of_cpd || 'Untitled Task',

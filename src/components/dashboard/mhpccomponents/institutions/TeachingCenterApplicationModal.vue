@@ -511,13 +511,6 @@
                 </button>
               </div>
             </form>
-
-            <PaymentModal
-              ref="paymentModalRef"
-              :amount="MHPC_TEACHING_CENTER_FEE"
-              @payment-completed="onPaymentCompleted"
-              @close="onPaymentModalClose"
-            />
           </div>
         </div>
       </div>
@@ -528,8 +521,6 @@
 <script setup>
 import { ref, watch, onMounted, computed } from 'vue'
 import apiServices from '@/services/services'
-
-import PaymentModal from '@/components/common/PaymentModal.vue'
 import { BuildingOffice2Icon, AcademicCapIcon } from '@heroicons/vue/24/outline'
 import { Loader } from 'lucide-vue-next'
 import { bhutanDzongkhagsGewogs } from '@/constants/dzongkhags.js'
@@ -556,9 +547,6 @@ const getDraftKey = () => {
 const isLoadingOptions = ref(true)
 const isSubmitting = ref(false)
 const isSubmittingDraft = ref(false)
-const paymentModalRef = ref(null)
-
-const MHPC_TEACHING_CENTER_FEE = 100
 
 const isShowingSuccessMessage = ref(false)
 
@@ -784,48 +772,10 @@ const handleFormSubmit = async () => {
   if (isSubmitting.value) return;
   if (!validateForm()) return;
 
-  if (paymentModalRef.value) {
-    paymentModalRef.value.openModal();
-  } else {
-    toast.error("Payment module is not available. Please refresh the page.");
-  }
-};
-
-const onPaymentModalClose = () => {
-  console.log('Payment modal closed.')
-}
-
-const onPaymentCompleted = async ({ paymentHash }) => {
-  if (isSubmitting.value) return;
   isSubmitting.value = true;
-  let redirectUrl = null;
 
   try {
-    const user = authStore.user;
-    const paymentGatewayFormData = new FormData();
-    paymentGatewayFormData.append('refNo', paymentHash);
-    paymentGatewayFormData.append('serviceCode', '100250'); // Service code for Teaching Center
-    paymentGatewayFormData.append('taxPayerName', formData.value.institute_id ? instituteOptions.value.find(i => i.value === formData.value.institute_id).label : user.cid);
-    paymentGatewayFormData.append('taxPayerNo', user.cid);
-    paymentGatewayFormData.append('taxPayerDocumentNo', user.cid);
-    paymentGatewayFormData.append('totalPayableAmount', MHPC_TEACHING_CENTER_FEE);
-    paymentGatewayFormData.append('description', 'MHPC Teaching Hospital Registration Fee');
-    paymentGatewayFormData.append('mobileNo', formData.value.contactNo || user.contact_number || '17110000');
-    paymentGatewayFormData.append('payerEmail', formData.value.emailAddress || user.email);
-    paymentGatewayFormData.append('user', user.id);
-    paymentGatewayFormData.append('payableAmount', MHPC_TEACHING_CENTER_FEE);
-    paymentGatewayFormData.append('application_no', paymentHash); // Use payment hash as a temporary reference
-    paymentGatewayFormData.append('app_type', 'mhpc_teaching_hospital');
-
-    const paymentResponse = await apiServices.makePayment(paymentGatewayFormData);
-    if (paymentResponse.data?.content?.redirectUrl) {
-      redirectUrl = paymentResponse.data.content.redirectUrl;
-    }
-
     const formPayloadForApp = createPayload(false);
-    formPayloadForApp.append('payment_id', paymentHash);
-    formPayloadForApp.append('payment_status', 'processing_payment');
-    formPayloadForApp.append('is_payment_complete', false);
     if (authStore.userId) {
       formPayloadForApp.append('applicant_user_id', authStore.userId);
     }
@@ -838,11 +788,7 @@ const onPaymentCompleted = async ({ paymentHash }) => {
     }
 
     isShowingSuccessMessage.value = true;
-
-    toast.success(`Payment initiated successfully. Redirecting for payment completion. A link has also been sent to your email.`, { timeout: 8000 });
-    if (redirectUrl) {
-        window.open(redirectUrl, '_blank');
-    }
+    toast.success(`Application submitted successfully.`, { timeout: 3000 });
 
     setTimeout(() => {
       emit('form-submitted');
@@ -875,9 +821,6 @@ const onPaymentCompleted = async ({ paymentHash }) => {
     toast.error(errorMessage);
   } finally {
     isSubmitting.value = false;
-    if (paymentModalRef.value) {
-        paymentModalRef.value.closeModal();
-    }
   }
 };
 

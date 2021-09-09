@@ -2,68 +2,108 @@
   <div>
     <PaymentModal
       ref="paymentModal"
-      :amount="1000"
+      :amount="paymentAmount"
       @payment-completed="onPaymentCompleted"
       @close="onPaymentModalClose"
     />
-    <form @submit.prevent="handleSubmit" class="space-y-6">
-      <!-- Autocomplete Dropdown for Original Application -->
-      <div class="bg-white border p-6 rounded-lg shadow-sm">
-        <h3 class="text-xl font-semibold mb-4 text-gray-900">Select Original Application</h3>
+
+    <form @submit.prevent="handleSubmit" class="space-y-8">
+      <div class="bg-gray-50/50 border p-8 rounded-xl shadow-sm">
+        <h3 class="text-xl font-semibold mb-6 text-gray-900 border-b pb-4">
+          1. Find Original Certificate
+        </h3>
         <div>
           <label
             for="original_application"
-            class="block text-sm font-medium text-gray-700 required"
+            class="block text-sm font-medium text-gray-700 mb-2 required"
           >
-            Search by Your Name or CID
+            Search by Your Name or CID to find the certificate you want a copy of.
           </label>
-          <input
-            type="text"
-            id="original_application"
-            v-model="searchQuery"
-            @input="onSearchInput"
-            placeholder="Start typing to begin search..."
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
-          />
+          <div class="relative">
+            <input
+              type="text"
+              id="original_application"
+              v-model="searchQuery"
+              @input="onSearchInput"
+              :disabled="!!selectedOriginalApplication"
+              placeholder="Start typing to search..."
+              class="w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring focus:ring-primary-500 focus:ring-opacity-50 p-4 pl-10"
+            />
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </span>
+          </div>
+
           <ul
-            v-if="filteredApplications.length > 0"
-            class="mt-2 bg-white border rounded-lg shadow-sm"
+            v-if="filteredApplications.length > 0 && !selectedOriginalApplication"
+            class="mt-2 bg-white border rounded-lg shadow-lg z-10"
           >
             <li
               v-for="app in filteredApplications"
               :key="app.id"
               @click="onOriginalApplicationSelect(app)"
-              class="p-2 hover:bg-gray-50 cursor-pointer"
+              class="p-3 hover:bg-primary-50 cursor-pointer transition-colors"
             >
-              {{ app.applicants_name }} ({{ app.cid_no }}),
-              {{ app.course_title }}
+              <span class="font-semibold">{{ app.applicants_name }}</span> ({{ app.cid_no }}) -
+              <span class="text-gray-600">{{ app.course_title }}</span>
             </li>
           </ul>
+
+          <div
+            v-if="selectedOriginalApplication"
+            class="mt-4 bg-primary-50 border border-primary-200 p-4 rounded-lg flex justify-between items-center"
+          >
+            <div>
+              <p class="font-semibold text-primary-800">
+                {{ selectedOriginalApplication.applicants_name }} ({{
+                  selectedOriginalApplication.course_title
+                }})
+              </p>
+              <p class="text-sm text-gray-600">
+                QEC No: {{ selectedOriginalApplication.qec_number }}
+              </p>
+            </div>
+            <button
+              @click="clearSelectedApplication"
+              class="text-gray-500 hover:text-red-600 font-semibold"
+            >
+              Clear
+            </button>
+          </div>
         </div>
       </div>
 
-      <!-- Change Details Section -->
-      <div v-if="selectedOriginalApplication" class="bg-white border p-6 rounded-lg shadow-sm">
-        <h3 class="text-xl font-semibold mb-4 text-gray-900">Change Details</h3>
+      <div
+        v-if="selectedOriginalApplication"
+        class="bg-white border p-8 rounded-xl shadow-sm space-y-6"
+      >
+        <h3 class="text-xl font-semibold mb-2 text-gray-900 border-b pb-4">2. Specify Changes</h3>
         <div
           v-for="(change, index) in form.change_details_input"
           :key="index"
-          class="mb-4 border-b pb-4"
+          class="space-y-4 border-b pb-6"
         >
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Changed Field -->
-            <div>
-              <label
-                :for="'changed_field_' + index"
-                class="block text-sm font-medium text-gray-700 required"
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
+            <div class="lg:col-span-1">
+              <label :for="'changed_field_' + index" class="form-label required"
+                >Field to Change</label
               >
-                Changed Field
-              </label>
               <select
                 :id="'changed_field_' + index"
                 v-model="change.changed_field"
                 required
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+                class="form-input"
               >
                 <option value="" disabled>Select Field</option>
                 <option
@@ -76,61 +116,46 @@
               </select>
             </div>
 
-            <!-- Old Value -->
-            <div>
-              <label
-                :for="'old_value_' + index"
-                class="block text-sm font-medium text-gray-700 required"
-              >
-                Old Value
-              </label>
+            <div class="lg:col-span-1">
+              <label :for="'old_value_' + index" class="form-label required">Old Value</label>
               <input
                 type="text"
                 :id="'old_value_' + index"
                 v-model="change.old_value"
                 required
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+                class="form-input"
               />
             </div>
 
-            <!-- New Value -->
-            <div>
-              <label
-                :for="'new_value_' + index"
-                class="block text-sm font-medium text-gray-700 required"
-              >
-                New Value
-              </label>
+            <div class="lg:col-span-1">
+              <label :for="'new_value_' + index" class="form-label required">New Value</label>
               <input
                 type="text"
                 :id="'new_value_' + index"
                 v-model="change.new_value"
+                @input="syncFormValue(change.changed_field, change.new_value)"
                 required
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+                class="form-input"
               />
             </div>
 
-            <!-- Other Description (if 'other' is selected) -->
-            <div v-if="change.changed_field === 'other'">
-              <label
-                :for="'other_description_' + index"
-                class="block text-sm font-medium text-gray-700 required"
+            <div v-if="change.changed_field === 'other'" class="md:col-span-2 lg:col-span-3">
+              <label :for="'other_description_' + index" class="form-label required"
+                >Description of Other Change</label
               >
-                Description of Change
-              </label>
               <input
                 type="text"
                 :id="'other_description_' + index"
                 v-model="change.other_description"
                 required
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+                class="form-input"
               />
             </div>
           </div>
           <button
             type="button"
             @click="removeChangeDetail(index)"
-            class="mt-2 text-red-600 hover:text-red-800"
+            class="text-sm text-red-600 hover:text-red-800 transition-colors"
           >
             Remove Change
           </button>
@@ -138,407 +163,176 @@
         <button
           type="button"
           @click="addChangeDetail"
-          class="mt-2 px-4 py-2 bg-primary text-white rounded-md hover:bg-secondary"
+          class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
         >
-          Add Change Detail
+          + Add Another Change
         </button>
       </div>
 
-      <!-- Personal Information Section -->
-      <div class="bg-white border p-6 rounded-lg shadow-sm">
-        <h3 class="text-xl font-semibold mb-4 text-gray-900">Personal Information</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <!-- CID No. -->
-          <div>
-            <label for="cid" class="block text-sm font-medium text-gray-700">CID No.</label>
-            <input
-              type="text"
-              id="cid"
-              v-model="form.cid_no"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
-            />
-          </div>
-
-          <!-- Full Name -->
-          <div>
-            <label for="full_name" class="block text-sm font-medium text-gray-700">Full Name</label>
-            <input
-              type="text"
-              id="full_name"
+      <div
+        v-if="selectedOriginalApplication"
+        class="bg-white border p-8 rounded-xl shadow-sm space-y-8"
+      >
+        <div>
+          <h3 class="text-xl font-semibold mb-6 text-gray-900 border-b pb-4">
+            3. Updated Personal Information
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <InputField label="CID No." v-model="form.cid_no" :readonly="isFieldLocked('cid_no')" />
+            <InputField
+              label="Full Name"
               v-model="form.applicants_name"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+              :readonly="isFieldLocked('applicants_name')"
             />
-          </div>
-
-          <!-- Date of Birth -->
-          <div>
-            <label for="date_of_birth" class="block text-sm font-medium text-gray-700"
-              >Date of Birth</label
-            >
-            <input
-              type="text"
-              id="date_of_birth"
+            <InputField
+              label="Date of Birth"
               v-model="form.date_of_birth"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+              :readonly="isFieldLocked('date_of_birth')"
             />
-          </div>
-
-          <!-- Contact Number -->
-          <div>
-            <label for="contact_number" class="block text-sm font-medium text-gray-700 required"
-              >Contact Number</label
-            >
-            <input
-              type="tel"
-              id="contact_number"
+            <InputField
+              label="Contact Number"
               v-model="form.contact_no"
+              :readonly="isFieldLocked('contact_no')"
               required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
             />
-          </div>
-
-          <!-- Email Address -->
-          <div>
-            <label for="email_address" class="block text-sm font-medium text-gray-700"
-              >Email Address</label
-            >
-            <input
-              type="email"
-              id="email_address"
+            <InputField
+              label="Email Address"
               v-model="form.email_address"
+              type="email"
+              :readonly="isFieldLocked('email_address')"
               required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
             />
-          </div>
-
-          <!-- Gender -->
-          <div>
-            <label for="gender" class="block text-sm font-medium text-gray-700">Gender</label>
-            <input
-              type="text"
-              id="gender"
-              v-model="form.gender"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
-            />
-          </div>
-
-          <!-- Dzongkhag -->
-          <div>
-            <label for="dzongkhag" class="block text-sm font-medium text-gray-700">Dzongkhag</label>
-            <input
-              type="text"
-              id="dzongkhag"
+            <InputField label="Gender" v-model="form.gender" :readonly="isFieldLocked('gender')" />
+            <InputField
+              label="Dzongkhag"
               v-model="form.dzongkhag"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+              :readonly="isFieldLocked('dzongkhag')"
             />
-          </div>
-
-          <!-- Gewog -->
-          <div>
-            <label for="gewog" class="block text-sm font-medium text-gray-700">Gewog</label>
-            <input
-              type="text"
-              id="gewog"
-              v-model="form.gewog"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
-            />
-          </div>
-
-          <!-- Village -->
-          <div>
-            <label for="village" class="block text-sm font-medium text-gray-700">Village</label>
-            <input
-              type="text"
-              id="village"
+            <InputField label="Gewog" v-model="form.gewog" :readonly="isFieldLocked('gewog')" />
+            <InputField
+              label="Village"
               v-model="form.village"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
+              :readonly="isFieldLocked('village')"
             />
           </div>
         </div>
-      </div>
 
-      <!-- Education Details Section -->
-      <div class="bg-white border p-6 rounded-lg shadow-sm">
-        <h3 class="text-xl font-semibold mb-4 text-gray-900">Education Details</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <!-- From in-country? -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 required">From in-country?</label>
-            <div class="mt-2 space-x-4">
-              <label class="inline-flex items-center">
-                <input
-                  type="radio"
-                  v-model="form.from_in_country"
-                  :value="true"
-                  required
-                  class="form-radio text-primary"
-                />
-                <span class="ml-2">Yes</span>
-              </label>
-              <label class="inline-flex items-center">
-                <input
-                  type="radio"
-                  v-model="form.from_in_country"
-                  :value="false"
-                  required
-                  class="form-radio text-primary"
-                />
-                <span class="ml-2">No</span>
-              </label>
+        <div>
+          <h3 class="text-xl font-semibold mb-6 text-gray-900 border-b pb-4">
+            4. Updated Education Details
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <InputField
+              label="Course Title"
+              v-model="form.course_title"
+              :readonly="isFieldLocked('course_title')"
+              required
+            />
+            <InputField
+              label="Name of Institute"
+              v-model="form.name_of_institute"
+              :readonly="isFieldLocked('name_of_institute')"
+              required
+            />
+            <InputField
+              label="Name of University"
+              v-model="form.name_of_university"
+              :readonly="isFieldLocked('name_of_university')"
+              required
+            />
+            <InputField
+              label="Student ID No."
+              v-model="form.student_id_no"
+              :readonly="isFieldLocked('student_id_no')"
+              required
+            />
+          </div>
+        </div>
+        <div v-if="selectedOriginalApplication" class="bg-white border p-8 rounded-xl shadow-sm">
+          <h3 class="text-xl font-semibold mb-6 text-gray-900 border-b pb-4">
+            5. Reason for Second Copy
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label for="reason_for_second_copy" class="form-label required">Reason</label>
+              <select
+                id="reason_for_second_copy"
+                v-model="form.reason_for_issue_of_second_copy"
+                required
+                class="form-input"
+              >
+                <option value="" disabled>Select a reason</option>
+                <option v-for="reason in reasonsForSecondCopy" :key="reason.id" :value="reason.id">
+                  {{ reason.name }}
+                </option>
+              </select>
+            </div>
+
+            <div v-if="form.reason_for_issue_of_second_copy === othersReasonId">
+              <label for="other_specify" class="form-label required">Other (Please Specify)</label>
+              <input
+                type="text"
+                id="other_specify"
+                v-model="form.second_copy_other"
+                required
+                class="form-input"
+              />
             </div>
           </div>
-
-          <!-- Course Title -->
+        </div>
+        <div v-if="selectedOriginalApplication" class="bg-white border p-8 rounded-xl shadow-sm">
+          <h3 class="text-xl font-semibold mb-6 text-gray-900 border-b pb-4">
+            6. Supporting Document
+          </h3>
           <div>
-            <label for="course_title" class="block text-sm font-medium text-gray-700 required"
-              >Course Title</label
+            <label class="form-label required"
+              >Upload a supporting document for your reason (e.g., FIR for lost certificate).</label
             >
-            <input
-              type="text"
-              id="course_title"
-              v-model="form.course_title"
+            <FileUpload
+              v-model="form.second_copy_supporting_document"
+              accept=".pdf"
+              :max-size="5"
               required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
             />
+            <p class="mt-2 text-sm text-gray-500">PDF format only, maximum 5MB.</p>
           </div>
-
-          <!-- Qualification Dropdown -->
-          <div>
-            <label for="qualification" class="block text-sm font-medium text-gray-700 required"
-              >Qualification</label
-            >
-            <select id="qualification" v-model="form.qualification" required>
-              <option value="" disabled>Select Qualification</option>
-              <option v-for="qual in qualificationOptions" :key="qual.value" :value="qual.value">
-                {{ qual.label }}
-              </option>
-            </select>
-          </div>
-
-          <!-- Type of Course Dropdown -->
-          <div>
-            <label for="type_of_course" class="block text-sm font-medium text-gray-700 required"
-              >Type of Course</label
-            >
-            <select id="type_of_course" v-model="form.type_of_course" required>
-              <option value="" disabled>Select Course Type</option>
-              <option v-for="type in courseTypeOptions" :key="type.value" :value="type.value">
-                {{ type.label }}
-              </option>
-            </select>
-          </div>
-
-          <!-- Duration of Course -->
-          <div>
-            <label for="duration_of_course" class="block text-sm font-medium text-gray-700 required"
-              >Duration of Course (Years)</label
-            >
-            <input
-              type="number"
-              id="duration_of_course"
-              v-model="form.duration_of_course"
-              min="1"
-              max="10"
-              required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
-            />
-          </div>
-
-          <!-- Name of Institute -->
-          <div>
-            <label for="name_of_institute" class="block text-sm font-medium text-gray-700 required"
-              >Name of Institute</label
-            >
-            <input
-              type="text"
-              id="name_of_institute"
-              v-model="form.name_of_institute"
-              required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
-            />
-          </div>
-
-          <!-- Name of University -->
-          <div>
-            <label for="name_of_university" class="block text-sm font-medium text-gray-700 required"
-              >Name of University</label
-            >
-            <input
-              type="text"
-              id="name_of_university"
-              v-model="form.name_of_university"
-              required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
-            />
-          </div>
-
-          <!-- Student ID No. -->
-          <div>
-            <label for="student_id_no" class="block text-sm font-medium text-gray-700 required"
-              >Student ID No.</label
-            >
-            <input
-              type="text"
-              id="student_id_no"
-              v-model="form.student_id_no"
-              required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
-            />
-          </div>
-
-          <!-- Year of Completion -->
-          <div>
-            <label for="year_of_completion" class="block text-sm font-medium text-gray-700 required"
-              >Year of Completion</label
-            >
-            <input
-              type="number"
-              id="year_of_completion"
-              v-model="form.year_of_completion"
-              :min="minYear"
-              :max="currentYear"
-              required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
-            />
-          </div>
-
-          <!-- Website -->
-          <div>
-            <label for="website" class="block text-sm font-medium text-gray-700">Website</label>
-            <input
-              type="url"
-              id="website"
-              v-model="form.website"
-              placeholder="https://"
-              pattern="https?://.+"
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
-            />
-          </div>
-
-          <!-- Location -->
-          <div>
-            <label for="location" class="block text-sm font-medium text-gray-700 required"
-              >Location</label
-            >
-            <input
-              type="text"
-              id="location"
-              v-model="form.location"
-              required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
-            />
-          </div>
-
-          <!-- Country -->
-          <div>
-            <label for="country" class="block text-sm font-medium text-gray-700 required"
-              >Country</label
-            >
-            <input
-              type="text"
-              id="country"
-              v-model="form.country"
-              required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
-            />
+        </div>
+        <div v-if="selectedOriginalApplication" class="bg-white border p-8 rounded-xl shadow-sm">
+          <div class="flex items-start">
+            <div class="flex items-center h-5">
+              <input
+                type="checkbox"
+                id="declaration"
+                v-model="declaration"
+                required
+                class="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+              />
+            </div>
+            <div class="ml-3 text-sm">
+              <label for="declaration" class="font-medium text-gray-700">Declaration</label>
+              <p class="text-gray-500 mt-1">
+                I hereby declare that the information provided is true and correct to the best of my
+                knowledge.
+              </p>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Reason for Second Copy -->
-      <div class="bg-white border p-6 rounded-lg shadow-sm">
-        <h3 class="text-xl font-semibold mb-4 text-gray-900">Reason for Second Copy</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <!-- Reason for Issue of Second Copy -->
-          <div>
-            <label
-              for="reason_for_second_copy"
-              class="block text-sm font-medium text-gray-700 required"
-              >Reason</label
-            >
-            <select
-              id="reason_for_second_copy"
-              v-model="form.reason_for_issue_of_second_copy"
-              required
-            >
-              <option value="" disabled>Select a reason</option>
-              <option v-for="reason in reasonsForSecondCopy" :key="reason.id" :value="reason.id">
-                {{ reason.name }}
-              </option>
-            </select>
-          </div>
-
-          <!-- Other Specify -->
-          <div v-if="form.reason_for_issue_of_second_copy === othersReasonId">
-            <label for="other_specify" class="block text-sm font-medium text-gray-700 required"
-              >Other (Specify)</label
-            >
-            <input
-              type="text"
-              id="other_specify"
-              v-model="form.second_copy_other"
-              required
-              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2"
-            />
-          </div>
-        </div>
-      </div>
-
-      <!-- Supporting Document for Second Copy -->
-      <div class="bg-white border p-6 rounded-lg shadow-sm">
-        <h3 class="text-xl font-semibold mb-4 text-gray-900">Supporting Document</h3>
-        <div>
-          <label class="block text-sm font-medium text-gray-700 required"
-            >Upload Supporting Document</label
-          >
-          <FileUpload
-            v-model="form.second_copy_supporting_document"
-            accept=".pdf"
-            :max-size="5"
-            required
-          />
-          <p class="mt-1 text-sm text-gray-500">PDF only, max 5MB</p>
-        </div>
-      </div>
-
-      <!-- Declaration -->
-      <div class="bg-white border p-6 rounded-lg shadow-sm space-y-6">
-        <div class="flex items-start">
-          <div class="flex items-center h-5">
-            <input
-              type="checkbox"
-              id="declaration"
-              v-model="declaration"
-              required
-              class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
-            />
-          </div>
-          <div class="ml-3 text-sm">
-            <label for="declaration" class="font-medium text-gray-700">Declaration</label>
-            <p class="text-gray-500">
-              I declare that all the information provided is true and accurate to the best of my
-              knowledge.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Form Actions -->
-      <div class="flex justify-end space-x-4">
+      <div class="flex justify-end space-x-4 pt-4 border-t">
         <button
           type="button"
           @click="$emit('close-modal')"
-          class="px-6 py-3 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+          class="px-8 py-3 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all"
         >
           Cancel
         </button>
         <button
-          type="button"
-          @click="handleSubmit"
+          type="submit"
           :disabled="isSubmitting || !declaration"
-          class="px-6 py-3 bg-primary text-white rounded-md hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
+          class="px-8 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
         >
-          {{ isSubmitting ? 'Submitting...' : 'Submit' }}
+          {{ isSubmitting ? 'Submitting...' : 'Proceed to Payment' }}
         </button>
       </div>
     </form>
@@ -546,46 +340,29 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, watch } from 'vue'
 import { useAuthStore } from '@/stores/authStore'
-import apiService from '@/services/services'
-import FileUpload from '@/components/common/FileUpload.vue'
 import { useToast } from 'vue-toastification'
+import apiService from '@/services/services'
 import PaymentModal from '@/components/common/PaymentModal.vue'
+import FileUpload from '@/components/common/FileUpload.vue'
+import InputField from '@/components/common/InputField.vue'
 
+//======================================================================
+// Component Emits
+//======================================================================
+const emit = defineEmits(['application-submitted', 'close-modal'])
+
+//======================================================================
+// Store and Plugin Initialization
+//======================================================================
 const authStore = useAuthStore()
-const { user } = useAuthStore()
+const { user } = authStore
 const toast = useToast()
 
-const originalApplications = ref([])
-const filteredApplications = ref([])
-const searchQuery = ref('')
-const selectedOriginalApplication = ref(null)
-const reasonsForSecondCopy = ref([])
-const othersReasonId = ref(null)
-const qualificationOptions = ref([])
-const courseTypeOptions = ref([])
-const isSubmitting = ref(false)
-const declaration = ref(false)
-const currentYear = new Date().getFullYear()
-const minYear = currentYear - 50
-
-const userCid = user.cid
-
-// Define available fields for change details
-const changedFieldOptions = [
-  { value: 'cid_no', label: 'CID Number' },
-  { value: 'applicants_name', label: 'Name' },
-  { value: 'date_of_birth', label: 'Date of Birth' },
-  { value: 'contact_no', label: 'Contact Number' },
-  { value: 'email_address', label: 'Email Address' },
-  { value: 'course_title', label: 'Course Title' },
-  { value: 'name_of_institute', label: 'Name of Institute' },
-  { value: 'name_of_university', label: 'Name of University' },
-  { value: 'student_id_no', label: 'Student ID Number' },
-  { value: 'other', label: 'Other' },
-]
-
+//======================================================================
+// Component State (Refs & Reactive)
+//======================================================================
 const form = reactive({
   cid_no: '',
   applicants_name: '',
@@ -614,89 +391,109 @@ const form = reactive({
   is_payment_complete: false,
   payment_id: null,
   status: 'applied',
-  change_details_input: [], // Array to store change details
+  change_details_input: [],
 })
 
+const originalApplications = ref([])
+const filteredApplications = ref([])
+const qualificationOptions = ref([])
+const courseTypeOptions = ref([])
+const reasonsForSecondCopy = ref([])
+const selectedOriginalApplication = ref(null)
+
+const searchQuery = ref('')
+const isSubmitting = ref(false)
+const declaration = ref(false)
+const paymentAmount = ref(0)
+const othersReasonId = ref(null)
+const lockedFields = ref(new Set())
 const paymentModal = ref(null)
 
-const openPaymentModal = () => {
-  paymentModal.value.openModal()
-}
+//======================================================================
+// Constants & Static Data
+//======================================================================
+const serviceCodeForSecondCopy = '100193'
+const changedFieldOptions = [
+  { value: 'cid_no', label: 'CID Number' },
+  { value: 'applicants_name', label: 'Name' },
+  { value: 'date_of_birth', label: 'Date of Birth' },
+  { value: 'contact_no', label: 'Contact Number' },
+  { value: 'email_address', label: 'Email Address' },
+  { value: 'course_title', label: 'Course Title' },
+  { value: 'name_of_institute', label: 'Name of Institute' },
+  { value: 'name_of_university', label: 'Name of University' },
+  { value: 'student_id_no', label: 'Student ID Number' },
+  { value: 'other', label: 'Other' },
+]
 
-const onPaymentModalClose = () => {
-  console.log('Payment modal closed')
-}
-
-const onPaymentCompleted = (paymentData) => {
-  form.is_payment_complete = false
-  form.payment_id = paymentData.paymentHash
-  form.status = 'processing_payment'
-  handleSubmitActual()
-}
-
-// Add a new change detail entry
-const addChangeDetail = () => {
-  form.change_details_input.push({
-    changed_field: '',
-    old_value: '',
-    new_value: '',
-    other_description: '',
-  })
-}
-
-// Remove a change detail entry
-const removeChangeDetail = (index) => {
-  form.change_details_input.splice(index, 1)
-}
-
-// Fetch original applications and other data
+//======================================================================
+// Lifecycle Hooks
+//======================================================================
 onMounted(async () => {
   try {
-    const [applicationsResponse, reasonsResponse, qualificationsResponse, courseTypesResponse] =
-      await Promise.all([
-        apiService.getRecognitionOfQualification(userCid),
-        apiService.getReasonsForIssueOfSecondCopy(),
-        apiService.getQualifications(),
-        apiService.getTypesOfCourse(),
-      ])
+    const [appsRes, reasonsRes, qualsRes, courseTypesRes, feeRes] = await Promise.all([
+      apiService.getRecognitionOfQualification(user.cid),
+      apiService.getReasonsForIssueOfSecondCopy(),
+      apiService.getQualifications(),
+      apiService.getTypesOfCourse(),
+      apiService.getServiceFee(serviceCodeForSecondCopy),
+    ])
 
-    originalApplications.value = applicationsResponse.data.filter(
-      (app) => app.status === 'approved' && !app.is_second_copy,
+    originalApplications.value = appsRes.data.filter(
+      (app) => app.status === 'approved' && !app.is_second_copy
     )
+    reasonsForSecondCopy.value = reasonsRes.data.results
+    qualificationOptions.value = qualsRes.data.results.map((q) => ({ value: q.id, label: q.name }))
+    courseTypeOptions.value = courseTypesRes.data.results.map((t) => ({
+      value: t.id,
+      label: t.name,
+    }))
 
-    reasonsForSecondCopy.value = reasonsResponse.data.results
-
-    const othersReason = reasonsForSecondCopy.value.find(
-      (reason) => reason.name.toLowerCase() === 'others',
-    )
+    const othersReason = reasonsForSecondCopy.value.find((r) => r.name.toLowerCase() === 'others')
     if (othersReason) {
       othersReasonId.value = othersReason.id
     }
 
-    qualificationOptions.value = qualificationsResponse.data.results.map((qual) => ({
-      value: qual.id,
-      label: qual.name,
-    }))
-
-    courseTypeOptions.value = courseTypesResponse.data.results.map((type) => ({
-      value: type.id,
-      label: type.name,
-    }))
+    if (feeRes.data && feeRes.data.fees) {
+      paymentAmount.value = feeRes.data.fees
+    } else {
+      toast.error('Failed to fetch payment amount. Using default.')
+      paymentAmount.value = 1000 // Fallback
+    }
   } catch (error) {
-    toast.error('Failed to fetch data')
+    toast.error('Failed to fetch initial data: ' + error.message)
     console.error('Error fetching data:', error)
+    paymentAmount.value = 1000 // Fallback
   }
 })
 
+//======================================================================
+// Watchers
+//======================================================================
+watch(
+  () => form.change_details_input,
+  () => updateLockedFields(),
+  { deep: true }
+)
+
+//======================================================================
+// Methods - Search & Selection Logic
+//======================================================================
 const onSearchInput = () => {
   if (searchQuery.value) {
-    filteredApplications.value = originalApplications.value.filter(
+    const results = originalApplications.value.filter(
       (app) =>
         (app.applicants_name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
           app.cid_no.toLowerCase().includes(searchQuery.value.toLowerCase())) &&
         app.status === 'approved' &&
-        !app.is_second_copy,
+        !app.is_second_copy
     )
+
+    if (results.length === 1) {
+      onOriginalApplicationSelect(results[0])
+    } else {
+      filteredApplications.value = results
+    }
   } else {
     filteredApplications.value = []
   }
@@ -724,75 +521,205 @@ const onOriginalApplicationSelect = (app) => {
     website: app.website,
     location: app.location,
     country: app.country,
-    ...(app.qualification && { qualification: app.qualification.id }),
-    ...(app.type_of_course && { type_of_course: app.type_of_course.id }),
-    change_details_input: [], // Reset change details on new selection
+    qualification: app.qualification?.id || '',
+    type_of_course: app.type_of_course?.id || '',
+    change_details_input: [],
   })
+
   searchQuery.value = ''
   filteredApplications.value = []
+  updateLockedFields()
 }
 
+const clearSelectedApplication = () => {
+  selectedOriginalApplication.value = null
+  Object.keys(form).forEach((key) => {
+    const initialValue = form[key]
+    if (Array.isArray(initialValue)) {
+      form[key] = []
+    } else if (typeof initialValue === 'boolean') {
+      form[key] = false
+    } else if (typeof initialValue === 'number') {
+      form[key] = 0
+    } else {
+      form[key] = ''
+    }
+  })
+  lockedFields.value.clear()
+}
+
+//======================================================================
+// Methods - Change Details Logic
+//======================================================================
+const addChangeDetail = () => {
+  form.change_details_input.push({
+    changed_field: '',
+    old_value: '',
+    new_value: '',
+    other_description: '',
+  })
+}
+
+const removeChangeDetail = (index) => {
+  const removedField = form.change_details_input[index].changed_field
+  form.change_details_input.splice(index, 1)
+
+  const isStillLocked = form.change_details_input.some((c) => c.changed_field === removedField)
+  if (!isStillLocked && selectedOriginalApplication.value) {
+    form[removedField] = selectedOriginalApplication.value[removedField]
+  }
+  updateLockedFields()
+}
+
+const updateLockedFields = () => {
+  lockedFields.value.clear()
+  form.change_details_input.forEach((change) => {
+    if (change.changed_field) {
+      lockedFields.value.add(change.changed_field)
+    }
+  })
+}
+
+const isFieldLocked = (fieldName) => {
+  return lockedFields.value.has(fieldName)
+}
+
+const syncFormValue = (field, value) => {
+  if (field in form) {
+    form[field] = value
+  }
+}
+
+//======================================================================
+// Methods - Form Submission & Payment Logic
+//======================================================================
 const handleSubmit = () => {
-  // --- START VALIDATION ---
-  if (!selectedOriginalApplication.value) {
-    toast.error('Please select an original application first.')
-    return
-  }
-  if (!form.reason_for_issue_of_second_copy) {
-    toast.error('Please select a reason for the second copy.')
-    return
-  }
-  if (!form.qualification) {
-    toast.error('Please select a qualification.')
-    return
-  }
-  if (!form.type_of_course) {
-    toast.error('Please select the type of course.')
-    return
-  }
-  if (!form.second_copy_supporting_document) {
-    toast.error('Please upload a supporting document.')
-    return
-  }
-  if (form.change_details_input.length === 0) {
-    toast.error('Please add at least one change detail.')
-    return
-  }
-  for (let i = 0; i < form.change_details_input.length; i++) {
-    const change = form.change_details_input[i]
-    if (!change.changed_field) {
-      toast.error(`Please select a changed field for change detail #${i + 1}.`)
-      return
-    }
-    if (!change.old_value) {
-      toast.error(`Please provide the old value for change detail #${i + 1}.`)
-      return
-    }
-    if (!change.new_value) {
-      toast.error(`Please provide the new value for change detail #${i + 1}.`)
-      return
+  if (!selectedOriginalApplication.value)
+    return toast.error('Please select an original application.')
+  if (form.change_details_input.length === 0)
+    return toast.error('Please add at least one change detail.')
+
+  for (const change of form.change_details_input) {
+    if (!change.changed_field || !change.old_value || !change.new_value) {
+      return toast.error('Please fill all fields in the Change Details section.')
     }
     if (change.changed_field === 'other' && !change.other_description) {
-      toast.error(`Please provide a description for 'Other' change detail #${i + 1}.`)
-      return
+      return toast.error("Please provide a description for the 'Other' change.")
     }
   }
-  if (!declaration.value) {
-    toast.error('Please accept the declaration.')
-    return
-  }
-  // --- END VALIDATION ---
+
+  if (!form.reason_for_issue_of_second_copy) return toast.error('Please select a reason.')
+  if (!form.second_copy_supporting_document)
+    return toast.error('Please upload a supporting document.')
+  if (!declaration.value) return toast.error('Please accept the declaration.')
+
   openPaymentModal()
 }
 
+const openPaymentModal = () => {
+  paymentModal.value.openModal()
+}
+
+const onPaymentCompleted = (paymentData) => {
+  form.is_payment_complete = false // This will be set on server callback
+  form.payment_id = paymentData.paymentHash
+  form.status = 'processing_payment'
+  handleSubmitActual()
+}
+
+const onPaymentModalClose = () => {
+  // Can add logic here if needed
+}
+
+const handleSubmitActual = async () => {
+  isSubmitting.value = true
+  try {
+    const formData = new FormData()
+
+    // Append core details
+    formData.append('original_application_id', selectedOriginalApplication.value.id)
+    formData.append('is_second_copy', 'true')
+
+    // Append all other form fields
+    for (const key in form) {
+      if (key === 'change_details_input') continue // Handled separately
+      const value = form[key]
+      if (value instanceof File) {
+        formData.append(key, value)
+      } else if (key === 'date_of_birth') {
+        formData.append(key, formatDate(value))
+      } else if (value !== null && value !== undefined) {
+        formData.append(key, String(value))
+      }
+    }
+
+    // Append change details in the format the backend expects
+    form.change_details_input.forEach((change, index) => {
+      formData.append(
+        `change_details_input[${index}][changed_field]`,
+        (change.changed_field || '').trim()
+      )
+      formData.append(`change_details_input[${index}][old_value]`, (change.old_value || '').trim())
+      formData.append(`change_details_input[${index}][new_value]`, (change.new_value || '').trim())
+      if (change.other_description) {
+        formData.append(
+          `change_details_input[${index}][other_description]`,
+          (change.other_description || '').trim()
+        )
+      }
+    })
+
+    // Create a separate FormData for the payment initiation
+    const paymentFormData = new FormData()
+    paymentFormData.append('refNo', form.payment_id)
+    paymentFormData.append('serviceCode', serviceCodeForSecondCopy)
+    paymentFormData.append('taxPayerName', form.applicants_name)
+    paymentFormData.append('taxPayerNo', form.cid_no)
+    paymentFormData.append('mobileNo', form.contact_no)
+    paymentFormData.append('payerEmail', form.email_address)
+    paymentFormData.append('totalPayableAmount', paymentAmount.value)
+    paymentFormData.append('payableAmount', paymentAmount.value)
+    paymentFormData.append('description', 'Payment for Second Copy ROQ')
+    paymentFormData.append('user', authStore.userId)
+    paymentFormData.append('application_no', form.payment_id)
+    paymentFormData.append('app_type', 'recognition_of_qualification')
+    paymentFormData.append('taxPayerDocumentNo', 'BAOW') // As per original code
+
+    // 1. Initiate payment
+    const paymentResponse = await apiService.makePayment(paymentFormData)
+    const redirectUrl = paymentResponse.data?.content?.redirectUrl
+    if (!redirectUrl) {
+      throw new Error('Redirect URL not received from payment gateway.')
+    }
+
+    // 2. Submit the application form data
+    const appResponse = await apiService.createRecognitionOfQualification(formData)
+    if (appResponse.status === 201) {
+      toast.success('Application submitted! Redirecting for payment...', { timeout: 5000 })
+      window.open(redirectUrl, '_blank')
+      emit('application-submitted')
+    }
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || error.message
+    toast.error(`Submission failed: ${errorMessage}`)
+    console.error('Error during submission:', error)
+  } finally {
+    isSubmitting.value = false
+  }
+}
+
+//======================================================================
+// Utility Functions
+//======================================================================
 const formatDate = (dateString) => {
   if (!dateString) return ''
+  // Check if already in YYYY-MM-DD format
   if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
     return dateString
   }
   const date = new Date(dateString)
   if (isNaN(date.getTime())) {
-    console.error('Invalid date:', dateString)
+    console.error('Invalid date for formatting:', dateString)
     return ''
   }
   const year = date.getFullYear()
@@ -800,118 +727,23 @@ const formatDate = (dateString) => {
   const day = String(date.getDate()).padStart(2, '0')
   return `${year}-${month}-${day}`
 }
-
-const handleSubmitActual = async () => {
-  isSubmitting.value = true
-  let redirectUrl = null
-
-  try {
-    if (!selectedOriginalApplication.value) {
-      toast.error('Please select an original application')
-      isSubmitting.value = false
-      return
-    }
-
-    const formData = new FormData()
-
-    formData.append('original_application_id', selectedOriginalApplication.value.id)
-    formData.append('is_second_copy', 'true')
-
-    // Append change details with array indexing
-    form.change_details_input.forEach((change, index) => {
-      // Trim values to prevent whitespace issues
-      const changedField = (change.changed_field || '').trim()
-      const oldValue = (change.old_value || '').trim()
-      const newValue = (change.new_value || '').trim()
-      const otherDescription = (change.other_description || '').trim()
-
-      if (!changedField || !oldValue || !newValue) {
-        throw new Error(`Invalid change detail at index ${index}: All fields must be non-empty`)
-      }
-
-      formData.append(`change_details_input[${index}][changed_field]`, changedField)
-      formData.append(`change_details_input[${index}][old_value]`, oldValue)
-      formData.append(`change_details_input[${index}][new_value]`, newValue)
-      if (otherDescription) {
-        formData.append(`change_details_input[${index}][other_description]`, otherDescription)
-      }
-    })
-
-    // Payment Request
-    const paymentData = {
-      platform: 'web',
-      refNo: form.payment_id,
-      taxPayerNo: form.cid_no,
-      taxPayerDocumentNo: 'BAOW',
-      payerEmail: form.email_address,
-      mobileNo: form.contact_no,
-      totalPayableAmount: 100.0, // Matches BIRMS payload
-      serviceCode: '100193',
-      description: 'Payment for Second Copy ROQ',
-      payableAmount: 100.0,
-      taxPayerName: form.applicants_name,
-      application_no: form.payment_id,
-      app_type: 'ROQ',
-      user_id: authStore.userId,
-    }
-
-    try {
-      const paymentResponse = await apiService.makePayment(paymentData)
-      if (paymentResponse.status !== 201 && paymentResponse.status !== 200) {
-        throw new Error('Payment request failed')
-      }
-      if (paymentResponse.data?.content?.redirectUrl) {
-        redirectUrl = paymentResponse.data.content.redirectUrl
-      }
-      const receivedAmount = paymentResponse.data.content.totalPayableAmount
-      if (receivedAmount !== 100.0) {
-        throw new Error(`Unexpected payment amount: ${receivedAmount}`)
-      }
-      console.log('Payment response:', paymentResponse.data)
-    } catch (paymentError) {
-      console.error('Error making payment:', paymentError)
-      toast.error(
-        'Payment request failed: ' + (paymentError.response?.data?.message || paymentError.message),
-      )
-      isSubmitting.value = false
-      return
-    }
-
-    // Append other form fields
-    for (const key in form) {
-      if (key === 'change_details_input') continue
-      if (Object.prototype.hasOwnProperty.call(form, key)) {
-        let value = form[key]
-        if (value instanceof File) {
-          formData.append(key, value)
-        } else if (key === 'date_of_birth') {
-          formData.append(key, formatDate(value))
-        } else if (typeof value === 'boolean') {
-          formData.append(key, value.toString())
-        } else if (value !== null && value !== undefined) {
-          formData.append(key, value.toString())
-        }
-      }
-    }
-
-    const response = await apiService.createRecognitionOfQualification(formData)
-    if (response.status === 201) {
-      toast.success(
-        'Second copy application submitted successfully, redirecting for payment. A link has also been sent to your email.',
-        { timeout: 8000 }
-      )
-      if (redirectUrl) {
-        window.open(redirectUrl, '_blank')
-      }
-      emit('application-submitted')
-    }
-  } catch (error) {
-    toast.error('Failed to submit application: ' + (error.response?.data?.message || error.message))
-    console.error('Error submitting application:', error)
-  } finally {
-    isSubmitting.value = false
-  }
-}
-
-const emit = defineEmits(['application-submitted', 'close-modal'])
 </script>
+
+
+<style>
+/* Add some global styles for form elements for consistency */
+.form-label {
+  @apply block text-sm font-medium text-gray-700 mb-1;
+}
+.form-input,
+select.form-input {
+  @apply mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring focus:ring-primary-500 focus:ring-opacity-50 p-3;
+}
+input[readonly].form-input {
+  @apply bg-gray-100 cursor-not-allowed;
+}
+.required:after {
+  content: ' *';
+  color: red;
+}
+</style>

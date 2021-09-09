@@ -494,29 +494,24 @@ const handleSubmit = async () => {
 
   const genderToSend = form.gender ? form.gender.toLowerCase() : 'others'
 
-  formData.append('registration_no', String(form.display_registration_no)) // This should be the Application PK
+  formData.append('registration_no', String(form.display_registration_no))
   formData.append('cid_no', form.cid_no || '')
   formData.append('full_name', form.full_name || '')
   formData.append('gender', genderToSend)
   formData.append('title_of_cpd', form.title_of_cpd)
   formData.append('relevance_to_profession', form.relevance_to_profession)
 
-  // Send the fetched personnel category/sub-category IDs under the names the backend expects
+  // FIX: Add the missing category and sub-category IDs to the payload
   if (form.personnel_category) {
-    // Ensure it's not empty/null before sending
-    formData.append('participation_category', String(form.personnel_category))
+    formData.append('personnel_category', form.personnel_category);
   }
-
   if (form.personnel_sub_category) {
-    // Sub-category might be optional
-    formData.append('participant_sub_category', String(form.personnel_sub_category))
+    formData.append('personnel_sub_category', form.personnel_sub_category);
   }
 
   formData.append('type_of_cpd_activity', form.type_of_cpd_activity)
   formData.append('cpd_hours', String(form.cpd_hours))
-
-  // Add cpd_credit, using the cpd_hours value as per the requirement to replace credit with hours
-  formData.append('cpd_credit', String(1)) // Or a fixed default like '1' if that's more appropriate
+  formData.append('cpd_credit', String(form.cpd_hours))
 
   if (form.attachment) {
     formData.append('attachment', form.attachment, form.attachment.name)
@@ -531,7 +526,7 @@ const handleSubmit = async () => {
       form.title_of_cpd = ''
       form.relevance_to_profession = ''
       form.type_of_cpd_activity = ''
-      form.cpd_hours = '' // Reset to empty string, consistent with initialization
+      form.cpd_hours = ''
       form.attachment = null
       attachmentFileName.value = ''
       if (fileInputRef.value) fileInputRef.value.value = ''
