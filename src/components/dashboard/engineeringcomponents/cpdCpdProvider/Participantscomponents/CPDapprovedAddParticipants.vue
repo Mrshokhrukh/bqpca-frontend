@@ -52,10 +52,12 @@ import TabNavigation from './TabNavigation.vue';
 import SingleEntryForm from './SingleEntryForm.vue';
 import BulkUploadForm from './BulkUploadForm.vue';
 import AttendancePhotoForm from './AttendancePhotoForm.vue';
+import { useAuthStore } from '@/stores/authStore';
 
 const router = useRouter();
 const route = useRoute();
 const toast = useToast();
+const authStore = useAuthStore();
 
 const allCpdTasks = ref([]);
 const participants = ref([]);
@@ -76,15 +78,17 @@ const attendancePhotoFormRef = ref(null);
 const bulkUploadErrorList = ref([]);
 
 const cpdTasksForSelection = computed(() => {
+  if (!allCpdTasks.value) return [];
   return allCpdTasks.value
     .filter((task) => {
-      const isApproved = task.is_cpd_approved === true;
+      const isApproved = task.status?.toLowerCase() === 'approved';
+
       if (currentProviderCid.value) {
         return isApproved && String(task.cid_no).trim() === String(currentProviderCid.value).trim();
       }
       return isApproved;
     })
-    .sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+    .sort((a, b) => (a.title_of_cpd || '').localeCompare(b.title_of_cpd || ''));
 });
 
 const participantRegNoSet = computed(() => {
@@ -107,10 +111,17 @@ onMounted(async () => {
 
 async function fetchData() {
   isLoading.value = true;
+  const cid = authStore.user?.cid;
+
+  if (!cid) {
+    toast.error("User CID not found. Cannot fetch data.");
+    isLoading.value = false;
+    return;
+  }
   try {
     const [tasksResponse, participantsResponse] = await Promise.all([
-      apiService.getEpcCpdTasks(),
-      apiService.getEpcFullApplicationListByCid(''),
+      apiService.getEpcCpdTasks({ cid: cid }),
+      apiService.getEpcNewApplications(),
     ]);
     allCpdTasks.value = tasksResponse.data?.results || tasksResponse.data || [];
     participants.value = participantsResponse.data?.results || participantsResponse.data || [];

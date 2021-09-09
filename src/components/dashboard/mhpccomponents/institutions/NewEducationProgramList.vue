@@ -379,76 +379,71 @@ const closePaymentModal = () => {
 }
 
 const handleNewProgramPaymentCompleted = async (paymentData) => {
-  // 1. Initial Checks: Ensure an item is selected for payment.
   if (!applicationForPayment.value) {
-    toast.error('No application selected for payment.')
-    return
+    toast.error('No application selected for payment.');
+    return;
   }
 
-  const user = authStore.user
+  const user = authStore.user;
   if (!user || !user.email || !user.cid || !user.id) {
-    toast.error('Missing user information. Please log in again or update your profile.')
-    return
+    toast.error('Missing user information. Please log in again or update your profile.');
+    return;
   }
 
-  const loadingToast = toast.info('Connecting to payment gateway...', { timeout: false })
-  const appToPay = applicationForPayment.value
-  const paymentId = paymentData.paymentHash
+  const loadingToast = toast.info('Connecting to payment gateway...', { timeout: false });
+  const appToPay = applicationForPayment.value;
+  const paymentId = paymentData.paymentHash;
+  let redirectUrl = null;
 
   try {
-    // 2. Build FormData for the Payment Gateway
-    const paymentGatewayFormData = new FormData()
-    paymentGatewayFormData.append('refNo', paymentId)
-    // Use the correct service code for this specific service
-    paymentGatewayFormData.append('serviceCode', '100249')
-    paymentGatewayFormData.append('taxPayerName', user.cid)
-    paymentGatewayFormData.append('taxPayerNo', user.cid)
-    paymentGatewayFormData.append('taxPayerDocumentNo', user.cid)
-    // Use the dynamic paymentAmount from the component's state
-    paymentGatewayFormData.append('totalPayableAmount', paymentAmount.value)
-    paymentGatewayFormData.append('description', 'MHPC New Education Program Registration')
-    paymentGatewayFormData.append('mobileNo', user?.contact_number || '17890123')
-    paymentGatewayFormData.append('payerEmail', user.email)
-    paymentGatewayFormData.append('user', user.id)
-    paymentGatewayFormData.append('payableAmount', paymentAmount.value)
-    paymentGatewayFormData.append('application_no', appToPay.id)
-    // Use the correct app_type
-    paymentGatewayFormData.append('app_type', 'specification_for_health_certification')
+    const paymentGatewayFormData = new FormData();
+    paymentGatewayFormData.append('refNo', paymentId);
+    paymentGatewayFormData.append('serviceCode', '100249');
+    paymentGatewayFormData.append('taxPayerName', user.cid);
+    paymentGatewayFormData.append('taxPayerNo', user.cid);
+    paymentGatewayFormData.append('taxPayerDocumentNo', user.cid);
+    paymentGatewayFormData.append('totalPayableAmount', paymentAmount.value);
+    paymentGatewayFormData.append('description', 'MHPC New Education Program Registration');
+    paymentGatewayFormData.append('mobileNo', user?.contact_number || '17890123');
+    paymentGatewayFormData.append('payerEmail', user.email);
+    paymentGatewayFormData.append('user', user.id);
+    paymentGatewayFormData.append('payableAmount', paymentAmount.value);
+    paymentGatewayFormData.append('application_no', appToPay.id);
+    paymentGatewayFormData.append('app_type', 'specification_for_health_certification');
 
-    // 3. Call the Payment Gateway API
-    await apiServices.makePayment(paymentGatewayFormData)
-    toast.dismiss(loadingToast)
-    toast.info('Payment successful. Recording transaction...', { timeout: false })
+    const paymentResponse = await apiServices.makePayment(paymentGatewayFormData);
+    if (paymentResponse.data?.content?.redirectUrl) {
+      redirectUrl = paymentResponse.data.content.redirectUrl;
+    }
+    toast.dismiss(loadingToast);
 
-    // 4. Call YOUR Backend to Record the Payment
-    // This now calls the specific, secure endpoint for this program type
     await apiServices.recordMhpcProgramPayment(appToPay.id, {
       payment_id: paymentId,
-    })
+    });
 
-    toast.dismiss(loadingToast)
-    toast.success(`Payment for program "${appToPay.specific_program_title}" recorded successfully.`)
+    toast.success(`Payment initiated successfully. Redirecting for payment completion. A link has also been sent to your email.`, { timeout: 8000 });
 
-    // 5. Refresh the list to show the new "Active" status
-    await fetchApplications()
+    if (redirectUrl) {
+      window.open(redirectUrl, '_blank');
+    }
+
+    await fetchApplications();
   } catch (error) {
-    toast.dismiss(loadingToast)
-    console.error('Payment handling error:', error.response || error.request || error)
+    toast.dismiss(loadingToast);
+    console.error('Payment handling error:', error.response || error.request || error);
     const errorMsg =
-      error.response?.data?.error || 'Failed to complete payment process. Please contact support.'
-    toast.error(`Error: ${errorMsg}`)
+      error.response?.data?.error || 'Failed to complete payment process. Please contact support.';
+    toast.error(`Error: ${errorMsg}`);
 
-    // Visually update the status to 'Failed' on error for immediate user feedback
-    const appInList = applications.value.find((a) => a.id === appToPay.id)
+    const appInList = applications.value.find((a) => a.id === appToPay.id);
     if (appInList) {
-      appInList.payment_status = 'FAILED'
+      appInList.payment_status = 'FAILED';
     }
   } finally {
-    // 6. Cleanup
-    paymentModalRef.value.closeModal()
-    applicationForPayment.value = null
+    paymentModalRef.value.closeModal();
+    applicationForPayment.value = null;
   }
-}
+};
 
 onMounted(() => {
   fetchApplications()

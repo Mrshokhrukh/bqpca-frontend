@@ -210,6 +210,8 @@
       :personnel-categories="masterData.personnelCategories"
       :personnel-subcategories="masterData.personnelSubcategories" 
       :sectors="masterData.sectors" 
+      :cpd-score="modalState.cpdScore"
+      :is-cpd-loading="modalState.isCpdLoading"
     />
   </div>
 </template>
@@ -221,6 +223,7 @@ import RenewalDetailsModal from '../modals/RenewalDetailsModal.vue';
 import DOPageHeader from '@/components/common/MHPC/DOPageHeader.vue';
 import { useToast } from 'vue-toastification';
 import dayjs from 'dayjs';
+
 
 // Constants
 const ITEMS_PER_PAGE = 10;
@@ -262,7 +265,9 @@ const masterData = reactive({
 const modalState = reactive({
   isOpen: false,
   selectedItem: null,
-  isProcessing: false
+  isProcessing: false,
+  cpdScore: 0,
+  isCpdLoading: false
 });
 
 // Computed properties
@@ -338,6 +343,63 @@ const headerDescription = computed(() => {
   
   return `Total: ${total} | Pending: ${pending} | Approved: ${approved}`;
 });
+
+
+const cpdTasksCache = ref(null);
+
+const fetchCpdDataForApplicant = async (cid, registrationNo) => {
+  if (!cid) return 0;
+
+  try {
+    if (!cpdTasksCache.value) {
+      const tasksResponse = await apiServices.getEpcCpdTasks();
+      cpdTasksCache.value = tasksResponse.data?.results || [];
+    }
+
+    const [selfResponse, participantResponse] = await Promise.all([
+      apiServices.getEpcCpdRecordsByCid(cid),
+      apiServices.getEpcCpdTaskParticipantsByCid(cid),
+    ]);
+
+    const selfRecords = selfResponse.data?.results || selfResponse.data || [];
+    const participantRecords = participantResponse.data?.results || participantResponse.data || [];
+
+    const processedSelfRecords = selfRecords.map(record => ({
+      id: `self-${record.id}`,
+      title: record.title_of_cpd,
+      status: record.review_status || 'Pending',
+      credits: record.cpd_credit || 0,
+      date: record.created_at,
+      type: 'SELF',
+    }));
+
+    const processedParticipantRecords = participantRecords
+      .filter(p => p.participant_reg_no?.trim() === registrationNo?.trim())
+      .map(participant => {
+        const task = (cpdTasksCache.value || []).find(t => t.id === participant.cpd_task_id);
+        return {
+          id: `participant-${participant.id}`,
+          title: task?.title_of_cpd || 'Event/Task CPD',
+          status: participant.review_status || 'Pending',
+          credits: participant.cpd_credits || 0,
+          date: task?.created_at || participant.created_at,
+          type: 'EVENT',
+        };
+      });
+
+    const allRecords = [...processedSelfRecords, ...processedParticipantRecords];
+
+    return allRecords
+      .filter(record => record.status === 'Approved')
+      .reduce((sum, record) => sum + (record.credits || 0), 0);
+
+  } catch (error) {
+    console.error(`Failed to fetch CPD data for CID ${cid}:`, error);
+    toast.error("Could not load applicant's CPD score.");
+    return 'Error'; // Indicate error state
+  }
+};
+
 
 // Pagination
 const paginationInfo = computed(() => {
@@ -539,11 +601,20 @@ const goToPreviousPage = () => {
 };
 
 // Modal handlers
-const openRenewalModal = (item) => {
+const openRenewalModal = async (item) => {
   if (modalState.isProcessing) return;
   
   modalState.selectedItem = item;
   modalState.isOpen = true;
+  modalState.isCpdLoading = true;
+  modalState.cpdScore = 0; // Reset score
+
+  const score = await fetchCpdDataForApplicant(item.cid_no, item.registration_no);
+  
+  if (modalState.selectedItem?.renewal_id === item.renewal_id) {
+    modalState.cpdScore = score;
+    modalState.isCpdLoading = false;
+  }
 };
 
 const closeRenewalModal = () => {

@@ -209,4 +209,7 @@ export default {
     return apiClient.delete(`/masters/roq-e-sign/${id}/`)
   },
 
+  getServiceFee(serviceCode) {
+    return apiClient.get(`/payments/service-fees/${serviceCode}/`)
+  },
 }

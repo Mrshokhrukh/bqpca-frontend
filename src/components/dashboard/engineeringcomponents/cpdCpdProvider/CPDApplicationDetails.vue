@@ -6,7 +6,7 @@
     <AlertMessage :messages="[successMessage]" type="success" v-if="successMessage" />
 
     <div class="bg-white border rounded-xl shadow-lg p-6">
-      <div class="space-y-8">
+      <div :key="formKey" class="space-y-8">
         <div>
           <ApplicantDetailsForm :applicant="applicant"
             @update:applicant="(updatedData) => Object.assign(applicant, updatedData)" />
@@ -77,9 +77,8 @@
 
 <script setup>
 import { ref, reactive, onMounted, watch, computed } from 'vue'
-import { useApplicationStore } from '@/stores/applicationStore'
 import { useAuthStore } from '@/stores/authStore'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import apiService from '@/services/services'
 
 import FormHeader from './cpdProviderApplicationComponents/FormHeader.vue'
@@ -123,9 +122,9 @@ function updateModelValue() {
   })
 }
 
-const applicationStore = useApplicationStore()
 const authStore = useAuthStore()
 const router = useRouter()
+const route = useRoute()
 
 // --- Reactive State ---
 const loading = ref(false)
@@ -193,6 +192,7 @@ const participantSubcategoryOptions = ref([])
 // UI State
 const areOptionsLoaded = ref(false)
 const participantFormKey = ref(0)
+const formKey = ref(0)
 
 // --- Computed Properties ---
 const isCpdApproved = computed(() => application.isApproved === 'true')
@@ -211,7 +211,6 @@ const populateFormWithDraft = (draftData) => {
   applicant.agencyTrainingLocation = draftData.proposed_training_location || ''
 
   // Application Details
-  // Note: Your form uses a string 'true'/'false', but the API sends a boolean.
   application.isApproved = draftData.is_cpd_approved ? 'true' : 'false'
   application.title = draftData.title_of_cpd || ''
   application.venue = draftData.venue || ''
@@ -227,22 +226,43 @@ const populateFormWithDraft = (draftData) => {
   // Teaching & Learning
   teachingMethod.type = draftData.type_of_cpd || ''
   teachingMethod.expectedOutcome = draftData.expected_outcome || ''
-  
+  if (draftData.methodologies && draftData.methodologies.length > 0) {
+    selectedMethodologies.value = draftData.methodologies.map(m => m.methodology_name)
+  }
+  if (draftData.learning_methods && draftData.learning_methods.length > 0) {
+    teachingMethods.value = draftData.learning_methods.map(lm => ({
+      activity: lm.activities,
+      duration: lm.duration
+    }))
+  } else {
+    teachingMethods.value = [{ activity: '', duration: null }]
+  }
+
   // Participant Details
   participantDetails.number = draftData.number_of_participants || null
   participantDetails.relevance = draftData.relevance_to_topic || ''
+  if (draftData.participation_category && draftData.participation_category.length > 0) {
+    participantDetails.category = draftData.participation_category;
+  }
+  if (draftData.participant_sub_category && draftData.participant_sub_category.length > 0) {
+    participantDetails.subcategory = draftData.participant_sub_category;
+  }
 
-  // You would continue mapping other fields like resourcePersons, methodologies, etc.
-  // if they can be saved in a draft. For example:
+  // Resource Persons
   if (draftData.resources && draftData.resources.length > 0) {
     resourcePersons.value = draftData.resources.map(r => ({
       regNo: r.resource_person_reg_no,
       name: r.resource_person_name
     }))
+  } else {
+    resourcePersons.value = [{ regNo: '', name: '' }]
   }
 
-  // IMPORTANT: Add an ID to the application object so you can perform an UPDATE (PUT/PATCH) instead of a CREATE (POST)
+  // Set the application ID for updates
   application.id = draftData.id
+
+  // Recalculate total hours after populating teaching methods
+  calculateTotalHours()
 }
 
 // --- Watchers ---
@@ -346,7 +366,7 @@ const fetchResourcePersonDetails = async (person) => {
       person.name = ''
     }
   } catch {
-    
+
     person.name = ''
   } finally {
     loading.value = false
@@ -577,6 +597,7 @@ const prepareFormData = (isDraft = false) => {
     .filter((method) => method.activity && method.duration > 0)
     .map((method) => ({ activities: method.activity, duration: method.duration }))
   if (validLearningMethods.length > 0) formData.append('learning_methods', JSON.stringify(validLearningMethods))
+  formData.append('duration_in_hours', totalHours.value || 0)
   formData.append('expected_outcome', teachingMethod.expectedOutcome)
   if (courseDocument.value) formData.append('course_document', courseDocument.value)
   if (areOptionsLoaded.value) {
@@ -613,23 +634,23 @@ const saveDraft = async () => {
   }
   validationErrors.value = []
   loading.value = true
-  
+
   try {
     const formData = prepareFormData(true)
-    
+
     // Check if we are updating an existing draft or creating a new one
     if (application.id) {
       await apiService.updateEpcCpdTask(application.id, formData)
       successMessage.value = 'Draft updated successfully!'
     } else {
       const response = await apiService.createEpcCpdTask(formData)
-      
+
       if (response.data && response.data.id) {
         application.id = response.data.id
       }
       successMessage.value = 'Draft saved successfully!'
     }
-    
+
     setTimeout(() => { successMessage.value = '' }, 3000)
   } catch (error) {
     validationErrors.value = ['An error occurred while saving the draft.']
@@ -657,10 +678,10 @@ const confirmSubmit = async () => {
     return
   }
   loading.value = true
-  
+
   try {
     const formData = prepareFormData(false) // isDraft is false for final submission
-    
+
     // Check if we are updating a final submission or creating a new one
     if (application.id) {
       // We have an ID, so we UPDATE (PUT request)
@@ -669,7 +690,7 @@ const confirmSubmit = async () => {
       // No ID, so we CREATE (POST request)
       await apiService.createEpcCpdTask(formData)
     }
-    
+
     successMessage.value = 'CPD application submitted successfully!'
     setTimeout(() => {
       router.push('/engineering_certification/track_cpd_applications')
@@ -691,29 +712,33 @@ const cancelForm = () => {
 }
 
 onMounted(async () => {
-  loading.value = true;
-  
-  // Check for draft data from the store FIRST
-  const draftToEdit = applicationStore.currentDraft
-  if (draftToEdit) {
-    // We are in "edit mode"
-    await loadDropdownOptions(); // Load options before populating
-    populateFormWithDraft(draftToEdit);
-  } else {
-    // We are in "create new" mode, load options normally
-    await loadDropdownOptions();
+  loading.value = true
+
+  // Always load dropdown options and user registrations first
+  await loadDropdownOptions()
+  await fetchUserRegistrations()
+
+  const draftId = route.query.id
+
+  if (draftId) {
+    // If an ID is in the URL, we are in "edit mode".
+    try {
+      // Fetch the specific draft application from the backend.
+      const response = await apiService.getEpcCpdTaskDetails(draftId)
+      if (response.data) {
+        // Use the fetched data to populate the form.
+        populateFormWithDraft(response.data)
+        formKey.value++ // Force re-render of children with populated data
+      } else {
+        console.error(`Draft with ID ${draftId} not found.`)
+        router.push('/admin/cme_cpd_provider/engineering_certification/cpd_application_details')
+      }
+    } catch (error) {
+      console.error("Error fetching draft data:", error)
+    }
   }
 
-  // Existing onMounted logic
-  await fetchUserRegistrations();
-
-  // ... rest of your onMounted logic (if any)
-  
-  calculateTotalHours();
-  loading.value = false;
-
-  // IMPORTANT: Clean up the store after using the data
-  // This ensures that if the user navigates to the form directly next time, it will be blank.
-  applicationStore.clearDraft();
+  calculateTotalHours() // Recalculate hours in case a draft was loaded
+  loading.value = false
 })
 </script>

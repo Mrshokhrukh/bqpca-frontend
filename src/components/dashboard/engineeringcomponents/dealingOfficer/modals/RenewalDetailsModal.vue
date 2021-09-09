@@ -51,42 +51,26 @@
                       CPD Status
                     </h4>
 
-                    <div v-if="cpdState.isLoading" class="text-center p-6 text-sm text-gray-500">
+                    <div v-if="isCpdLoading" class="text-center p-6 text-sm text-gray-500">
                       <div
                         class="animate-spin h-5 w-5 mx-auto mb-2 border-2 border-blue-600 border-t-transparent rounded-full">
                       </div>
                       Loading CPD data...
                     </div>
 
-                    <div v-else-if="cpdState.error" class="text-center p-6 text-sm text-red-600">
+                    <div v-else-if="cpdDisplayData.totalPoints === 'N/A'" class="text-center p-6 text-sm text-red-600">
                       <p>Failed to load CPD data</p>
-                      <button @click="retryFetchCpd" class="mt-2 text-xs text-blue-600 hover:text-blue-800 underline">
-                        Retry
-                      </button>
                     </div>
 
                     <div v-else class="text-center p-6 bg-blue-50 rounded-lg border">
                       <p class="text-3xl font-bold text-blue-700">
-                        {{ cpdState.totalPoints }}
+                        {{ cpdDisplayData.totalPoints }}
                         <span class="text-lg font-medium">Points</span>
                       </p>
-                      <p class="text-xs text-blue-600 mt-1">(Recommended: 60)</p>
+                      <p class="text-xs text-blue-600 mt-1">(Recommended: 30)</p>
                       <div class="mt-3 text-xs px-2 py-1 rounded-full inline-block font-medium"
-                        :class="cpdState.status.badgeClass">
-                        {{ cpdState.status.text }}
-                      </div>
-
-                      <div v-if="cpdState.records.length > 0" class="mt-3 text-xs text-gray-600">
-                        <details class="cursor-pointer">
-                          <summary class="hover:text-blue-600">View {{ cpdState.records.length }} CPD records</summary>
-                          <ul class="mt-2 text-left space-y-1 max-h-32 overflow-y-auto">
-                            <li v-for="record in cpdState.records.slice(0, 5)" :key="record.id"
-                              class="flex justify-between">
-                              <span class="truncate">{{ record.title_of_cpd || 'Untitled' }}</span>
-                              <span class="font-medium">{{ record.cpd_credit || 0 }}pts</span>
-                            </li>
-                          </ul>
-                        </details>
+                        :class="cpdDisplayData.status.badgeClass">
+                        {{ cpdDisplayData.status.text }}
                       </div>
                     </div>
                   </div>
@@ -374,6 +358,14 @@ const props = defineProps({
   sectors: {
     type: Array,
     default: () => []
+  },
+  cpdScore: {
+    type: [Number, String],
+    default: 0
+  },
+  isCpdLoading: {
+    type: Boolean,
+    default: false
   }
 });
 
@@ -403,18 +395,6 @@ const formData = ref({
   endorsement_remarks: ''
 });
 
-// CPD state
-const cpdState = reactive({
-  records: [],
-  isLoading: false,
-  error: null,
-  totalPoints: 0,
-  status: {
-    text: 'Loading...',
-    badgeClass: 'bg-gray-100 text-gray-800'
-  }
-});
-
 // Submission state
 const submissionState = reactive({
   isSubmitting: false,
@@ -424,6 +404,33 @@ const submissionState = reactive({
 // Computed properties
 const isProcessed = computed(() => {
   return props.renewalData?.renewal_status && props.renewalData.renewal_status !== 'Pending';
+});
+
+const cpdDisplayData = computed(() => {
+  if (props.isCpdLoading) {
+    return {
+      totalPoints: '...',
+      status: { text: 'Loading...', badgeClass: 'bg-gray-100 text-gray-800' }
+    };
+  }
+  if (props.cpdScore === 'Error') {
+    return {
+      totalPoints: 'N/A',
+      status: { text: 'Error', badgeClass: 'bg-red-100 text-red-800' }
+    };
+  }
+
+  const points = Number(props.cpdScore) || 0;
+  let status = {};
+  if (points >= 30) {
+    status = { text: 'Requirement Met', badgeClass: 'bg-green-100 text-green-800' };
+  } else if (points >= 15) {
+    status = { text: 'Partially Met', badgeClass: 'bg-yellow-100 text-yellow-800' };
+  } else {
+    status = { text: 'Below Required', badgeClass: 'bg-red-100 text-red-800' };
+  }
+
+  return { totalPoints: points, status };
 });
 
 const paymentInfo = computed(() => {
@@ -486,21 +493,6 @@ const isFormInvalid = computed(() => {
   return formData.value.renewal_review_status === 'Pending' &&
     formData.value.renewal_endorsement_decision === 'Pending';
 });
-
-// CPD computed properties
-watch(() => cpdState.records, (records) => {
-  if (isDestroyed.value) return;
-
-  cpdState.totalPoints = records.reduce((total, record) => total + (record?.cpd_credit || 0), 0);
-
-  if (cpdState.totalPoints >= 60) {
-    cpdState.status = { text: 'Requirement Met', badgeClass: 'bg-green-100 text-green-800' };
-  } else if (cpdState.totalPoints >= 30) {
-    cpdState.status = { text: 'Partially Met', badgeClass: 'bg-yellow-100 text-yellow-800' };
-  } else {
-    cpdState.status = { text: 'Below Required', badgeClass: 'bg-red-100 text-red-800' };
-  }
-}, { immediate: true });
 
 // Helper functions
 const formatDate = (dateString) => {
@@ -585,37 +577,6 @@ const restorePageState = () => {
     } catch (error) {
       console.warn('Focus restoration failed:', error);
     }
-  }
-};
-
-// Data fetching
-const fetchCpdData = async (cid) => {
-  if (!cid || isDestroyed.value) return;
-
-  cpdState.isLoading = true;
-  cpdState.error = null;
-
-  try {
-    const response = await apiServices.getEpcCpdRecordsByCid(cid);
-    if (!isDestroyed.value) {
-      cpdState.records = response.data?.filter(record => record.review_status === 'Approved') || [];
-    }
-  } catch (error) {
-    console.error('Error fetching CPD records:', error);
-    if (!isDestroyed.value) {
-      cpdState.error = error;
-      cpdState.records = [];
-    }
-  } finally {
-    if (!isDestroyed.value) {
-      cpdState.isLoading = false;
-    }
-  }
-};
-
-const retryFetchCpd = () => {
-  if (props.renewalData?.cid_no) {
-    fetchCpdData(props.renewalData.cid_no);
   }
 };
 
@@ -724,11 +685,6 @@ const unwatchRenewalData = watch(() => props.renewalData, (newData) => {
     renewal_endorsement_decision: newData.renewal_status || 'Pending',
     endorsement_remarks: newData.endorsement_remarks || ''
   };
-
-  // Fetch CPD data
-  if (newData.cid_no) {
-    fetchCpdData(newData.cid_no);
-  }
 }, { immediate: true });
 
 const unwatchIsOpen = watch(() => props.isOpen, (isOpen) => {
@@ -754,15 +710,7 @@ onUnmounted(() => {
   // Restore page state
   restorePageState();
 
-  // Clear reactive state
-  Object.assign(cpdState, {
-    records: [],
-    isLoading: false,
-    error: null,
-    totalPoints: 0,
-    status: { text: 'Loading...', badgeClass: 'bg-gray-100 text-gray-800' }
-  });
-
+  // Clear submission state
   Object.assign(submissionState, {
     isSubmitting: false,
     error: null

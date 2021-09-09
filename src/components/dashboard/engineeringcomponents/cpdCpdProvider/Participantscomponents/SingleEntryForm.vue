@@ -173,26 +173,13 @@ function getParticipantRegNo(participant) {
 }
 
 const processedCpdTasks = computed(() => {
-  if (!props.cpdTasks || props.cpdTasks.length === 0) {
-    return [];
-  }
-
-  return props.cpdTasks
-    .filter(taskApp => {
-      const isApproved = taskApp.is_cpd_approved === true;
-      if (!isApproved) return false;
-
-      if (props.currentProviderCid && taskApp.cid_no !== props.currentProviderCid) {
-        return false;
-      }
-
-      return true;
-    })
-    .map(taskApp => ({
-      id: taskApp.id,
-      title: taskApp.title || taskApp.title_of_cpd || 'Untitled Task',
-      activity_date: taskApp.from_date || taskApp.start_date || 'No date available'
-    }));
+  if (!props.cpdTasks) return [];
+  // ✅ The list is already filtered by the parent. Just map it.
+  return props.cpdTasks.map(taskApp => ({
+    id: taskApp.id,
+    title: taskApp.title || taskApp.title_of_cpd || 'Untitled Task',
+    activity_date: taskApp.from_date || taskApp.start_date || 'No date available'
+  }));
 });
 
 const isFormValid = computed(() => {

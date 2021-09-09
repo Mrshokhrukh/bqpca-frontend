@@ -985,29 +985,63 @@ const closeTeachingCenterPaymentModal = () => {
 }
 
 const handleTeachingCenterPaymentCompleted = async (paymentData) => {
-  if (!selectedApplicationForPayment.value) return
-  isPaymentProcessing.value = true
+  if (!selectedApplicationForPayment.value) return;
+  isPaymentProcessing.value = true;
+  let redirectUrl = null;
+  const user = authStore.user;
+
+  if (!user || !user.id || !user.cid || !user.email) {
+      toast.error('User information is missing. Please log in again.');
+      isPaymentProcessing.value = false;
+      return;
+  }
+
   try {
-    // NEW, CORRECT WAY
-    const applicationId = selectedApplicationForPayment.value.id
-    const payload = { payment_id: paymentData.paymentHash }
-    console.log('Confirming payment for application:', applicationId, payload)
+    const appToPay = selectedApplicationForPayment.value;
+    const paymentId = paymentData.paymentHash;
 
-    // Call the new, dedicated API endpoint
-    await apiServices.confirmTeachingCenterPayment(applicationId, payload)
+    const paymentGatewayFormData = new FormData();
+    paymentGatewayFormData.append('refNo', paymentId);
+    paymentGatewayFormData.append('serviceCode', '100250'); 
+    paymentGatewayFormData.append('taxPayerName', appToPay.institute_details?.name_of_institution || user.cid);
+    paymentGatewayFormData.append('taxPayerNo', user.cid);
+    paymentGatewayFormData.append('taxPayerDocumentNo', user.cid);
+    paymentGatewayFormData.append('totalPayableAmount', teaching_hospital_registration.value);
+    paymentGatewayFormData.append('payableAmount', teaching_hospital_registration.value);
+    paymentGatewayFormData.append('description', 'MHPC Teaching Hospital Registration Fee');
+    paymentGatewayFormData.append('mobileNo', user.contact_number || '17110000');
+    paymentGatewayFormData.append('payerEmail', user.email);
+    paymentGatewayFormData.append('user', user.id);
+    paymentGatewayFormData.append('application_no', appToPay.id);
+    paymentGatewayFormData.append('app_type', 'mhpc_teaching_hospital');
 
-    toast.success('Payment successful! Your application status has been updated.')
-    await fetchApplications() // Refresh the list to show the new "Paid" status
+    const paymentResponse = await apiServices.makePayment(paymentGatewayFormData);
+    if (paymentResponse.data?.content?.redirectUrl) {
+      redirectUrl = paymentResponse.data.content.redirectUrl;
+    }
+
+    await apiServices.confirmTeachingCenterPayment(appToPay.id, { payment_id: paymentId });
+
+    toast.success(`Payment initiated successfully. Redirecting for payment completion. A link has also been sent to your email.`, { timeout: 8000 });
+
+    if (redirectUrl) {
+      window.open(redirectUrl, '_blank');
+    }
+
+    await fetchApplications();
   } catch (error) {
-    console.error('Error confirming payment:', error)
+    console.error('Error confirming payment:', error);
     toast.error(
       'Payment was successful, but failed to update the application. Please contact support.'
-    )
+    );
   } finally {
-    isPaymentProcessing.value = false
-    closeTeachingCenterPaymentModal()
+    isPaymentProcessing.value = false;
+    if (teachingCenterPaymentModalRef.value) {
+        teachingCenterPaymentModalRef.value.closeModal();
+    }
+    closeTeachingCenterPaymentModal();
   }
-}
+};
 
 onMounted(() => {
   fetchApplications()

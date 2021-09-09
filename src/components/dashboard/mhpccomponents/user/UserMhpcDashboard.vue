@@ -26,9 +26,9 @@
             <StatCard
               title="CPD Credits"
               icon="Award"
-              :progress="cpdCredits"
-              :total="50"
-              type="progress"
+              :credits="totalCpdCredits"
+              :totalTarget="30"
+              :statusCounts="statusCounts"
             />
             <ActivityFeed title="Recent Activities" :activities="recentActivities" />
           </div>
@@ -67,12 +67,13 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useAuthStore } from '@/stores/authStore'
 import { useDashboardStore } from '@/stores/mhpcUserDahboardStore'
+import { useMhpcCpdStore } from '@/stores/mhpcCpdStore'
 import { storeToRefs } from 'pinia'
 import apiService from '@/services/services'
 
+// ... (all other imports remain the same)
 import ProfileHeader from './dashBoardComponents/ProfileHeaders.vue'
 import StatCard from './dashBoardComponents/StatCards.vue'
-// IMPORTANT: Make sure this now points to the new detailed card component
 import CogsStatusCard from './dashBoardComponents/CogsStatusCard.vue'
 import ApplicationHistoryCard from './dashBoardComponents/ApplicationHistoryCards.vue'
 import ActivityFeed from './dashBoardComponents/ActivityFeeds.vue'
@@ -85,11 +86,12 @@ import FirstDashboardState from './dashBoardComponents/FirstDashboardStates.vue'
 
 const authStore = useAuthStore()
 const dashboardStore = useDashboardStore()
+const cpdStore = useMhpcCpdStore()
 const { user } = storeToRefs(authStore)
 const {
   userDetail,
   applications,
-  cpdCredits,
+  // cpdCredits, <-- No longer needed from this store
   licenseExpiryDate,
   licenseStatus,
   recentActivities,
@@ -101,13 +103,15 @@ const {
   showCertificateModal,
 } = storeToRefs(dashboardStore)
 
-// State for the COGS data. The modal state is no longer needed.
 const cogsApplication = ref(null)
+
+// ## FIX ##: Get both totalCpdCredits and the new statusCounts from the correct store
+const { totalCpdCredits, statusCounts } = storeToRefs(cpdStore)
 
 const isDprEnabled = ref(false)
 
 const dashboardState = computed(() => {
-  // ... (no changes in this computed property)
+  // ... (this logic is unchanged)
   if (isLoading.value) return { isLoading: true }
   const hasNoApplications = !applications.value?.length
   const hasApplicationsButNoQualifications =
@@ -128,7 +132,7 @@ const dashboardState = computed(() => {
   }
   const qualificationInfo = applications.value.reduce((acc, app) => {
     const primaryQual = app.user_qualifications?.find(
-      (q) => q.is_primary_qualification && q.endorsement_decision !== 'Approved',
+      (q) => q.is_primary_qualification && q.endorsement_decision !== 'Approved'
     )
     return acc || (primaryQual ? { application: app, qualification: primaryQual } : null)
   }, null)
@@ -138,10 +142,9 @@ const dashboardState = computed(() => {
 const fetchDashboardData = async () => {
   if (!user.value?.cid) return
   try {
-    // Fetch all the original data
-    await dashboardStore.fetchAllData(user.value.cid)
+    // ## FIX ##: Ensure cpdStore.fetchCpdRecords() is called
+    await Promise.all([dashboardStore.fetchAllData(user.value.cid), cpdStore.fetchCpdRecords()])
 
-    // Fetch COGS data to be displayed in the card
     const response = await apiService.getMhpcCogs()
     if (response.data.results && response.data.results.length > 0) {
       cogsApplication.value = response.data.results[0]
@@ -151,9 +154,9 @@ const fetchDashboardData = async () => {
   }
 }
 
+// ... (all other functions like showRejectedApplications, visitApplication, etc. are unchanged)
 const showRejectedApplications = () => dashboardStore.setSelectedApplications('Rejected')
 const closeApplicationsModal = () => dashboardStore.clearSelectedApplications()
-
 const visitApplication = (app) => {
   const routes = {
     CPD: '/admin/user/health_certification/cpd',
@@ -163,8 +166,6 @@ const visitApplication = (app) => {
     window.location.href = routes[app.type]
   }
 }
-
-// Logic for the Certificate modal (remains unchanged and correct)
 const handleViewCertificate = (qualification) => {
   if (!qualification || !qualification.application) {
     return
@@ -176,7 +177,6 @@ const handleViewCertificate = (qualification) => {
   selectedApplication.value = applicationForModal
   showCertificateModal.value = true
 }
-
 const closeCertificateModal = () => {
   showCertificateModal.value = false
   selectedApplication.value = null
@@ -188,11 +188,11 @@ watch(
   applications,
   (newApplications) => {
     const approvedEoi = newApplications.find(
-      (app) => app.type === 'EOI' && app.status === 'Approved',
+      (app) => app.type === 'EOI' && app.status === 'Approved'
     )
     isDprEnabled.value = !!approvedEoi
   },
-  { deep: true },
+  { deep: true }
 )
 
 watch(
@@ -200,6 +200,6 @@ watch(
   (newUserDetails) => {
     if (newUserDetails?.username) fetchDashboardData()
   },
-  { deep: true },
+  { deep: true }
 )
 </script>

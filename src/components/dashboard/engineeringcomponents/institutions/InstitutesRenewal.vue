@@ -465,7 +465,7 @@
     <!-- Payment Modal Component -->
     <PaymentModal
       ref="paymentModal"
-      :amount="100000"
+      :amount="1000"
       @payment-completed="handlePaymentCompleted"
       @close="closePaymentModal" />
   </div>
@@ -660,6 +660,8 @@ const handlePaymentCompleted = async (paymentData) => {
   }
   isLoading.value = true;
   isRenewing.value = true;
+  let redirectUrl = null;
+
   try {
     const paymentLogFormData = new FormData();
     paymentLogFormData.append('refNo', paymentData.paymentHash);
@@ -667,25 +669,31 @@ const handlePaymentCompleted = async (paymentData) => {
     paymentLogFormData.append('taxPayerName', instituteData.value.full_name || user.cid);
     paymentLogFormData.append('taxPayerNo', user.cid);
     paymentLogFormData.append('taxPayerDocumentNo', user.cid);
-    paymentLogFormData.append('totalPayableAmount', 100000);
-    paymentLogFormData.append('payableAmount', 100000);
+    paymentLogFormData.append('totalPayableAmount', 1000);
+    paymentLogFormData.append('payableAmount', 1000);
     paymentLogFormData.append('description', `Renewal fee for Institute: ${instituteData.value.name_of_institution}`);
     paymentLogFormData.append('mobileNo', instituteData.value.contact_no || 'NA');
     paymentLogFormData.append('payerEmail', instituteData.value.email_address || 'NA');
     paymentLogFormData.append('user', user.id);
     paymentLogFormData.append('application_no', instituteData.value.id);
     paymentLogFormData.append('app_type', 'engineering_institute_renewal');
-    await apiServices.makePayment(paymentLogFormData);
+    
+    const paymentResponse = await apiServices.makePayment(paymentLogFormData);
+    if(paymentResponse.data?.content?.redirectUrl) {
+      redirectUrl = paymentResponse.data.content.redirectUrl;
+    }
 
     const renewalUpdateFormData = new FormData();
-    renewalUpdateFormData.append('institute', instituteData.value.id);
     renewalUpdateFormData.append('payment_id', paymentData.paymentHash);
-    renewalUpdateFormData.append('payment_status', 'completed');
-    renewalUpdateFormData.append('payment_date', new Date().toISOString());
-    renewalUpdateFormData.append('renewal_status', 'COMPLETED');
+    renewalUpdateFormData.append('payment_status', 'processing_payment');
+
     await apiServices.updateEpcInstituteRenewal(renewalData.value.id, renewalUpdateFormData);
 
-    toast.success('Payment completed successfully! Your institute registration has been renewed for one year.');
+    toast.success('Payment initiated successfully. Redirecting for payment completion. A link has also been sent to your email.', { timeout: 8000 });
+    if (redirectUrl) {
+      window.open(redirectUrl, '_blank');
+    }
+
     await fetchInstituteAndCapaData();
   } catch (error) {
     console.error('Renewal process failed:', error);
@@ -697,6 +705,9 @@ const handlePaymentCompleted = async (paymentData) => {
   } finally {
     isLoading.value = false;
     isRenewing.value = false;
+    if (paymentModal.value) {
+        paymentModal.value.closeModal();
+    }
   }
 };
 
