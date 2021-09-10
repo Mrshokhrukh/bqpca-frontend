@@ -104,6 +104,7 @@ import AccreditationAssessment from '@/components/dashboard/accredcomponent/deal
 import InitialAccreditaionApplication from '@/components/dashboard/accredcomponent/dealingOfficer/InitialAccreditationApplication.vue'
 import ManageAccreditationSchedule from '@/components/dashboard/accredcomponent/dealingOfficer/ManageAccreditationSchedule.vue'
 import IsarReport from '@/components/dashboard/accredcomponent/dealingOfficer/IsarReport.vue'
+import IqarReport from '@/components/dashboard/accredcomponent/dealingOfficer/Iqarreport.vue'
 //Assessor Components
 import AssessorDashboard from '@/components/dashboard/accredcomponent/assessor/AssessorDashboard.vue'
 import CoiDeclaration from '@/components/dashboard/accredcomponent/assessor/CoiDeclaration.vue'
@@ -217,6 +218,8 @@ const dealingOfficerComponent = computed(() => {
       return ManageAccreditationSchedule
     case path.endsWith('/accreditation/isar_reports'):
       return IsarReport
+    case path.endsWith('/accreditation/iqar_list'):
+      return IqarReport
 
     default:
       return null

@@ -281,6 +281,9 @@ const closePaymentModal = () => {
   selectedQualificationForPayment.value = null
 }
 
+// =========================================================================
+// == MODIFIED FUNCTION: handlePaymentCompleted                           ==
+// =========================================================================
 const handlePaymentCompleted = async (paymentData) => {
   // Initial checks
   if (!selectedQualificationForPayment.value) {
@@ -299,9 +302,41 @@ const handlePaymentCompleted = async (paymentData) => {
   const itemForPayment = selectedQualificationForPayment.value
   let redirectUrl = null
 
-  // Detect if it's a renewal (check for renewal-specific field)
+  // --- START OF FIX ---
+
+  // 1. Determine if it's a renewal
   const isRenewal = Object.hasOwn(itemForPayment, 'renewal_review_status') ||
     Object.hasOwn(itemForPayment, 'new_expiry_date')
+
+  // 2. Determine the correct service code and description dynamically
+  let serviceCode = ''
+  let description = ''
+
+  if (isRenewal) {
+    serviceCode = '100256' // Renewal for engineering professional
+    description = 'EPC Renewal Fee'
+  } else {
+    // It's a qualification, check if it's primary (initial) or additional
+    const isPrimary = itemForPayment.is_primary_qualification === true
+
+    if (isPrimary) {
+      serviceCode = '100253' // Initial registration for engineering professional
+      description = 'EPC Initial Registration Fee'
+    } else {
+      serviceCode = '100257' // Additional qualification fee for engineering professional
+      description = 'EPC Additional Qualification Fee'
+    }
+  }
+
+  // 3. Check if a valid service code was determined
+  if (!serviceCode) {
+    toast.error('Could not determine the correct service for payment. Please contact support.')
+    isLoading.value = false
+    return
+  }
+
+  // --- END OF FIX ---
+
 
   try {
     // Prepare payment gateway data
@@ -311,11 +346,7 @@ const handlePaymentCompleted = async (paymentData) => {
     paymentInitiationFormData.append('taxPayerName', user.cid)
     paymentInitiationFormData.append('taxPayerNo', user.cid)
     paymentInitiationFormData.append('taxPayerDocumentNo', user.cid)
-    paymentInitiationFormData.append('totalPayableAmount', 100) // EPC amount
-    paymentInitiationFormData.append(
-      'description',
-      isRenewal ? 'EPC Renewal Fee' : 'EPC Qualification Registration Fee'
-    )
+    paymentInitiationFormData.append('totalPayableAmount', 100) // Note: This should also be dynamic if fees differ
     paymentInitiationFormData.append('mobileNo', user.contact_number)
     paymentInitiationFormData.append('payerEmail', user.email)
     paymentInitiationFormData.append('user', user.id)
@@ -378,7 +409,6 @@ const handlePaymentCompleted = async (paymentData) => {
       window.open(redirectUrl, '_blank')
     }
 
-    // Refresh all data
     await fetchAllData()
 
   } catch (error) {

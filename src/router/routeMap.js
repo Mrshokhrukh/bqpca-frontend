@@ -236,6 +236,7 @@ export default {
       initial_accreditations: accredDashboard,
       manage_accreditation_schedule: accredDashboard,
       isar_reports: accredDashboard,
+      iqar_list: accredDashboard,
     },
     engineering_certification: {
       dashboard: engineeringDashboard,
@@ -477,7 +478,7 @@ export default {
       cpd_application_tracker: engineeringDashboard,
       cpd_approved_add_participants: engineeringDashboard,
       cme_cpd_provider_profile: engineeringDashboard,
-      
+
     },
     health_certification: {
       dashboard: mhpcDashboard,
