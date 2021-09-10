@@ -36,15 +36,16 @@
     </div>
 
     <ApplicationModal
-      v-if="showModal && modalType !== 'viewCertificate' && modalType !== null"
       :show-modal="showModal"
       :modal-type="modalType"
       :application="selectedApplication"
       @close="closeModal"
       @update="handleApplicationUpdate"
+      :user-role="authStoreRole"
     />
+
     <ViewCertificateModal
-      v-if="showModal && modalType === 'viewCertificate'"
+      v-if="modalType === 'viewCertificate'"
       :show-modal="showModal"
       :application="selectedApplication"
       @close="closeModal"
@@ -95,7 +96,7 @@ const filteredApplications = computed(() => {
     const matchesType = selectedType.value ? app.type_of_course === selectedType.value : true
     const matchesSearch = searchQuery.value
       ? Object.values(app).some((value) =>
-          String(value).toLowerCase().includes(searchQuery.value.toLowerCase()),
+          String(value).toLowerCase().includes(searchQuery.value.toLowerCase())
         )
       : true
     const isSecondCopy = app.is_second_copy // Exclude if is_second_copy is true
@@ -215,14 +216,16 @@ const closeRemarksModal = () => {
 }
 
 const handleApplicationUpdate = async (updateData) => {
-  loading.value = true
+  const updateLoadingToast = toast.info('Updating application...', { timeout: false })
   try {
     await apiService.patchRecognitionOfQualification(selectedApplication.value.id, updateData)
+    toast.dismiss(updateLoadingToast)
+    toast.success('Application updated successfully.')
     await loadData()
   } catch (e) {
-    console.error('Error updating application:', e)
+    toast.dismiss(updateLoadingToast)
+    toast.error(e.response?.data?.detail || 'Failed to update application.')
   } finally {
-    loading.value = false
     closeModal()
   }
 }

@@ -94,9 +94,8 @@ const filteredApplications = computed(() => {
         )
       : true
     const isNotSecondCopy = !app.is_second_copy
-    const isNotDraft = app.status !== 'draft'
 
-    return matchesStatus && matchesSearch && isNotSecondCopy && isNotDraft
+    return matchesStatus && matchesSearch && isNotSecondCopy
   })
 })
 
@@ -124,7 +123,7 @@ const loadData = async (showLoadingToast = false) => {
   }
 
   try {
-    const response = await apiService.getRecognitionOfQualifications()
+    const response = await apiService.getRecognitionOfQualifications({ status: 'under_review' })
     applications.value = response.data.results || []
     if (showLoadingToast) {
       toast.dismiss(loadingToastId)

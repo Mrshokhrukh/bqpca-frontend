@@ -45,11 +45,14 @@
 
         <!-- Content Area -->
         <div class="flex-1 overflow-y-auto p-5 sm:p-6 space-y-6 sm:space-y-8">
-          <!-- View Mode -->
-          <div v-if="modalType === 'view' || modalType === 'viewCertificate'" class="space-y-6 sm:space-y-8">
+          <!-- View or Edit Mode -->
+          <div
+            v-if="modalType === 'view' || modalType === 'viewCertificate' || modalType === 'edit'"
+            class="space-y-6 sm:space-y-8"
+          >
             <!-- QEC Number Display -->
             <div
-              v-if="modalApplication.status === 'approved' && modalApplication.qec_number"
+              v-if="editableApplication.status === 'approved' && editableApplication.qec_number"
               class="bg-gradient-to-r from-green-50 via-emerald-50 to-teal-50 rounded-xl p-6 sm:p-8 shadow-lg border border-green-200/50"
             >
               <div class="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-5">
@@ -62,7 +65,7 @@
                 class="bg-white/80 p-4 sm:p-6 rounded-xl border border-green-200 flex flex-col sm:flex-row items-start sm:items-center justify-between shadow-sm gap-3 sm:gap-4"
               >
                 <span class="text-2xl sm:text-3xl font-bold text-green-700 tracking-wider">{{
-                  modalApplication.qec_number
+                  editableApplication.qec_number
                 }}</span>
                 <div
                   class="flex items-center gap-2 text-green-700 bg-green-100 py-1.5 px-3.5 rounded-full text-sm"
@@ -87,27 +90,44 @@
                     Personal Information
                   </h4>
                 </div>
-                <div class="space-y-2.5">
-                  <div
-                    v-for="(item, index) in personalInfo"
-                    :key="`personal-${index}`"
-                    class="sm:grid sm:grid-cols-3 sm:gap-x-4 py-3 border-b border-gray-200/70 last:border-b-0"
-                  >
-                    <div
-                      class="flex items-center text-xs sm:text-sm font-medium text-gray-500 sm:col-span-1 mb-0.5 sm:mb-0"
-                    >
-                      <component
-                        :is="personalInfoIcons[index]"
-                        class="w-4 h-4 text-blue-500 mr-2.5 shrink-0"
-                      />
-                      {{ item.label }}
-                    </div>
-                    <div
-                      class="text-sm sm:text-base text-gray-700 sm:col-span-2 font-medium pl-[calc(1rem+0.625rem)] sm:pl-0"
-                    >
-                      {{ item.value || '-' }}
-                    </div>
-                  </div>
+                <div class="space-y-4">
+                  <FormInputGroup
+                    label="Applicant's Name"
+                    v-model="editableApplication.applicants_name"
+                    :is-editing="isEditing"
+                    icon="User"
+                  />
+                  <FormInputGroup
+                    label="CID Number"
+                    v-model="editableApplication.cid_no"
+                    :is-editing="isEditing"
+                    icon="Hash"
+                  />
+                  <FormInputGroup
+                    label="Date of Birth"
+                    v-model="editableApplication.date_of_birth"
+                    :is-editing="isEditing"
+                    type="date"
+                    icon="Calendar"
+                  />
+                  <FormSelectGroup
+                    label="Gender"
+                    v-model="editableApplication.gender"
+                    :is-editing="isEditing"
+                    :options="genders"
+                  />
+                  <FormInputGroup
+                    label="Contact Number"
+                    v-model="editableApplication.contact_no"
+                    :is-editing="isEditing"
+                    icon="Phone"
+                  />
+                  <FormInputGroup
+                    label="Email Address"
+                    v-model="editableApplication.email_address"
+                    :is-editing="isEditing"
+                    icon="Mail"
+                  />
                 </div>
               </div>
 
@@ -115,14 +135,14 @@
               <div class="space-y-6 sm:space-y-8">
                 <!-- Passport Photo -->
                 <div
-                  v-if="modalApplication.passport_size_photo"
+                  v-if="editableApplication.passport_size_photo"
                   class="bg-slate-50 rounded-xl shadow-lg border border-gray-200/50 overflow-hidden"
                 >
                   <div
                     class="relative aspect-[3/4] max-h-[320px] w-full flex items-center justify-center bg-gray-100"
                   >
                     <img
-                      :src="modalApplication.passport_size_photo"
+                      :src="editableApplication.passport_size_photo"
                       alt="Passport Photo"
                       class="w-full h-full object-cover"
                     />
@@ -148,40 +168,75 @@
                   <h4 class="text-md sm:text-lg font-semibold text-gray-800">Education Details</h4>
                 </div>
               </div>
-              <div class="space-y-2.5">
-                <div
-                  v-for="(item, index) in educationInfo"
-                  :key="`education-${index}`"
-                  class="sm:grid sm:grid-cols-3 sm:gap-x-4 py-3 border-b border-gray-200/70 last:border-b-0"
-                >
-                  <div
-                    class="flex items-center text-xs sm:text-sm font-medium text-gray-500 sm:col-span-1 mb-0.5 sm:mb-0"
-                  >
-                    <component
-                      :is="educationInfoIcons[index]"
-                      class="w-4 h-4 text-purple-500 mr-2.5 shrink-0"
-                    />
-                    {{ item.label }}
-                  </div>
-                  <div
-                    class="text-sm sm:text-base text-gray-700 sm:col-span-2 font-medium pl-[calc(1rem+0.625rem)] sm:pl-0"
-                  >
-                    <template v-if="item.isLink && item.value">
-                      <a
-                        :href="item.value"
-                        target="_blank"
-                        class="text-blue-600 hover:text-blue-700 hover:underline inline-flex items-center gap-1 group"
-                      >
-                        <span
-                          class="truncate max-w-[200px] sm:max-w-xs group-hover:max-w-none transition-all duration-200"
-                          >{{ item.value }}</span
-                        >
-                        <ExternalLinkIcon class="w-3.5 h-3.5 shrink-0" />
-                      </a>
-                    </template>
-                    <span v-else>{{ item.value || '-' }}</span>
-                  </div>
-                </div>
+              <div class="space-y-4">
+                <FormInputGroup
+                  label="Course Title"
+                  v-model="editableApplication.course_title"
+                  :is-editing="isEditing"
+                  icon="GraduationCap"
+                />
+                <FormInputGroup
+                  label="Course Duration (years)"
+                  v-model="editableApplication.duration_of_course"
+                  :is-editing="isEditing"
+                  type="number"
+                  icon="Timer"
+                />
+                <FormInputGroup
+                  label="Institute Name"
+                  v-model="editableApplication.name_of_institute"
+                  :is-editing="isEditing"
+                  icon="School"
+                />
+                <FormInputGroup
+                  label="University Name"
+                  v-model="editableApplication.name_of_university"
+                  :is-editing="isEditing"
+                  icon="School"
+                />
+                <FormInputGroup
+                  label="Location (Institute)"
+                  v-model="editableApplication.location"
+                  :is-editing="isEditing"
+                  icon="MapPin"
+                />
+                <FormInputGroup
+                  label="Country (Institute)"
+                  v-model="editableApplication.country"
+                  :is-editing="isEditing"
+                  icon="MapPin"
+                />
+
+                <FormInputGroup
+                  label="Student ID No."
+                  v-model="editableApplication.student_id_no"
+                  :is-editing="isEditing"
+                  icon="Hash"
+                />
+                <FormInputGroup
+                  label="Year of Completion"
+                  v-model="editableApplication.year_of_completion"
+                  :is-editing="isEditing"
+                  icon="Calendar"
+                />
+                <FormInputGroup
+                  label="Institute Website"
+                  v-model="editableApplication.website"
+                  :is-editing="isEditing"
+                  icon="Globe"
+                />
+                <FormSelectGroup
+                  label="Type of Course"
+                  v-model="editableApplication.type_of_course_id"
+                  :is-editing="isEditing"
+                  :options="courseTypes"
+                />
+                <FormSelectGroup
+                  label="Qualification Level"
+                  v-model="editableApplication.qualification_id"
+                  :is-editing="isEditing"
+                  :options="qualifications"
+                />
               </div>
             </div>
 
@@ -200,7 +255,7 @@
                 <a
                   v-for="doc in filteredDocuments"
                   :key="doc.key"
-                  :href="modalApplication[doc.key]"
+                  :href="editableApplication[doc.key]"
                   target="_blank"
                   class="group flex items-center p-3.5 sm:p-4 bg-white/80 rounded-lg border border-gray-200/80 hover:border-blue-400/70 hover:shadow-md transition-all duration-150"
                 >
@@ -269,7 +324,10 @@
                 ></textarea>
               </div>
             </div>
-            <div v-if="modalType === 'forward'" class="flex items-start gap-3 sm:gap-4 p-4 sm:p-5 bg-blue-50/70 rounded-xl border border-blue-200/80 shadow-sm">
+            <div
+              v-if="modalType === 'forward'"
+              class="flex items-start gap-3 sm:gap-4 p-4 sm:p-5 bg-blue-50/70 rounded-xl border border-blue-200/80 shadow-sm"
+            >
               <CircleAlert class="w-6 h-6 sm:w-8 sm:h-8 text-blue-600 shrink-0 mt-0.5" />
               <div>
                 <p class="text-blue-800 font-medium text-sm sm:text-base">
@@ -277,7 +335,10 @@
                 </p>
               </div>
             </div>
-            <div v-if="modalType === 'approve'" class="flex items-start gap-3 sm:gap-4 p-4 sm:p-5 bg-green-50/70 rounded-xl border border-green-200/80 shadow-sm">
+            <div
+              v-if="modalType === 'approve'"
+              class="flex items-start gap-3 sm:gap-4 p-4 sm:p-5 bg-green-50/70 rounded-xl border border-green-200/80 shadow-sm"
+            >
               <CheckCircleIcon class="w-6 h-6 sm:w-8 sm:h-8 text-green-600 shrink-0 mt-0.5" />
               <div>
                 <p class="text-green-800 font-medium text-sm sm:text-base">
@@ -301,7 +362,12 @@
           </button>
           <button
             v-if="modalType !== 'view' && modalType !== 'viewCertificate'"
-            class="inline-flex items-center px-4 py-2 text-xs sm:text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-500 transition-all duration-150 shadow-sm"
+            class="inline-flex items-center px-4 py-2 text-xs sm:text-sm font-medium text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-1 transition-all duration-150 shadow-sm"
+            :class="
+              modalType === 'edit'
+                ? 'bg-amber-600 hover:bg-amber-700 focus:ring-amber-500'
+                : 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500'
+            "
             @click="handleModalAction"
             :disabled="isSaving"
           >
@@ -310,10 +376,10 @@
               isSaving
                 ? 'Saving...'
                 : modalType === 'forward'
-                  ? 'Forward'
-                  : modalType === 'approve'
-                    ? 'Approve'
-                    : 'Save Changes'
+                ? 'Forward'
+                : modalType === 'approve'
+                ? 'Approve'
+                : 'Save Changes'
             }}
           </button>
         </div>
@@ -325,6 +391,9 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { useToast } from 'vue-toastification'
+import apiService from '@/services/services'
+import FormInputGroup from './FormInputGroup.vue'
+import FormSelectGroup from './FormSelectGroup.vue'
 import {
   User as UserIcon,
   MapPin as MapPinIcon,
@@ -347,7 +416,8 @@ import {
   Save as SaveIcon,
   ArrowRight as ArrowRightIcon,
   Camera as CameraIcon,
-  SendIcon,
+  Send as SendIcon,
+  Pencil as PencilIcon,
 } from 'lucide-vue-next'
 
 const props = defineProps({
@@ -364,43 +434,56 @@ const noteText = ref('')
 const privateNoteText = ref('')
 const rejectionReason = ref('')
 const isSaving = ref(false)
+const editableApplication = ref({})
 
-const modalApplication = computed(() => props.application || {})
+const isEditing = computed(() => props.modalType === 'edit')
+
+const qualifications = ref([])
+const courseTypes = ref([])
+const countries = ref([])
+const genders = ref([
+  { value: 'Male', text: 'Male' },
+  { value: 'Female', text: 'Female' },
+  { value: 'Other', text: 'Other' },
+])
 
 const headerColorClass = computed(
   () =>
     ({
       view: 'bg-blue-100/70',
+      edit: 'bg-amber-100/70',
       addNote: 'bg-green-100/70',
       addPrivateNote: 'bg-indigo-100/70',
       forward: 'bg-indigo-100/70',
       regret: 'bg-red-100/70',
       approve: 'bg-green-100/70',
-    }[props.modalType] || 'bg-gray-100/70'),
+    }[props.modalType] || 'bg-gray-100/70')
 )
 
 const headerIconClass = computed(
   () =>
     ({
       view: 'text-blue-600',
+      edit: 'text-amber-600',
       addNote: 'text-green-600',
       addPrivateNote: 'text-indigo-600',
       forward: 'text-indigo-600',
       regret: 'text-red-600',
       approve: 'text-green-600',
-    }[props.modalType] || 'text-gray-600'),
+    }[props.modalType] || 'text-gray-600')
 )
 
 const modalTitle = computed(
   () =>
     ({
       view: 'View Application Details',
+      edit: 'Edit Application Details',
       addNote: 'Add/Edit Remarks',
       addPrivateNote: 'Add Private Note for DO',
       forward: 'Forward Application',
       regret: 'Regret Application',
       approve: 'Approve Application',
-    }[props.modalType] || 'Application Details'),
+    }[props.modalType] || 'Application Details')
 )
 
 const modalDescription = computed(
@@ -411,11 +494,12 @@ const modalDescription = computed(
           ? 'These remarks are visible to the DO.'
           : 'These remarks are visible to the Chief.',
       addPrivateNote: 'This note will only be visible to the assigned dealing officer.',
-    }[props.modalType] || ''),
+    }[props.modalType] || '')
 )
 
 const modalIcons = {
   view: UserIcon,
+  edit: PencilIcon,
   addNote: DocumentIcon,
   addPrivateNote: SendIcon,
   forward: ArrowRightIcon,
@@ -429,60 +513,8 @@ const actionButtonIcon = computed(
       forward: ArrowRightIcon,
       regret: XIcon,
       approve: CheckCircleIcon,
-    }[props.modalType] || SaveIcon),
+    }[props.modalType] || SaveIcon)
 )
-
-const personalInfoIcons = [UserIcon, HashIcon, CalendarIcon, UserIcon, PhoneIcon, MailIcon]
-const educationInfoIcons = [
-  GraduationCapIcon,
-  TimerIcon,
-  SchoolIcon,
-  SchoolIcon,
-  MapPinIcon,
-  GlobeIcon,
-  HashIcon,
-  CalendarIcon,
-  GlobeIcon,
-  DocumentIcon,
-  GraduationCapIcon,
-]
-
-const personalInfo = computed(() => [
-  { label: "Applicant's Name", value: modalApplication.value.applicants_name },
-  { label: 'CID Number', value: modalApplication.value.cid_no },
-  {
-    label: 'Date of Birth',
-    value: modalApplication.value.date_of_birth
-      ? new Date(modalApplication.value.date_of_birth).toLocaleDateString('en-GB', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-        })
-      : null,
-  },
-  { label: 'Gender', value: modalApplication.value.gender },
-  { label: 'Contact Number', value: modalApplication.value.contact_no },
-  { label: 'Email Address', value: modalApplication.value.email_address },
-])
-
-const educationInfo = computed(() => [
-  { label: 'Course Title', value: modalApplication.value.course_title },
-  {
-    label: 'Course Duration',
-    value: modalApplication.value.duration_of_course
-      ? `${modalApplication.value.duration_of_course} years`
-      : null,
-  },
-  { label: 'Institute Name', value: modalApplication.value.name_of_institute },
-  { label: 'University Name', value: modalApplication.value.name_of_university },
-  { label: 'Location (Institute)', value: modalApplication.value.location },
-  { label: 'Country (Institute)', value: modalApplication.value.country },
-  { label: 'Student ID No.', value: modalApplication.value.student_id_no },
-  { label: 'Year of Completion', value: modalApplication.value.year_of_completion },
-  { label: 'Institute Website', value: modalApplication.value.website, isLink: true },
-  { label: 'Type of Course', value: modalApplication.value.type_of_course?.name || null },
-  { label: 'Qualification Level', value: modalApplication.value.qualification?.name || null },
-])
 
 const documents = [
   { key: 'degree_certificate', label: 'Degree Certificate' },
@@ -492,7 +524,7 @@ const documents = [
 ]
 
 const filteredDocuments = computed(() =>
-  documents.filter((doc) => modalApplication.value && modalApplication.value[doc.key]),
+  documents.filter((doc) => editableApplication.value && editableApplication.value[doc.key])
 )
 
 const handleBackdropClick = (event) => {
@@ -506,6 +538,50 @@ const handleModalAction = async () => {
   let payload = {}
 
   switch (props.modalType) {
+    case 'edit':
+      const originalApp = props.application
+      const editedApp = editableApplication.value
+      const changes = {}
+
+      const fieldsToCompare = [
+        'applicants_name',
+        'cid_no',
+        'date_of_birth',
+        'gender',
+        'contact_no',
+        'email_address',
+        'course_title',
+        'duration_of_course',
+        'name_of_institute',
+        'name_of_university',
+        'location',
+        'country',
+        'student_id_no',
+        'year_of_completion',
+        'website',
+      ]
+
+      fieldsToCompare.forEach((field) => {
+        if (originalApp[field] !== editedApp[field]) {
+          changes[field] = editedApp[field]
+        }
+      })
+
+      if (originalApp.type_of_course?.id !== editedApp.type_of_course_id) {
+        changes.type_of_course_id = editedApp.type_of_course_id
+      }
+      if (originalApp.qualification?.id !== editedApp.qualification_id) {
+        changes.qualification_id = editedApp.qualification_id
+      }
+
+      if (Object.keys(changes).length === 0) {
+        toast.info('No changes were made.')
+        isSaving.value = false
+        closeModal()
+        return
+      }
+      payload = changes
+      break
     case 'addNote':
       if (props.userRole === 'chief') {
         payload = { chief_remarks: noteText.value }
@@ -548,24 +624,69 @@ const closeModal = () => {
   emit('close')
 }
 
+async function fetchDropdownData() {
+  try {
+    // We only fetch the data we actually need and have endpoints for.
+    const [qualsResponse, typesResponse] = await Promise.all([
+      apiService.getQualifications(),
+      apiService.getTypesOfCourse(),
+    ])
+
+    qualifications.value =
+      qualsResponse.data?.results?.map((q) => ({ value: q.id, text: q.name })) || []
+    courseTypes.value =
+      typesResponse.data?.results?.map((t) => ({ value: t.id, text: t.name })) || []
+  } catch (error) {
+    toast.error('Failed to load necessary data for editing.')
+    console.error(error)
+  }
+}
+
+watch(
+  () => props.application,
+  (newApp) => {
+    if (newApp && Object.keys(newApp).length) {
+      editableApplication.value = JSON.parse(JSON.stringify(newApp))
+      editableApplication.value.type_of_course_id = newApp.type_of_course?.id || null
+      editableApplication.value.qualification_id = newApp.qualification?.id || null
+    } else {
+      editableApplication.value = {}
+    }
+  },
+  { deep: true, immediate: true }
+)
+
 watch(
   () => props.showModal,
   (newValue) => {
     if (newValue) {
+      if (props.modalType === 'view' || props.modalType === 'edit' || props.modalType === 'viewCertificate') {
+        fetchDropdownData()
+      }
       if (props.modalType === 'addNote') {
         if (props.userRole === 'chief') {
-          noteText.value = modalApplication.value.chief_remarks || ''
+          noteText.value = editableApplication.value.chief_remarks || ''
         } else if (props.userRole === 'dealing_officer') {
-          noteText.value = modalApplication.value.dealing_officer_remarks || ''
+          noteText.value = editableApplication.value.dealing_officer_remarks || ''
         }
       }
       if (props.modalType === 'addPrivateNote') {
-        privateNoteText.value = modalApplication.value.chief_to_do_remarks || ''
+        privateNoteText.value = editableApplication.value.chief_to_do_remarks || ''
       }
       if (props.modalType === 'regret') {
-        rejectionReason.value = modalApplication.value.chief_remarks || ''
+        rejectionReason.value = editableApplication.value.chief_remarks || ''
       }
     }
-  },
+  }
+)
+
+watch(
+  () => editableApplication.value.country,
+  (newCountry) => {
+    if (newCountry && typeof newCountry === 'string' && newCountry.length > 0) {
+      // Capitalize the first letter and keep the rest
+      editableApplication.value.country = newCountry.charAt(0).toUpperCase() + newCountry.slice(1)
+    }
+  }
 )
 </script>

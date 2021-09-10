@@ -184,7 +184,6 @@ const filterDataByTimeRange = (data) => {
 
 // Group applications by month (memoized)
 const groupApplicationsByMonth = (apps) => {
-  console.log('groupApplicationsByMonth: Input apps:', apps) // Log input apps
   const grouped = {}
   apps.forEach((app) => {
     const date = new Date(app.created_at)
@@ -237,15 +236,11 @@ const groupApplicationsByMonth = (apps) => {
 // Computed months for the chart
 const computedMonths = computed(() => {
   if (applications.value.length === 0) {
-    console.log('computedMonths: applications.value is empty, returning empty array.')
     return [] // Fallback for empty data
   }
   const filteredData = filterDataByTimeRange(applications.value)
-  console.log('computedMonths: filteredData:', filteredData) // Log filtered data
   const groupedData = groupApplicationsByMonth(filteredData)
-  console.log('computedMonths: groupedData:', groupedData) // Log grouped data
   const months = Object.keys(groupedData)
-  console.log('computedMonths: months (categories):', months) // Log final categories
   return months
 })
 
@@ -353,7 +348,6 @@ const loadApplications = async () => {
   try {
     const response = await apiService.getRecognitionOfQualifications()
     applications.value = response.data.results
-    console.log('Applications loaded:', applications.value) // Add this line
   } catch (error) {
     console.error('Error loading applications:', error)
   }
