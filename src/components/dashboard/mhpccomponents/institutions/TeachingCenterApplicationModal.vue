@@ -511,13 +511,6 @@
                 </button>
               </div>
             </form>
-
-            <PaymentModal
-              ref="paymentModalRef"
-              :amount="MHPC_TEACHING_CENTER_FEE"
-              @payment-completed="onPaymentCompleted"
-              @close="onPaymentModalClose"
-            />
           </div>
         </div>
       </div>
@@ -528,8 +521,6 @@
 <script setup>
 import { ref, watch, onMounted, computed } from 'vue'
 import apiServices from '@/services/services'
-
-import PaymentModal from '@/components/common/PaymentModal.vue'
 import { BuildingOffice2Icon, AcademicCapIcon } from '@heroicons/vue/24/outline'
 import { Loader } from 'lucide-vue-next'
 import { bhutanDzongkhagsGewogs } from '@/constants/dzongkhags.js'
@@ -556,9 +547,6 @@ const getDraftKey = () => {
 const isLoadingOptions = ref(true)
 const isSubmitting = ref(false)
 const isSubmittingDraft = ref(false)
-const paymentModalRef = ref(null)
-
-const MHPC_TEACHING_CENTER_FEE = 100
 
 const isShowingSuccessMessage = ref(false)
 
@@ -781,70 +769,60 @@ const validateForm = () => {
 }
 
 const handleFormSubmit = async () => {
-  if (isSubmitting.value) return
-  if (!validateForm()) return
+  if (isSubmitting.value) return;
+  if (!validateForm()) return;
 
-  isSubmitting.value = true
+  isSubmitting.value = true;
 
   try {
-    const formPayloadForApp = createPayload(false)
+    const formPayloadForApp = createPayload(false);
     if (authStore.userId) {
-      formPayloadForApp.append('applicant_user_id', authStore.userId)
+      formPayloadForApp.append('applicant_user_id', authStore.userId);
     }
 
-    await apiServices.createMhpcTeachingCenter(formPayloadForApp)
+    await apiServices.createMhpcTeachingCenter(formPayloadForApp);
 
-    // 1. Clear the local storage draft
-    const draftKey = getDraftKey()
+    const draftKey = getDraftKey();
     if (draftKey) {
-      localStorage.removeItem(draftKey)
+      localStorage.removeItem(draftKey);
     }
 
-    // 2. Show the success message to the user
-    isShowingSuccessMessage.value = true
+    isShowingSuccessMessage.value = true;
+    toast.success(`Application submitted successfully.`, { timeout: 3000 });
 
-    // 3. Set a timer to close the modal AND reset the form's data
     setTimeout(() => {
-      emit('form-submitted') // Signal parent to close the modal
-      resetForm()          // Reset the form data for the next use
-    }, 3000)
+      emit('form-submitted');
+      resetForm();
+    }, 3000);
 
   } catch (error) {
-    console.error('Error during submission process:', error.response?.data || error.message || error)
-    
-    let errorMessage = 'Error submitting application. '
+    console.error('Error during submission process:', error.response?.data || error.message || error);
+    let errorMessage = 'Error submitting application. ';
     if (error.response?.data) {
-      const errors = error.response.data
+      const errors = error.response.data;
       if (typeof errors === 'string') {
-        errorMessage += errors
+        errorMessage += errors;
       } else if (typeof errors === 'object') {
         const messages = Object.entries(errors)
           .map(([key, value]) => {
-            const fieldName = key.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())
-            return `${fieldName}: ${Array.isArray(value) ? value.join(', ') : value}`
+            const fieldName = key.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase());
+            return `${fieldName}: ${Array.isArray(value) ? value.join(', ') : value}`;
           })
-          .join('\n')
-        if (messages) errorMessage += `Details:\n${messages}`
-        else if (errors.detail) errorMessage += errors.detail
-        else errorMessage += 'An unexpected error occurred.'
+          .join('\n');
+        if (messages) errorMessage += `Details:\n${messages}`;
+        else if (errors.detail) errorMessage += errors.detail;
+        else errorMessage += 'An unexpected error occurred.';
       } else {
-        errorMessage += 'An unexpected error occurred.'
+        errorMessage += 'An unexpected error occurred.';
       }
     } else {
-      errorMessage += error.message || 'An unexpected network or server error occurred.'
+      errorMessage += error.message || 'An unexpected network or server error occurred.';
     }
-    toast.error(errorMessage)
-    isSubmitting.value = false // Ensure submission is re-enabled on error
+    toast.error(errorMessage);
+  } finally {
+    isSubmitting.value = false;
   }
-}
-
-const onPaymentModalClose = () => {
-  console.log('Payment modal closed.')
-}
-
-const onPaymentCompleted = async ({ paymentHash }) => {
-  console.log('Payment completed with hash:', paymentHash)
-}
+};
 
 const handleCancel = () => {
   emit('close')

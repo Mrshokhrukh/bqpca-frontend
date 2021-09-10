@@ -345,6 +345,7 @@ const handlePaymentCompleted = async (paymentData) => {
   const applicationId = selectedApplication.value.id
   const paymentId = paymentData.paymentHash
   const user = authStore.user
+  let redirectUrl = null
 
   if (!user || !user.contact_number || !user.email || !user.cid) {
     toast.error('Missing user information. Please update your profile.')
@@ -369,7 +370,10 @@ const handlePaymentCompleted = async (paymentData) => {
     paymentInitiationFormData.append('application_no', selectedApplication.value.id)
     paymentInitiationFormData.append('app_type', 'certificate_of_good_standing_fee')
 
-    await apiService.makePayment(paymentInitiationFormData)
+    const paymentResponse = await apiService.makePayment(paymentInitiationFormData)
+    if (paymentResponse.data?.content?.redirectUrl) {
+      redirectUrl = paymentResponse.data.content.redirectUrl
+    }
 
     const updateFormData = new FormData()
     updateFormData.append('is_payment_complete', 'false') // This remains false until the webhook confirms
@@ -377,7 +381,13 @@ const handlePaymentCompleted = async (paymentData) => {
 
     await apiService.patchEpcCogs(applicationId, updateFormData)
 
-    toast.success(`Payment initiated! Your application status will update shortly.`)
+    toast.success(
+      `Payment initiated successfully. Redirecting for payment completion. A link has also been sent to your email.`,
+      { timeout: 8000 }
+    )
+    if (redirectUrl) {
+      window.open(redirectUrl, '_blank')
+    }
   } catch (error) {
     console.error('Payment update error:', error)
     if (error.response) {
@@ -386,8 +396,12 @@ const handlePaymentCompleted = async (paymentData) => {
       toast.error('A network error occurred. Please try again.')
     }
   } finally {
+    if (paymentModal.value) {
+      paymentModal.value.closeModal()
+    }
     await fetchApplications()
     selectedApplication.value = null
+    isLoading.value = false
   }
 }
 

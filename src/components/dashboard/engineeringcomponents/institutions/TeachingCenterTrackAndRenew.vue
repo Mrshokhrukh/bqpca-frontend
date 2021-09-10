@@ -620,61 +620,118 @@ const closePaymentModal = () => {
 
 const handleRenewalPaymentConfirmation = async (paymentData) => {
   if (!renewalToPay.value || !authStore.user?.id) {
-    toast.error('Required data is missing. Cannot process payment.')
-    return
+    toast.error('Required data is missing. Cannot process payment.');
+    return;
   }
-  isLoading.value = true
-  try {
-    await apiServices.patchEpcTeachingCenterRenewal(renewalToPay.value.id, {
-      payment_id: paymentData.paymentHash,
-      payment_status: 'completed',
-    })
+  isLoading.value = true;
+  let redirectUrl = null;
+  const user = authStore.user;
+  const renewal = renewalToPay.value;
 
-    toast.success('Renewal payment confirmed!')
-    await fetchData()
+  try {
+    const paymentGatewayFormData = new FormData();
+    paymentGatewayFormData.append('refNo', paymentData.paymentHash);
+    paymentGatewayFormData.append('serviceCode', '100263'); // Placeholder for EPC Teaching Center Renewal Fee
+    paymentGatewayFormData.append('taxPayerName', renewal.teaching_center_details?.center_name || user.cid);
+    paymentGatewayFormData.append('taxPayerNo', user.cid);
+    paymentGatewayFormData.append('taxPayerDocumentNo', user.cid);
+    paymentGatewayFormData.append('totalPayableAmount', 1000);
+    paymentGatewayFormData.append('payableAmount', 1000);
+    paymentGatewayFormData.append('description', `Renewal fee for ${renewal.teaching_center_details?.center_name}`);
+    paymentGatewayFormData.append('mobileNo', user.contact_number || '17110000');
+    paymentGatewayFormData.append('payerEmail', user.email);
+    paymentGatewayFormData.append('user', user.id);
+    paymentGatewayFormData.append('application_no', renewal.id);
+    paymentGatewayFormData.append('app_type', 'epc_teaching_center_renewal');
+
+    const paymentResponse = await apiServices.makePayment(paymentGatewayFormData);
+    if (paymentResponse.data?.content?.redirectUrl) {
+      redirectUrl = paymentResponse.data.content.redirectUrl;
+    }
+
+    await apiServices.patchEpcTeachingCenterRenewal(renewal.id, {
+      payment_id: paymentData.paymentHash,
+      payment_status: 'processing_payment',
+    });
+
+    toast.success('Payment initiated successfully. Redirecting for payment completion. A link has also been sent to your email.', { timeout: 8000 });
+
+    if (redirectUrl) {
+      window.open(redirectUrl, '_blank');
+    }
+
+    await fetchData();
   } catch (error) {
     const errorMsg =
       error.response?.data?.detail ||
       JSON.stringify(error.response?.data) ||
-      'An unknown error occurred'
+      'An unknown error occurred';
     toast.error(
       `Renewal Failed: ${errorMsg}. Please contact support with Payment Ref: ${paymentData.paymentHash}`,
       { timeout: 8000 }
-    )
+    );
   } finally {
-    isLoading.value = false
-    closePaymentModal()
+    isLoading.value = false;
+    closePaymentModal();
   }
-}
+};
 
 const handleNewRegistrationPayment = async (paymentData) => {
   if (!centerForNewPayment.value || !authStore.user?.id) {
-    toast.error('Required data is missing. Cannot process payment.')
-    return
+    toast.error('Required data is missing. Cannot process payment.');
+    return;
   }
-  isLoading.value = true
-  const paymentId = paymentData.paymentHash
-  const centerId = centerForNewPayment.value.id
+  isLoading.value = true;
+  const paymentId = paymentData.paymentHash;
+  const centerId = centerForNewPayment.value.id;
+  let redirectUrl = null;
+  const user = authStore.user;
 
   try {
+    const paymentGatewayFormData = new FormData();
+    paymentGatewayFormData.append('refNo', paymentId);
+    paymentGatewayFormData.append('serviceCode', '100261'); // EPC Teaching Center Initial Fee
+    paymentGatewayFormData.append('taxPayerName', centerForNewPayment.value.institute?.name_of_institution || user.cid);
+    paymentGatewayFormData.append('taxPayerNo', user.cid);
+    paymentGatewayFormData.append('taxPayerDocumentNo', user.cid);
+    paymentGatewayFormData.append('totalPayableAmount', 1000);
+    paymentGatewayFormData.append('payableAmount', 1000);
+    paymentGatewayFormData.append('description', `Initial registration fee for ${centerForNewPayment.value.center_name}`);
+    paymentGatewayFormData.append('mobileNo', user.contact_number || '17110000');
+    paymentGatewayFormData.append('payerEmail', user.email);
+    paymentGatewayFormData.append('user', user.id);
+    paymentGatewayFormData.append('application_no', centerId);
+    paymentGatewayFormData.append('app_type', 'epc_teaching_center');
+
+    const paymentResponse = await apiServices.makePayment(paymentGatewayFormData);
+    if (paymentResponse.data?.content?.redirectUrl) {
+      redirectUrl = paymentResponse.data.content.redirectUrl;
+    }
+
     await apiServices.patchEpcTeachingCenter(centerId, {
       payment_id: paymentId,
-      is_payment_complete: true,
-    })
+      is_payment_complete: false,
+      payment_status: 'processing_payment',
+    });
 
-    toast.success('Payment confirmed! Your teaching center is now active.')
-    await fetchData()
+    toast.success('Payment initiated successfully. Redirecting for payment completion. A link has also been sent to your email.', { timeout: 8000 });
+
+    if (redirectUrl) {
+      window.open(redirectUrl, '_blank');
+    }
+
+    await fetchData();
   } catch (error) {
     const errorMsg =
       error.response?.data?.detail ||
       JSON.stringify(error.response?.data) ||
-      'Payment confirmation failed.'
-    toast.error(`${errorMsg} Please contact support with Ref: ${paymentId}`, { timeout: 8000 })
+      'Payment confirmation failed.';
+    toast.error(`${errorMsg} Please contact support with Ref: ${paymentId}`, { timeout: 8000 });
   } finally {
-    isLoading.value = false
-    closePaymentModal()
+    isLoading.value = false;
+    closePaymentModal();
   }
-}
+};
 
 const fetchData = async () => {
   if (!authStore.user?.cid) {

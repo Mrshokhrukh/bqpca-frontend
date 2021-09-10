@@ -190,7 +190,7 @@ const fetchRenewalApplications = async () => {
   isLoading.value = true
   apiError.value = false
   try {
-    const response = await apiService.getEpcRenewals() // EPC renewals endpoint
+    const response = await apiService.getEpcRenewals({ cid: userCid.value }) // EPC renewals endpoint
     if (response && response.data && response.data.results) {
       renewalApplications.value = response.data.results
     } else {
@@ -300,6 +300,7 @@ const handlePaymentCompleted = async (paymentData) => {
   isLoading.value = true
   const paymentId = paymentData.paymentHash
   const itemForPayment = selectedQualificationForPayment.value
+  let redirectUrl = null
 
   // --- START OF FIX ---
 
@@ -341,7 +342,7 @@ const handlePaymentCompleted = async (paymentData) => {
     // Prepare payment gateway data
     const paymentInitiationFormData = new FormData()
     paymentInitiationFormData.append('refNo', paymentId)
-    paymentInitiationFormData.append('serviceCode', '100253') // EPC service code
+    paymentInitiationFormData.append('serviceCode', isRenewal ? '100256' : '100253') 
     paymentInitiationFormData.append('taxPayerName', user.cid)
     paymentInitiationFormData.append('taxPayerNo', user.cid)
     paymentInitiationFormData.append('taxPayerDocumentNo', user.cid)
@@ -354,7 +355,10 @@ const handlePaymentCompleted = async (paymentData) => {
     paymentInitiationFormData.append('app_type', 'specification_for_engineering_certification')
 
     // Call payment gateway
-    await apiService.makePayment(paymentInitiationFormData)
+    const paymentResponse = await apiService.makePayment(paymentInitiationFormData)
+    if (paymentResponse.data?.content?.redirectUrl) {
+      redirectUrl = paymentResponse.data.content.redirectUrl
+    }
 
     // Prepare update data
     const updateFormData = new FormData()
@@ -397,7 +401,13 @@ const handlePaymentCompleted = async (paymentData) => {
     itemForPayment.payment_id = paymentId
     itemForPayment.payment_status = 'processing_payment'
 
-    toast.success(`Payment initiated (Ref: ${paymentId.substring(0, 8)}...). Your application status will update shortly.`)
+    toast.success(
+      `Payment initiated successfully. Redirecting for payment completion. A link has also been sent to your email.`,
+      { timeout: 8000 }
+    )
+    if (redirectUrl) {
+      window.open(redirectUrl, '_blank')
+    }
 
     await fetchAllData()
 
@@ -418,6 +428,9 @@ const handlePaymentCompleted = async (paymentData) => {
     }
   } finally {
     isLoading.value = false
+    if (paymentModalRef.value) {
+      paymentModalRef.value.closeModal()
+    }
   }
 }
 

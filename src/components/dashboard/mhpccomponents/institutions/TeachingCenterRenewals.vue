@@ -846,47 +846,73 @@ const initiatePayment = (center) => {
 
 const handlePaymentCompleted = async (paymentData) => {
   if (!selectedCenter.value) {
-    toast.error('No center selected for payment.')
-    return
+    toast.error('No center selected for payment.');
+    return;
   }
 
-  isLoading.value = true
-  const paymentId = paymentData.paymentHash
-  const payload = { payment_id: paymentId }
+  isLoading.value = true;
+  const paymentId = paymentData.paymentHash;
+  const isForRenewal = selectedCenter.value.latest_renewal?.renewal_status === 'AWAITING_PAYMENT';
+  let redirectUrl = null;
+  const user = authStore.user;
 
-  const isForRenewal = selectedCenter.value.latest_renewal?.renewal_status === 'AWAITING_PAYMENT'
+  if (!user || !user.id || !user.cid || !user.email) {
+      toast.error('User information is missing. Please log in again.');
+      isLoading.value = false;
+      return;
+  }
 
   try {
-    if (isForRenewal) {
-      const renewalId = selectedCenter.value.latest_renewal.id
-      const centerId = selectedCenter.value.id
-      await apiServices.confirmTeachingCenterRenewalPayment(centerId, renewalId, payload)
-      toast.success(
-        `Renewal payment confirmed (Ref: ${paymentId.substring(
-          0,
-          8
-        )}...). Status will update shortly.`
-      )
-    } else {
-      await apiServices.confirmInitialCenterPayment(selectedCenter.value.id, payload)
-      toast.success(
-        `Initial payment confirmed (Ref: ${paymentId.substring(
-          0,
-          8
-        )}...). Status will update shortly.`
-      )
+    const paymentGatewayFormData = new FormData();
+    paymentGatewayFormData.append('refNo', paymentId);
+    paymentGatewayFormData.append('serviceCode', '100252'); 
+    paymentGatewayFormData.append('taxPayerName', selectedCenter.value.institute_details?.name_of_institution || user.cid);
+    paymentGatewayFormData.append('taxPayerNo', user.cid);
+    paymentGatewayFormData.append('taxPayerDocumentNo', user.cid);
+    paymentGatewayFormData.append('totalPayableAmount', 100);
+    paymentGatewayFormData.append('payableAmount', 100);
+    paymentGatewayFormData.append('description', isForRenewal ? 'MHPC Teaching Center Renewal Fee' : 'MHPC Teaching Center Initial Fee');
+    paymentGatewayFormData.append('mobileNo', user.contact_number || '17110000');
+    paymentGatewayFormData.append('payerEmail', user.email);
+    paymentGatewayFormData.append('user', user.id);
+    paymentGatewayFormData.append('application_no', selectedCenter.value.id);
+    paymentGatewayFormData.append('app_type', 'mhpc_teaching_center');
+
+    const paymentResponse = await apiServices.makePayment(paymentGatewayFormData);
+    if (paymentResponse.data?.content?.redirectUrl) {
+      redirectUrl = paymentResponse.data.content.redirectUrl;
     }
 
-    await fetchData()
+    const payload = { payment_id: paymentId };
+    if (isForRenewal) {
+      const renewalId = selectedCenter.value.latest_renewal.id;
+      const centerId = selectedCenter.value.id;
+      await apiServices.confirmTeachingCenterRenewalPayment(centerId, renewalId, payload);
+    } else {
+      await apiServices.confirmInitialCenterPayment(selectedCenter.value.id, payload);
+    }
+
+    toast.success(`Payment initiated successfully. Redirecting for payment completion. A link has also been sent to your email.`, { timeout: 8000 });
+
+    if (redirectUrl) {
+      window.open(redirectUrl, '_blank');
+    }
+
+    await fetchData();
   } catch (error) {
-    console.error('Payment handling error:', error.response || error)
+    console.error('Payment handling error:', error.response || error);
     const errorMsg =
       error.response?.data?.error ||
       error.response?.data?.detail ||
-      'An error occurred while confirming your payment.'
-    toast.error(`${errorMsg} Please contact support.`)
+      'An error occurred while confirming your payment.';
+    toast.error(`${errorMsg} Please contact support.`);
+  } finally {
+    isLoading.value = false;
+    if (paymentModalRef.value) {
+        paymentModalRef.value.closeModal();
+    }
   }
-}
+};
 </script>
 
 <style scoped>

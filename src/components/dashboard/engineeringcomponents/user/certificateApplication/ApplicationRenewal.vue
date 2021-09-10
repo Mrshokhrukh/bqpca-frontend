@@ -442,6 +442,8 @@ import apiService from '@/services/services'
 import { useToast } from 'vue-toastification'
 import { useAuthStore } from '@/stores/authStore'
 import { useEngineeringCertificationStore } from '@/stores/engineeringNavigationStore'
+import { useEpcCpdStore } from '@/stores/epcCpdStore'
+import { storeToRefs } from 'pinia'
 import { Dialog, DialogPanel, DialogTitle } from '@headlessui/vue'
 import dayjs from 'dayjs'
 import isBetween from 'dayjs/plugin/isBetween'
@@ -452,7 +454,32 @@ import PageHeader from '@/components/common/MHPC/PageHeader.vue'
 
 import {
   // ... your other lucide-vue-next imports
-  User, Users, Calendar, Phone, Mail, Home, MapPin, Map, Clock, AlertCircle, AlertTriangle, AlertOctagon, Loader, CreditCard, ArrowLeft, ArrowRight, RefreshCw, Check, X, Tag, Award, MessageSquare, ClipboardList, FileText, CheckCircle, Info
+  User,
+  Users,
+  Calendar,
+  Phone,
+  Mail,
+  Home,
+  MapPin,
+  Map,
+  Clock,
+  AlertCircle,
+  AlertTriangle,
+  AlertOctagon,
+  Loader,
+  CreditCard,
+  ArrowLeft,
+  ArrowRight,
+  RefreshCw,
+  Check,
+  X,
+  Tag,
+  Award,
+  MessageSquare,
+  ClipboardList,
+  FileText,
+  CheckCircle,
+  Info,
 } from 'lucide-vue-next'
 
 dayjs.extend(isBetween)
@@ -463,6 +490,14 @@ const router = useRouter()
 const toast = useToast()
 const authStore = useAuthStore()
 const engineeringStore = useEngineeringCertificationStore()
+const cpdStore = useEpcCpdStore()
+
+const {
+  totalCpdCredits: getTotalCpdPoints,
+  allCpdRecords: cpdRecords,
+  isLoading: isCpdLoading,
+  error: cpdLoadError,
+} = storeToRefs(cpdStore)
 
 const formData = ref({
   cid_no: '',
@@ -481,9 +516,6 @@ const formData = ref({
   is_active: false,
   qualification_id_to_renew: null,
 })
-const cpdRecords = ref([])
-const isCpdLoading = ref(false)
-const cpdLoadError = ref('')
 
 const showConfirmation = ref(false)
 const isLoading = ref(true)
@@ -494,23 +526,26 @@ const remarks = ref('')
 
 const today = computed(() => dayjs().startOf('day')) // Use startOf('day') for consistency
 const expiryDate = computed(() =>
-  formData.value.expiry_date ? dayjs(formData.value.expiry_date).startOf('day') : null
+  formData.value.expiry_date ? dayjs(formData.value.expiry_date).startOf('day') : null,
 )
 const threeMonthsFromNow = computed(() => today.value.add(3, 'month'))
 
 // --- FIX #1: Add a computed property to specifically check for today's expiry ---
 const expiresToday = computed(() =>
-  expiryDate.value ? expiryDate.value.isSame(today.value, 'day') : false
+  expiryDate.value ? expiryDate.value.isSame(today.value, 'day') : false,
 )
 
 const hasExpired = computed(() =>
-  expiryDate.value ? expiryDate.value.isBefore(today.value, 'day') : false
+  expiryDate.value ? expiryDate.value.isBefore(today.value, 'day') : false,
 )
 
 const isExpiringWithin3Months = computed(() => {
   if (!expiryDate.value || hasExpired.value) return false
   // Use isSameOrAfter to include today correctly
-  return expiryDate.value.isSameOrAfter(today.value, 'day') && expiryDate.value.isSameOrBefore(threeMonthsFromNow.value, 'day')
+  return (
+    expiryDate.value.isSameOrAfter(today.value, 'day') &&
+    expiryDate.value.isSameOrBefore(threeMonthsFromNow.value, 'day')
+  )
 })
 
 const renewalType = computed(() => {
@@ -558,11 +593,11 @@ const renewalEligibilityMessage = computed(() => {
     return 'Cannot determine eligibility without a valid qualification expiry date.'
 
   if (hasExpired.value) {
-      return 'Your qualification has expired. Please proceed with re-registration.'
+    return 'Your qualification has expired. Please proceed with re-registration.'
   }
 
   if (isExpiringWithin3Months.value && !formData.value.is_active && !expiresToday.value) {
-      return 'Your qualification is not eligible for renewal because it is currently inactive. Please contact support for assistance.'
+    return 'Your qualification is not eligible for renewal because it is currently inactive. Please contact support for assistance.'
   }
 
   return 'Your qualification is currently not eligible. Renewal is only possible if it is active and expiring within 3 months, or if it has already expired.'
@@ -574,13 +609,6 @@ const getNewExpiryDate = computed(() => {
   if (!expiryDate.value) return dayjs().add(5, 'year').toDate()
   const baseDate = hasExpired.value ? dayjs() : expiryDate.value
   return baseDate.add(5, 'year').toDate()
-})
-
-const getTotalCpdPoints = computed(() => {
-  if (!cpdRecords.value || cpdRecords.value.length === 0) return 0
-  return cpdRecords.value
-    .filter((record) => record.review_status === 'Approved')
-    .reduce((total, record) => total + (Number(record.cpd_credit) || 0), 0)
 })
 
 const cpdStatus = computed(() => {
@@ -689,6 +717,7 @@ const cpdMessageIconColor = computed(() => {
 })
 
 onMounted(async () => {
+  cpdStore.fetchCpdRecords()
   await engineeringStore.initialize()
   if (!engineeringStore.visibleMenus.hasRenewalInProgress) {
     await fetchApplicationData()
@@ -720,7 +749,7 @@ const fetchApplicationData = async () => {
     }
 
     const sortedApplications = applications.sort((a, b) =>
-      dayjs(b.updated_at).isAfter(dayjs(a.updated_at)) ? 1 : -1
+      dayjs(b.updated_at).isAfter(dayjs(a.updated_at)) ? 1 : -1,
     )
 
     const latestApplication = sortedApplications[0]
@@ -756,16 +785,16 @@ const fetchApplicationData = async () => {
       detailedApplication.user_qualifications.length === 0
     ) {
       throw new Error(
-        'No qualifications found on the application. Cannot determine renewal eligibility.'
+        'No qualifications found on the application. Cannot determine renewal eligibility.',
       )
     }
 
     let primaryQualification = detailedApplication.user_qualifications.find(
-      (q) => q.is_primary_qualification === true
+      (q) => q.is_primary_qualification === true,
     )
     if (!primaryQualification && detailedApplication.user_qualifications.length > 0) {
       console.warn(
-        'No primary qualification found. Falling back to the one with the latest valid expiry date.'
+        'No primary qualification found. Falling back to the one with the latest valid expiry date.',
       )
       const sortedQualifications = [...detailedApplication.user_qualifications].sort((a, b) => {
         const dateA = dayjs(a.expiry_date)
@@ -784,13 +813,12 @@ const fetchApplicationData = async () => {
     const expiryDateOnQual = primaryQualification.expiry_date
     const expiryDateOnApp = detailedApplication.expiry_date
 
-    const finalExpiryDate = (expiryDateOnQual && dayjs(expiryDateOnQual).isValid())
-      ? expiryDateOnQual
-      : expiryDateOnApp
+    const finalExpiryDate =
+      expiryDateOnQual && dayjs(expiryDateOnQual).isValid() ? expiryDateOnQual : expiryDateOnApp
 
     if (!finalExpiryDate || !dayjs(finalExpiryDate).isValid()) {
       throw new Error(
-        'Could not find a valid expiry date on either the qualification or the main application.'
+        'Could not find a valid expiry date on either the qualification or the main application.',
       )
     }
 
@@ -799,14 +827,14 @@ const fetchApplicationData = async () => {
     if (primaryQualification.registration_date) {
       formData.value.registration_date = primaryQualification.registration_date
     }
-    
+
     if (typeof primaryQualification.is_active === 'boolean') {
       formData.value.is_active = primaryQualification.is_active
     } else if (typeof detailedApplication.is_active === 'boolean') {
       formData.value.is_active = detailedApplication.is_active
     }
 
-    await fetchCpdRecords(userCid)
+    // CPD records are now fetched from the store
   } catch (error) {
     console.error('Error fetching application data:', error)
     loadError.value = error.message || 'Failed to load application data. Please try again.'
@@ -819,28 +847,6 @@ const fetchApplicationData = async () => {
     }
   } finally {
     isLoading.value = false
-  }
-}
-
-const fetchCpdRecords = async (cid) => {
-  if (!cid) {
-    cpdLoadError.value = 'Cannot fetch CPD records without a CID.'
-    return
-  }
-  isCpdLoading.value = true
-  cpdLoadError.value = ''
-  cpdRecords.value = []
-  try {
-    await new Promise((resolve) => setTimeout(resolve, 500))
-    const response = await apiService.getEpcCpdRecordsByCid(cid)
-    cpdRecords.value = response?.data || []
-  } catch (error) {
-    console.error('Error fetching CPD records:', error)
-    cpdLoadError.value =
-      error.response?.data?.detail || error.message || 'Failed to load CPD records.'
-    cpdRecords.value = []
-  } finally {
-    isCpdLoading.value = false
   }
 }
 
@@ -899,19 +905,19 @@ const confirmSubmit = async () => {
       toast.success(
         `${
           renewalType.value === 're-registration' ? 'Re-registration' : 'Renewal'
-        } application submitted successfully! Payment will be processed later. Check "My Applications" for status.`
+        } application submitted successfully! Payment will be processed later. Check "My Applications" for status.`,
       )
       await engineeringStore.initialize()
       router.push('/admin/user/engineering_certification/my_applications')
     } else {
       console.warn(
         `${renewalType.value} created, but API response structure might be unexpected.`,
-        renewalResponse
+        renewalResponse,
       )
       toast.success(
         `${
           renewalType.value === 're-registration' ? 'Re-registration' : 'Renewal'
-        } application submitted successfully! Check "My Applications" for status. Payment will be handled later.`
+        } application submitted successfully! Check "My Applications" for status. Payment will be handled later.`,
       )
       await engineeringStore.initialize()
       router.push('/admin/user/engineering_certification/my_applications')

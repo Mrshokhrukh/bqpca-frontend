@@ -91,11 +91,9 @@ const filteredApplications = computed(() => {
         )
       : true
     const isSecondCopy = app.is_second_copy === true // Ensure boolean true
-    const isForward = app.forward === true
-    const isNotApproved = app.status !== 'approved'
 
     return (
-      matchesStatus && matchesType && matchesSearch && isSecondCopy && isForward && isNotApproved
+      matchesStatus && matchesType && matchesSearch && isSecondCopy
     )
   })
 })
@@ -151,6 +149,7 @@ const loadData = async () => {
   try {
     const response = await apiService.getRecognitionOfQualifications({
       user_id: userId.value, // Use user ID instead of email
+      status: 'under_review',
     })
     applications.value = response.data.results
   } catch (error) {

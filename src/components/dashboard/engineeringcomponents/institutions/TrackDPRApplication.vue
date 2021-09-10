@@ -281,6 +281,7 @@ const handlePaymentCompleted = async (paymentData) => {
   const paymentId = paymentData.paymentHash;
   const appToPay = selectedAppForPayment.value;
   appToPay.payment_status_display = 'Processing...';
+  let redirectUrl = null;
 
   try {
     const paymentGatewayFormData = new FormData();
@@ -298,15 +299,22 @@ const handlePaymentCompleted = async (paymentData) => {
     paymentGatewayFormData.append('application_no', appToPay.id);
     paymentGatewayFormData.append('app_type', 'epc_institute');
 
-    await apiService.makePayment(paymentGatewayFormData);
+    const paymentResponse = await apiService.makePayment(paymentGatewayFormData);
+    if (paymentResponse.data?.content?.redirectUrl) {
+      redirectUrl = paymentResponse.data.content.redirectUrl;
+    }
 
     const updateFormData = new FormData();
     updateFormData.append('payment_id', paymentId);
-    updateFormData.append('is_payment_complete', true);
+    updateFormData.append('is_payment_complete', false);
 
     await apiService.patchEpcInstitute(appToPay.id, updateFormData);
 
-    toast.success(`Payment confirmed (Ref: ${paymentId.substring(0, 8)}...). Your application is updated.`);
+    toast.success(`Payment initiated successfully. Redirecting for payment completion. A link has also been sent to your email.`, { timeout: 8000 });
+
+    if (redirectUrl) {
+        window.open(redirectUrl, '_blank');
+    }
 
     await fetchApplications();
 
@@ -320,6 +328,9 @@ const handlePaymentCompleted = async (paymentData) => {
     appToPay.payment_status_display = 'Failed';
   } finally {
     isLoading.value = false;
+    if (paymentModalRef.value) {
+        paymentModalRef.value.closeModal();
+    }
     closePaymentModal();
   }
 };

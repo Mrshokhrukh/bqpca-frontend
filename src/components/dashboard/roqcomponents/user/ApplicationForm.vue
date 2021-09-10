@@ -1304,6 +1304,8 @@ const handleSaveAsDraft = async () => {
 
 const handleSubmitActual = async (isDraft = false) => {
   isSubmitting.value = true
+  let redirectUrl = null
+
   try {
     const formData = new FormData()
     const formKeysToBackendKeys = {
@@ -1336,32 +1338,33 @@ const handleSubmitActual = async (isDraft = false) => {
     }
 
     if (!isDraft) {
-      const paymentData = {
-        platform: 'BQPCA e-Zhapto',
-        refNo: form.payment_id,
-        taxPayerNo: form.cid_no || 'N/A',
-        taxPayerDocumentNo: form.cid_no || 'N/A',
-        payerEmail: form.email_address,
-        mobileNo: form.contact_no,
-        totalPayableAmount: 1000.0,
-        serviceCode: '100192',
-        description: 'Payment for ROQ Application',
-        payableAmount: 1000.0,
-        taxPayerName: form.applicants_name,
-        application_no: form.payment_id,
-        app_type: 'ROQ',
-        user_id: authStore.userId,
-      }
+      const paymentInitiationFormData = new FormData()
+      paymentInitiationFormData.append('refNo', form.payment_id)
+      paymentInitiationFormData.append('serviceCode', '100192') // ROQ New Application
+      paymentInitiationFormData.append('taxPayerName', form.applicants_name)
+      paymentInitiationFormData.append('taxPayerNo', form.cid_no || 'N/A')
+      paymentInitiationFormData.append('taxPayerDocumentNo', form.cid_no || 'N/A')
+      paymentInitiationFormData.append('totalPayableAmount', 1000.0)
+      paymentInitiationFormData.append('description', 'Payment for ROQ Application')
+      paymentInitiationFormData.append('mobileNo', form.contact_no)
+      paymentInitiationFormData.append('payerEmail', form.email_address)
+      paymentInitiationFormData.append('user', authStore.userId)
+      paymentInitiationFormData.append('payableAmount', 1000.0)
+      paymentInitiationFormData.append('application_no', form.payment_id)
+      paymentInitiationFormData.append('app_type', 'recognition_of_qualification')
+
       try {
-        const paymentResponse = await apiService.makePayment(paymentData)
-        if (paymentResponse.status !== 201 && paymentResponse.status !== 200) {
-          throw new Error('Payment request failed with status: ' + paymentResponse.status)
+        const paymentResponse = await apiService.makePayment(paymentInitiationFormData)
+        if (paymentResponse.data?.content?.redirectUrl) {
+          redirectUrl = paymentResponse.data.content.redirectUrl
+        } else {
+          throw new Error('Redirect URL not received from payment gateway.')
         }
       } catch (paymentError) {
         console.error('Error making payment:', paymentError)
         toast.error(
           'Payment request failed: ' +
-            (paymentError.response?.data?.message || paymentError.message)
+            (paymentError.response?.data?.message || paymentError.message),
         )
         isSubmitting.value = false
         return
@@ -1372,7 +1375,17 @@ const handleSubmitActual = async (isDraft = false) => {
     if (props.mode === 'edit' && props.initialData?.id) {
       response = await apiService.updateRecognitionOfQualification(props.initialData.id, formData)
       if (response.status === 200) {
-        toast.success('Application updated successfully')
+        if (isDraft) {
+          toast.success('Draft updated successfully')
+        } else {
+          toast.success(
+            'Application updated successfully, redirecting for payment. A link has also been sent to your email.',
+            { timeout: 8000 }
+          )
+          if (redirectUrl) {
+            window.open(redirectUrl, '_blank')
+          }
+        }
         emit('application-submitted', response.data) // Emit updated data
       }
     } else {
@@ -1381,7 +1394,13 @@ const handleSubmitActual = async (isDraft = false) => {
         if (isDraft) {
           toast.success('Application saved as draft')
         } else {
-          toast.success('Application submitted successfully.')
+          toast.success(
+            'Application submitted successfully, redirecting for payment. A link has also been sent to your email.',
+            { timeout: 8000 }
+          )
+          if (redirectUrl) {
+            window.open(redirectUrl, '_blank')
+          }
         }
         emit('application-submitted', response.data) // Emit newly created data
       }

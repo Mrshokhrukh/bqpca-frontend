@@ -930,6 +930,9 @@ export default {
   deleteMhpcCpdTaskParticipant(id) {
     return apiClient.delete(`/mhpc/mhpc-cpd-task-participants/${id}/`)
   },
+  getMhpcCpdTaskParticipantsByCid(cid) {
+    return apiClient.get(`/mhpc/mhpc-cpd-task-participants/?cid=${cid}`)
+  },
   // ***** NEW METHOD FOR BULK UPLOAD *****
   /**
    * Bulk creates CPD Task Participants from a CSV file.

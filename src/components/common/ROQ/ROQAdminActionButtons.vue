@@ -32,6 +32,14 @@
     <!-- Dealing Officer Specific Buttons -->
     <template v-if="userRole === 'dealing_officer'">
       <button
+        v-if="showEditButton"
+        @click="handleAction('edit')"
+        class="inline-flex items-center justify-center gap-2 px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-amber-600 shadow-sm hover:bg-amber-700 transition-all duration-200"
+      >
+        <Pencil class="h-4 w-4" />
+        <span>Edit</span>
+      </button>
+      <button
         v-if="showAddNoteButton"
         @click="handleAction('addNote')"
         class="inline-flex items-center justify-center gap-2 px-3 py-2 border border-gray-200 text-sm font-medium rounded-md text-gray-700 bg-white shadow-sm hover:bg-gray-50 transition-all duration-200"
@@ -136,6 +144,8 @@ const hasAnyRemarks = computed(
 
 // DEALING OFFICER
 const doActionableStatuses = ['applied', 'processing']
+const doEditableStatuses = ['applied', 'processing', 'under_review', 'reprocess', 'reupload']
+const showEditButton = computed(() => doEditableStatuses.includes(props.application.status))
 const showAddNoteButton = computed(() => doActionableStatuses.includes(props.application.status))
 const hasRemarks = computed(() => !!props.application.dealing_officer_remarks)
 const showReUploadButton = computed(() => doActionableStatuses.includes(props.application.status))
