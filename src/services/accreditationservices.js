@@ -284,9 +284,9 @@ export default {
   sendNotification(userId, data) {
     return apiClient.post('/accreditations/notifications/', { user_id: userId, ...data });
   },
-  getNotifications(userId) {
-    return apiClient.get(`/accreditations/notifications/?user_id=${userId}`);
-  },
+  // getNotifications(userId) {
+  //   return apiClient.get(`/accreditations/notifications/?user_id=${userId}`);
+  // },
 
   // Payment Status endpoints
   updatePaymentStatus(applicationId, paymentData) {
