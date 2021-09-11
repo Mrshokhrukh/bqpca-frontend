@@ -85,6 +85,28 @@ const selectedApplication = ref({})
 const showRemarksModal = ref(false)
 const error = ref(null)
 
+const getErrorMessage = (error) => {
+  if (error.response) {
+    const data = error.response.data
+    if (data.detail) {
+      return data.detail // For {'detail': '...'}
+    }
+    if (typeof data === 'object' && data !== null) {
+      // For {'field': ['error msg'], 'field2': ['...']}
+      const messages = Object.entries(data).map(([field, errors]) => {
+        return `${field}: ${Array.isArray(errors) ? errors.join(', ') : errors}`
+      })
+      if (messages.length > 0) {
+        return messages.join('; ')
+      }
+    }
+    if (Array.isArray(data)) {
+      return data.join(', ') // For ['error msg']
+    }
+  }
+  return 'An unexpected error occurred. Please try again.'
+}
+
 const filteredApplications = computed(() => {
   return applications.value.filter((app) => {
     const matchesStatus = selectedStatus.value ? app.status === selectedStatus.value : true
@@ -201,7 +223,7 @@ const handleApplicationUpdate = async (updateData) => {
   } catch (e) {
     console.error('Error updating application:', e)
     toast.dismiss(updateLoadingToast)
-    const errorMsg = e.response?.data?.detail || 'Failed to update application.'
+    const errorMsg = getErrorMessage(e)
     toast.error(errorMsg)
   } finally {
     closeModal()

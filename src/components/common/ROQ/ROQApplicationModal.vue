@@ -274,6 +274,38 @@
                 </a>
               </div>
             </div>
+
+            <!-- Changes for Second Copy -->
+            <div
+              v-if="editableApplication.is_second_copy && editableApplication.change_details && editableApplication.change_details.length > 0"
+              class="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl p-5 sm:p-6 shadow-lg border border-yellow-200/50"
+            >
+              <div class="flex items-center gap-3 sm:gap-4 mb-5">
+                <div class="p-2.5 sm:p-3 bg-yellow-100/70 rounded-xl shadow-sm">
+                  <HistoryIcon class="w-5 h-5 text-yellow-600" />
+                </div>
+                <h4 class="text-md sm:text-lg font-semibold text-gray-800">
+                  Changes for Second Copy
+                </h4>
+              </div>
+              <div class="space-y-3">
+                <div 
+                  v-for="change in editableApplication.change_details" 
+                  :key="change.changed_field"
+                  class="p-3 bg-white/80 rounded-lg border border-gray-200/80"
+                >
+                  <p class="text-sm font-medium text-gray-600">{{ formatChangedField(change.changed_field) }}</p>
+                  <div class="flex items-center gap-2 mt-1 text-xs">
+                    <span class="text-red-600 bg-red-100 px-2 py-0.5 rounded-md">Old: {{ change.old_value }}</span>
+                    <ArrowRightIcon class="w-3 h-3 text-gray-400" />
+                    <span class="text-green-600 bg-green-100 px-2 py-0.5 rounded-md">New: {{ change.new_value }}</span>
+                  </div>
+                  <p v-if="change.changed_field === 'other' && change.other_description" class="text-xs text-gray-500 mt-2">
+                    Description: {{ change.other_description }}
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
 
           <!-- Other Modal Types (Forms) -->
@@ -418,6 +450,7 @@ import {
   Camera as CameraIcon,
   Send as SendIcon,
   Pencil as PencilIcon,
+  History as HistoryIcon,
 } from 'lucide-vue-next'
 
 const props = defineProps({
@@ -441,11 +474,7 @@ const isEditing = computed(() => props.modalType === 'edit')
 const qualifications = ref([])
 const courseTypes = ref([])
 const countries = ref([])
-const genders = ref([
-  { value: 'Male', text: 'Male' },
-  { value: 'Female', text: 'Female' },
-  { value: 'Other', text: 'Other' },
-])
+const genders = ref([])
 
 const headerColorClass = computed(
   () =>
@@ -636,6 +665,10 @@ async function fetchDropdownData() {
       qualsResponse.data?.results?.map((q) => ({ value: q.id, text: q.name })) || []
     courseTypes.value =
       typesResponse.data?.results?.map((t) => ({ value: t.id, text: t.name })) || []
+    genders.value = [
+      { value: 'M', text: 'Male' },
+      { value: 'F', text: 'Female' },
+    ]
   } catch (error) {
     toast.error('Failed to load necessary data for editing.')
     console.error(error)
@@ -647,8 +680,11 @@ watch(
   (newApp) => {
     if (newApp && Object.keys(newApp).length) {
       editableApplication.value = JSON.parse(JSON.stringify(newApp))
-      editableApplication.value.type_of_course_id = newApp.type_of_course?.id || null
-      editableApplication.value.qualification_id = newApp.qualification?.id || null
+      // Convert to string to fix prop type warning
+      editableApplication.value.type_of_course_id =
+        newApp.type_of_course?.id != null ? String(newApp.type_of_course.id) : null
+      editableApplication.value.qualification_id =
+        newApp.qualification?.id != null ? String(newApp.qualification.id) : null
     } else {
       editableApplication.value = {}
     }
@@ -679,6 +715,13 @@ watch(
     }
   }
 )
+
+const formatChangedField = (field) => {
+  if (!field) return ''
+  return field
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, (char) => char.toUpperCase())
+}
 
 watch(
   () => editableApplication.value.country,
