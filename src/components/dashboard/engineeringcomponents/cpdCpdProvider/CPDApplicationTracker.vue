@@ -1,6 +1,5 @@
 <template>
   <div class="w-full mx-auto px-4 py-8">
-    <!-- Application Tracking Header -->
     <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 rounded-xl p-8 mb-10">
       <h2 class="text-3xl font-bold text-gray-900 mb-3 text-center">
         Engineering CPD Application Tracking
@@ -10,13 +9,11 @@
       </p>
     </div>
 
-    <!-- Loading State -->
     <div v-if="loading" class="flex justify-center items-center py-16">
       <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       <span class="ml-3 text-lg text-gray-700">Loading applications...</span>
     </div>
 
-    <!-- Error Message -->
     <div v-if="error && !loading" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6 relative">
       <p class="font-bold">Error loading applications</p>
       <p>{{ error }}</p>
@@ -26,7 +23,6 @@
       </button>
     </div>
 
-    <!-- Approved Applications Notice -->
     <div v-if="!loading && hasApprovedApplicationsWithoutParticipants"
       class="bg-blue-50 border border-blue-200 text-blue-800 px-6 py-4 rounded-lg mb-6">
       <div class="flex items-start">
@@ -58,7 +54,6 @@
       </div>
     </div>
 
-    <!-- Empty State -->
     <div v-if="!loading && !error && userApplications.length === 0" class="bg-gray-50 rounded-xl p-8 text-center mt-6">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24"
         stroke="currentColor">
@@ -73,7 +68,6 @@
       </button>
     </div>
 
-    <!-- Search and Filter Controls -->
     <div v-if="!loading && !error && userApplications.length > 0"
       class="mb-6 flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center">
       <div class="relative w-full sm:w-auto">
@@ -105,7 +99,6 @@
       </div>
     </div>
 
-    <!-- Application Table -->
     <div v-if="!loading && !error && userApplications.length > 0"
       class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-x-auto">
       <table class="min-w-full divide-y divide-gray-200">
@@ -129,13 +122,11 @@
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
-          <!-- Display message if filters result in no matches -->
           <tr v-if="filteredApplications.length === 0">
             <td colspan="5" class="px-6 py-8 text-center text-gray-500 italic">
               No applications match your current search/filter criteria.
             </td>
           </tr>
-          <!-- Iterate over filtered applications -->
           <tr v-for="application in filteredApplications" :key="application.id"
             class="hover:bg-gray-50 transition-colors duration-150" :class="{
               'bg-blue-50 hover:bg-blue-100': isApprovedWithoutParticipants(application),
@@ -181,7 +172,6 @@
       </table>
     </div>
 
-    <!-- New Application Button -->
     <div v-if="!loading && userApplications.length > 0" class="mt-6 flex justify-end">
       <button @click="createNewApplication"
         class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
@@ -194,14 +184,11 @@
       </button>
     </div>
 
-    <!-- Application View Modal -->
     <div v-if="showViewModal && selectedApplication"
       class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4 overflow-y-auto transition-opacity duration-300"
       aria-labelledby="modal-title" role="dialog" aria-modal="true">
-      <!-- Modal content -->
       <div
         class="bg-white rounded-xl shadow-xl max-w-4xl w-full m-4 max-h-[95vh] overflow-hidden flex flex-col transform transition-all duration-300 scale-100">
-        <!-- Modal Header -->
         <div class="flex justify-between items-center p-5 border-b border-gray-200 bg-gray-50 rounded-t-xl">
           <h2 class="text-xl font-semibold text-gray-800" id="modal-title">
             Engineering CPD Application Details
@@ -217,9 +204,7 @@
           </button>
         </div>
 
-        <!-- Modal Body -->
         <div class="p-6 space-y-6 overflow-y-auto">
-          <!-- Status Banner (Needs Participants) -->
           <div v-if="isApprovedWithoutParticipants(selectedApplication)"
             class="bg-blue-50 border-l-4 border-blue-400 text-blue-700 p-4 rounded-r-lg" role="alert">
             <div class="flex">
@@ -246,7 +231,6 @@
             </div>
           </div>
 
-          <!-- Basic Info Section -->
           <div class="border border-gray-200 p-4 rounded-lg">
             <h3 class="text-lg font-semibold mb-3 text-gray-700 border-b pb-2">
               Basic Information
@@ -293,7 +277,6 @@
             </div>
           </div>
 
-          <!-- Applicant Details Section -->
           <div class="border border-gray-200 p-4 rounded-lg">
             <h3 class="text-lg font-semibold mb-3 text-gray-700 border-b pb-2">
               Applicant Details
@@ -326,7 +309,6 @@
             </div>
           </div>
 
-          <!-- START: Resource Persons Section -->
           <div v-if="selectedApplication.resources && selectedApplication.resources.length > 0"
             class="border border-gray-200 p-4 rounded-lg">
             <h3 class="text-lg font-semibold mb-3 text-gray-700 border-b pb-2">
@@ -371,10 +353,7 @@
               </table>
             </div>
           </div>
-          <!-- END: Resource Persons Section -->
 
-
-          <!-- CPD Details Section -->
           <div class="border border-gray-200 p-4 rounded-lg">
             <h3 class="text-lg font-semibold mb-3 text-gray-700 border-b pb-2">CPD Details</h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-3">
@@ -426,7 +405,6 @@
             </div>
           </div>
 
-          <!-- Supporting Documents Section -->
           <div
             v-if="selectedApplication.document_supporting_expertise || selectedApplication.course_document || selectedApplication.attachment"
             class="border border-gray-200 p-4 rounded-lg">
@@ -457,7 +435,6 @@
             </div>
           </div>
 
-          <!-- Participants Section (if present) -->
           <div v-if="selectedApplication.participants && selectedApplication.participants.length > 0"
             class="border border-gray-200 p-4 rounded-lg">
             <h3 class="text-lg font-semibold mb-3 text-gray-700 border-b pb-2">
@@ -514,14 +491,12 @@
               </table>
             </div>
           </div>
-          <!-- If no participants yet but needed -->
           <div v-else-if="isApprovedWithoutParticipants(selectedApplication)"
             class="border border-gray-200 p-4 rounded-lg text-center text-gray-500">
             <p>Participant details have not been added yet.</p>
           </div>
         </div>
 
-        <!-- Modal Footer -->
         <div class="flex items-center justify-end p-4 space-x-3 border-t border-gray-200 bg-gray-50 rounded-b-xl">
           <button @click="closeViewModal" type="button"
             class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200">
@@ -731,7 +706,7 @@ const fetchApplications = async () => {
     applications.value = []
     loading.value = false
     toast.error(error.value)
-    return 
+    return
   }
 
   try {

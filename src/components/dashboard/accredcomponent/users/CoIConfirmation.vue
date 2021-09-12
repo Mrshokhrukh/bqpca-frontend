@@ -112,25 +112,31 @@
         </div>
       </div>
 
-      <!-- All Responded State -->
-      <div v-else class="text-center py-12 bg-white shadow-lg rounded-lg">
+      <!-- State: "All Done". Shows only if user HAD records and now none are pending. -->
+      <div v-else-if="hasCompletedRecords" class="text-center py-12 bg-white shadow-lg rounded-lg">
         <svg class="mx-auto h-12 w-12 text-green-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
         <h3 class="mt-2 text-lg font-medium text-gray-900">All Declarations Submitted</h3>
         <p class="mt-1 text-sm text-gray-500">You have responded to all assigned assessors. Thank you.</p>
       </div>
+
+      <!-- State: "Awaiting Assignment". The default state if there's nothing to do. -->
+      <div v-else class="text-center py-12 bg-white shadow-lg rounded-lg">
+        <svg class="mx-auto h-12 w-12 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <h3 class="mt-2 text-lg font-medium text-gray-900">Awaiting Assessor Assignment</h3>
+        <p class="mt-1 text-sm text-gray-500">There are currently no proposed assessors for you to review. Please check back later.</p>
+      </div>
+
     </div>
 
-    <!-- ================================================================= -->
-    <!-- CORRECTED: Assessor Details Modal with Content                     -->
-    <!-- ================================================================= -->
+    <!-- Assessor Details Modal -->
     <transition enter-active-class="transition-opacity duration-300 ease-out" enter-from-class="opacity-0" enter-to-class="opacity-100" leave-active-class="transition-opacity duration-200 ease-in" leave-from-class="opacity-100" leave-to-class="opacity-0">
         <div v-if="assessorDetailsModalOpen" class="fixed inset-0 bg-gray-800 bg-opacity-75 z-50 flex items-center justify-center p-4" @click.self="closeAssessorModal">
             <div class="relative bg-white rounded-lg shadow-xl w-full max-w-lg mx-auto transform transition-all" v-if="selectedAssessor">
                 <!-- Modal Header -->
                 <div class="flex items-start justify-between p-5 border-b rounded-t">
-                    <h3 class="text-xl font-semibold text-gray-900">
-                        Assessor Details
-                    </h3>
+                    <h3 class="text-xl font-semibold text-gray-900">Assessor Details</h3>
                     <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" @click="closeAssessorModal">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
                     </button>
@@ -191,21 +197,27 @@ const loading = ref(true);
 const error = ref(null);
 const currentUser = ref(null);
 const isSubmitting = ref(false);
-
-const decisions = ref({}); // { [recordId]: { decision: 'no_conflict' | 'has_conflict', remarks: '' } }
+const decisions = ref({});
 const showFinalDeclaration = ref(false);
-
 const assessorDetailsModalOpen = ref(false);
 const selectedAssessor = ref(null);
 
-// --- Computed Properties ---
-const pendingRecords = computed(() => {
+
+const recordsForCurrentUser = computed(() => {
     if (!currentUser.value || !allCoiRecords.value) return [];
     return allCoiRecords.value.filter(record =>
-        record.status === 'pending_assessor' &&
         record.application_details?.institute_profile_details?.user_liaison_username === currentUser.value.username
     );
 });
+
+const pendingRecords = computed(() => {
+    return recordsForCurrentUser.value.filter(record => record.status === 'pending_assessor');
+});
+const hasCompletedRecords = computed(() => {
+    if (loading.value || !currentUser.value || !allCoiRecords.value) return false;
+    return recordsForCurrentUser.value.length > 0 && pendingRecords.value.length === 0;
+});
+
 
 const instituteName = computed(() => {
     return pendingRecords.value[0]?.application_details?.institute_profile_details?.name || 'Your Institute';
@@ -241,11 +253,12 @@ onMounted(() => {
   }
 });
 
+
 const fetchCoiRecords = async () => {
   loading.value = true;
   error.value = null;
-  decisions.value = {}; // Reset decisions on fetch
-  showFinalDeclaration.value = false; // Reset view on fetch
+  decisions.value = {};
+  showFinalDeclaration.value = false;
   try {
     const response = await apiService.getApplicationAssessorCOIs();
     allCoiRecords.value = response.data.results || [];
@@ -264,7 +277,7 @@ const updateDecision = (recordId, decision) => {
     }
     decisions.value[recordId].decision = decision;
     if (decision === 'no_conflict') {
-        decisions.value[recordId].remarks = ''; // Clear remarks if user switches back
+        decisions.value[recordId].remarks = '';
     }
 };
 
@@ -275,17 +288,14 @@ const handleSubmitDecisions = () => {
     }
     isSubmitting.value = true;
     if (hasAnyConflict.value) {
-        // If there's any conflict, submit everything right away
         submitAllDecisionsToServer();
     } else {
-        // If no conflicts, show the final declaration form
         showFinalDeclaration.value = true;
         isSubmitting.value = false;
     }
 };
 
 const handleFinalSignAndSubmit = () => {
-    // This is the final step after viewing the Annexure.
     isSubmitting.value = true;
     submitAllDecisionsToServer();
 };
@@ -293,7 +303,6 @@ const handleFinalSignAndSubmit = () => {
 // --- Server Communication ---
 const submitAllDecisionsToServer = async () => {
     const promises = [];
-
     for (const record of pendingRecords.value) {
         const decisionInfo = decisions.value[record.id];
         const formData = new FormData();
@@ -315,12 +324,11 @@ const submitAllDecisionsToServer = async () => {
         } else {
             alert("Declaration successfully signed and submitted!");
         }
-        // Refresh the list to show the "All Responded" state
         await fetchCoiRecords();
     } catch (err) {
         console.error("Submission error:", err);
         alert('An error occurred while submitting your declarations. Please try again.');
-        showFinalDeclaration.value = false; // Go back to the table on error
+        showFinalDeclaration.value = false;
     } finally {
         isSubmitting.value = false;
     }
@@ -333,7 +341,7 @@ const openAssessorModal = (assessor) => {
 };
 const closeAssessorModal = () => {
     assessorDetailsModalOpen.value = false;
-    selectedAssessor.value = null; // Clear selected assessor on close
+    selectedAssessor.value = null;
 };
 </script>
 
@@ -346,6 +354,6 @@ const closeAssessorModal = () => {
   to { opacity: 1; transform: translateY(0); }
 }
 .whitespace-pre-wrap {
-    white-space: pre-wrap; /* Ensures long text in textareas wraps correctly */
+    white-space: pre-wrap;
 }
 </style>
