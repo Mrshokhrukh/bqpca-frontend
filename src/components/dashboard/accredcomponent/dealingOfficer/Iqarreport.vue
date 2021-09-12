@@ -90,7 +90,7 @@
         <div class="p-6 overflow-y-auto">
           <!-- Display Submitted Data -->
           <div class="mb-6 space-y-4">
-            <h3 class="text-lg font-semibold border-b pb-2">Submitted Information</h3>
+            <h3 class="text-lg font-semibold border-b pb-2">Submited Information</h3>
 
             <!-- Implementation Plan Details (Part B) -->
             <div v-if="selectedReport.report_type === 'implementation_plan'">
@@ -165,8 +165,7 @@ const reports = ref([]);
 const isLoading = ref(true);
 const isSubmitting = ref(false);
 const error = ref(null);
-const filterStatus = ref('submitted'); // Default to show 'submitted' reports
-
+const filterStatus = ref('submitted');
 const isModalOpen = ref(false);
 const selectedReport = ref(null);
 const officerAction = ref({ status: 'reviewed', remarks: '' });
