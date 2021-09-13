@@ -20,7 +20,7 @@
                   id="qualificationName"
                   v-model="formData.qualification_name"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter qualification name"
+                  placeholder="e.g., PhD, Masters, Bachelors"
                   required
                 />
               </div>
@@ -35,16 +35,17 @@
                   v-model="formData.description"
                   rows="4"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter qualification description"
-                  required
+                  placeholder="Enter a brief description"
                 ></textarea>
               </div>
               <div class="flex gap-3">
                 <button
                   type="submit"
-                  class="flex-1 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  :disabled="isLoading"
+                  class="flex-1 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-blue-400"
                 >
-                  {{ isEditing ? 'Update Qualification' : 'Add Qualification' }}
+                  <span v-if="isLoading">Saving...</span>
+                  <span v-else>{{ isEditing ? 'Update Qualification' : 'Add Qualification' }}</span>
                 </button>
                 <button
                   v-if="isEditing"
@@ -76,7 +77,7 @@
               <input
                 type="text"
                 v-model="searchQuery"
-                placeholder="Search qualifications..."
+                placeholder="Search by name or description..."
                 class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
               <svg
@@ -95,6 +96,11 @@
             </div>
           </div>
 
+          <!-- Error Alert -->
+          <div v-if="error" class="mb-4 p-4 text-sm text-red-700 bg-red-100 rounded-lg">
+            {{ error }}
+          </div>
+
           <!-- Qualifications Grid -->
           <div class="space-y-4 mb-6">
             <TransitionGroup name="list">
@@ -110,10 +116,11 @@
                     </h3>
                     <p class="text-sm text-slate-600 mt-1">{{ qualification.description }}</p>
                   </div>
-                  <div class="flex gap-2">
+                  <div class="flex gap-2 flex-shrink-0">
                     <button
                       @click="startEdit(qualification)"
                       class="p-2 text-blue-600 hover:bg-blue-50 rounded-md"
+                      title="Edit Qualification"
                     >
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
@@ -127,6 +134,7 @@
                     <button
                       @click="openDeleteModal(qualification)"
                       class="p-2 text-red-600 hover:bg-red-50 rounded-md"
+                      title="Delete Qualification"
                     >
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
@@ -142,15 +150,18 @@
               </div>
             </TransitionGroup>
 
-            <!-- Empty State -->
-            <div v-if="filteredQualifications.length === 0" class="text-center py-8">
-              <p class="text-slate-500">No qualifications found</p>
+            <!-- Loading & Empty State -->
+            <div v-if="isLoading" class="text-center py-8">
+              <p class="text-slate-500">Loading qualifications...</p>
+            </div>
+            <div v-else-if="filteredQualifications.length === 0" class="text-center py-8">
+              <p class="text-slate-500">No qualifications found. Try a different search.</p>
             </div>
           </div>
 
           <!-- Pagination -->
           <div
-            v-if="filteredQualifications.length > itemsPerPage"
+            v-if="totalPages > 1"
             class="flex justify-center gap-2"
           >
             <button
@@ -183,9 +194,8 @@
             Are you absolutely sure?
           </AlertDialogTitle>
           <AlertDialogDescription class="text-slate-600 mb-6">
-            This action cannot be undone. This will permanently delete the qualification "{{
-              qualificationToDelete?.qualification_name
-            }}".
+            This action cannot be undone. This will permanently delete the qualification:
+            <strong class="text-slate-800">"{{ qualificationToDelete?.qualification_name }}"</strong>.
           </AlertDialogDescription>
           <div class="flex justify-end gap-4">
             <AlertDialogCancel
@@ -210,7 +220,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
-import services from '@/services/services'
+import apiService from '@/services/services'
 import {
   AlertDialogAction,
   AlertDialogCancel,
@@ -221,8 +231,10 @@ import {
   AlertDialogTitle,
 } from 'radix-vue'
 
-// State
+// Reactive State
 const qualifications = ref([])
+const isLoading = ref(false)
+const error = ref(null)
 const formData = ref({
   id: null,
   qualification_name: '',
@@ -231,30 +243,83 @@ const formData = ref({
 const isEditing = ref(false)
 const searchQuery = ref('')
 const currentPage = ref(1)
-const itemsPerPage = 5
+const itemsPerPage = 10
 
 const isDeleteModalOpen = ref(false)
 const qualificationToDelete = ref(null)
 
-// Fetch qualifications on component mount
-onMounted(async () => {
+// --- API Methods ---
+
+// Fetch all qualifications
+const fetchQualifications = async () => {
+  isLoading.value = true
+  error.value = null
   try {
-    const response = await services.getMastersQualifications()
+    const response = await apiService.getMastersQualifications()
     qualifications.value = response.data.results
-  } catch (error) {
-    console.error('Error fetching qualifications:', error)
+  } catch (err) {
+    error.value = 'Failed to fetch qualifications. Please try again.'
+    console.error('Error fetching qualifications:', err)
+  } finally {
+    isLoading.value = false
   }
+}
+
+// Handle form submission for both create and update
+const handleSubmit = async () => {
+  isLoading.value = true
+  error.value = null
+  try {
+    if (isEditing.value) {
+      await apiService.updateMastersQualification(formData.value.id, formData.value)
+    } else {
+      await apiService.createMastersQualification(formData.value)
+    }
+    // REFACTORED: Always re-fetch the list for data consistency
+    await fetchQualifications()
+    resetForm()
+  } catch (err) {
+    error.value = 'Failed to save the qualification. You may not have permission (Admin required).'
+    console.error('Error saving qualification:', err)
+  } finally {
+    isLoading.value = false
+  }
+}
+
+// Handle delete confirmation
+const confirmDelete = async () => {
+  if (!qualificationToDelete.value) return
+  isLoading.value = true
+  error.value = null
+  try {
+    await apiService.deleteMastersQualification(qualificationToDelete.value.id)
+    // REFACTORED: Re-fetch the list instead of manually splicing the array
+    await fetchQualifications()
+    closeDeleteModal()
+  } catch (err) {
+    error.value = 'Failed to delete the qualification. It might be linked to other data.'
+    console.error('Error deleting qualification:', err)
+  } finally {
+    isLoading.value = false
+  }
+}
+
+// --- Lifecycle Hook ---
+onMounted(() => {
+  fetchQualifications()
 })
 
-// Computed
+// --- Computed Properties for UI ---
 const filteredQualifications = computed(() => {
-  return qualifications.value.filter((qualification) => {
-    const query = searchQuery.value.toLowerCase()
-    return (
-      qualification.qualification_name.toLowerCase().includes(query) ||
-      qualification.description.toLowerCase().includes(query)
-    )
-  })
+  if (!searchQuery.value) {
+    return qualifications.value
+  }
+  const query = searchQuery.value.toLowerCase()
+  return qualifications.value.filter(
+    (q) =>
+      q.qualification_name.toLowerCase().includes(query) ||
+      (q.description && q.description.toLowerCase().includes(query))
+  )
 })
 
 const totalPages = computed(() => {
@@ -267,28 +332,11 @@ const paginatedQualifications = computed(() => {
   return filteredQualifications.value.slice(start, end)
 })
 
-// Methods
-const handleSubmit = async () => {
-  try {
-    if (isEditing.value) {
-      const response = await services.updateMastersQualification(formData.value.id, formData.value)
-      const index = qualifications.value.findIndex((q) => q.id === formData.value.id)
-      if (index !== -1) {
-        qualifications.value[index] = response.data
-      }
-    } else {
-      const response = await services.createMastersQualification(formData.value)
-      qualifications.value.push(response.data)
-    }
-    resetForm()
-  } catch (error) {
-    console.error('Error saving qualification:', error)
-  }
-}
-
+// --- Helper Methods ---
 const startEdit = (qualification) => {
   formData.value = { ...qualification }
   isEditing.value = true
+  window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
 const cancelEdit = () => {
@@ -305,21 +353,6 @@ const closeDeleteModal = () => {
   qualificationToDelete.value = null
 }
 
-const confirmDelete = async () => {
-  if (!qualificationToDelete.value) return
-
-  try {
-    await services.deleteMastersQualification(qualificationToDelete.value.id)
-    const index = qualifications.value.findIndex((q) => q.id === qualificationToDelete.value.id)
-    if (index !== -1) {
-      qualifications.value.splice(index, 1)
-    }
-    closeDeleteModal()
-  } catch (error) {
-    console.error('Error deleting qualification:', error)
-  }
-}
-
 const resetForm = () => {
   formData.value = {
     id: null,
@@ -329,7 +362,7 @@ const resetForm = () => {
   isEditing.value = false
 }
 
-// Watch for search query changes to reset pagination
+// Watch for search query changes to reset pagination to the first page
 watch(searchQuery, () => {
   currentPage.value = 1
 })
@@ -340,13 +373,11 @@ watch(searchQuery, () => {
 .list-leave-active {
   transition: all 0.3s ease;
 }
-
 .list-enter-from,
 .list-leave-to {
   opacity: 0;
   transform: translateX(30px);
 }
-
 .list-move {
   transition: transform 0.3s ease;
 }

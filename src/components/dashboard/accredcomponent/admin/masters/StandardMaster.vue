@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-50 p-4 lg:p-8">
     <div class="max-w-[1600px] mx-auto">
-      <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">Standard Management</h1>
+      <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">ISAR Standard Management</h1>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Left Column - Add/Edit Form -->
@@ -20,7 +20,7 @@
                   id="standardName"
                   v-model="formData.standard_name"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter standard name"
+                  placeholder="e.g., Standard 1: Curricular Aspects"
                   required
                 />
               </div>
@@ -33,16 +33,17 @@
                   v-model="formData.description"
                   rows="4"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter standard description"
-                  required
+                  placeholder="Enter a brief description of the standard"
                 ></textarea>
               </div>
               <div class="flex gap-3">
                 <button
                   type="submit"
-                  class="flex-1 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  :disabled="isLoading"
+                  class="flex-1 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-blue-400"
                 >
-                  {{ isEditing ? 'Update Standard' : 'Add Standard' }}
+                  <span v-if="isLoading">Saving...</span>
+                  <span v-else>{{ isEditing ? 'Update Standard' : 'Add Standard' }}</span>
                 </button>
                 <button
                   v-if="isEditing"
@@ -74,7 +75,7 @@
               <input
                 type="text"
                 v-model="searchQuery"
-                placeholder="Search Standards..."
+                placeholder="Search by name or description..."
                 class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
               <svg
@@ -93,6 +94,11 @@
             </div>
           </div>
 
+          <!-- Error Alert -->
+          <div v-if="error" class="mb-4 p-4 text-sm text-red-700 bg-red-100 rounded-lg">
+            {{ error }}
+          </div>
+
           <!-- Standards Grid -->
           <div class="space-y-4 mb-6">
             <TransitionGroup name="list">
@@ -106,10 +112,11 @@
                     <h3 class="font-medium text-slate-900">{{ standard.standard_name }}</h3>
                     <p class="text-sm text-slate-600 mt-1">{{ standard.description }}</p>
                   </div>
-                  <div class="flex gap-2">
+                  <div class="flex gap-2 flex-shrink-0">
                     <button
                       @click="startEdit(standard)"
                       class="p-2 text-blue-600 hover:bg-blue-50 rounded-md"
+                      title="Edit Standard"
                     >
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
@@ -123,6 +130,7 @@
                     <button
                       @click="openDeleteModal(standard)"
                       class="p-2 text-red-600 hover:bg-red-50 rounded-md"
+                      title="Delete Standard"
                     >
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
@@ -138,14 +146,17 @@
               </div>
             </TransitionGroup>
 
-            <!-- Empty State -->
-            <div v-if="filteredStandards.length === 0" class="text-center py-8">
-              <p class="text-slate-500">No standards found</p>
+            <!-- Loading & Empty State -->
+            <div v-if="isLoading" class="text-center py-8">
+               <p class="text-slate-500">Loading standards...</p>
+            </div>
+            <div v-else-if="filteredStandards.length === 0" class="text-center py-8">
+              <p class="text-slate-500">No standards found. Try a different search.</p>
             </div>
           </div>
 
           <!-- Pagination -->
-          <div v-if="filteredStandards.length > itemsPerPage" class="flex justify-center gap-2">
+          <div v-if="totalPages > 1" class="flex justify-center gap-2">
             <button
               @click="currentPage--"
               :disabled="currentPage === 1"
@@ -176,9 +187,8 @@
             Are you absolutely sure?
           </AlertDialogTitle>
           <AlertDialogDescription class="text-slate-600 mb-6">
-            This action cannot be undone. This will permanently delete the standard "{{
-              standardToDelete?.standard_name
-            }}".
+            This action cannot be undone. This will permanently delete the standard:
+            <strong class="text-slate-800">"{{ standardToDelete?.standard_name }}"</strong>.
           </AlertDialogDescription>
           <div class="flex justify-end gap-4">
             <AlertDialogCancel
@@ -203,7 +213,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
-import services from '@/services/services'
+import apiService from '@/services/services'
 import {
   AlertDialogAction,
   AlertDialogCancel,
@@ -214,8 +224,10 @@ import {
   AlertDialogTitle,
 } from 'radix-vue'
 
-// State
+// Reactive State
 const standards = ref([])
+const isLoading = ref(false)
+const error = ref(null)
 const formData = ref({
   id: null,
   standard_name: '',
@@ -224,30 +236,83 @@ const formData = ref({
 const isEditing = ref(false)
 const searchQuery = ref('')
 const currentPage = ref(1)
-const itemsPerPage = 5
+const itemsPerPage = 10 // Adjust as needed
 
 const isDeleteModalOpen = ref(false)
 const standardToDelete = ref(null)
 
-// Fetch standards on component mount
-onMounted(async () => {
+// --- API Methods ---
+
+// Fetch all standards
+const fetchStandards = async () => {
+  isLoading.value = true
+  error.value = null
   try {
-    const response = await services.getMastersStandards()
+    const response = await apiService.getMastersStandards()
     standards.value = response.data.results
-  } catch (error) {
-    console.error('Error fetching standards:', error)
+  } catch (err) {
+    error.value = 'Failed to fetch standards. Please try again.'
+    console.error('Error fetching standards:', err)
+  } finally {
+    isLoading.value = false
   }
+}
+
+// Handle form submission for both create and update
+const handleSubmit = async () => {
+  isLoading.value = true
+  error.value = null
+  try {
+    if (isEditing.value) {
+      await apiService.updateMastersStandard(formData.value.id, formData.value)
+    } else {
+      await apiService.createMastersStandard(formData.value)
+    }
+    // REFACTORED: Always re-fetch the list to ensure data consistency
+    await fetchStandards()
+    resetForm()
+  } catch (err) {
+    error.value = 'Failed to save the standard. You may not have permission (Admin required).'
+    console.error('Error saving standard:', err)
+  } finally {
+    isLoading.value = false
+  }
+}
+
+// Handle delete confirmation
+const confirmDelete = async () => {
+  if (!standardToDelete.value) return
+  isLoading.value = true
+  error.value = null
+  try {
+    await apiService.deleteMastersStandard(standardToDelete.value.id)
+    // REFACTORED: Re-fetch the list instead of manually splicing the array
+    await fetchStandards()
+    closeDeleteModal()
+  } catch (err) {
+    error.value = 'Failed to delete the standard. It might be linked to other data.'
+    console.error('Error deleting standard:', err)
+  } finally {
+    isLoading.value = false
+  }
+}
+
+// --- Lifecycle Hook ---
+onMounted(() => {
+  fetchStandards()
 })
 
-// Computed
+// --- Computed Properties for UI ---
 const filteredStandards = computed(() => {
-  return standards.value.filter((standard) => {
-    const query = searchQuery.value.toLowerCase()
-    return (
+  if (!searchQuery.value) {
+    return standards.value
+  }
+  const query = searchQuery.value.toLowerCase()
+  return standards.value.filter(
+    (standard) =>
       standard.standard_name.toLowerCase().includes(query) ||
-      standard.description.toLowerCase().includes(query)
-    )
-  })
+      (standard.description && standard.description.toLowerCase().includes(query))
+  )
 })
 
 const totalPages = computed(() => {
@@ -260,28 +325,11 @@ const paginatedStandards = computed(() => {
   return filteredStandards.value.slice(start, end)
 })
 
-// Methods
-const handleSubmit = async () => {
-  try {
-    if (isEditing.value) {
-      const response = await services.updateMastersStandard(formData.value.id, formData.value)
-      const index = standards.value.findIndex((st) => st.id === formData.value.id)
-      if (index !== -1) {
-        standards.value[index] = response.data
-      }
-    } else {
-      const response = await services.createMastersStandard(formData.value)
-      standards.value.push(response.data)
-    }
-    resetForm()
-  } catch (error) {
-    console.error('Error saving standard:', error)
-  }
-}
-
+// --- Helper Methods ---
 const startEdit = (standard) => {
   formData.value = { ...standard }
   isEditing.value = true
+  window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
 const cancelEdit = () => {
@@ -298,21 +346,6 @@ const closeDeleteModal = () => {
   standardToDelete.value = null
 }
 
-const confirmDelete = async () => {
-  if (!standardToDelete.value) return
-
-  try {
-    await services.deleteMastersStandard(standardToDelete.value.id)
-    const index = standards.value.findIndex((st) => st.id === standardToDelete.value.id)
-    if (index !== -1) {
-      standards.value.splice(index, 1)
-    }
-    closeDeleteModal()
-  } catch (error) {
-    console.error('Error deleting standard:', error)
-  }
-}
-
 const resetForm = () => {
   formData.value = {
     id: null,
@@ -322,7 +355,7 @@ const resetForm = () => {
   isEditing.value = false
 }
 
-// Watch for search query changes to reset pagination
+// Watch for search query changes to reset pagination to the first page
 watch(searchQuery, () => {
   currentPage.value = 1
 })
@@ -333,13 +366,11 @@ watch(searchQuery, () => {
 .list-leave-active {
   transition: all 0.3s ease;
 }
-
 .list-enter-from,
 .list-leave-to {
   opacity: 0;
   transform: translateX(30px);
 }
-
 .list-move {
   transition: transform 0.3s ease;
 }

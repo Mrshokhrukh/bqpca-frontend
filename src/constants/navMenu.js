@@ -1757,158 +1757,162 @@ const serviceSpecificMenuItems = {
       },
     ],
 
-    admin: [
+    // This is your complete 'admin' array for the sidebar configuration.
+
+admin: [
+  {
+    name: 'Dashboard',
+    icon: getIconComponent('LayoutDashboard'),
+    route: (serviceType) => `/admin/admin/${serviceType}/dashboard`,
+  },
+  // {
+  //   name: 'Applications & Appeals',
+  //   icon: getIconComponent('ClipboardList'),
+  //   children: [
+  //     {
+  //       name: 'Applications',
+  //       icon: getIconComponent('FileText'),
+  //       route: (serviceType) => `/admin/admin/${serviceType}/application_lists`,
+  //     },
+  //     {
+  //       name: 'Appeals',
+  //       icon: getIconComponent('History'),
+  //       route: (serviceType) => `/admin/admin/${serviceType}/appeal_lists`,
+  //     },
+  //     {
+  //       name: 'Past Accreditations',
+  //       icon: getIconComponent('History'), // Or Archive if available
+  //       route: (serviceType) => `/admin/admin/${serviceType}/past_accreditations`,
+  //     },
+  //   ],
+  // },
+  // {
+  //   name: 'Reports',
+  //   icon: getIconComponent('FileBarChart'),
+  //   route: (serviceType) => `/admin/admin/${serviceType}/reports`,
+  // },
+  {
+    name: 'Institutions',
+    icon: getIconComponent('Building'),
+    children: [
       {
-        name: 'Dashboard',
-        icon: getIconComponent('LayoutDashboard'),
-        route: (serviceType) => `/admin/admin/${serviceType}/dashboard`,
+        name: 'Manage Institute Types', // Renamed for clarity
+        icon: getIconComponent('Building2'),
+        // CORRECTED: This now points to the '/institute' route key
+        route: (serviceType) => `/admin/admin/${serviceType}/institute`,
+      },
+      // {
+      //   name: 'Assessor Pool',
+      //   icon: getIconComponent('Users2'),
+      //   route: (serviceType) => `/admin/admin/${serviceType}/assessor_pool`,
+      // },
+      // {
+      //   name: 'Institution Standards',
+      //   icon: getIconComponent('Award'),
+      //   route: (serviceType) => `/admin/admin/${serviceType}/institution_standards`,
+      // },
+    ],
+  },
+  {
+    name: 'Personnel',
+    icon: getIconComponent('Users'),
+    children: [
+      {
+        name: 'Categories',
+        icon: getIconComponent('List'),
+        route: (serviceType) => `/admin/admin/${serviceType}/employee_category`,
       },
       {
-        name: 'Applications & Appeals',
-        icon: getIconComponent('ClipboardList'),
-        children: [
-          {
-            name: 'Applications',
-            icon: getIconComponent('FileText'),
-            route: (serviceType) => `/admin/admin/${serviceType}/application_lists`,
-          },
-          {
-            name: 'Appeals',
-            icon: getIconComponent('History'),
-            route: (serviceType) => `/admin/admin/${serviceType}/appeal_lists`,
-          },
-          {
-            name: 'Past Accreditations',
-            icon: getIconComponent('History'), // Or Archive if available
-            route: (serviceType) => `/admin/admin/${serviceType}/past_accreditations`,
-          },
-        ],
+        name: 'Employee Types',
+        icon: getIconComponent('Briefcase'),
+        route: (serviceType) => `/admin/admin/${serviceType}/employee_type`,
       },
       {
-        name: 'Reports',
-        icon: getIconComponent('FileBarChart'),
-        route: (serviceType) => `/admin/admin/${serviceType}/reports`,
-      },
-      {
-        name: 'Institutions',
-        icon: getIconComponent('Building'),
-        children: [
-          {
-            name: 'Manage Institutes',
-            icon: getIconComponent('Building2'),
-            route: (serviceType) => `/admin/admin/${serviceType}/institute`,
-          },
-          {
-            name: 'Assessor Pool',
-            icon: getIconComponent('Users2'),
-            route: (serviceType) => `/admin/admin/${serviceType}/assessor_pool`,
-          },
-          {
-            name: 'Institution Standards',
-            icon: getIconComponent('Award'),
-            route: (serviceType) => `/admin/admin/${serviceType}/institution_standards`,
-          },
-        ],
-      },
-      {
-        name: 'Personnel',
+        name: 'Staff Types',
         icon: getIconComponent('Users'),
-        children: [
-          {
-            name: 'Categories',
-            icon: getIconComponent('List'),
-            route: (serviceType) => `/admin/admin/${serviceType}/employee_category`,
-          },
-          {
-            name: 'Employee Types',
-            icon: getIconComponent('Briefcase'),
-            route: (serviceType) => `/admin/admin/${serviceType}/employee_type`,
-          },
-          {
-            name: 'Staff Types',
-            icon: getIconComponent('Users'),
-            route: (serviceType) => `/admin/admin/${serviceType}/staff_type`,
-          },
-          {
-            name: 'Qualifications',
-            icon: getIconComponent('GraduationCap'),
-            route: (serviceType) => `/admin/admin/${serviceType}/qualification`,
-          },
-        ],
+        route: (serviceType) => `/admin/admin/${serviceType}/staff_type`,
       },
       {
-        name: 'Accreditation Setup',
-        icon: getIconComponent('Settings'),
-        children: [
-          {
-            name: 'Decisions',
-            icon: getIconComponent('CheckSquare'),
-            route: (serviceType) => `/admin/admin/${serviceType}/decision`,
-          },
-          {
-            name: 'Decision Classes',
-            icon: getIconComponent('Layers'),
-            route: (serviceType) => `/admin/admin/${serviceType}/decision_classes`,
-          },
-          {
-            name: 'Indicators',
-            icon: getIconComponent('Target'),
-            route: (serviceType) => `/admin/admin/${serviceType}/indicators`,
-          },
-          {
-            name: 'Key Aspects',
-            icon: getIconComponent('Key'),
-            route: (serviceType) => `/admin/admin/${serviceType}/key_aspects`,
-          },
-          {
-            name: 'Standards',
-            icon: getIconComponent('Award'),
-            route: (serviceType) => `/admin/admin/${serviceType}/standard`,
-          },
-          {
-            name: 'Rating Categories',
-            icon: getIconComponent('Star'),
-            route: (serviceType) => `/admin/admin/${serviceType}/rating_category`,
-          },
-        ],
-      },
-      {
-        name: 'System Config',
-        icon: getIconComponent('Sliders'),
-        children: [
-          {
-            name: 'Appeal Reasons',
-            icon: getIconComponent('Scroll'),
-            route: (serviceType) => `/admin/admin/${serviceType}/appeal_reason`,
-          },
-          {
-            name: 'Application Duration',
-            icon: getIconComponent('Clock'),
-            route: (serviceType) => `/admin/admin/${serviceType}/application_duration`,
-          },
-          {
-            name: 'Document Types',
-            icon: getIconComponent('FileText'),
-            route: (serviceType) => `/admin/admin/${serviceType}/document_type`,
-          },
-          {
-            name: 'E-Signature',
-            icon: getIconComponent('PenTool'),
-            route: (serviceType) => `/admin/admin/${serviceType}/e_signature`,
-          },
-          {
-            name: 'Fees',
-            icon: getIconComponent('DollarSign'),
-            route: (serviceType) => `/admin/admin/${serviceType}/fees`,
-          },
-          {
-            name: 'Source of Funding',
-            icon: getIconComponent('Wallet'),
-            route: (serviceType) => `/admin/admin/${serviceType}/source_of_funding`,
-          },
-        ],
+        name: 'Qualifications',
+        icon: getIconComponent('GraduationCap'),
+        route: (serviceType) => `/admin/admin/${serviceType}/qualification`,
       },
     ],
+  },
+  {
+    name: 'Accreditation Setup',
+    icon: getIconComponent('Settings'),
+    children: [
+      {
+        name: 'Decisions',
+        icon: getIconComponent('CheckSquare'),
+        route: (serviceType) => `/admin/admin/${serviceType}/decision`,
+      },
+      {
+        name: 'Decision Classes',
+        icon: getIconComponent('Layers'),
+        route: (serviceType) => `/admin/admin/${serviceType}/decision_classes`,
+      },
+      {
+        name: 'Indicators',
+        icon: getIconComponent('Target'),
+        route: (serviceType) => `/admin/admin/${serviceType}/indicators`,
+      },
+      {
+        name: 'Key Aspects',
+        icon: getIconComponent('Key'),
+        route: (serviceType) => `/admin/admin/${serviceType}/key_aspects`,
+      },
+      {
+        name: 'Standards',
+        icon: getIconComponent('Award'),
+        route: (serviceType) => `/admin/admin/${serviceType}/standard`,
+      },
+      {
+        name: 'Rating Categories',
+        icon: getIconComponent('Star'),
+        route: (serviceType) => `/admin/admin/${serviceType}/rating_category`,
+      },
+    ],
+  },
+  {
+    name: 'System Config',
+    icon: getIconComponent('Sliders'),
+    children: [
+      {
+        name: 'Appeal Reasons',
+        icon: getIconComponent('Scroll'),
+        route: (serviceType) => `/admin/admin/${serviceType}/appeal_reason`,
+      },
+      // {
+      //   name: 'Application Duration',
+      //   icon: getIconComponent('Clock'),
+      //   route: (serviceType) => `/admin/admin/${serviceType}/application_duration`,
+      // },
+      {
+        name: 'Document Types',
+        icon: getIconComponent('FileText'),
+        // CORRECTED: This route now points to the '/document_type' key
+        route: (serviceType) => `/admin/admin/${serviceType}/document_type`,
+      },
+      {
+        name: 'E-Signature',
+        icon: getIconComponent('PenTool'),
+        route: (serviceType) => `/admin/admin/${serviceType}/e_signature`,
+      },
+      {
+        name: 'Fees',
+        icon: getIconComponent('DollarSign'),
+        route: (serviceType) => `/admin/admin/${serviceType}/fees`,
+      },
+      {
+        name: 'Source of Funding',
+        icon: getIconComponent('Wallet'),
+        route: (serviceType) => `/admin/admin/${serviceType}/source_of_funding`,
+      },
+    ],
+  },
+],
     assessor: [
       {
         name: 'Dashboard',
