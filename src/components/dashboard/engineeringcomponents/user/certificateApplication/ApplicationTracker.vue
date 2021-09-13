@@ -342,7 +342,7 @@ const handlePaymentCompleted = async (paymentData) => {
     // Prepare payment gateway data
     const paymentInitiationFormData = new FormData()
     paymentInitiationFormData.append('refNo', paymentId)
-    paymentInitiationFormData.append('serviceCode', isRenewal ? '100256' : '100253') 
+    paymentInitiationFormData.append('serviceCode', isRenewal ? '100256' : '100253')
     paymentInitiationFormData.append('taxPayerName', user.cid)
     paymentInitiationFormData.append('taxPayerNo', user.cid)
     paymentInitiationFormData.append('taxPayerDocumentNo', user.cid)
@@ -352,6 +352,7 @@ const handlePaymentCompleted = async (paymentData) => {
     paymentInitiationFormData.append('user', user.id)
     paymentInitiationFormData.append('payableAmount', 100)
     paymentInitiationFormData.append('application_no', itemForPayment.id)
+    paymentInitiationFormData.append('description', 'Payment for Engineering Professional Certification')
     paymentInitiationFormData.append('app_type', 'specification_for_engineering_certification')
 
     // Call payment gateway
