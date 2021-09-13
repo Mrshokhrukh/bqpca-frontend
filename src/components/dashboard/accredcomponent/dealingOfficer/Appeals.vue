@@ -25,6 +25,8 @@
               <tr>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Institution</th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Appeal Reason</th>
+                <!-- NEW: Payment Status Header -->
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Status</th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Submitted On</th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
@@ -38,6 +40,13 @@
                 </td>
                 <td class="px-6 py-4">
                   <div class="text-sm text-gray-900">{{ appeal.appeal_reason_display }}</div>
+                </td>
+                <!-- NEW: Payment Status Data Cell -->
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span v-if="appeal.application_details" :class="['px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full', getPaymentStatusClass(appeal.application_details.is_payment_complete)]">
+                    {{ appeal.application_details.is_payment_complete ? 'Paid' : 'Pending' }}
+                  </span>
+                   <span v-else class="text-xs text-gray-400">N/A</span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatDate(appeal.created_at) }}</td>
                 <td class="px-6 py-4 whitespace-nowrap">
@@ -54,7 +63,7 @@
       </div>
     </div>
 
-    <!-- Appeal Details & Decision Modal -->
+    <!-- Appeal Details & Decision Modal (Unchanged) -->
     <div v-if="isModalOpen && selectedAppeal" class="fixed z-50 inset-0 overflow-y-auto">
       <div class="flex items-center justify-center min-h-screen px-4 text-center sm:block sm:p-0">
         <div class="fixed inset-0 bg-gray-500 bg-opacity-75" @click="closeModal"></div>
@@ -95,7 +104,7 @@
                 </div>
             </div>
 
-            <!-- Right Column: Officer Decision Panel (UPDATED) -->
+            <!-- Right Column: Officer Decision Panel (Unchanged) -->
             <div class="space-y-6">
               <div class="p-4 bg-blue-50 rounded-lg border border-blue-200">
                 <h4 class="text-lg font-semibold text-gray-800 border-b pb-2 mb-4">1. Appeal Decision</h4>
@@ -112,7 +121,7 @@
                 </div>
               </div>
 
-              <!-- NEW SECTION: This appears only if the appeal is approved -->
+              <!-- This appears only if the appeal is approved -->
               <div v-if="isAppealApproved" class="p-4 bg-green-50 rounded-lg border border-green-300 animate-fade-in">
                 <h4 class="text-lg font-semibold text-gray-800 border-b pb-2 mb-4">2. Post-Appeal Outcome</h4>
                 <p class="text-sm text-gray-600 mb-4">The appeal is approved. Specify the new grade for the original accreditation application.</p>
@@ -218,7 +227,8 @@ const saveDecision = async () => {
     closeModal();
     alert('Decision saved successfully! The original application has been updated.');
     await fetchInitialData(); // Refresh the list
-  } catch (error) {
+  } catch (error)
+  {
     console.error('Error saving decision:', error.response?.data);
     alert(`Failed to save decision. Server responded with: ${JSON.stringify(error.response?.data)}`);
   } finally {
@@ -251,11 +261,17 @@ const viewAppeal = (appeal) => {
 const closeModal = () => { isModalOpen.value = false; selectedAppeal.value = null; };
 
 const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-CA') : 'N/A';
+
 const getStatusClass = (s) => ({
     'submitted': 'bg-blue-100 text-blue-800',
     'decision_made': 'bg-green-100 text-green-800',
     'under_review_bac': 'bg-yellow-100 text-yellow-800',
 }[s] || 'bg-gray-100 text-gray-800');
+
+// NEW: Helper function for payment status badge
+const getPaymentStatusClass = (isComplete) => {
+  return isComplete ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800';
+};
 
 onMounted(fetchInitialData);
 </script>

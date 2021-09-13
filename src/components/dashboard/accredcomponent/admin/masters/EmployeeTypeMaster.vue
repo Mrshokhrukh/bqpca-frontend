@@ -1,374 +1,227 @@
-# EmployeeTypeManager.vue
-
 <template>
-  <div class="p-6 w-full mx-auto">
-    <h1 class="text-2xl font-bold text-gray-800 mb-6">Employee Type Management</h1>
+  <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-50 p-4 lg:p-8">
+    <div class="max-w-[1600px] mx-auto">
+      <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">Employee Type Management</h1>
 
-    <!-- Success/Error Notifications -->
-    <div
-      v-if="notification.show"
-      :class="{
-        'fixed top-4 right-4 p-4 rounded-md shadow-lg z-50 max-w-md': true,
-        'bg-green-50 text-green-800 border border-green-200': notification.type === 'success',
-        'bg-red-50 text-red-800 border border-red-200': notification.type === 'error',
-      }"
-    >
-      <div class="flex items-center justify-between">
-        <p>{{ notification.message }}</p>
-        <button @click="clearNotification" class="ml-4 text-gray-500 hover:text-gray-700">×</button>
-      </div>
-    </div>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Left Column - Add/Edit Form -->
+        <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6 h-fit sticky top-8">
+          <h2 class="text-xl font-semibold text-slate-900 mb-4">
+            {{ isEditing ? 'Edit Employee Type' : 'Add New Employee Type' }}
+          </h2>
+          <form @submit.prevent="handleSubmit" class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1">Employee Type Name</label>
+              <input
+                v-model="formData.employee_type_name"
+                type="text"
+                class="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="e.g., Regular, Contract, Visiting"
+                required
+                :maxlength="200"
+              />
+            </div>
 
-    <!-- Add/Edit Form -->
-    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-      <h2 class="text-xl font-semibold text-gray-700 mb-4">
-        {{ isEditing ? 'Edit Employee Type' : 'Add New Employee Type' }}
-      </h2>
-      <form @submit.prevent="handleSubmit" class="space-y-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Employee Type Name</label>
-          <input
-            v-model="formData.employee_type_name"
-            type="text"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Enter employee type name"
-            required
-            :maxlength="100"
-          />
-        </div>
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1">Description</label>
+              <textarea
+                v-model="formData.description"
+                rows="4"
+                class="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Enter a brief description of the employee type"
+                :maxlength="500"
+              ></textarea>
+            </div>
 
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
-          <textarea
-            v-model="formData.description"
-            rows="4"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Enter type description"
-            required
-            :maxlength="500"
-          ></textarea>
-          <p class="text-sm text-gray-500 mt-1">{{ formData.description.length }}/500 characters</p>
-        </div>
-
-        <div class="flex justify-end space-x-3">
-          <button
-            v-if="isEditing"
-            type="button"
-            @click="cancelEdit"
-            class="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            class="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            :disabled="isLoading"
-          >
-            <span v-if="isLoading" class="inline-flex items-center">
-              <svg
-                class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                fill="none"
-                viewBox="0 0 24 24"
+            <div class="flex justify-end space-x-3">
+              <button
+                v-if="isEditing"
+                type="button"
+                @click="cancelEdit"
+                class="px-4 py-2 text-slate-700 bg-slate-100 rounded-md hover:bg-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-500"
               >
-                <circle
-                  class="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  stroke-width="4"
-                ></circle>
-                <path
-                  class="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
-              </svg>
-              {{ isEditing ? 'Updating...' : 'Adding...' }}
-            </span>
-            <span v-else>{{ isEditing ? 'Update' : 'Add' }}</span>
-          </button>
+                Cancel
+              </button>
+              <button
+                type="submit"
+                class="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-blue-400"
+                :disabled="isLoading"
+              >
+                <span v-if="isLoading">{{ isEditing ? 'Updating...' : 'Adding...' }}</span>
+                <span v-else>{{ isEditing ? 'Update Type' : 'Add Type' }}</span>
+              </button>
+            </div>
+          </form>
         </div>
-      </form>
-    </div>
 
-    <!-- Data Table -->
-    <div class="bg-white rounded-lg shadow-md overflow-hidden">
-      <!-- Search and Filter -->
-      <div class="p-4 border-b border-gray-200">
-        <div class="flex items-center justify-between">
-          <input
-            v-model="searchQuery"
-            type="text"
-            placeholder="Search employee types..."
-            class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            @input="handleSearch"
-          />
-          <div class="ml-4">
-            <select
-              v-model="sortBy"
-              class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              @change="handleSort"
-            >
-              <option value="employee_type_name">Sort by Name</option>
-              <option value="created_at">Sort by Date</option>
-            </select>
+        <!-- Right Column - Data Table -->
+        <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
+          <div class="mb-6 space-y-4">
+            <div class="flex justify-between items-center">
+              <h2 class="text-xl font-semibold text-slate-900">Employee Types List</h2>
+              <span class="text-sm text-slate-500">
+                {{ pagination.count }} Type{{ pagination.count !== 1 ? 's' : '' }}
+              </span>
+            </div>
+             <!-- Error Alert -->
+            <div v-if="error" class="p-4 text-sm text-red-700 bg-red-100 rounded-lg">
+              {{ error }}
+            </div>
+          </div>
+
+          <div v-if="isLoading && !employeeTypes.length" class="text-center py-8">
+             <p class="text-slate-500">Loading employee types...</p>
+          </div>
+
+          <div v-else class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-200">
+              <thead class="bg-slate-50">
+                <tr>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Type Name</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Description</th>
+                  <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-slate-200">
+                <tr v-for="type in employeeTypes" :key="type.id" class="hover:bg-slate-50">
+                  <td class="px-6 py-4 whitespace-nowrap font-medium text-slate-900">{{ type.employee_type_name }}</td>
+                  <td class="px-6 py-4 text-slate-700">
+                    <p class="line-clamp-2">{{ type.description }}</p>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <div class="flex justify-end gap-2">
+                       <button @click="startEdit(type)" class="p-2 text-blue-600 hover:bg-blue-50 rounded-md" title="Edit Type">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                      </button>
+                      <button @click="openDeleteModal(type)" class="p-2 text-red-600 hover:bg-red-50 rounded-md" title="Delete Type">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr v-if="!isLoading && employeeTypes.length === 0">
+                  <td colspan="3" class="px-6 py-4 text-center text-slate-500">No employee types found.</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
-
-      <div class="min-w-full overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
-            <tr>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                @click="toggleSort('employee_type_name')"
-              >
-                Type Name
-                <span v-if="sortBy === 'employee_type_name'">
-                  {{ sortDesc ? '↓' : '↑' }}
-                </span>
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Description
-              </th>
-              <th
-                class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-if="isLoading && !types.length">
-              <td colspan="3" class="px-6 py-4 text-center text-gray-500">Loading...</td>
-            </tr>
-            <tr v-else-if="filteredTypes.length === 0">
-              <td colspan="3" class="px-6 py-4 text-center text-gray-500">
-                No employee types found
-              </td>
-            </tr>
-            <tr v-for="type in filteredTypes" :key="type.id">
-              <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
-                {{ type.employee_type_name }}
-              </td>
-              <td class="px-6 py-4">
-                <p class="line-clamp-2">{{ type.description }}</p>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                <button
-                  @click="editType(type)"
-                  class="text-blue-600 hover:text-blue-900 focus:outline-none"
-                  :disabled="isLoading"
-                >
-                  Edit
-                </button>
-                <button
-                  @click="confirmDelete(type.id)"
-                  class="text-red-600 hover:text-red-900 focus:outline-none"
-                  :disabled="isLoading"
-                >
-                  Delete
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Pagination -->
-      <div
-        v-if="totalPages > 1"
-        class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6"
-      >
-        <div class="flex-1 flex justify-between items-center">
-          <button
-            @click="currentPage > 1 && fetchTypes(currentPage - 1)"
-            :disabled="currentPage === 1 || isLoading"
-            class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-            :class="{ 'opacity-50 cursor-not-allowed': currentPage === 1 || isLoading }"
-          >
-            Previous
-          </button>
-          <span class="text-sm text-gray-700"> Page {{ currentPage }} of {{ totalPages }} </span>
-          <button
-            @click="currentPage < totalPages && fetchTypes(currentPage + 1)"
-            :disabled="currentPage === totalPages || isLoading"
-            class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-            :class="{
-              'opacity-50 cursor-not-allowed': currentPage === totalPages || isLoading,
-            }"
-          >
-            Next
-          </button>
-        </div>
-      </div>
     </div>
 
-    <!-- Delete Confirmation Modal -->
-    <div
-      v-if="showDeleteModal"
-      class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center"
-    >
-      <div class="bg-white p-6 rounded-lg shadow-xl max-w-md mx-auto">
-        <h3 class="text-lg font-medium text-gray-900 mb-4">Confirm Delete</h3>
-        <p class="text-gray-600 mb-6">
-          Are you sure you want to delete this employee type? This action cannot be undone.
-        </p>
-        <div class="flex justify-end space-x-3">
-          <button
-            @click="showDeleteModal = false"
-            class="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500"
-            :disabled="isLoading"
-          >
-            Cancel
-          </button>
-          <button
-            @click="deleteType"
-            class="px-4 py-2 text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
-            :disabled="isLoading"
-          >
-            <span v-if="isLoading">Deleting...</span>
-            <span v-else>Delete</span>
-          </button>
+    <!-- Delete Confirmation Modal using Radix -->
+    <AlertDialogRoot :open="isDeleteModalOpen" @update:open="isDeleteModalOpen = $event">
+      <AlertDialogContent class="fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[500px] translate-x-[-50%] translate-y-[-50%] rounded-lg bg-white p-6 shadow-lg focus:outline-none z-50">
+        <AlertDialogTitle class="text-xl font-semibold text-slate-900 mb-2">Are you absolutely sure?</AlertDialogTitle>
+        <AlertDialogDescription class="text-slate-600 mb-6">
+          This action cannot be undone. This will permanently delete the employee type: <strong class="text-slate-800">"{{ typeToDelete?.employee_type_name }}"</strong>.
+        </AlertDialogDescription>
+        <div class="flex justify-end gap-4">
+          <AlertDialogCancel class="px-4 py-2 rounded-md bg-slate-100 text-slate-700 hover:bg-slate-200" @click="closeDeleteModal">Cancel</AlertDialogCancel>
+          <AlertDialogAction class="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700" @click="confirmDelete">Delete</AlertDialogAction>
         </div>
-      </div>
-    </div>
+      </AlertDialogContent>
+      <AlertDialogOverlay class="fixed inset-0 bg-black/50 z-40" />
+    </AlertDialogRoot>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch, onBeforeUnmount } from 'vue'
-import api from '@/services/services'
+import { ref, onMounted } from 'vue'
+import apiService from '@/services/services'
+import {
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogOverlay,
+  AlertDialogRoot,
+  AlertDialogTitle,
+} from 'radix-vue'
 
-// State
-const types = ref([])
-const searchQuery = ref('')
+// Reactive State
+const employeeTypes = ref([])
+const isLoading = ref(false)
+const error = ref(null)
 const formData = ref({
   employee_type_name: '',
   description: '',
 })
 const isEditing = ref(false)
 const editingId = ref(null)
-const showDeleteModal = ref(false)
-const deleteId = ref(null)
-const currentPage = ref(1)
-const totalPages = ref(1)
-const isLoading = ref(false)
-const sortBy = ref('employee_type_name')
-const sortDesc = ref(false)
-const notification = ref({
-  show: false,
-  type: 'success',
-  message: '',
-  timeout: null,
+
+const isDeleteModalOpen = ref(false)
+const typeToDelete = ref(null)
+
+const pagination = ref({
+  count: 0,
+  next: null,
+  previous: null,
+  currentPage: 1
 })
 
-// Computed
-const filteredTypes = computed(() => {
-  let filtered = [...types.value]
-
-  // Search filter
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase()
-    filtered = filtered.filter(
-      (type) =>
-        type.employee_type_name.toLowerCase().includes(query) ||
-        type.description.toLowerCase().includes(query),
-    )
-  }
-
-  // Sort
-  filtered.sort((a, b) => {
-    const modifier = sortDesc.value ? -1 : 1
-    return a[sortBy.value] > b[sortBy.value] ? modifier : -modifier
-  })
-
-  return filtered
-})
-
-// Methods
-const fetchTypes = async (page = 1) => {
+// --- API Methods ---
+const fetchEmployeeTypes = async () => {
+  isLoading.value = true
+  error.value = null
   try {
-    isLoading.value = true
-    const response = await api.getMastersEmployeeTypes()
-    types.value = response.data.results
-    totalPages.value = Math.ceil(response.data.count / 10)
-    currentPage.value = page
-  } catch (error) {
-    showNotification('Error loading employee types', 'error')
+    const response = await apiService.getMastersEmployeeTypes()
+    employeeTypes.value = response.data.results
+    pagination.value.count = response.data.count
+  } catch (err) {
+    error.value = "Failed to load employee types. Please try again."
+    console.error('Error fetching employee types:', err)
   } finally {
     isLoading.value = false
-  }
-}
-
-const handleSearch = () => {
-  currentPage.value = 1
-}
-
-const handleSort = () => {
-  currentPage.value = 1
-}
-
-const toggleSort = (field) => {
-  if (sortBy.value === field) {
-    sortDesc.value = !sortDesc.value
-  } else {
-    sortBy.value = field
-    sortDesc.value = false
-  }
-}
-
-const showNotification = (message, type = 'success') => {
-  if (notification.value.timeout) {
-    clearTimeout(notification.value.timeout)
-  }
-  notification.value = {
-    show: true,
-    type,
-    message,
-    timeout: setTimeout(() => {
-      notification.value.show = false
-    }, 3000),
-  }
-}
-
-const clearNotification = () => {
-  notification.value.show = false
-  if (notification.value.timeout) {
-    clearTimeout(notification.value.timeout)
   }
 }
 
 const handleSubmit = async () => {
+  isLoading.value = true
+  error.value = null
   try {
-    isLoading.value = true
     if (isEditing.value) {
-      await api.updateMastersEmployeeType(editingId.value, formData.value)
-      showNotification('Employee type updated successfully')
+      await apiService.updateMastersEmployeeType(editingId.value, formData.value)
     } else {
-      await api.createMastersEmployeeType(formData.value)
-      showNotification('Employee type created successfully')
+      await apiService.createMastersEmployeeType(formData.value)
     }
+    await fetchEmployeeTypes()
     resetForm()
-    fetchTypes()
-  } catch (error) {
-    showNotification(error.response?.data?.message || 'Error saving employee type', 'error')
+  } catch (err) {
+    error.value = "Failed to save employee type. You may not have permission (Admin required)."
+    console.error('Error saving employee type:', err)
   } finally {
     isLoading.value = false
   }
 }
 
-const editType = (type) => {
-  formData.value = {
-    employee_type_name: type.employee_type_name,
-    description: type.description,
+const confirmDelete = async () => {
+  if (!typeToDelete.value) return
+  isLoading.value = true
+  error.value = null
+  try {
+    await apiService.deleteMastersEmployeeType(typeToDelete.value.id)
+    await fetchEmployeeTypes()
+    closeDeleteModal()
+  } catch (err) {
+    error.value = "Failed to delete employee type. It might be in use by other records."
+    console.error('Error deleting employee type:', err)
+  } finally {
+    isLoading.value = false
   }
+}
+
+// --- Lifecycle Hook ---
+onMounted(() => {
+  fetchEmployeeTypes()
+})
+
+// --- Helper Methods ---
+const startEdit = (type) => {
   isEditing.value = true
   editingId.value = type.id
+  formData.value = { ...type }
+  window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
 const cancelEdit = () => {
@@ -376,48 +229,25 @@ const cancelEdit = () => {
 }
 
 const resetForm = () => {
+  isEditing.value = false
+  editingId.value = null
   formData.value = {
     employee_type_name: '',
     description: '',
   }
-  isEditing.value = false
-  editingId.value = null
 }
 
-const confirmDelete = (id) => {
-  deleteId.value = id
-  showDeleteModal.value = true
+const openDeleteModal = (type) => {
+  typeToDelete.value = type
+  isDeleteModalOpen.value = true
 }
 
-const deleteType = async () => {
-  try {
-    isLoading.value = true
-    await api.deleteMastersEmployeeType(deleteId.value)
-    showDeleteModal.value = false
-    deleteId.value = null
-    showNotification('Employee type deleted successfully')
-    fetchTypes()
-  } catch (error) {
-    showNotification(error.response?.data?.message || 'Error deleting employee type', 'error')
-  } finally {
-    isLoading.value = false
-  }
+const closeDeleteModal = () => {
+  isDeleteModalOpen.value = false
+  typeToDelete.value = null
 }
-
-// Cleanup on component unmount
-onBeforeUnmount(() => {
-  if (notification.value.timeout) {
-    clearTimeout(notification.value.timeout)
-  }
-})
-
-// Lifecycle
-onMounted(() => {
-  fetchTypes()
-})
-
-// Watch for search query changes
-watch(searchQuery, () => {
-  handleSearch()
-})
 </script>
+
+<style scoped>
+/* Scoped styles if needed */
+</style>

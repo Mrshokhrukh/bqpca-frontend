@@ -1,3 +1,4 @@
+
 const roqDashboard = () => import('@/views/admin/ROQ/Dashboard.vue')
 const ecpfDashboard = () => import('@/views/admin/ECPF/Dashboard.vue')
 const mhpcDashboard = () => import('@/views/admin/MHPC/Dashboard.vue')
@@ -54,6 +55,7 @@ export default {
       institute: accredDashboard,
       key_aspects: accredDashboard,
       document: accredDashboard,
+      Document_type: accredDashboard,
       qualification: accredDashboard,
       rating_category: accredDashboard,
       source_of_funding: accredDashboard,

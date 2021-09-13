@@ -44,7 +44,8 @@
                 class="flex-1 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 :disabled="isLoading"
               >
-                {{ editingReason ? 'Update Reason' : 'Add Reason' }}
+                <span v-if="isLoading">Processing...</span>
+                <span v-else>{{ editingReason ? 'Update Reason' : 'Add Reason' }}</span>
               </button>
               <button
                 type="button"
@@ -67,29 +68,6 @@
                 {{ pagination.count }} Reason{{ pagination.count !== 1 ? 's' : '' }}
               </span>
             </div>
-            <div class="flex justify-end">
-              <button
-                @click="resetForm"
-                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
-                :disabled="isLoading"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-5 w-5 mr-2"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                  />
-                </svg>
-                Add New Reason
-              </button>
-            </div>
           </div>
 
           <!-- Error Alert -->
@@ -111,7 +89,7 @@
                   </svg>
                 </div>
                 <div class="ml-3">
-                  <h3 class="text-sm font-medium text-red-800">Error</h3>
+                  <h3 class="text-sm font-medium text-red-800">An Error Occurred</h3>
                   <p class="mt-1 text-sm text-red-700">{{ error }}</p>
                 </div>
               </div>
@@ -164,13 +142,13 @@
                           d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                         ></path>
                       </svg>
-                      <span class="ml-2">Loading...</span>
+                      <span class="ml-2">Loading reasons...</span>
                     </div>
                   </td>
                 </tr>
                 <tr v-else-if="appealReasons.length === 0">
                   <td colspan="3" class="px-6 py-4 text-center text-sm text-slate-500">
-                    No appeal reasons found
+                    No appeal reasons have been added yet.
                   </td>
                 </tr>
                 <tr
@@ -189,6 +167,7 @@
                       <button
                         @click="editReason(reason)"
                         class="p-2 text-blue-600 hover:bg-blue-50 rounded-md"
+                        title="Edit Reason"
                       >
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path
@@ -200,8 +179,9 @@
                         </svg>
                       </button>
                       <button
-                        @click="deleteAppealReason(reason.id)"
+                        @click="openDeleteModal(reason)"
                         class="p-2 text-red-600 hover:bg-red-50 rounded-md"
+                        title="Delete Reason"
                       >
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path
@@ -220,11 +200,11 @@
           </div>
 
           <!-- Pagination -->
-          <div v-if="pagination.count > 0" class="mt-6 flex justify-center gap-2">
+          <div v-if="totalPages() > 1" class="mt-6 flex justify-center items-center gap-2">
             <button
-              v-if="pagination.previous"
+              :disabled="!pagination.previous"
               @click="changePage(pagination.currentPage - 1)"
-              class="px-3 py-1 rounded border border-slate-300 hover:bg-slate-50"
+              class="px-3 py-1 rounded border border-slate-300 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Previous
             </button>
@@ -232,9 +212,9 @@
               Page {{ pagination.currentPage }} of {{ totalPages() }}
             </span>
             <button
-              v-if="pagination.next"
+              :disabled="!pagination.next"
               @click="changePage(pagination.currentPage + 1)"
-              class="px-3 py-1 rounded border border-slate-300 hover:bg-slate-50"
+              class="px-3 py-1 rounded border border-slate-300 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Next
             </button>
@@ -252,9 +232,8 @@
         Are you absolutely sure?
       </AlertDialogTitle>
       <AlertDialogDescription class="text-slate-600 mb-6">
-        This action cannot be undone. This will permanently delete the appeal reason "{{
-          formData.appeal_name
-        }}".
+        This action cannot be undone. This will permanently delete the appeal reason:
+        <strong class="text-slate-800">"{{ formData.appeal_name }}"</strong>.
       </AlertDialogDescription>
       <div class="flex justify-end gap-4">
         <AlertDialogCancel
@@ -267,7 +246,7 @@
           class="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700"
           @click="confirmDeleteReason"
         >
-          Delete
+          Yes, Delete Reason
         </AlertDialogAction>
       </div>
     </AlertDialogContent>
@@ -277,7 +256,8 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import api from '@/services/services'
+// CORRECTED: Import the service with the name you use.
+import apiService from '@/services/services'
 import {
   AlertDialogAction,
   AlertDialogCancel,
@@ -291,7 +271,6 @@ import {
 // Data
 const appealReasons = ref([])
 const isLoading = ref(false)
-// const showForm = ref(false) // Removed showForm ref
 const editingReason = ref(null)
 const isDeleteModalOpen = ref(false)
 const reasonToDeleteId = ref(null)
@@ -318,7 +297,8 @@ const fetchAppealReasons = async (page = 1) => {
   isLoading.value = true
   error.value = null
   try {
-    const response = await api.getMhpcMastersAppealReasons()
+    // CORRECTED: Use the correct function name from your services file.
+    const response = await apiService.getMastersAppealReasons()
     appealReasons.value = response.data.results
     pagination.value = {
       count: response.data.count,
@@ -327,8 +307,8 @@ const fetchAppealReasons = async (page = 1) => {
       currentPage: page,
     }
   } catch (err) {
-    error.value = 'Failed to fetch appeal reasons'
-    console.error('Error:', err)
+    error.value = 'Failed to fetch appeal reasons. Please check your connection and try again.'
+    console.error('Error fetching appeal reasons:', err)
   } finally {
     isLoading.value = false
   }
@@ -339,13 +319,13 @@ const createAppealReason = async () => {
   isLoading.value = true
   error.value = null
   try {
-    await api.createMhpcMastersAppealReason(formData.value)
-    await fetchAppealReasons(pagination.value.currentPage)
+    // CORRECTED: Use the correct function name.
+    await apiService.createMastersAppealReason(formData.value)
+    await fetchAppealReasons() // Fetch the first page to see the new entry
     resetForm()
-    // showForm.value = false // Removed showForm update
   } catch (err) {
-    error.value = 'Failed to create appeal reason'
-    console.error('Error:', err)
+    error.value = 'Failed to create appeal reason. You may not have permission (Admin required).'
+    console.error('Error creating appeal reason:', err)
   } finally {
     isLoading.value = false
   }
@@ -358,47 +338,51 @@ const updateAppealReason = async () => {
   isLoading.value = true
   error.value = null
   try {
-    await api.updateMhpcMastersAppealReason(editingReason.value.id, formData.value)
+    // CORRECTED: Use the correct function name.
+    await apiService.updateMastersAppealReason(editingReason.value.id, formData.value)
     await fetchAppealReasons(pagination.value.currentPage)
     resetForm()
-    // showForm.value = false; // Removed showForm update
   } catch (err) {
-    error.value = 'Failed to update appeal reason'
-    console.error('Error:', err)
+    error.value = 'Failed to update appeal reason. You may not have permission (Admin required).'
+    console.error('Error updating appeal reason:', err)
   } finally {
     isLoading.value = false
   }
 }
 
-// Delete appeal reason
-const deleteAppealReason = async (id) => {
-  // Function is now used in template, no more warning
-  reasonToDeleteId.value = id
+// Open the delete confirmation modal
+const openDeleteModal = (reason) => {
+  reasonToDeleteId.value = reason.id
+  // Set the name in formData so it can be displayed in the modal
+  formData.value.appeal_name = reason.appeal_name
   isDeleteModalOpen.value = true
 }
 
+// Confirm and execute the deletion
 const confirmDeleteReason = async () => {
   if (!reasonToDeleteId.value) return
   isLoading.value = true
   error.value = null
   try {
-    await api.deleteMhpcMastersAppealReason(reasonToDeleteId.value)
+    // CORRECTED: Use the correct function name.
+    await apiService.deleteMastersAppealReason(reasonToDeleteId.value)
     await fetchAppealReasons(pagination.value.currentPage)
     closeDeleteModal()
   } catch (err) {
-    error.value = 'Failed to delete appeal reason'
-    console.error('Error:', err)
+    error.value = 'Failed to delete appeal reason. You may not have permission (Admin required).'
+    console.error('Error deleting appeal reason:', err)
   } finally {
     isLoading.value = false
   }
 }
 
+// Close the delete modal
 const closeDeleteModal = () => {
   isDeleteModalOpen.value = false
   reasonToDeleteId.value = null
 }
 
-// Handle page change
+// Handle page change for pagination
 const changePage = async (page) => {
   await fetchAppealReasons(page)
 }
@@ -410,7 +394,8 @@ const editReason = (reason) => {
     appeal_name: reason.appeal_name,
     description: reason.description,
   }
-  // showForm.value = true // No need to show/hide form, it's always visible
+  // Scroll to the form for better UX on mobile
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 const resetForm = () => {
@@ -419,11 +404,12 @@ const resetForm = () => {
     description: '',
   }
   editingReason.value = null
-  // showForm.value = false // Removed showForm update
 }
 
-// Compute total pages
+// Compute total pages for pagination display
 const totalPages = () => {
+  // Your backend seems to be paginating by 10 by default.
+  // If you change the page size in Django, update the '10' here.
   return Math.ceil(pagination.value.count / 10)
 }
 
@@ -432,5 +418,3 @@ onMounted(() => {
   fetchAppealReasons()
 })
 </script>
-
-<style scoped></style>

@@ -98,6 +98,7 @@
     <AccreCertificateModal
       :is-open="isCertificateModalOpen"
       :application="selectedApplicationForCertificate"
+      :signature="activeSignature"
       @close="closeCertificateModal"
     />
 
@@ -118,8 +119,14 @@ const instituteProfile = ref({});
 const siteVisit = ref({ isScheduled: false, isConfirmed: false, startDate: null });
 const isCertificateModalOpen = ref(false);
 const selectedApplicationForCertificate = ref(null);
-// --- NEW: State for the application schedule ---
 const activeSchedule = ref(null);
+
+// === NEW: State for the active signature ===
+const activeSignature = ref({
+  name: '',
+  designation: '',
+  signatureUrl: '',
+});
 
 const FINAL_STATUSES = ['approved_accredited', 'approved_conditional', 'rejected_not_accredited', 'closed_withdrawn', 'closed_completed'];
 
@@ -133,12 +140,12 @@ const fetchDashboardData = async () => {
   loading.value = true;
   error.value = null;
   try {
-    // --- UPDATED: Use Promise.allSettled to prevent one failure from stopping all data loading ---
-    // This is useful because getActiveApplicationSchedule might return a 404, which is expected.
-    const [profileResult, appsResult, scheduleResult] = await Promise.allSettled([
+    // --- UPDATED: Added fetch for active signature ---
+    const [profileResult, appsResult, scheduleResult, signatureResult] = await Promise.allSettled([
       apiService.getMyInstituteProfile(),
       apiService.getAccreditationApplications(),
-      apiService.getActiveApplicationSchedule(), // This is the new API call
+      apiService.getActiveApplicationSchedule(),
+      apiService.getMastersESignatures({ is_active: true }), // <-- NEW API CALL
     ]);
 
     // Handle Institute Profile
@@ -151,7 +158,6 @@ const fetchDashboardData = async () => {
       } else {
         error.value = 'Could not load your dashboard. Please try again later.';
       }
-      // Stop further processing if profile fails, as it's critical
       loading.value = false;
       return;
     }
@@ -160,15 +166,25 @@ const fetchDashboardData = async () => {
     if (appsResult.status === 'fulfilled') {
       applications.value = appsResult.value.data.results;
       checkForSiteVisit(applications.value);
-    } // It's okay if this fails, we can still show the "apply" card
+    }
 
     // Handle Active Schedule
-    if (scheduleResult.status === 'fulfilled' && scheduleResult.value.data) {
-      // The API returned a 200 OK with schedule data
+    if (scheduleResult.status === 'fulfilled' && scheduleResult.value.data && Object.keys(scheduleResult.value.data).length > 0) {
       activeSchedule.value = scheduleResult.value.data;
     } else {
-      // API call failed (e.g., 404 Not Found) or returned empty data, meaning no active schedule
       activeSchedule.value = null;
+    }
+
+    // === NEW: Handle Active Signature ===
+    if (signatureResult.status === 'fulfilled' && signatureResult.value.data.results.length > 0) {
+        const sig = signatureResult.value.data.results[0];
+        activeSignature.value = {
+            name: sig.name,
+            designation: sig.designation,
+            signatureUrl: sig.signature, // The API provides the full URL
+        };
+    } else {
+        console.warn("No active e-signature found in the system.");
     }
 
   } catch (err) {
@@ -221,10 +237,8 @@ const latestApplication = computed(() => {
 const nextStep = computed(() => {
     const app = latestApplication.value;
 
-    // --- NEW LOGIC: Check for active schedule if user has no applications yet ---
     if (!app) {
       if (activeSchedule.value && activeSchedule.value.end_date) {
-        // --- CASE 1: No applications, and the window is OPEN ---
         return {
           icon: shallowRef(CalendarCheck),
           title: "Ready to Apply? The Window is Open!",
@@ -235,12 +249,11 @@ const nextStep = computed(() => {
           cardClass: 'bg-green-600'
         };
       } else {
-        // --- CASE 2: No applications, and the window is CLOSED ---
         return {
             icon: shallowRef(CalendarX),
             title: "Application Window Currently Closed",
             description: "We are not accepting new accreditation applications at this time. Please check back later for information on the next application cycle.",
-            actionType: null, // No action
+            actionType: null,
             cardClass: 'bg-gray-500'
         };
       }
@@ -280,7 +293,7 @@ const nextStep = computed(() => {
             icon: shallowRef(AlertTriangle),
             title: "Decision Reached",
             description: `A final decision has been made on your application. You may be eligible to appeal this decision.`,
-            actionType: 'link', link: `/admin/user/accreditation/track-accreditation`, actionText: "View Decision & Appeal"
+            actionType: 'link', link: `/admin/user/accreditation/track_accreditation`, actionText: "View Decision & Appeal"
         },
     };
 
@@ -305,7 +318,6 @@ const nextStep = computed(() => {
         return { icon: shallowRef(Clock), title: "In Progress", description: `Your application status is: ${app.status_display}.` };
     }
 });
-
 
 const recentActivities = computed(() => {
     if (!latestApplication.value) return [];

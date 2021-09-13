@@ -42,7 +42,10 @@
                   <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Application Ref.</th>
                   <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reason for Appeal</th>
                   <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Submission Date</th>
-                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                  <!-- === NEW COLUMN HEADER === -->
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Status</th>
+                  <!-- === RENAMED COLUMN HEADER === -->
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Appeal Status</th>
                   <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
@@ -51,6 +54,18 @@
                   <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ appeal.application_reference_no }}</td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ appeal.appeal_reason_display }}</td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ new Date(appeal.created_at).toLocaleDateString() }}</td>
+                  <!-- === NEW COLUMN CELL FOR PAYMENT STATUS === -->
+                  <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    <span v-if="appeal.status_appeal === 'draft'" class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                      N/A
+                    </span>
+                    <span v-else-if="appeal.is_payment_complete" class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                      Paid
+                    </span>
+                    <span v-else class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-orange-100 text-orange-800">
+                      Pending
+                    </span>
+                  </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm">
                     <span :class="getStatusClass(appeal.status_appeal)" class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full">
                       {{ appeal.status_appeal_display || appeal.status_appeal }}
@@ -105,10 +120,11 @@ const fetchData = async () => {
   try {
 
     const response = await apiService.getAccreditationAppeals();
+    // Assuming API response includes `is_payment_complete` boolean for each appeal
     appeals.value = response.data.results || [];
 
 
-    canApplyForAppeal.value = true;
+    canApplyForAppeal.value = true; // This should ideally be driven by API logic
 
   } catch (error) {
     console.error("Failed to fetch appeal data:", error);
