@@ -37,7 +37,6 @@
           <tr class="bg-gray-100">
             <th class="py-3 px-4 text-left border-b font-semibold text-gray-600">Application Ref #</th>
             <th class="py-3 px-4 text-left border-b font-semibold text-gray-600">Institute Name</th>
-            <!-- === NEW COLUMN HEADER === -->
             <th class="py-3 px-4 text-left border-b font-semibold text-gray-600">Payment Status</th>
             <th class="py-3 px-4 text-left border-b font-semibold text-gray-600">Submission Date</th>
             <th class="py-3 px-4 text-left border-b font-semibold text-gray-600">Status</th>
@@ -48,7 +47,6 @@
         </thead>
         <tbody>
           <tr v-if="filteredApplications.length === 0">
-            <!-- === UPDATED COLSPAN === -->
             <td colspan="8" class="py-4 px-4 text-center border-b text-gray-500">
               No applications found matching your criteria.
             </td>
@@ -62,7 +60,6 @@
                 {{ application.application_reference_no || application.application_uid.substring(0, 8) }}
             </td>
             <td class="py-3 px-4 border-b">{{ application.institute_profile_details.name }}</td>
-            <!-- === NEW COLUMN CELL FOR PAYMENT STATUS === -->
             <td class="py-3 px-4 border-b">
                 <span v-if="application.status === 'draft_initial'" class="text-gray-400">N/A</span>
                 <span v-else :class="getPaymentStatusClass(application.is_payment_complete)">
@@ -139,6 +136,7 @@
     <AccreCertificateModal
         :is-open="isCertificateModalOpen"
         :application="selectedApplicationForCertificate"
+        :signature="activeSignature"
         @close="closeCertificateModal"
     />
 
@@ -173,23 +171,45 @@ const selectedApplicationForIsar = ref(null);
 const isCertificateModalOpen = ref(false);
 const selectedApplicationForCertificate = ref(null);
 
+// === NEW: State for the active signature ===
+const activeSignature = ref({
+  name: '',
+  designation: '',
+  signatureUrl: '',
+});
+
 // Fetching Data
-const fetchApplications = async () => {
+const fetchData = async () => {
   loading.value = true;
   error.value = null;
   try {
-    const response = await apiService.getAccreditationApplications();
-    applications.value = response.data.results || response.data || [];
+    // === UPDATED: Fetch applications AND signature concurrently ===
+    const [appsResponse, sigResponse] = await Promise.all([
+        apiService.getAccreditationApplications(),
+        apiService.getMastersESignatures({ is_active: true })
+    ]);
+
+    applications.value = appsResponse.data.results || appsResponse.data || [];
+
+    if (sigResponse.data.results && sigResponse.data.results.length > 0) {
+        const sig = sigResponse.data.results[0];
+        activeSignature.value = {
+            name: sig.name,
+            designation: sig.designation,
+            signatureUrl: sig.signature,
+        };
+    }
+
   } catch (err) {
-    console.error('Error fetching accreditation applications:', err);
-    error.value = 'Failed to load applications.';
+    console.error('Error fetching data:', err);
+    error.value = 'Failed to load data.';
     toast.error(error.value);
   } finally {
     loading.value = false;
   }
 };
 
-onMounted(fetchApplications);
+onMounted(fetchData);
 
 // Computed Properties
 const uniqueStatuses = computed(() => {
@@ -203,7 +223,7 @@ const filteredApplications = computed(() => {
   return applications.value.filter(app => {
     const appName = app.institute_profile_details?.name || '';
     const appRef = app.application_reference_no || '';
-    const appUID = app.application_uid || ''; // Fallback search
+    const appUID = app.application_uid || '';
 
     const lowerCaseQuery = searchQuery.value.toLowerCase();
 
@@ -243,7 +263,6 @@ const getStatusClass = (statusKey) => {
     return `inline-block py-1 px-2 rounded text-xs font-medium ${mapping[statusKey] || 'bg-gray-100 text-gray-800'}`;
 };
 
-// === NEW HELPER FUNCTION FOR PAYMENT STATUS ===
 const getPaymentStatusClass = (isComplete) => {
     const baseClass = 'inline-block py-1 px-2 rounded text-xs font-medium';
     if (isComplete) {
@@ -299,13 +318,8 @@ const handleIsarSubmit = async (formData) => {
     try {
         formData.append('is_final_submission', 'true');
         const response = await apiService.createIsarReport(formData);
-        const updatedApplication = response.data;
-        const index = applications.value.findIndex(app => app.id === updatedApplication.id);
-        if (index !== -1) {
-            applications.value[index] = updatedApplication;
-        } else {
-            await fetchApplications();
-        }
+        // Re-fetch all data to ensure table is up-to-date
+        await fetchData();
         toast.success('ISAR submitted successfully! The application status has been updated.');
         closeIsarModal();
     } catch (err) {

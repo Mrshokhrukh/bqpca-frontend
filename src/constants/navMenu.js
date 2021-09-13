@@ -1692,12 +1692,12 @@ const serviceSpecificMenuItems = {
       {
         name: 'Dashboard',
         icon: getIconComponent('LayoutDashboard'),
-        route: (serviceType) => `/admin/dealing_officer/${serviceType}/dashboard`, // Corrected "dealing_Officer"
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/dashboard`,
       },
       {
         name: 'Manage Accreditation Schedule',
         icon: getIconComponent('LayoutDashboard'),
-        route: (serviceType) => `/admin/dealing_officer/${serviceType}/manage_accreditation_schedule`, // Corrected "dealing_Officer"
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/manage_accreditation_schedule`, 
       },
       {
         name: 'Accreditation Applications',
