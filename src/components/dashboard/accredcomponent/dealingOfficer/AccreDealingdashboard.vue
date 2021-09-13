@@ -1,21 +1,17 @@
 <template>
   <div class="min-h-screen bg-gray-100">
     <div class="mx-auto p-6">
-      <!-- Dashboard Header -->
       <header class="mb-8">
         <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
         <p class="text-gray-600 mt-1">System-wide statistics and recent activity.</p>
       </header>
 
-      <!-- Error Message Display -->
       <div v-if="error" class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-md" role="alert">
         <p class="font-bold">Error Loading Dashboard</p>
         <p>{{ error }}</p>
       </div>
 
-      <!-- Stats Cards - Now showing more relevant, historical data -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <!-- Total Applications (This Year) -->
         <div class="bg-white rounded-xl shadow-md overflow-hidden">
           <div class="p-6">
             <div class="flex items-center justify-between">
@@ -37,7 +33,6 @@
           </div>
         </div>
 
-        <!-- Active Processes -->
         <div class="bg-white rounded-xl shadow-md overflow-hidden">
           <div class="p-6">
             <div class="flex items-center justify-between">
@@ -57,7 +52,6 @@
           </div>
         </div>
 
-        <!-- Accredited Institutes -->
         <div class="bg-white rounded-xl shadow-md overflow-hidden">
           <div class="p-6">
             <div class="flex items-center justify-between">
@@ -77,7 +71,6 @@
           </div>
         </div>
 
-        <!-- Completed Processes (All Time) -->
         <div class="bg-white rounded-xl shadow-md overflow-hidden">
           <div class="p-6">
             <div class="flex items-center justify-between">
@@ -99,7 +92,6 @@
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-        <!-- Recent Activity Table -->
         <div class="lg:col-span-2 bg-white rounded-xl shadow-md overflow-hidden">
           <div class="px-6 py-4 border-b border-gray-200">
             <h2 class="text-lg font-semibold text-gray-900">Recent Activity</h2>
@@ -146,7 +138,6 @@
           </div>
         </div>
 
-        <!-- Application Status Overview Chart -->
         <div class="bg-white rounded-xl shadow-md p-6">
             <h3 class="text-lg font-semibold text-gray-900 mb-4">System Overview</h3>
             <div v-if="loading" class="text-center text-gray-500 py-4">Loading stats...</div>
@@ -169,56 +160,44 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
+import { useRouter } from 'vue-router';
 import apiService from '@/services/services';
 
-// --- Reactive State ---
+const router = useRouter();
+
 const loading = ref(true);
 const error = ref(null);
 const stats = ref({ totalThisYear: 0, activeProcesses: 0, accredited: 0, completed: 0 });
-const recentApplications = ref([]); // For table and chart
+const recentApplications = ref([]);
 
-// --- Constants for Status Groups ---
 const FINAL_STATUSES = ['approved_accredited', 'approved_conditional', 'rejected_not_accredited', 'closed_withdrawn', 'closed_completed'];
 
-// --- Lifecycle Hooks ---
 onMounted(() => {
   fetchDashboardData();
 });
 
-// --- Main Data Fetching Method ---
 const fetchDashboardData = async () => {
   loading.value = true;
   error.value = null;
   try {
     const currentYear = new Date().getFullYear();
 
-    // Fetch all necessary data in parallel
     const [
       totalThisYearResponse,
       accreditedResponse,
       allAppsResponse,
     ] = await Promise.all([
-      // 1. Get count for applications created this year
       apiService.getAccreditationApplications({ created_at__year: currentYear }),
-      // 2. Get count of all accredited applications
       apiService.getAccreditationApplications({ status: 'approved_accredited' }),
-      // 3. Get a list of all applications for calculating other stats and populating the table
       apiService.getAccreditationApplications({ limit: 200, ordering: '-updated_at' }),
     ]);
 
-    // Populate the dashboard from the fetched data
     const allApps = allAppsResponse.data.results;
 
-    // -- Set Card Statistics --
     stats.value.totalThisYear = totalThisYearResponse.data.count;
     stats.value.accredited = accreditedResponse.data.count;
-
-    // Calculate other stats from the main list
     stats.value.activeProcesses = allApps.filter(app => !FINAL_STATUSES.includes(app.status)).length;
     stats.value.completed = allApps.filter(app => FINAL_STATUSES.includes(app.status)).length;
-
-    // -- Set Recent Activity Table --
-    // Show top 10 most recently updated applications
     recentApplications.value = allApps.slice(0, 10);
 
   } catch (err) {
@@ -229,7 +208,6 @@ const fetchDashboardData = async () => {
   }
 };
 
-// --- Helper & Display Functions ---
 const formatDate = (dateString) => {
   if (!dateString) return 'N/A';
   return new Date(dateString).toLocaleDateString('en-US', {
@@ -253,14 +231,15 @@ const getStatusClass = (status) => {
 };
 
 const viewApplication = (appId) => {
-    // In a real app, use Vue Router to navigate
-    // import { useRouter } from 'vue-router'; const router = useRouter();
-    // router.push({ name: 'ApplicationDetails', params: { id: appId } });
-    alert(`Navigating to details for application ID: ${appId}`);
+    router.push({
+        path: '/admin/dealing_officer/accreditation/isar_reports',
+        query: { view: appId }
+    });
 };
 
-// --- Computed Properties for Chart ---
 const applicationStatusDistribution = computed(() => {
+    if (loading.value || recentApplications.value.length === 0) return [];
+
     const statusCounts = recentApplications.value.reduce((acc, app) => {
         const displayName = app.status_display || 'Unknown Status';
         acc[displayName] = (acc[displayName] || 0) + 1;

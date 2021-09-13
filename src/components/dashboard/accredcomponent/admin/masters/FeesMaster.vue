@@ -13,27 +13,29 @@
             <div class="space-y-4">
               <div>
                 <label for="feeCategory" class="block text-sm font-medium text-slate-700"
-                  >Fees Category</label
+                  >Fee Category</label
                 >
                 <input
                   type="text"
                   id="feeCategory"
                   v-model="formData.fee_category"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter fees category"
+                  placeholder="e.g., Initial Application Fee"
                   required
                 />
               </div>
               <div>
                 <label for="feeAmount" class="block text-sm font-medium text-slate-700"
-                  >Fees Amount</label
+                  >Fee Amount (Nu.)</label
                 >
                 <input
                   type="number"
                   id="feeAmount"
                   v-model="formData.fee_amount"
+                  step="0.01"
+                  min="0"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter fees amount"
+                  placeholder="e.g., 50000.00"
                   required
                 />
               </div>
@@ -46,17 +48,18 @@
                   v-model="formData.fee_description"
                   rows="4"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter description"
-                  required
+                  placeholder="Enter a brief description of the fee"
                 ></textarea>
               </div>
 
               <div class="flex gap-3">
                 <button
                   type="submit"
-                  class="flex-1 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  :disabled="isLoading"
+                  class="flex-1 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-blue-400"
                 >
-                  {{ isEditing ? 'Update Fee' : 'Add Fee' }}
+                  <span v-if="isLoading">Saving...</span>
+                  <span v-else>{{ isEditing ? 'Update Fee' : 'Add Fee' }}</span>
                 </button>
                 <button
                   v-if="isEditing"
@@ -86,7 +89,7 @@
               <input
                 type="text"
                 v-model="searchQuery"
-                placeholder="Search Fees..."
+                placeholder="Search by fee category..."
                 class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
               <svg
@@ -105,6 +108,11 @@
             </div>
           </div>
 
+          <!-- Error Alert -->
+          <div v-if="error" class="mb-4 p-4 text-sm text-red-700 bg-red-100 rounded-lg">
+            {{ error }}
+          </div>
+
           <!-- Fees Grid -->
           <div class="space-y-4 mb-6">
             <TransitionGroup name="list">
@@ -116,13 +124,14 @@
                 <div class="flex justify-between items-start gap-4">
                   <div>
                     <h3 class="font-medium text-slate-900">{{ fee.fee_category }}</h3>
-                    <p class="text-sm text-slate-600 mt-1">{{ fee.fee_amount }}</p>
+                    <p class="text-lg font-semibold text-blue-700 mt-1">{{ formatCurrency(fee.fee_amount) }}</p>
                     <p class="text-sm text-slate-600 mt-1">{{ fee.fee_description }}</p>
                   </div>
-                  <div class="flex gap-2">
+                  <div class="flex gap-2 flex-shrink-0">
                     <button
                       @click="startEdit(fee)"
                       class="p-2 text-blue-600 hover:bg-blue-50 rounded-md"
+                      title="Edit Fee"
                     >
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
@@ -136,6 +145,7 @@
                     <button
                       @click="openDeleteModal(fee)"
                       class="p-2 text-red-600 hover:bg-red-50 rounded-md"
+                      title="Delete Fee"
                     >
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
@@ -151,14 +161,17 @@
               </div>
             </TransitionGroup>
 
-            <!-- Empty State -->
-            <div v-if="filteredFees.length === 0" class="text-center py-8">
-              <p class="text-slate-500">No fees found</p>
+            <!-- Loading & Empty State -->
+            <div v-if="isLoading" class="text-center py-8">
+              <p class="text-slate-500">Loading fees...</p>
+            </div>
+            <div v-else-if="filteredFees.length === 0" class="text-center py-8">
+              <p class="text-slate-500">No fees found. Try a different search.</p>
             </div>
           </div>
 
           <!-- Pagination -->
-          <div v-if="filteredFees.length > itemsPerPage" class="flex justify-center gap-2">
+          <div v-if="totalPages > 1" class="flex justify-center gap-2">
             <button
               @click="currentPage--"
               :disabled="currentPage === 1"
@@ -189,9 +202,8 @@
             Are you absolutely sure?
           </AlertDialogTitle>
           <AlertDialogDescription class="text-slate-600 mb-6">
-            This action cannot be undone. This will permanently delete the fee "{{
-              feeToDelete?.fee_category
-            }}".
+            This action cannot be undone. This will permanently delete the fee:
+            <strong class="text-slate-800">"{{ feeToDelete?.fee_category }}"</strong>.
           </AlertDialogDescription>
           <div class="flex justify-end gap-4">
             <AlertDialogCancel
@@ -216,7 +228,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import services from '@/services/services'
+import apiService from '@/services/services'
 import {
   AlertDialogAction,
   AlertDialogCancel,
@@ -228,6 +240,8 @@ import {
 } from 'radix-vue'
 
 const fees = ref([])
+const isLoading = ref(false)
+const error = ref(null)
 const formData = ref({
   id: null,
   fee_category: '',
@@ -237,19 +251,33 @@ const formData = ref({
 const isEditing = ref(false)
 const searchQuery = ref('')
 const currentPage = ref(1)
-const itemsPerPage = 5
+const itemsPerPage = 10
 
 const isDeleteModalOpen = ref(false)
 const feeToDelete = ref(null)
 
+// Helper function to format currency
+const formatCurrency = (value) => {
+  if (value === null || value === undefined) return ''
+  return new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'BTN', // Use 'BTN' for Bhutanese Ngultrum
+    minimumFractionDigits: 2,
+  }).format(value).replace('BTN', 'Nu.')
+}
+
 // Fetch fees on component mount
 const fetchFees = async () => {
+  isLoading.value = true
+  error.value = null
   try {
-    const response = await services.getMastersFees()
+    const response = await apiService.getMastersFees()
     fees.value = response.data.results
-    console.log(fees.value)
-  } catch (error) {
-    console.error('Error fetching fees:', error)
+  } catch (err) {
+    error.value = 'Failed to fetch fees. Please try again.'
+    console.error('Error fetching fees:', err)
+  } finally {
+    isLoading.value = false
   }
 }
 
@@ -258,16 +286,25 @@ onMounted(() => {
 })
 
 const handleSubmit = async () => {
+  isLoading.value = true
+  error.value = null
   try {
-    if (isEditing.value) {
-      await services.updateMastersFee(formData.value.id, formData.value)
-    } else {
-      await services.createMastersFee(formData.value)
+    const payload = {
+      ...formData.value,
+      fee_amount: Number(formData.value.fee_amount) // Ensure amount is a number
     }
-    fetchFees()
+    if (isEditing.value) {
+      await apiService.updateMastersFee(formData.value.id, payload)
+    } else {
+      await apiService.createMastersFee(payload)
+    }
+    await fetchFees()
     resetForm()
-  } catch (error) {
-    console.error('Error saving fee:', error)
+  } catch (err) {
+    error.value = 'Failed to save the fee. You may not have the required permissions (Admin).';
+    console.error('Error saving fee:', err)
+  } finally {
+    isLoading.value = false
   }
 }
 
@@ -284,6 +321,7 @@ const resetForm = () => {
 const startEdit = (fee) => {
   formData.value = { ...fee }
   isEditing.value = true
+  window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
 const cancelEdit = () => {
@@ -301,16 +339,25 @@ const closeDeleteModal = () => {
 }
 
 const confirmDelete = async () => {
+  if (!feeToDelete.value) return
+  isLoading.value = true
+  error.value = null
   try {
-    await services.deleteMastersFee(feeToDelete.value.id)
-    fetchFees()
+    await apiService.deleteMastersFee(feeToDelete.value.id)
+    await fetchFees()
     closeDeleteModal()
-  } catch (error) {
-    console.error('Error deleting fee:', error)
+  } catch (err) {
+    error.value = 'Failed to delete the fee. It might be in use.';
+    console.error('Error deleting fee:', err)
+  } finally {
+    isLoading.value = false
   }
 }
 
 const filteredFees = computed(() => {
+  if (!searchQuery.value) {
+    return fees.value;
+  }
   return fees.value.filter((fee) =>
     fee.fee_category.toLowerCase().includes(searchQuery.value.toLowerCase()),
   )

@@ -1,26 +1,26 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-50 p-4 lg:p-8">
     <div class="max-w-[1600px] mx-auto">
-      <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">Institute Management</h1>
+      <h1 class="text-3xl font-bold text-slate-900 mb-6 font-serif">Institute Types Management</h1>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Left Column - Add/Edit Form -->
         <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6 h-fit sticky top-8">
           <h2 class="text-xl font-semibold text-slate-900 mb-4">
-            {{ isEditing ? 'Edit Institution' : 'Add New Institution' }}
+            {{ isEditing ? 'Edit Institute Type' : 'Add New Institute Type' }}
           </h2>
           <form @submit.prevent="handleSubmit">
             <div class="space-y-4">
               <div>
                 <label for="name" class="block text-sm font-medium text-slate-700"
-                  >Name of Institution</label
+                  >Name of Institute Type</label
                 >
                 <input
                   type="text"
                   id="name"
-                  v-model="formData.name_of_institute"
+                  v-model="formData.name"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter institution name"
+                  placeholder="e.g., University, College, Private Institute"
                   required
                 />
               </div>
@@ -33,16 +33,17 @@
                   v-model="formData.description"
                   rows="4"
                   class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter institution description"
-                  required
+                  placeholder="Enter a brief description"
                 ></textarea>
               </div>
               <div class="flex gap-3">
                 <button
                   type="submit"
-                  class="flex-1 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  :disabled="isLoading"
+                  class="flex-1 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-blue-400"
                 >
-                  {{ isEditing ? 'Update Institution' : 'Add Institution' }}
+                  <span v-if="isLoading">Saving...</span>
+                  <span v-else>{{ isEditing ? 'Update Type' : 'Add Type' }}</span>
                 </button>
                 <button
                   v-if="isEditing"
@@ -57,14 +58,14 @@
           </form>
         </div>
 
-        <!-- Right Column - Institutions List -->
+        <!-- Right Column - Institute Types List -->
         <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
           <div class="mb-6 space-y-4">
             <div class="flex justify-between items-center">
-              <h2 class="text-xl font-semibold text-slate-900">Institutions List</h2>
+              <h2 class="text-xl font-semibold text-slate-900">Institute Types List</h2>
               <span class="text-sm text-slate-500">
-                {{ filteredInstitutions.length }} Institution{{
-                  filteredInstitutions.length !== 1 ? 's' : ''
+                {{ filteredInstituteTypes.length }} Type{{
+                  filteredInstituteTypes.length !== 1 ? 's' : ''
                 }}
               </span>
             </div>
@@ -74,7 +75,7 @@
               <input
                 type="text"
                 v-model="searchQuery"
-                placeholder="Search Institutions..."
+                placeholder="Search by name..."
                 class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
               <svg
@@ -93,36 +94,45 @@
             </div>
           </div>
 
-          <!-- Institution Grid -->
-          <div class="space-y-4 mb-6">
+          <!-- Loading State -->
+          <div v-if="isLoading" class="text-center py-8">
+             <p class="text-slate-500">Loading institute types...</p>
+          </div>
+
+          <!-- Institute Type Grid -->
+          <div v-else class="space-y-4 mb-6">
             <TransitionGroup name="list">
+              <!-- CORRECTED: Iterate over the paginated list -->
               <div
-                v-for="institution in filteredInstitutions"
-                :key="institution.id"
+                v-for="type in paginatedInstituteTypes"
+                :key="type.id"
                 class="p-4 border border-slate-200 rounded-lg hover:border-blue-200 hover:bg-blue-50/30 transition-colors duration-200"
               >
                 <div class="flex justify-between items-start gap-4">
                   <div>
-                    <h3 class="font-medium text-slate-900">{{ institution.name_of_institute }}</h3>
-                    <p class="text-sm text-slate-600 mt-1">{{ institution.description }}</p>
+                    <!-- CORRECTED: Use 'name' field -->
+                    <h3 class="font-medium text-slate-900">{{ type.name }}</h3>
+                    <p class="text-sm text-slate-600 mt-1">{{ type.description }}</p>
                   </div>
-                  <div class="flex gap-2">
+                  <div class="flex gap-2 flex-shrink-0">
                     <button
-                      @click="startEdit(institution)"
+                      @click="startEdit(type)"
                       class="p-2 text-blue-600 hover:bg-blue-50 rounded-md"
+                      title="Edit Type"
                     >
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
                           stroke-linecap="round"
                           stroke-linejoin="round"
                           stroke-width="2"
-                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002 2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
                         />
                       </svg>
                     </button>
                     <button
-                      @click="openDeleteModal(institution)"
+                      @click="openDeleteModal(type)"
                       class="p-2 text-red-600 hover:bg-red-50 rounded-md"
+                      title="Delete Type"
                     >
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path
@@ -139,13 +149,13 @@
             </TransitionGroup>
 
             <!-- Empty State -->
-            <div v-if="filteredInstitutions.length === 0" class="text-center py-8">
-              <p class="text-slate-500">No institutions found</p>
+            <div v-if="filteredInstituteTypes.length === 0" class="text-center py-8">
+              <p class="text-slate-500">No institute types found. Try a different search.</p>
             </div>
           </div>
 
           <!-- Pagination -->
-          <div v-if="filteredInstitutions.length > itemsPerPage" class="flex justify-center gap-2">
+          <div v-if="totalPages > 1" class="flex justify-center gap-2">
             <button
               @click="currentPage--"
               :disabled="currentPage === 1"
@@ -176,9 +186,9 @@
             Are you absolutely sure?
           </AlertDialogTitle>
           <AlertDialogDescription class="text-slate-600 mb-6">
-            This action cannot be undone. This will permanently delete the institution "{{
-              institutionToDelete?.name_of_institute
-            }}".
+            This action cannot be undone. This will permanently delete the institute type: <strong class="text-slate-800">"{{
+              typeToDelete?.name
+            }}"</strong>.
           </AlertDialogDescription>
           <div class="flex justify-end gap-4">
             <AlertDialogCancel
@@ -203,7 +213,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import services from '@/services/services'
+import apiService from '@/services/services'
 import {
   AlertDialogAction,
   AlertDialogCancel,
@@ -214,100 +224,126 @@ import {
   AlertDialogTitle,
 } from 'radix-vue'
 
-const institutions = ref([])
+const instituteTypes = ref([])
+const isLoading = ref(false)
 const formData = ref({
   id: null,
-  name_of_institute: '',
+  // CORRECTED: Use 'name' to match the model
+  name: '',
   description: '',
 })
 const isEditing = ref(false)
 const searchQuery = ref('')
 const currentPage = ref(1)
-const itemsPerPage = 5
+const itemsPerPage = 10 // You can adjust this value
 
 const isDeleteModalOpen = ref(false)
-const institutionToDelete = ref(null)
+const typeToDelete = ref(null)
 
-// Fetch institutions on component mount
-const fetchInstitutions = async () => {
+// Fetch institute types on component mount
+const fetchInstituteTypes = async () => {
+  isLoading.value = true
   try {
-    const response = await services.getMastersInstitutes()
-    institutions.value = response.data.results
+    // CORRECTED: Use the correct API function name
+    const response = await apiService.getMastersInstituteTypes()
+    instituteTypes.value = response.data.results
   } catch (error) {
-    console.error('Error fetching institutions:', error)
+    console.error('Error fetching institute types:', error)
+    // You could add user-facing error feedback here
+  } finally {
+    isLoading.value = false
   }
 }
 
 onMounted(() => {
-  fetchInstitutions()
+  fetchInstituteTypes()
 })
 
 const handleSubmit = async () => {
+  isLoading.value = true
   try {
-    if (isEditing.value) {
-      await services.updateMastersInstitute(formData.value.id, formData.value)
-    } else {
-      await services.createMastersInstitute(formData.value)
+    const payload = {
+      name: formData.value.name,
+      description: formData.value.description,
     }
-    fetchInstitutions()
+    if (isEditing.value) {
+      // CORRECTED: Use the correct API function name
+      await apiService.updateMastersInstituteType(formData.value.id, payload)
+    } else {
+      // CORRECTED: Use the correct API function name
+      await apiService.createMastersInstituteType(payload)
+    }
+    await fetchInstituteTypes() // Refresh list after saving
     resetForm()
   } catch (error) {
-    console.error('Error saving institution:', error)
+    console.error('Error saving institute type:', error)
+  } finally {
+    isLoading.value = false
   }
 }
 
 const resetForm = () => {
   formData.value = {
     id: null,
-    name_of_institute: '',
+    name: '',
     description: '',
   }
   isEditing.value = false
 }
 
-const startEdit = (institution) => {
-  formData.value = { ...institution }
+const startEdit = (type) => {
+  formData.value = { ...type }
   isEditing.value = true
+  window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
 const cancelEdit = () => {
   resetForm()
 }
 
-const openDeleteModal = (institution) => {
-  institutionToDelete.value = institution
+const openDeleteModal = (type) => {
+  typeToDelete.value = type
   isDeleteModalOpen.value = true
 }
 
 const closeDeleteModal = () => {
-  institutionToDelete.value = null
+  typeToDelete.value = null
   isDeleteModalOpen.value = false
 }
 
 const confirmDelete = async () => {
+  if (!typeToDelete.value) return;
+  isLoading.value = true;
   try {
-    await services.deleteMastersInstitute(institutionToDelete.value.id)
-    fetchInstitutions()
+    // CORRECTED: Use the correct API function name
+    await apiService.deleteMastersInstituteType(typeToDelete.value.id)
+    await fetchInstituteTypes()
     closeDeleteModal()
   } catch (error) {
-    console.error('Error deleting institution:', error)
+    console.error('Error deleting institute type:', error)
+  } finally {
+    isLoading.value = false;
   }
 }
 
-const filteredInstitutions = computed(() => {
-  return institutions.value.filter((institution) =>
-    institution.name_of_institute.toLowerCase().includes(searchQuery.value.toLowerCase()),
+const filteredInstituteTypes = computed(() => {
+  if (!searchQuery.value) {
+    return instituteTypes.value;
+  }
+  return instituteTypes.value.filter((type) =>
+    type.name.toLowerCase().includes(searchQuery.value.toLowerCase()),
   )
 })
 
 const totalPages = computed(() => {
-  return Math.ceil(filteredInstitutions.value.length / itemsPerPage)
+  return Math.ceil(filteredInstituteTypes.value.length / itemsPerPage)
 })
 
-const paginatedInstitutions = computed(() => {
+// CORRECTED: This computed property now correctly slices the filtered list for pagination
+const paginatedInstituteTypes = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage
   const end = start + itemsPerPage
-  return filteredInstitutions.value.slice(start, end)
+  return filteredInstituteTypes.value.slice(start, end)
 })
 </script>
 

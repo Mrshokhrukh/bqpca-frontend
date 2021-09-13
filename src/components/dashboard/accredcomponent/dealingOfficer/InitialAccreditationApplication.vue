@@ -27,6 +27,8 @@
             <tr>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Institute</th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cycle</th>
+              <!-- NEW: Added Payment Status Header -->
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Status</th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Submitted On</th>
               <th scope="col" class="relative px-6 py-3"><span class="sr-only">Actions</span></th>
@@ -36,6 +38,12 @@
             <tr v-for="app in applications" :key="app.id" class="hover:bg-gray-50">
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ app.institute_profile_name_display }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ app.accreditation_cycle_display }}</td>
+              <!-- NEW: Added Payment Status Data Cell -->
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <span :class="['px-2 inline-flex text-xs leading-5 font-semibold rounded-full', paymentStatusBadgeClass(app.is_payment_complete)]">
+                  {{ app.is_payment_complete ? 'Paid' : 'Pending' }}
+                </span>
+              </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 <span :class="['px-2 inline-flex text-xs leading-5 font-semibold rounded-full', statusBadgeClass(app.status)]">
                   {{ app.status_display }}
@@ -108,8 +116,18 @@ const handleDecision = () => {
 const statusBadgeClass = (statusKey) => {
   const mapping = {
     'initial_app_submitted_heqc_review': 'bg-blue-100 text-blue-800',
+    // You can add other statuses here from your JSON for different colors
+    'approved_accredited': 'bg-green-100 text-green-800',
   };
   return mapping[statusKey] || 'bg-gray-100 text-gray-800';
+};
+
+// NEW: Added function for payment status badge classes
+const paymentStatusBadgeClass = (isComplete) => {
+  if (isComplete) {
+    return 'bg-green-100 text-green-800';
+  }
+  return 'bg-yellow-100 text-yellow-800';
 };
 
 onMounted(() => {

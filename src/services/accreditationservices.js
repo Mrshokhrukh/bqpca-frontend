@@ -347,7 +347,7 @@ export default {
   },
 
   /**
-   
+
    * @param {string|number} reportId The ID of the report to update.
    * @param {object} reportData The JSON payload containing fields to update.
    * @returns {Promise} A promise that resolves with the updated report data.
@@ -371,7 +371,6 @@ export default {
   submitPostAccreditationReport(reportId, reportData) {
     return this.patchPostAccreditationReport(reportId, reportData);
   },
-
 
   // Masters Fees endpoints
   getMastersFees() {
@@ -793,3 +792,4 @@ export default {
     return apiClient.get(endpoint);
   },
 };
+

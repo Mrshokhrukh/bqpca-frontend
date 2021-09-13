@@ -22,7 +22,6 @@
           >
             Download PDF
           </button>
-
           <button @click="closeModal" class="text-gray-500 hover:text-gray-800 text-2xl font-bold">
             ×
           </button>
@@ -37,52 +36,23 @@
         >
           <div class="relative border-2 border-gray-700 p-6 sm:p-10">
             <!-- Decorative Corner Images -->
-            <img
-              :src="cornerTopLeft"
-              alt="Top Left Border"
-              class="absolute top-0 left-0 w-24 h-24 object-contain"
-            />
-            <img
-              :src="cornerTopRight"
-              alt="Top Right Border"
-              class="absolute top-0 right-0 w-24 h-24 object-contain"
-            />
-            <img
-              :src="cornerBottomLeft"
-              alt="Bottom Left Border"
-              class="absolute bottom-0 left-0 w-24 h-24 object-contain"
-            />
-            <img
-              :src="cornerBottomRight"
-              alt="Bottom Right Border"
-              class="absolute bottom-0 right-0 w-24 h-24 object-contain"
-            />
+            <img :src="cornerTopLeft" alt="Top Left Border" class="absolute top-0 left-0 w-24 h-24 object-contain" />
+            <img :src="cornerTopRight" alt="Top Right Border" class="absolute top-0 right-0 w-24 h-24 object-contain" />
+            <img :src="cornerBottomLeft" alt="Bottom Left Border" class="absolute bottom-0 left-0 w-24 h-24 object-contain" />
+            <img :src="cornerBottomRight" alt="Bottom Right Border" class="absolute bottom-0 right-0 w-24 h-24 object-contain" />
 
             <!-- Certificate Content -->
             <div class="relative z-10">
               <header class="mb-4">
                 <!-- === LOGOS & TITLES SECTION === -->
                 <div class="text-center my-4 sm:my-6">
-                  <!-- LOGOS -->
                   <div class="flex justify-around items-center px-4 sm:px-8 mb-2">
-                    <img
-                      :src="rgobLogo"
-                      alt="Royal Government of Bhutan Logo"
-                      class="h-20 sm:h-24 w-auto object-contain"
-                    />
-                    <img
-                      :src="sherigLogo"
-                      alt="Ministry of Education and Skills Development Logo"
-                      class="h-20 sm:h-24 w-auto object-contain"
-                    />
-                    <img
-                      :src="accredLogo"
-                      alt="BQPCA Accreditation Logo"
-                      class="h-20 sm:h-24 w-auto object-contain"
-                    />
+                    <img :src="rgobLogo" alt="Royal Government of Bhutan Logo" class="h-20 sm:h-24 w-auto object-contain" />
+                    <img :src="sherigLogo" alt="Ministry of Education and Skills Development Logo" class="h-20 sm:h-24 w-auto object-contain" />
+                    <img :src="accredLogo" alt="BQPCA Accreditation Logo" class="h-20 sm:h-24 w-auto object-contain" />
                   </div>
                   <p class="text-base sm:text-lg font-semibold mt-2 mb-4">
-                    འབྲུག་ཤེས་ཚད་དང་ཁྱད་རིག་ངོ་སྦྱོར་དབང་འཛིན།
+                    འབྲུག་ཤེས་ཚད་དང་ཁྱད་རིག་ངོ་སྦྱྱོར་དབང་འཛིན།
                   </p>
                   <div class="inline-block">
                     <h2 class="text-base sm:text-lg font-semibold uppercase tracking-wider">
@@ -93,10 +63,9 @@
                 </div>
               </header>
 
-              <!-- Certificate Number -->
               <div class="mt-4 sm:mt-6 text-left">
                 <p class="text-sm font-semibold">
-                  Accreditation Certificate No. {{ application.application_reference_no || 'N/A' }}
+                  Accreditation Certificate No. {{ application.certificate_number || 'N/A' }}
                 </p>
               </div>
 
@@ -106,48 +75,48 @@
                 </h1>
                 <p class="text-lg sm:text-xl leading-relaxed max-w-3xl mx-auto">
                   This is to certify that
-                  <span class="font-bold text-xl sm:text-2xl block my-3">{{
-                    application.institute_profile_details.name
-                  }}</span>
+                  <span class="font-bold text-xl sm:text-2xl block my-3">
+                    {{ application.institute_profile_details.name }}
+                  </span>
                   is accredited by the
                   <span class="font-semibold block mt-1">Higher Education Quality Council,</span>
-                  <span class="font-semibold block mt-2"
-                    >Bhutan Qualifications and Professionals Certification Authority</span
-                  >
+                  <span class="font-semibold block mt-2">
+                    Bhutan Qualifications and Professionals Certification Authority
+                  </span>
                   with
-                  <span class="font-bold">{{
-                    application.final_grade_awarded_details.rating_category_name
-                  }}</span>
+                  <span class="font-bold">
+                    {{ application.final_grade_awarded_details.rating_category_name }}
+                  </span>
                   and is valid until {{ formattedValidityDate }}.
                 </p>
               </main>
 
-              <!-- === FOOTER - RESTRUCTURED TO 3 COLUMNS === -->
+              <!-- === FOOTER - RESTRUCTURED TO 2 COLUMNS === -->
               <footer class="mt-16 sm:mt-24">
                 <div class="flex justify-between items-end">
-                  <!-- Left: Date -->
+                  <!-- Left Side: Date -->
                   <div class="text-left">
                     <p><span class="font-semibold">Date:</span> {{ formattedIssueDate }}</p>
                   </div>
 
-                  <!-- Middle: Director -->
+                  <!-- Right Side: Director Signature and Name -->
                   <div class="text-center">
-                    <div class="border-b-2 border-gray-600 w-48 mb-1"></div>
-                    <p class="font-semibold">Director</p>
+                    <!-- Signature Image -->
+                    <div class="h-16 w-48 mb-1 flex items-center justify-center">
+                      <img
+                        v-if="signature.signatureUrl"
+                        :src="signature.signatureUrl"
+                        alt="Director's Signature"
+                        class="max-h-full max-w-full object-contain"
+                      />
+                       <div v-else class="h-full w-full border-b-2 border-gray-600"></div>
+                    </div>
+                    <!-- Name and Designation -->
+                    <p class="font-semibold">{{ signature.name || '(Director Name)' }}</p>
+                    <p class="text-sm">{{ signature.designation || 'Director' }}</p>
                   </div>
 
-                  <!-- Right: Seal -->
-                  <div class="text-right">
-                    <div v-if="application.seal_url" class="h-24 w-24 sm:h-28 sm:w-28 inline-block">
-                      <img :src="application.seal_url" alt="Official Seal" class="h-full w-full" />
-                    </div>
-                    <div
-                      v-else
-                      class="h-24 w-24 sm:h-28 sm:w-28 bg-gray-200 rounded-full flex items-center justify-center inline-block"
-                    >
-                      <span class="text-xs text-gray-500">Seal</span>
-                    </div>
-                  </div>
+                  <!-- Seal has been removed -->
                 </div>
               </footer>
             </div>
@@ -172,14 +141,26 @@ import cornerTopRight from '@/assets/corner_top_right.png'
 import cornerBottomLeft from '@/assets/corner_bottom_left.png'
 import cornerBottomRight from '@/assets/corner_bottom_right.png'
 
+// === PROPS DEFINITION ===
 const props = defineProps({
   isOpen: { type: Boolean, required: true },
   application: { type: Object, default: null },
+  signature: {
+    type: Object,
+    default: () => ({
+      name: '',
+      designation: '',
+      signatureUrl: '',
+    }),
+  },
 })
+
 const emit = defineEmits(['close'])
 const certificatePrintArea = ref(null)
+
 const closeModal = () => emit('close')
 
+// === COMPUTED PROPERTIES FOR DATES ===
 const formattedIssueDate = computed(() => {
   if (!props.application?.accreditation_validity_from) return ''
   const options = { day: 'numeric', month: 'long', year: 'numeric' }
@@ -195,19 +176,25 @@ const formattedValidityDate = computed(() => {
   return `${day}.${month}.${year}`
 })
 
+// === PDF DOWNLOAD FUNCTIONALITY ===
 const downloadCertificate = () => {
   if (!certificatePrintArea.value) {
     console.error('Certificate area not found for download.')
     return
   }
   const appName = props.application.institute_profile_details.name || 'Certificate'
-  const filename = `Accreditation-Certificate-${appName.replace(/ /g, '_')}.pdf`
+  const filename = `Accreditation-Certificate-${appName.replace(/\s+/g, '_')}.pdf`
+
   html2canvas(certificatePrintArea.value, {
-    scale: 2,
+    scale: 3,
     useCORS: true,
   }).then((canvas) => {
     const imgData = canvas.toDataURL('image/png')
-    const pdf = new jsPDF('landscape', 'mm', 'a4')
+    const pdf = new jsPDF({
+      orientation: 'landscape',
+      unit: 'mm',
+      format: 'a4',
+    })
     const pdfWidth = pdf.internal.pageSize.getWidth()
     const pdfHeight = pdf.internal.pageSize.getHeight()
     pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight)
@@ -217,6 +204,7 @@ const downloadCertificate = () => {
 </script>
 
 <style>
+/* Print styles remain the same */
 @media print {
   body {
     background-color: white !important;

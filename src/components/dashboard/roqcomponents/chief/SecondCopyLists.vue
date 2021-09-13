@@ -80,6 +80,28 @@ const selectedApplication = ref({})
 const showRemarksModal = ref(false)
 const error = ref(null)
 
+const getErrorMessage = (error) => {
+  if (error.response) {
+    const data = error.response.data
+    if (data.detail) {
+      return data.detail // For {'detail': '...'}
+    }
+    if (typeof data === 'object' && data !== null) {
+      // For {'field': ['error msg'], 'field2': ['...']}
+      const messages = Object.entries(data).map(([field, errors]) => {
+        return `${field}: ${Array.isArray(errors) ? errors.join(', ') : errors}`
+      })
+      if (messages.length > 0) {
+        return messages.join('; ')
+      }
+    }
+    if (Array.isArray(data)) {
+      return data.join(', ') // For ['error msg']
+    }
+  }
+  return 'An unexpected error occurred. Please try again.'
+}
+
 // Computed Property for filtered Applications
 const filteredApplications = computed(() => {
   return applications.value.filter((app) => {
@@ -91,11 +113,9 @@ const filteredApplications = computed(() => {
         )
       : true
     const isSecondCopy = app.is_second_copy === true // Ensure boolean true
-    const isForward = app.forward === true
-    const isNotApproved = app.status !== 'approved'
 
     return (
-      matchesStatus && matchesType && matchesSearch && isSecondCopy && isForward && isNotApproved
+      matchesStatus && matchesType && matchesSearch && isSecondCopy
     )
   })
 })
@@ -151,6 +171,7 @@ const loadData = async () => {
   try {
     const response = await apiService.getRecognitionOfQualifications({
       user_id: userId.value, // Use user ID instead of email
+      status: 'under_review',
     })
     applications.value = response.data.results
   } catch (error) {
@@ -209,39 +230,21 @@ const closeRemarksModal = () => {
 }
 
 const handleApplicationUpdate = async (updateData) => {
-  loading.value = true
+  const updateLoadingToast = toast.info('Updating application...', {
+    timeout: false,
+    closeButton: false,
+  })
   try {
-    if (updateData.modal_action === 'addNote') {
-      await apiService.patchRecognitionOfQualification(selectedApplication.value.id, {
-        chief_remarks: updateData.remarks,
-        modal_action: updateData.modal_action,
-      })
-    } else if (updateData.modal_action === 'regret') {
-      await apiService.patchRecognitionOfQualification(selectedApplication.value.id, {
-        chief_remarks: updateData.chief_remarks,
-        status: updateData.status,
-        modal_action: updateData.modal_action,
-      })
-    } else if (updateData.modal_action === 'assignQEC') {
-      await apiService.patchRecognitionOfQualification(selectedApplication.value.id, {
-        qec_number: updateData.qec_number,
-        status: updateData.status,
-        modal_action: updateData.modal_action,
-      })
-    } else if (updateData.modal_action === 'approve') {
-      await apiService.patchRecognitionOfQualification(selectedApplication.value.id, {
-        status: updateData.status,
-        modal_action: updateData.modal_action,
-        qec_number: 'None',
-      })
-    } else {
-      await apiService.updateRecognitionOfQualification(selectedApplication.value.id, updateData)
-    }
+    await apiService.patchRecognitionOfQualification(selectedApplication.value.id, updateData)
+    toast.dismiss(updateLoadingToast)
+    toast.success('Application updated successfully.')
     await loadData()
   } catch (e) {
     console.error('Error updating application:', e)
+    toast.dismiss(updateLoadingToast)
+    const errorMsg = getErrorMessage(e)
+    toast.error(errorMsg)
   } finally {
-    loading.value = false
     closeModal()
   }
 }

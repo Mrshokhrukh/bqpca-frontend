@@ -95,7 +95,7 @@
       </div>
 
       <div v-if="appeal.application && !loadingError" class="flex items-center justify-end space-x-4 p-6 border-t bg-gray-50">
-          <button type="button" @click="saveDraft" :disabled="isFormEmpty" class="px-6 py-3 border rounded-lg text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50">Save as Draft</button>
+          <button type="button" @click="saveDraft" :disabled="isFormEmpty || isSubmitting" class="px-6 py-3 border rounded-lg text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50">Save as Draft</button>
           <button type="button" @click="closeModal" class="px-6 py-3 border rounded-lg text-gray-700 bg-white hover:bg-gray-50">Cancel</button>
           <button type="button" @click="handleSubmit" :disabled="!isFormFullyValid || isSubmitting" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50">
             <span v-if="isSubmitting">Processing...</span>
@@ -104,10 +104,10 @@
       </div>
     </div>
 
+    <!-- PAYMENT INTEGRATION: Add Payment Modal Component -->
     <PaymentModal
       ref="paymentModal"
       :amount="1000"
-      :close-on-success="true"
       @payment-completed="onPaymentCompleted"
       @close="onPaymentModalClose"
     />
@@ -118,7 +118,9 @@
 import { ref, reactive, watch, computed, onMounted } from 'vue';
 import apiService from '@/services/services';
 import { useToast } from 'vue-toastification';
+// PAYMENT INTEGRATION: Import PaymentModal and authStore
 import PaymentModal from '@/components/common/PaymentModal.vue';
+import { useAuthStore } from '@/stores/authStore';
 
 const props = defineProps({
   isVisible: {
@@ -129,6 +131,8 @@ const props = defineProps({
 const emit = defineEmits(['close', 'appeal-submitted']);
 
 const toast = useToast();
+// PAYMENT INTEGRATION: Initialize authStore
+const authStore = useAuthStore();
 const DRAFT_KEY_PREFIX = 'appeal_draft_for_app_';
 const loadingError = ref(null);
 const appealedApplicationUID = ref('');
@@ -277,54 +281,111 @@ const handleSubmit = () => {
     toast.warning('Please fill out all required fields before proceeding.');
     return;
   }
+  isSubmitting.value = true;
   paymentModal.value.openModal();
 };
 
+// PAYMENT INTEGRATION: This function is called when the payment modal emits 'payment-completed'
 const onPaymentCompleted = (paymentData) => {
-  isSubmitting.value = true;
-  appeal.is_appeal_fee_paid = paymentData.paymentDone;
+  appeal.is_appeal_fee_paid = false; // Will be confirmed by webhook
   appeal.appeal_payment_id_gateway_ref = paymentData.paymentHash;
-  appeal.status_appeal = 'submitted';
-  submitAppealData();
+  appeal.status_appeal = 'pending_payment';
+  handleSubmitActual(); // Proceed with the actual submission
 };
 
+// PAYMENT INTEGRATION: This function is called when the payment modal is closed by the user
 const onPaymentModalClose = () => {
     toast.info('Payment was cancelled. Your appeal has not been submitted.');
     isSubmitting.value = false;
 };
 
-const submitAppealData = async () => {
-  const formData = new FormData();
-  Object.keys(appeal).forEach(key => {
-    const value = appeal[key];
-    if (key === 'supporting_documents') return;
-    if (typeof value === 'boolean') {
-      formData.append(key, value ? 'true' : 'false');
-    } else if (value !== null && value !== undefined) {
-      formData.append(key, value);
-    }
-  });
-  appeal.supporting_documents.forEach((file) => {
-    formData.append('supporting_documents', file, file.name);
-  });
+// PAYMENT INTEGRATION: This is the new core submission logic
+const handleSubmitActual = async () => {
+  let redirectUrl = null;
+  const user = authStore.user;
+
+  if (!user || !user.cid || !user.email || !user.contact_number) {
+    toast.error("User details are missing. Cannot proceed with payment.");
+    isSubmitting.value = false;
+    return;
+  }
+
   try {
-    toast.info("Submitting your appeal...");
-    await apiService.createApplicationAppeal(formData);
+    // Step 1: Initiate payment with the gateway to get a redirect URL
+    const feeAmount = 1000.0;
+    const paymentInitiationFormData = new FormData();
+    paymentInitiationFormData.append('refNo', appeal.appeal_payment_id_gateway_ref);
+    paymentInitiationFormData.append('serviceCode', '100195'); // Correct service code for appeals
+    paymentInitiationFormData.append('taxPayerName', autoFilledDetails['Name of Institution']);
+    paymentInitiationFormData.append('taxPayerNo', user.cid);
+    paymentInitiationFormData.append('taxPayerDocumentNo', user.cid);
+    paymentInitiationFormData.append('totalPayableAmount', feeAmount.toFixed(2));
+    paymentInitiationFormData.append('payableAmount', feeAmount.toFixed(2));
+    paymentInitiationFormData.append('description', 'Accreditation Institutions Appeal Fee');
+    paymentInitiationFormData.append('mobileNo', user.contact_number);
+    paymentInitiationFormData.append('payerEmail', user.email);
+    paymentInitiationFormData.append('user', user.id);
+    paymentInitiationFormData.append('application_no', appeal.appeal_payment_id_gateway_ref);
+    paymentInitiationFormData.append('app_type', 'accreditation_institutions_appeal');
+
+    try {
+        const paymentResponse = await apiService.makePayment(paymentInitiationFormData);
+        if (paymentResponse.data?.content?.redirectUrl) {
+            redirectUrl = paymentResponse.data.content.redirectUrl;
+        } else {
+            throw new Error('Redirect URL not received from payment gateway.');
+        }
+    } catch (paymentError) {
+        console.error('Error making payment:', paymentError.response?.data || paymentError);
+        const errorDetail = paymentError.response?.data ? JSON.stringify(paymentError.response.data) : paymentError.message;
+        toast.error('Payment request failed: ' + errorDetail);
+        isSubmitting.value = false;
+        return;
+    }
+
+    // Step 2: Save the appeal data to our backend
+    const appealFormData = new FormData();
+    Object.keys(appeal).forEach(key => {
+        const value = appeal[key];
+        if (key === 'supporting_documents') return;
+        if (typeof value === 'boolean') {
+            appealFormData.append(key, value ? 'true' : 'false');
+        } else if (value !== null && value !== undefined) {
+            appealFormData.append(key, value);
+        }
+    });
+    appeal.supporting_documents.forEach((file) => {
+        appealFormData.append('supporting_documents', file, file.name);
+    });
+
+    await apiService.createApplicationAppeal(appealFormData);
+
+    // Step 3: Success! Redirect user to payment page
+    toast.success(
+      'Appeal submitted, redirecting for payment. A link is also sent to your email.',
+      { timeout: 8000 }
+    );
+    if (redirectUrl) {
+        window.open(redirectUrl, '_blank');
+    }
+
     if (draftKey.value) {
         localStorage.removeItem(draftKey.value);
     }
-    toast.success('Your appeal has been submitted successfully!');
     emit('appeal-submitted');
     closeModal();
+
   } catch (error) {
     const errorMsg = error.response?.data?.detail || 'An unexpected error occurred while submitting the appeal.';
     toast.error(errorMsg);
+    // Revert status on failure
     appeal.status_appeal = 'draft';
     appeal.is_appeal_fee_paid = false;
   } finally {
     isSubmitting.value = false;
   }
 };
+
 
 watch(() => props.isVisible, (newValue) => {
   if (newValue) {

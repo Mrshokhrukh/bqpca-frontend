@@ -622,10 +622,9 @@ const prepareFormData = (isDraft = false) => {
 }
 
 const saveDraft = async () => {
-  if (!applicant.agencyTrainingLocation && !application.title && !isCpdApproved.value) {
-    validationErrors.value = ['Please fill in at least Agency/Training Location or Title of CPD (if not pre-approved) to save a draft.']
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-    return
+  if (!applicant.agencyTrainingLocation && !application.title) {
+    validationErrors.value = ['Please fill in at least Agency/Training Location or Title of CPD to save a draft.'];
+    window.scrollTo({ top: 0, behavior: 'smooth' }); return;
   }
   if (isCpdApproved.value && !approvalLetter.value) {
     validationErrors.value = ['Please upload the Approval Letter to save a draft for a pre-approved CPD.']
@@ -653,23 +652,13 @@ const saveDraft = async () => {
 
     setTimeout(() => { successMessage.value = '' }, 3000)
   } catch (error) {
-    validationErrors.value = ['An error occurred while saving the draft.']
-    if (error.response && error.response.data) {
-      const errorMessages = Object.values(error.response.data).flat()
-      validationErrors.value.push(...errorMessages)
-    }
+    validationErrors.value = ['Error saving draft. Please check fields.'];
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
-const handleSubmit = () => {
-  if (isFormValid.value) {
-    showConfirmation.value = true
-  } else {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
-}
+const handleSubmit = () => { if (isFormValid.value) showConfirmation.value = true; else window.scrollTo({ top: 0, behavior: 'smooth' }); };
 
 const confirmSubmit = async () => {
   showConfirmation.value = false
@@ -684,11 +673,9 @@ const confirmSubmit = async () => {
 
     // Check if we are updating a final submission or creating a new one
     if (application.id) {
-      // We have an ID, so we UPDATE (PUT request)
-      await apiService.updateEpcCpdTask(application.id, formData)
+      await apiService.updateEpcCpdTask(application.id, formData);
     } else {
-      // No ID, so we CREATE (POST request)
-      await apiService.createEpcCpdTask(formData)
+      await apiService.createEpcCpdTask(formData);
     }
 
     successMessage.value = 'CPD application submitted successfully!'
@@ -696,20 +683,21 @@ const confirmSubmit = async () => {
       router.push('/engineering_certification/track_cpd_applications')
     }, 2000)
   } catch (error) {
-    validationErrors.value = ['An error occurred while submitting the form.']
-    if (error.response && error.response.data) {
-      const errorMessages = Object.values(error.response.data).flat()
-      validationErrors.value.push(...errorMessages)
+    validationErrors.value = ['Submission failed. Please review errors.'];
+    if (error.response?.data) {
+      const errorMessages = Object.values(error.response.data).flat();
+      validationErrors.value.push(...errorMessages);
     }
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 const cancelForm = () => {
-  router.push('/engineering_certification/dashboard')
-}
+  localStorage.removeItem('cpdDraftToEdit');
+  router.push('/engineering_certification/dashboard');
+};
 
 onMounted(async () => {
   loading.value = true

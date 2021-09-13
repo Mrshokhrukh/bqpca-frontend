@@ -6,42 +6,42 @@
       <suspense>
         <component :is="adminComponent" />
         <template #fallback>
-          <div>Loading...</div>
+          <div>Loading Component...</div>
         </template>
       </suspense>
     </template>
 
-    <!-- Dealing Officer Section -->
+    <!-- Dealing Officer Section (UNCHANGED) -->
     <template v-else-if="role === 'dealing_officer'">
       <component :is="dealingOfficerComponent" />
     </template>
 
-    <!-- Chief Section -->
+    <!-- Chief Section (UNCHANGED) -->
     <template v-else-if="role === 'chief'">
       <component :is="chiefComponent" />
     </template>
 
-    <!-- Director Section -->
+    <!-- Director Section (UNCHANGED) -->
     <template v-else-if="role === 'director'">
       <component :is="directorComponent" />
     </template>
 
-    <!-- Super Admin Section -->
+    <!-- Super Admin Section (UNCHANGED) -->
     <template v-else-if="role === 'super_admin'">
       <component :is="superAdminComponent" />
     </template>
 
-    <!-- User Section -->
+    <!-- User Section (UNCHANGED) -->
     <template v-else-if="role === 'user'">
       <component :is="userComponent" />
     </template>
-    <!-- User Section -->
+    <!-- Assessor Section (UNCHANGED) -->
     <template v-else-if="role === 'assessor'">
       <component :is="assessorComponent" />
     </template>
     <!-- Default Section -->
     <template v-else>
-      <div>Select the service and role.</div>
+      <div>Select a service and role to continue.</div>
     </template>
   </div>
 </template>
@@ -57,15 +57,16 @@ import ApplicationLists from '@/components/dashboard/accredcomponent/admin/Appli
 import AppealLists from '@/components/dashboard/accredcomponent/admin/AppealLists.vue'
 import AdminReports from '@/components/dashboard/accredcomponent/admin/AdminReports.vue'
 
-// Import Admin Masters Components
+// CORRECTED: Import all Admin Masters Components with correct paths and names
 import AppealReasonMaster from '@/components/dashboard/accredcomponent/admin/masters/AppealReasonMaster.vue'
 import ApplicationDurationMaster from '@/components/dashboard/accredcomponent/admin/masters/ApplicationDurationMaster.vue'
 import AssessorPoolMaster from '@/components/dashboard/accredcomponent/admin/masters/AssessorPoolMaster.vue'
 import DecisionMaster from '@/components/dashboard/accredcomponent/admin/masters/DecisionMaster.vue'
 import DecisionClass from '@/components/dashboard/accredcomponent/admin/masters/DecisionClass.vue'
-import ESignatureMaster from '@/components/dashboard/accredcomponent/admin/masters/ESignatureMaster.vue'
+import DocumentTypeMasters from '@/components/dashboard/accredcomponent/admin/masters/DocumentTypeMasters.vue'
 import EmployeeCategoryMaster from '@/components/dashboard/accredcomponent/admin/masters/EmployeeCategoryMaster.vue'
 import EmployeeTypeMaster from '@/components/dashboard/accredcomponent/admin/masters/EmployeeTypeMaster.vue'
+import ESignatureMaster from '@/components/dashboard/accredcomponent/admin/masters/ESignatureMaster.vue'
 import FeesMaster from '@/components/dashboard/accredcomponent/admin/masters/FeesMaster.vue'
 import IndicatorsMaster from '@/components/dashboard/accredcomponent/admin/masters/IndicatorsMaster.vue'
 import InstituteTypeMaster from '@/components/dashboard/accredcomponent/admin/masters/InstituteTypeMaster.vue'
@@ -75,9 +76,8 @@ import RatingCategoryMaster from '@/components/dashboard/accredcomponent/admin/m
 import SourceOfFundingMaster from '@/components/dashboard/accredcomponent/admin/masters/SourceOfFundingMaster.vue'
 import StaffTypeMaster from '@/components/dashboard/accredcomponent/admin/masters/StaffTypeMaster.vue'
 import StandardMaster from '@/components/dashboard/accredcomponent/admin/masters/StandardMaster.vue'
-import DocumentType from '@/components/dashboard/accredcomponent/admin/DocumentType.vue'
 
-//user components import
+// User components import (UNCHANGED)
 import AccreUserDashboard from '@/components/dashboard/accredcomponent/users/AccreUserDashboard.vue'
 import AccreApplyForAccreditation from '@/components/dashboard/accredcomponent/users/AccreApplyForAccreditation.vue'
 import AccreViewResults from '@/components/dashboard/accredcomponent/users/AccreViewResults.vue'
@@ -86,12 +86,12 @@ import AccreUserProfile from '@/components/dashboard/accredcomponent/users/Accre
 import CoIConfirmation from '@/components/dashboard/accredcomponent/users/CoIConfirmation.vue'
 import SiteVisitConfirmation from '@/components/dashboard/accredcomponent/users/SiteVisitConfirmation.vue'
 import CreateInstituteProfile from '@/components/dashboard/accredcomponent/users/CreateInstituteProfile.vue'
-import SubmitIsarReport from '@/components/dashboard/accredcomponent/users/SubmitIsarReport.vue';
-import TrackIsarReports from '@/components/dashboard/accredcomponent/users/TrackIsarReports.vue';
-import TrackAccreditation from '@/components/dashboard/accredcomponent/users/TrackAccreditation.vue';
+import SubmitIsarReport from '@/components/dashboard/accredcomponent/users/SubmitIsarReport.vue'
+import TrackIsarReports from '@/components/dashboard/accredcomponent/users/TrackIsarReports.vue'
+import TrackAccreditation from '@/components/dashboard/accredcomponent/users/TrackAccreditation.vue'
 import QualityAssuranceReport from '@/components/dashboard/accredcomponent/users/QualityAssuranceReport.vue'
 
-// Import Dealing Officer Components
+// Import Dealing Officer Components (UNCHANGED)
 import AccreDealingdashboard from '@/components/dashboard/accredcomponent/dealingOfficer/AccreDealingdashboard.vue'
 import InstitutionalAccreditations from '@/components/dashboard/accredcomponent/dealingOfficer/InstitutionalAccreditations.vue'
 import Appeals from '@/components/dashboard/accredcomponent/dealingOfficer/Appeals.vue'
@@ -104,7 +104,9 @@ import AccreditationAssessment from '@/components/dashboard/accredcomponent/deal
 import InitialAccreditaionApplication from '@/components/dashboard/accredcomponent/dealingOfficer/InitialAccreditationApplication.vue'
 import ManageAccreditationSchedule from '@/components/dashboard/accredcomponent/dealingOfficer/ManageAccreditationSchedule.vue'
 import IsarReport from '@/components/dashboard/accredcomponent/dealingOfficer/IsarReport.vue'
-//Assessor Components
+import IqarReport from '@/components/dashboard/accredcomponent/dealingOfficer/Iqarreport.vue'
+
+//Assessor Components (UNCHANGED)
 import AssessorDashboard from '@/components/dashboard/accredcomponent/assessor/AssessorDashboard.vue'
 import CoiDeclaration from '@/components/dashboard/accredcomponent/assessor/CoiDeclaration.vue'
 import AssessorUploadReport from '@/components/dashboard/accredcomponent/assessor/AssessorUploadReport.vue'
@@ -116,84 +118,60 @@ const { role } = useAuthStore()
 watchEffect(() => {
   console.log('Route changed:', {
     fullPath: route.fullPath,
-    path: route.path,
     params: route.params,
-    matched: route.matched,
   })
 })
-
-// Admin Route-Based Components
 const adminComponent = computed(() => {
-  // Extract full path
-  const path = route.path
-  console.log('Computing admin component for path:', path)
-
-  // Get path segments and remove empty ones
-  const segments = path.split('/').filter(Boolean)
-  console.log('Path segments:', segments)
-
-  // Handle accreditation service type
-  if (segments.includes('accreditation')) {
-    // Check if this is a masters route
-    if (segments.includes('masters')) {
-      const masterType = segments[segments.length - 1]
-      console.log('Master component requested:', masterType)
-
-      // Map master routes to components
-      const mastersMap = {
-        appeal_reason: AppealReasonMaster,
-        application_duration: ApplicationDurationMaster,
-        assessor_pool: AssessorPoolMaster,
-        decision: DecisionMaster,
-        decision_classes: DecisionClass,
-        e_signature: ESignatureMaster,
-        employee_category: EmployeeCategoryMaster,
-        employee_type: EmployeeTypeMaster,
-        fees: FeesMaster,
-        indicators: IndicatorsMaster,
-        'institute-types': InstituteTypeMaster,
-        key_aspects: KeyAspectsMaster,
-        qualification: QualificationMaster,
-        document: DocumentType,
-        rating_category: RatingCategoryMaster,
-        source_of_funding: SourceOfFundingMaster,
-        staff_type: StaffTypeMaster,
-        standard: StandardMaster,
-      }
-
-      if (mastersMap[masterType]) {
-        console.log('Returning master component:', masterType)
-        return mastersMap[masterType]
-      } else {
-        console.warn('Master component not found:', masterType)
-        return AdminDashboard
-      }
-    }
-
-    // Handle main routes
-    const mainComponentName = segments[segments.length - 1]
-    const mainComponentsMap = {
-      dashboard: AdminDashboard,
-      application_lists: ApplicationLists,
-      appeal_lists: AppealLists,
-      reports: AdminReports,
-    }
-
-    console.log('Main component requested:', mainComponentName)
-    return mainComponentsMap[mainComponentName] || AdminDashboard
+  const segments = route.path.split('/').filter(Boolean)
+  if (segments[0] !== 'admin' || segments[1] !== 'admin' || segments[2] !== 'accreditation') {
+    return null
+  }
+  const componentKey = segments[segments.length - 1]
+  const adminComponentMap = {
+    // Main routes
+    dashboard: AdminDashboard,
+    application_lists: ApplicationLists,
+    appeal_lists: AppealLists,
+    reports: AdminReports,
+    appeal_reason: AppealReasonMaster,
+    application_duration: ApplicationDurationMaster,
+    assessor_pool: AssessorPoolMaster,
+    decision: DecisionMaster,
+    decision_classes: DecisionClass,
+    document_type: DocumentTypeMasters,
+    employee_category: EmployeeCategoryMaster,
+    employee_type: EmployeeTypeMaster,
+    e_signature: ESignatureMaster,
+    fees: FeesMaster,
+    indicators: IndicatorsMaster,
+    institute: InstituteTypeMaster,
+    key_aspects: KeyAspectsMaster,
+    qualification: QualificationMaster,
+    rating_category: RatingCategoryMaster,
+    source_of_funding: SourceOfFundingMaster,
+    staff_type: StaffTypeMaster,
+    standard: StandardMaster,
   }
 
-  // Return null for non-accreditation services
-  return null
+  console.log(`[Admin Role] Trying to render component for key: "${componentKey}"`)
+
+  // Look up the component in the map. If it's not found, default to the AdminDashboard.
+  const componentToShow = adminComponentMap[componentKey]
+  if (componentToShow) {
+    console.log(`[Admin Role] Found component: ${componentToShow.__name || 'Component'}`)
+    return componentToShow
+  } else {
+    console.warn(`[Admin Role] No component found for key "${componentKey}". Defaulting to dashboard.`)
+    return AdminDashboard
+  }
 })
 
-// Dealing Officer Route-Based Components
+// Dealing Officer Route-Based Components (UNCHANGED)
 const dealingOfficerComponent = computed(() => {
   const path = route.path
   switch (true) {
     case path.endsWith('/accreditation/dashboard'):
       return AccreDealingdashboard
-
     case path.endsWith('/accreditation/institutional_accreditations'):
       return InstitutionalAccreditations
     case path.endsWith('/accreditation/appeals'):
@@ -202,7 +180,6 @@ const dealingOfficerComponent = computed(() => {
       return AssessorManagement
     case path.endsWith('/accreditation/site_visit_scheduling'):
       return SiteVisitScheduling
-
     case path.endsWith('/accreditation/reports'):
       return Reports
     case path.endsWith('/accreditation/payment_history'):
@@ -217,13 +194,14 @@ const dealingOfficerComponent = computed(() => {
       return ManageAccreditationSchedule
     case path.endsWith('/accreditation/isar_reports'):
       return IsarReport
-
+    case path.endsWith('/accreditation/iqar_list'):
+      return IqarReport
     default:
       return null
   }
 })
 
-// Chief Route-Based Components
+// Chief Route-Based Components (UNCHANGED)
 const chiefComponent = computed(() => {
   const path = route.path
   switch (true) {
@@ -236,17 +214,17 @@ const chiefComponent = computed(() => {
   }
 })
 
-// Director Route-Based Components
+// Director Route-Based Components (UNCHANGED)
 const directorComponent = computed(() => {
   return null
 })
 
-// Super Admin Route-Based Components
+// Super Admin Route-Based Components (UNCHANGED)
 const superAdminComponent = computed(() => {
   return null
 })
 
-// User Route-Based Components
+// User Route-Based Components (UNCHANGED)
 const userComponent = computed(() => {
   const path = route.path
   switch (true) {
@@ -279,6 +257,7 @@ const userComponent = computed(() => {
   }
 })
 
+// Assessor Route-Based Components (UNCHANGED)
 const assessorComponent = computed(() => {
   const path = route.path
   switch (true) {
@@ -292,5 +271,4 @@ const assessorComponent = computed(() => {
       return null
   }
 })
-
 </script>

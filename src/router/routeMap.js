@@ -1,3 +1,4 @@
+
 const roqDashboard = () => import('@/views/admin/ROQ/Dashboard.vue')
 const ecpfDashboard = () => import('@/views/admin/ECPF/Dashboard.vue')
 const mhpcDashboard = () => import('@/views/admin/MHPC/Dashboard.vue')
@@ -54,6 +55,7 @@ export default {
       institute: accredDashboard,
       key_aspects: accredDashboard,
       document: accredDashboard,
+      Document_type: accredDashboard,
       qualification: accredDashboard,
       rating_category: accredDashboard,
       source_of_funding: accredDashboard,
@@ -236,6 +238,7 @@ export default {
       initial_accreditations: accredDashboard,
       manage_accreditation_schedule: accredDashboard,
       isar_reports: accredDashboard,
+      iqar_list: accredDashboard,
     },
     engineering_certification: {
       dashboard: engineeringDashboard,
@@ -477,7 +480,7 @@ export default {
       cpd_application_tracker: engineeringDashboard,
       cpd_approved_add_participants: engineeringDashboard,
       cme_cpd_provider_profile: engineeringDashboard,
-      
+
     },
     health_certification: {
       dashboard: mhpcDashboard,
