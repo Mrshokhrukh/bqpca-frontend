@@ -19,24 +19,37 @@
 </template>
 
 <script setup>
+// 1. ADD this import for `inject`
+import { defineProps, defineEmits, inject } from 'vue';
+
 const props = defineProps({
   message: {
     type: String,
     default: 'Are you sure?'
   },
-  
-  closeToast: Function,
+  // 2. REMOVE `closeToast` from the props definition.
+  // closeToast: Function, // <-- REMOVE THIS LINE
 });
 
 const emit = defineEmits(['confirm', 'cancel']);
 
+// 3. GET the closeToast function using `inject`.
+// The key 'closeToast' is provided by the vue-toastification library.
+const closeToast = inject('closeToast');
+
 const onConfirm = () => {
   emit('confirm');
-  props.closeToast(); // Close the toast after emitting the event
+  // 4. CALL the injected function directly (no more `props.`)
+  if (closeToast) {
+    closeToast();
+  }
 };
 
 const onCancel = () => {
   emit('cancel');
-  props.closeToast(); // Close the toast after emitting the event
+  // 5. CALL the injected function directly (no more `props.`)
+  if (closeToast) {
+    closeToast();
+  }
 };
 </script>
