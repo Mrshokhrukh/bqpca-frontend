@@ -104,7 +104,7 @@ import AccreditationAssessment from '@/components/dashboard/accredcomponent/deal
 import InitialAccreditaionApplication from '@/components/dashboard/accredcomponent/dealingOfficer/InitialAccreditationApplication.vue'
 import ManageAccreditationSchedule from '@/components/dashboard/accredcomponent/dealingOfficer/ManageAccreditationSchedule.vue'
 import IsarReport from '@/components/dashboard/accredcomponent/dealingOfficer/IsarReport.vue'
-import IqarReport from '@/components/dashboard/accredcomponent/dealingOfficer/Iqarreport.vue'
+import IqarReport from '@/components/dashboard/accredcomponent/dealingOfficer/IqarReport.vue';
 
 //Assessor Components (UNCHANGED)
 import AssessorDashboard from '@/components/dashboard/accredcomponent/assessor/AssessorDashboard.vue'
