@@ -192,7 +192,6 @@ const loading = ref(true)
 const loadingTeachingCenters = ref(true)
 const error = ref(null)
 
-// Modal states
 const isViewModalOpen = ref(false)
 const selectedApplication = ref(null)
 const isConfirmModalOpen = ref(false)
@@ -204,7 +203,6 @@ const confirmDialog = ref({
   confirmButtonClass: '',
 })
 
-// Fetch data
 const fetchAllData = async () => {
   loading.value = true
   loadingTeachingCenters.value = true
@@ -252,18 +250,33 @@ const fetchApplications = async () => {
   }
 }
 
-// Helpers
-const getTeachingCenterName = (tcId) => {
-  if (!tcId || !allTeachingCenters.value.length) {
-    return null
-  }
-  const center = allTeachingCenters.value.find((tc) => tc.id === tcId)
-  if (center) {
-    return `${center.center_name}${center.center_location ? ` - ${center.center_location}` : ''}`
-  }
-  return `ID: ${tcId}`
-}
+const getTeachingCenterName = (centerData) => {
 
+  if (!centerData) {
+    return null;
+  }
+
+
+  if (typeof centerData === 'object' && centerData !== null && centerData.center_name) {
+
+    return `${centerData.center_name}${centerData.center_location ? ` - ${centerData.center_location}` : ''}`;
+  }
+
+  
+  if (typeof centerData === 'number' || typeof centerData === 'string') {
+    if (!allTeachingCenters.value.length) {
+      return `Loading... (ID: ${centerData})`;
+    }
+    const center = allTeachingCenters.value.find(tc => String(tc.id) === String(centerData));
+    if (center) {
+      return `${center.center_name}${center.center_location ? ` - ${center.center_location}` : ''}`;
+    }
+    return `Unknown Center (ID: ${centerData})`;
+  }
+
+  // 4. Fallback for any other weird data
+  return 'Invalid Center Data';
+};
 const formatDate = (dateString) => {
   if (!dateString) return 'N/A'
   const date = new Date(dateString)
@@ -276,11 +289,9 @@ const formatDate = (dateString) => {
   })
 }
 
-// View Modal
 const openViewModal = (app) => {
   console.log('Opening modal with application:', app)
   selectedApplication.value = {
-    // Create a deep enough copy for editing files
     ...app,
     curriculum_validation_letter: app.curriculum_validation_letter,
     curriculum_document: app.curriculum_document,
@@ -293,12 +304,11 @@ const closeViewModal = () => {
   selectedApplication.value = null
 }
 
-// Confirm Actions
 const promptDelete = (app) => {
   actionContext.value = {
     type: 'delete',
-    application: { ...app }, // Pass a copy
-    remarks: '', // Not used for delete but part of the structure
+    application: { ...app },
+    remarks: '',
   }
   confirmDialog.value = {
     title: 'Confirm Deletion',
@@ -312,7 +322,6 @@ const promptDelete = (app) => {
 }
 
 const promptApprove = (appFromModal) => {
-  // appFromModal might have updated files
   actionContext.value = {
     type: 'approve',
     application: { ...appFromModal },
@@ -330,7 +339,6 @@ const promptApprove = (appFromModal) => {
 }
 
 const promptReject = (appFromModal) => {
-  // appFromModal might have updated files
   actionContext.value = {
     type: 'reject',
     application: { ...appFromModal },
@@ -366,16 +374,14 @@ const executeAction = async () => {
     } else if (type === 'approve' || type === 'reject') {
       if (type === 'reject' && !remarks.trim()) {
         toast.error('Remarks are required for rejection.')
-        // Do not close confirm modal on validation error
-        isConfirmModalOpen.value = true // Keep it open
+        isConfirmModalOpen.value = true
         return
       }
 
       const formData = new FormData()
-      // Ensure IDs are present and valid
       if (!application.institute_details?.id) {
         toast.error('Institute ID is missing.')
-        closeConfirmModal() // Close confirm modal on critical error
+        closeConfirmModal()
         return
       }
       formData.append('institute_id', application.institute_details.id)
@@ -389,11 +395,9 @@ const executeAction = async () => {
 
       formData.append('specific_program_title', application.specific_program_title || '')
       if (application.teaching_center) {
-        // Ensure it's not null/undefined before appending
         formData.append('teaching_center', application.teaching_center)
       }
 
-      // Handle file uploads: only append if it's a File object (newly uploaded)
       if (application.curriculum_validation_letter instanceof File) {
         formData.append('curriculum_validation_letter', application.curriculum_validation_letter)
       }
@@ -401,21 +405,18 @@ const executeAction = async () => {
         formData.append('curriculum_document', application.curriculum_document)
       }
 
-      formData.append('terms', JSON.stringify(application.terms || [])) // Ensure terms is an array
+      formData.append('terms', JSON.stringify(application.terms || []))
       formData.append('is_payment_complete', application.is_payment_complete ? 'true' : 'false')
       if (application.payment_id) {
-        // Ensure it's not null/undefined
         formData.append('payment_id', application.payment_id)
       }
       formData.append('status', type === 'approve' ? 'AWAITING_PAYMENT' : 'REJECTED')
       if (remarks && remarks.trim()) {
-        // Only append if remarks are provided
         formData.append('status_remarks', remarks.trim())
       }
 
       await apiServices.updateMhpcProgramOffered(application.id, formData)
 
-      // Update local state
       const appIndex = applications.value.findIndex((app) => app.id === application.id)
       if (appIndex !== -1) {
         applications.value[appIndex].status = formData.get('status')
@@ -451,7 +452,7 @@ const executeAction = async () => {
       closeConfirmModal()
     }
     if (isViewModalOpen.value && selectedApplication.value?.id === application.id) {
-      closeViewModal() // Close the details modal if it was for the acted-upon application
+      closeViewModal()
     }
   }
 }

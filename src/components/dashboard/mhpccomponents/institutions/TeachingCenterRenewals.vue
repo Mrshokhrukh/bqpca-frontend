@@ -1,509 +1,525 @@
 <template>
-  <div class="w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 bg-gray-50 min-h-screen">
-    <InstituteHeader
-      title="Training Center Tracker & Renewal"
-      subtitle="Track and renew your teaching center registrations"
-      :show-actions="false"
-    />
-
-    <div
-      v-if="!authStore.user || !authStore.user.cid"
-      class="mt-8 text-center py-16 bg-white rounded-2xl border border-gray-200 shadow-sm"
-    >
-      <svg
-        class="mx-auto h-12 w-12 text-gray-400"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        aria-hidden="true"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-        />
-      </svg>
-      <h3 class="mt-2 text-lg font-medium text-gray-900">Waiting for User Information</h3>
-      <p class="mt-1 text-sm text-gray-500">
-        User profile is loading or essential information (like CID) is not yet available.
-      </p>
-      <div
-        v-if="initialAuthCheckPending"
-        class="flex items-center justify-center mt-4 text-indigo-600"
-      >
-        <Loader class="animate-spin h-5 w-5 mr-2" />
-        <span>Checking authentication status...</span>
+  <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+    <!-- Header Section -->
+    <div class="bg-white shadow-sm border-b border-gray-200">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="text-center">
+          <h1 class="text-3xl font-bold text-gray-900 mb-2">Training Center Management</h1>
+          <p class="text-lg text-gray-600">Track, manage, and renew your teaching center registrations</p>
+        </div>
       </div>
     </div>
 
-    <template v-else>
-      <div v-if="isLoading" class="flex flex-col items-center justify-center min-h-[400px] mt-8">
-        <Loader class="animate-spin text-indigo-600 w-10 h-10" />
-        <p class="mt-4 text-lg font-medium text-gray-700">Loading teaching center data...</p>
-      </div>
-
+    <!-- Main Content -->
+    <div class="mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Authentication Check -->
       <div
-        v-else-if="apiError"
-        class="mt-8 text-center py-16 bg-red-50 rounded-2xl border border-red-200 shadow-sm"
+        v-if="!authStore.user || !authStore.user.cid"
+        class="text-center py-16"
       >
-        <p class="text-red-700 text-lg font-medium">{{ errorMessage }}</p>
-        <p class="text-red-600 text-sm mt-2">Please try refreshing the page or contact support.</p>
-        <button
-          @click="fetchData"
-          class="mt-6 btn btn-outline border-red-300 text-red-700 hover:bg-red-100 focus:ring-red-500"
-        >
-          Try Again
-        </button>
+        <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-12 max-w-md mx-auto">
+          <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-2">Authentication Required</h3>
+          <p class="text-gray-600 mb-4">Please ensure you're logged in with valid credentials to access your training centers.</p>
+          <div v-if="initialAuthCheckPending" class="flex items-center justify-center text-blue-600">
+            <svg class="animate-spin h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span>Verifying credentials...</span>
+          </div>
+        </div>
       </div>
 
-      <div
-        v-else-if="!instituteTeachingCenters.length"
-        class="mt-8 text-center py-16 bg-white rounded-2xl border border-gray-200 shadow-sm"
-      >
-        <svg
-          class="mx-auto h-12 w-12 text-gray-400"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          aria-hidden="true"
-        >
-          <path
-            vector-effect="non-scaling-stroke"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"
-          />
-        </svg>
-        <h3 class="mt-2 text-lg font-medium text-gray-900">No Training Centers Found</h3>
-        <p class="mt-1 text-sm text-gray-500">
-          No teaching centers associated with your institute are currently registered.
-        </p>
-      </div>
-
-      <div v-else class="space-y-8 mt-8">
-        <div
-          v-for="center in instituteTeachingCenters"
-          :key="center.id"
-          class="bg-white rounded-2xl shadow-md hover:shadow-lg border border-gray-200 overflow-hidden transition-all duration-300"
-        >
-          <div class="p-6 md:p-8">
-            <div class="flex items-start justify-between flex-wrap gap-4 mb-6">
-              <div>
-                <h3 class="text-xl font-bold text-gray-900 mb-1">
-                  {{ center.center_name }}
-                </h3>
-                <p class="text-sm text-gray-500 flex items-center space-x-2 flex-wrap">
-                  <span :class="getStatusTextClass(center)">{{ getStatusText(center) }}</span>
-                  <span class="text-gray-300">•</span>
-                  <span
-                    :class="[
-                      'px-2.5 py-0.5 text-xs font-medium rounded-full',
-                      center.has_active_capa
-                        ? 'bg-red-100 text-red-800'
-                        : 'bg-green-100 text-green-800',
-                    ]"
-                  >
-                    {{ center.has_active_capa ? 'CAPA Pending' : 'No Active CAPAs' }}
-                  </span>
-                  <span class="text-gray-300">•</span>
-                  <span
-                    :class="[
-                      'px-2.5 py-0.5 text-xs font-medium rounded-full whitespace-nowrap',
-                      getReviewDecisionClass(
-                        center.tc_review_decision_display || center.tc_review_decision,
-                        'badge',
-                        center.is_active
-                      ),
-                    ]"
-                  >
-                    {{ center.tc_review_decision_display || center.tc_review_decision || 'N/A' }}
-                  </span>
-                </p>
-              </div>
-              <div class="text-right text-sm">
-                <p class="text-gray-500">Center ID</p>
-                <p class="font-medium text-gray-800">{{ center.id }}</p>
-              </div>
-            </div>
-
-            <div
-              v-if="center.has_active_capa"
-              class="mb-6 p-4 rounded-lg flex items-start bg-red-100 text-red-800 border border-red-300"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-6 w-6 flex-shrink-0 mt-0.5"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path
-                  d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0-3.42 0z"
-                ></path>
-                <line x1="12" y1="9" x2="12" y2="13"></line>
-                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+      <template v-else>
+        <!-- Loading State -->
+        <div v-if="isLoading" class="flex flex-col items-center justify-center min-h-[400px]">
+          <div class="bg-white rounded-2xl shadow-lg p-12 text-center">
+            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="animate-spin w-8 h-8 text-blue-600" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              <div class="ml-3">
-                <h3 class="text-sm font-semibold">Renewal Blocked: CAPA Pending</h3>
-                <p class="mt-1 text-xs">
-                  This teaching center cannot be renewed because there is an open Corrective and
-                  Preventive Action (CAPA) request. Please resolve all pending CAPAs before
-                  proceeding with the renewal.
-                </p>
-              </div>
             </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">Loading Training Centers</h3>
+            <p class="text-gray-600">Please wait while we fetch your data...</p>
+          </div>
+        </div>
 
-            <div
-              v-if="
-                !center.has_active_capa && center.valid_till && getDaysUntilExpiration(center) <= 90
-              "
-              class="mb-6 p-4 rounded-lg flex items-start"
-              :class="[
-                getDaysUntilExpiration(center) <= 0
-                  ? 'bg-red-50 text-red-700 border border-red-200'
-                  : getDaysUntilExpiration(center) <= 30
-                  ? 'bg-orange-50 text-orange-700 border border-orange-200'
-                  : 'bg-yellow-50 text-yellow-700 border border-yellow-200',
-              ]"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5 flex-shrink-0 mt-0.5"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                  clip-rule="evenodd"
-                />
+        <!-- Error State -->
+        <div v-else-if="apiError" class="text-center py-16">
+          <div class="bg-red-50 rounded-2xl shadow-lg border-2 border-red-200 p-12 max-w-lg mx-auto">
+            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <div class="ml-3">
-                <h3 class="text-sm font-semibold">
-                  {{
-                    getDaysUntilExpiration(center) <= 0
-                      ? 'Registration Expired!'
-                      : getDaysUntilExpiration(center) <= 30
-                      ? 'Registration Expiring Soon!'
-                      : 'Registration Renewal Recommended'
-                  }}
-                </h3>
-                <p class="mt-1 text-xs">
-                  {{
-                    getDaysUntilExpiration(center) <= 0
-                      ? 'Your teaching center registration has expired. Please renew immediately.'
-                      : `Expires in ${getDaysUntilExpiration(center)} days (${formatDate(
-                          center.valid_till
-                        )}). Please renew to maintain status.`
-                  }}
-                </p>
-              </div>
             </div>
+            <h3 class="text-xl font-semibold text-red-900 mb-2">Unable to Load Data</h3>
+            <p class="text-red-700 mb-6">{{ errorMessage }}</p>
+            <button @click="fetchData" class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200">
+              Try Again
+            </button>
+          </div>
+        </div>
 
-            <div
-              v-if="isPaymentRequired(center)"
-              class="mb-6 p-4 rounded-lg flex items-start bg-yellow-50 text-yellow-800 border border-yellow-200"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5 flex-shrink-0 mt-0.5"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                  clip-rule="evenodd"
-                />
+        <!-- Empty State -->
+        <div v-else-if="!instituteTeachingCenters.length" class="text-center py-16">
+          <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-12 max-w-lg mx-auto">
+            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
               </svg>
-              <div class="ml-3">
-                <h3 class="text-sm font-semibold">Payment Required</h3>
-                <p class="mt-1 text-xs">
-                  Your application or renewal has been approved. Please complete the payment to
-                  activate your registration.
-                </p>
-              </div>
             </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">No Training Centers Found</h3>
+            <p class="text-gray-600 mb-6">You don't have any registered training centers yet. Contact your administrator to get started.</p>
+            <button @click="fetchData" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200">
+              Refresh
+            </button>
+          </div>
+        </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 mb-6">
-              <div class="space-y-3 p-4 bg-gray-50 rounded-lg border border-gray-100">
-                <h4 class="text-sm font-semibold text-gray-700 mb-2">Registration Details</h4>
-                <InfoItem
-                  label="Status"
-                  :value="getStatusText(center)"
-                  :valueClass="getStatusTextClass(center)"
-                />
-                <InfoItem label="Valid From" :value="formatDate(center.valid_since)" />
-                <InfoItem
-                  label="Valid Until"
-                  :value="formatDate(center.valid_till)"
-                  :valueClass="getExpirationTextClass(center)"
-                />
-                <InfoItem
-                  label="Review Decision"
-                  :value="center.tc_review_decision_display || center.tc_review_decision || 'N/A'"
-                  :valueClass="
-                    getReviewDecisionClass(
-                      center.tc_review_decision_display || center.tc_review_decision,
-                      'text',
-                      center.is_active
-                    )
-                  "
-                />
-                <InfoItem
-                  label="Payment Status"
-                  :value="getPaymentStatusText(center)"
-                  :valueClass="getPaymentStatusTextClass(center)"
-                />
-              </div>
-
-              <div class="space-y-3 p-4 bg-gray-50 rounded-lg border border-gray-100">
-                <h4 class="text-sm font-semibold text-gray-700 mb-2">Center Information</h4>
-                <InfoItem
-                  label="Institute"
-                  :value="center.institute_details?.name_of_institution || 'N/A'"
-                />
-                <InfoItem
-                  label="Location"
-                  :value="`${center.center_location || 'N/A'}, ${center.state_dzongkhag || 'N/A'}`"
-                />
-                <InfoItem label="City/Gewog" :value="center.city_gewog || 'N/A'" />
-                <InfoItem label="Target Category" :value="center.target_category || 'N/A'" />
-              </div>
-            </div>
-
-            <div class="mt-6 pt-6 border-t border-gray-100">
-              <!-- Renewal In Progress -->
-              <div
-                v-if="isRenewalInProgress(center)"
-                class="p-4 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 text-sm"
-              >
-                <h4 class="font-semibold">Renewal In Progress</h4>
-                <p class="mt-1">
-                  Your renewal application is under review. You will be notified upon completion.
-                </p>
-              </div>
-
-              <!-- Application In Progress -->
-              <div
-                v-else-if="
-                  !center.has_active_capa &&
-                  !center.is_active &&
-                  center.tc_review_decision === 'Pending'
-                "
-                class="p-4 bg-orange-50 border border-orange-200 rounded-lg text-orange-700 text-sm"
-              >
-                <h4 class="font-semibold">Application In Progress</h4>
-                <p class="mt-1">
-                  Your application is under review. You will be notified upon completion.
-                </p>
-              </div>
-
-              <!-- Application Rejected -->
-              <div
-                v-else-if="center.tc_review_decision === 'Rejected' && center.tc_reason_if_rejected"
-                class="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm"
-              >
-                <h4 class="font-semibold">Application Rejected</h4>
-                <p class="mt-1">Reason: {{ center.tc_reason_if_rejected }}</p>
-
-                <!-- CAPA Warning for Rejected Applications -->
-                <div
-                  v-if="center.has_active_capa"
-                  class="mt-3 p-3 bg-red-100 rounded-lg border border-red-300 text-red-800 text-xs"
-                >
-                  <h4 class="font-semibold">Cannot Re-apply: CAPA Pending</h4>
-                  <p class="mt-1">
-                    You must resolve the pending Corrective and Preventive Action (CAPA) before
-                    re-applying or renewing this teaching center.
+        <!-- Training Centers List -->
+        <div v-else class="space-y-6">
+          <div
+            v-for="center in instituteTeachingCenters"
+            :key="center.id"
+            class="bg-white rounded-2xl shadow-lg hover:shadow-xl border border-gray-200 overflow-hidden transition-all duration-300 transform hover:-translate-y-1"
+          >
+            <!-- Header Section -->
+            <div class="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4">
+              <div class="flex items-center justify-between flex-wrap gap-4">
+                <div>
+                  <h3 class="text-xl font-bold text-white mb-1">{{ center.center_name }}</h3>
+                  <p class="text-blue-100 text-sm">
+                    {{ center.center_location }}, {{ center.state_dzongkhag }}
                   </p>
                 </div>
+                <div class="text-right">
+                  <p class="text-blue-100 text-xs uppercase tracking-wide">Center ID</p>
+                  <p class="text-white font-mono font-semibold">#{{ center.id }}</p>
+                </div>
+              </div>
+            </div>
 
-                <!-- Re-apply button - only if no CAPA -->
-                <button
-                  v-else
-                  @click="openRenewalDialog(center)"
-                  class="mt-3 btn btn-primary bg-red-600 hover:bg-red-700 focus:ring-red-500 text-xs"
-                >
-                  Re-apply / Renew
-                </button>
+            <div class="p-6">
+              <!-- Status Pills -->
+              <div class="flex flex-wrap gap-2 mb-6">
+                <span :class="getStatusPillClass(center)">
+                  {{ getStatusText(center) }}
+                </span>
+                <span :class="center.has_active_capa ? 'bg-red-100 text-red-800 border border-red-200' : 'bg-green-100 text-green-800 border border-green-200'" class="px-3 py-1 text-xs font-medium rounded-full">
+                  {{ center.has_active_capa ? 'CAPA Active' : 'No Active CAPAs' }}
+                </span>
+                <span :class="getReviewDecisionPillClass(center)" class="px-3 py-1 text-xs font-medium rounded-full border">
+                  {{ center.tc_review_decision_display || center.tc_review_decision || 'Pending Review' }}
+                </span>
               </div>
 
-              <!-- No Need to Renew Yet -->
+              <!-- CAPA Warning - Enhanced -->
+              <div v-if="center.has_active_capa" class="mb-6 p-6 rounded-xl bg-gradient-to-r from-red-50 to-red-100 border-l-4 border-red-500 shadow-sm">
+                <div class="flex items-start">
+                  <div class="flex-shrink-0">
+                    <div class="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center">
+                      <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                      </svg>
+                    </div>
+                  </div>
+                  <div class="ml-4 flex-1">
+                    <h4 class="text-lg font-bold text-red-900 mb-2">⚠️ Renewal Blocked - CAPA Active</h4>
+                    <div class="bg-white rounded-lg p-4 border border-red-200 mb-4">
+                      <p class="text-red-800 font-semibold mb-2">What is a CAPA?</p>
+                      <p class="text-red-700 text-sm leading-relaxed mb-3">
+                        A <strong>Corrective and Preventive Action (CAPA)</strong> is a formal process to address and resolve quality or compliance issues identified in your training center operations.
+                      </p>
+                      <div class="bg-red-50 rounded-lg p-3 border border-red-100">
+                        <p class="text-red-800 font-semibold text-sm mb-1">🚫 Why is renewal blocked?</p>
+                        <ul class="text-red-700 text-sm space-y-1">
+                          <li>• Active CAPAs indicate unresolved compliance issues</li>
+                          <li>• Training centers must meet all quality standards</li>
+                          <li>• Resolution ensures continuous improvement</li>
+                        </ul>
+                      </div>
+                    </div>
+                    <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                      <p class="text-blue-800 font-semibold text-sm mb-2">📋 Next Steps:</p>
+                      <ol class="text-blue-700 text-sm space-y-1">
+                        <li><strong>1.</strong> Contact your compliance officer</li>
+                        <li><strong>2.</strong> Review the specific CAPA requirements</li>
+                        <li><strong>3.</strong> Implement necessary corrective actions</li>
+                        <li><strong>4.</strong> Submit evidence of resolution</li>
+                        <li><strong>5.</strong> Wait for CAPA closure approval</li>
+                      </ol>
+                    </div>
+                    <div class="mt-4 flex items-center text-red-700">
+                      <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <p class="text-sm font-medium">Renewal will be automatically available once all CAPAs are resolved.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Expiration Warning -->
               <div
-                v-else-if="
-                  !center.has_active_capa && center.is_active && getDaysUntilExpiration(center) > 90
-                "
-                class="p-4 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm"
+                v-if="!center.has_active_capa && center.valid_till && getDaysUntilExpiration(center) <= 90"
+                class="mb-6 p-4 rounded-xl border-l-4 shadow-sm"
+                :class="[
+                  getDaysUntilExpiration(center) <= 0
+                    ? 'bg-gradient-to-r from-red-50 to-red-100 border-red-500'
+                    : getDaysUntilExpiration(center) <= 30
+                    ? 'bg-gradient-to-r from-orange-50 to-orange-100 border-orange-500'
+                    : 'bg-gradient-to-r from-yellow-50 to-yellow-100 border-yellow-500'
+                ]"
               >
-                <h4 class="font-semibold">Registration Valid</h4>
-                <p class="mt-1">
-                  Your registration is valid until {{ formatDate(center.valid_till) }}. Renewal will
-                  be available 90 days before expiration.
-                </p>
+                <div class="flex items-start">
+                  <div class="flex-shrink-0">
+                    <div :class="[
+                      'w-8 h-8 rounded-full flex items-center justify-center',
+                      getDaysUntilExpiration(center) <= 0 ? 'bg-red-500' :
+                      getDaysUntilExpiration(center) <= 30 ? 'bg-orange-500' : 'bg-yellow-500'
+                    ]">
+                      <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                  </div>
+                  <div class="ml-3">
+                    <h4 :class="[
+                      'font-semibold text-sm',
+                      getDaysUntilExpiration(center) <= 0 ? 'text-red-900' :
+                      getDaysUntilExpiration(center) <= 30 ? 'text-orange-900' : 'text-yellow-900'
+                    ]">
+                      {{ getDaysUntilExpiration(center) <= 0 ? '🔴 Registration Expired!' :
+                         getDaysUntilExpiration(center) <= 30 ? '🟠 Expiring Soon!' : '🟡 Renewal Available' }}
+                    </h4>
+                    <p :class="[
+                      'text-xs mt-1',
+                      getDaysUntilExpiration(center) <= 0 ? 'text-red-800' :
+                      getDaysUntilExpiration(center) <= 30 ? 'text-orange-800' : 'text-yellow-800'
+                    ]">
+                      {{ getDaysUntilExpiration(center) <= 0
+                        ? 'Your registration has expired. Renew immediately to restore active status.'
+                        : `Registration expires in ${getDaysUntilExpiration(center)} days (${formatDate(center.valid_till)}). Renew now to avoid disruption.`
+                      }}
+                    </p>
+                  </div>
+                </div>
               </div>
 
-              <!-- Action buttons section -->
-              <div class="flex justify-end items-center space-x-3 mt-4">
+              <!-- Payment Required -->
+              <div v-if="isPaymentRequired(center)" class="mb-6 p-4 rounded-xl bg-gradient-to-r from-amber-50 to-yellow-100 border-l-4 border-amber-500 shadow-sm">
+                <div class="flex items-start">
+                  <div class="w-8 h-8 bg-amber-500 rounded-full flex items-center justify-center flex-shrink-0">
+                    <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                    </svg>
+                  </div>
+                  <div class="ml-3">
+                    <h4 class="font-semibold text-amber-900 text-sm">💳 Payment Required</h4>
+                    <p class="text-amber-800 text-xs mt-1">Your application has been approved! Complete payment to activate your registration.</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Information Grid -->
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <!-- Registration Details -->
+                <div class="bg-gray-50 rounded-xl p-5 border border-gray-100">
+                  <h4 class="text-sm font-semibold text-gray-700 mb-4 flex items-center">
+                    <svg class="w-4 h-4 mr-2 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Registration Details
+                  </h4>
+                  <div class="space-y-3">
+                    <div class="flex justify-between items-center py-2 border-b border-gray-200">
+                      <span class="text-sm text-gray-600">Status</span>
+                      <span :class="getStatusTextClass(center)" class="text-sm font-medium">{{ getStatusText(center) }}</span>
+                    </div>
+                    <div class="flex justify-between items-center py-2 border-b border-gray-200">
+                      <span class="text-sm text-gray-600">Valid From</span>
+                      <span class="text-sm text-gray-900">{{ formatDate(center.valid_since) }}</span>
+                    </div>
+                    <div class="flex justify-between items-center py-2 border-b border-gray-200">
+                      <span class="text-sm text-gray-600">Valid Until</span>
+                      <span :class="getExpirationTextClass(center)" class="text-sm font-medium">{{ formatDate(center.valid_till) }}</span>
+                    </div>
+                    <div class="flex justify-between items-center py-2 border-b border-gray-200">
+                      <span class="text-sm text-gray-600">Payment Status</span>
+                      <span :class="getPaymentStatusTextClass(center)" class="text-sm font-medium">{{ getPaymentStatusText(center) }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Center Information -->
+                <div class="bg-gray-50 rounded-xl p-5 border border-gray-100">
+                  <h4 class="text-sm font-semibold text-gray-700 mb-4 flex items-center">
+                    <svg class="w-4 h-4 mr-2 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                    Center Information
+                  </h4>
+                  <div class="space-y-3">
+                    <div class="flex justify-between items-center py-2 border-b border-gray-200">
+                      <span class="text-sm text-gray-600">Institute</span>
+                      <span class="text-sm text-gray-900 text-right">{{ center.institute_details?.name_of_institution || 'N/A' }}</span>
+                    </div>
+                    <div class="flex justify-between items-center py-2 border-b border-gray-200">
+                      <span class="text-sm text-gray-600">Location</span>
+                      <span class="text-sm text-gray-900">{{ center.center_location || 'N/A' }}</span>
+                    </div>
+                    <div class="flex justify-between items-center py-2 border-b border-gray-200">
+                      <span class="text-sm text-gray-600">City/Gewog</span>
+                      <span class="text-sm text-gray-900">{{ center.city_gewog || 'N/A' }}</span>
+                    </div>
+                    <div class="flex justify-between items-center py-2 border-b border-gray-200">
+                      <span class="text-sm text-gray-600">Category</span>
+                      <span class="text-sm text-gray-900">{{ center.target_category || 'N/A' }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Status Messages -->
+              <div class="mb-6">
+                <!-- Renewal In Progress -->
+                <div v-if="isRenewalInProgress(center)" class="p-4 bg-blue-50 border border-blue-200 rounded-xl">
+                  <div class="flex items-center">
+                    <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                      <svg class="w-4 h-4 text-white animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                    </div>
+                    <div class="ml-3">
+                      <h4 class="font-semibold text-blue-900 text-sm">Renewal In Progress</h4>
+                      <p class="text-blue-700 text-xs">Your renewal application is under review. We'll notify you once completed.</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Application In Progress -->
+                <div v-else-if="!center.has_active_capa && !center.is_active && center.tc_review_decision === 'Pending'" class="p-4 bg-orange-50 border border-orange-200 rounded-xl">
+                  <div class="flex items-center">
+                    <div class="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center flex-shrink-0">
+                      <svg class="w-4 h-4 text-white animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <div class="ml-3">
+                      <h4 class="font-semibold text-orange-900 text-sm">Application Under Review</h4>
+                      <p class="text-orange-700 text-xs">Your application is being evaluated. Please wait for the review to complete.</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Application Rejected -->
+                <div v-else-if="center.tc_review_decision === 'Rejected' && center.tc_reason_if_rejected" class="p-4 bg-red-50 border border-red-200 rounded-xl">
+                  <div class="flex items-start">
+                    <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0">
+                      <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </div>
+                    <div class="ml-3 flex-1">
+                      <h4 class="font-semibold text-red-900 text-sm mb-2">Application Rejected</h4>
+                      <div class="bg-white rounded-lg p-3 border border-red-200 mb-3">
+                        <p class="text-red-700 text-xs"><strong>Reason:</strong> {{ center.tc_reason_if_rejected }}</p>
+                      </div>
+                      <div v-if="!center.has_active_capa" class="flex">
+                        <button @click="openRenewalDialog(center)" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-xs font-medium transition-colors duration-200">
+                          Re-apply / Renew
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Valid Registration -->
+                <div v-else-if="!center.has_active_capa && center.is_active && getDaysUntilExpiration(center) > 90" class="p-4 bg-green-50 border border-green-200 rounded-xl">
+                  <div class="flex items-center">
+                    <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+                      <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <div class="ml-3">
+                      <h4 class="font-semibold text-green-900 text-sm">Registration Active & Valid</h4>
+                      <p class="text-green-700 text-xs">Valid until {{ formatDate(center.valid_till) }}. Renewal available 90 days before expiration.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="flex justify-end items-center space-x-3 pt-4 border-t border-gray-100">
                 <!-- Payment Button -->
-                <button
-                  v-if="isPaymentRequired(center)"
-                  @click="initiatePayment(center)"
-                  class="btn btn-primary bg-yellow-500 hover:bg-yellow-600 focus:ring-yellow-500"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-4 w-4 mr-2"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"
-                    />
+                <button v-if="isPaymentRequired(center)" @click="initiatePayment(center)" class="bg-gradient-to-r from-yellow-500 to-amber-500 hover:from-yellow-600 hover:to-amber-600 text-white px-6 py-2.5 rounded-lg font-medium transition-all duration-200 transform hover:scale-105 shadow-lg">
+                  <svg class="w-4 h-4 mr-2 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                   </svg>
-                  Make Payment to Activate
+                  Complete Payment
                 </button>
 
                 <!-- Certificate Button -->
-                <button
-                  v-if="center.is_active && getDaysUntilExpiration(center) > 0"
-                  @click="openCertificateDialog(center)"
-                  class="btn btn-outline"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-4 w-4 mr-2"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                    />
+                <button v-if="center.is_active && getDaysUntilExpiration(center) > 0" @click="openCertificateDialog(center)" class="bg-white border-2 border-blue-300 text-blue-700 hover:bg-blue-50 px-6 py-2.5 rounded-lg font-medium transition-all duration-200 transform hover:scale-105">
+                  <svg class="w-4 h-4 mr-2 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
                   View Certificate
                 </button>
 
-                <!-- Renewal Button - This should be blocked for CAPA -->
+                <!-- Renewal Button -->
                 <button
                   v-if="canRenew(center)"
                   @click="openRenewalDialog(center)"
-                  class="btn btn-primary"
-                  :class="{
-                    'animate-pulse bg-orange-500 hover:bg-orange-600':
-                      getDaysUntilExpiration(center) <= 30 && getDaysUntilExpiration(center) > 0,
-                    'bg-red-600 hover:bg-red-700': getDaysUntilExpiration(center) <= 0,
-                  }"
+                  :class="[
+                    'px-6 py-2.5 rounded-lg font-medium transition-all duration-200 transform hover:scale-105 shadow-lg text-white',
+                    getDaysUntilExpiration(center) <= 0
+                      ? 'bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 animate-pulse'
+                      : getDaysUntilExpiration(center) <= 30
+                      ? 'bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 animate-pulse'
+                      : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700'
+                  ]"
                 >
-                  {{ getDaysUntilExpiration(center) <= 0 ? 'Renew Expired' : 'Renew Center' }}
+                  <svg class="w-4 h-4 mr-2 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                  {{ getDaysUntilExpiration(center) <= 0 ? 'Renew Expired Registration' : 'Renew Registration' }}
                 </button>
               </div>
             </div>
           </div>
         </div>
-      </div>
     </template>
 
-    <div
-      v-if="showRenewalDialog"
-      class="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 p-4"
-    >
-      <div
-        class="bg-white rounded-xl shadow-xl p-6 md:p-8 m-4 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
-      >
-        <h3 class="text-xl font-bold text-gray-900 mb-6">Training Center Renewal Application</h3>
+    <!-- Renewal Dialog -->
+    <div v-if="showRenewalDialog" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto transform transition-all duration-300">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-2xl font-bold text-gray-900">Renew Training Center</h3>
+          <button @click="closeRenewalDialog" class="text-gray-400 hover:text-gray-600 transition-colors duration-200">
+            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
         <form @submit.prevent="confirmRenewal" class="space-y-6">
-          <div v-if="selectedCenter" class="space-y-4">
-            <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
-              <p class="text-sm font-medium text-gray-700">
-                Center Name:
-                <span class="font-normal text-gray-900">{{ selectedCenter.center_name }}</span>
-              </p>
-              <p class="text-sm font-medium text-gray-700">
-                Location:
-                <span class="font-normal text-gray-900">{{ selectedCenter.center_location }}</span>
+          <div v-if="selectedCenter" class="space-y-6">
+            <!-- Center Info Card -->
+            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200">
+              <h4 class="font-semibold text-blue-900 mb-3">Center Details</h4>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div>
+                  <p class="text-blue-700 font-medium">Center Name</p>
+                  <p class="text-blue-900">{{ selectedCenter.center_name }}</p>
+                </div>
+                <div>
+                  <p class="text-blue-700 font-medium">Location</p>
+                  <p class="text-blue-900">{{ selectedCenter.center_location }}</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- File Upload -->
+            <div>
+              <label for="attachments" class="block text-sm font-semibold text-gray-700 mb-2">Supporting Documents (Optional)</label>
+              <div class="relative">
+                <input
+                  type="file"
+                  id="attachments"
+                  @change="handleFileUpload"
+                  class="block w-full text-sm text-gray-600 file:mr-4 file:py-3 file:px-6 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  accept=".pdf,.doc,.docx,.jpg,.png"
+                />
+              </div>
+              <p v-if="selectedFileName" class="mt-2 text-sm text-green-600 flex items-center">
+                <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                File selected: {{ selectedFileName }}
               </p>
             </div>
 
+            <!-- Remarks -->
             <div>
-              <label for="attachments" class="form-label">Attachments (Optional)</label>
-              <input
-                type="file"
-                id="attachments"
-                @change="handleFileUpload"
-                class="form-file-input"
-                accept=".pdf,.doc,.docx,.jpg,.png"
-              />
-              <p v-if="selectedFileName" class="mt-1.5 text-xs text-green-600">
-                Selected: {{ selectedFileName }}
-              </p>
-            </div>
-
-            <div>
-              <label for="remarks" class="form-label">Remarks</label>
+              <label for="remarks" class="block text-sm font-semibold text-gray-700 mb-2">Additional Remarks</label>
               <textarea
                 id="remarks"
                 v-model="renewalFormData.user_remarks"
-                rows="3"
-                class="form-textarea"
+                rows="4"
+                class="block w-full rounded-lg border border-gray-300 p-4 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500 resize-none"
+                placeholder="Any additional information or comments about your renewal application..."
               ></textarea>
             </div>
 
-            <div class="flex items-start">
-              <div class="flex items-center h-5">
-                <input
-                  id="declaration"
-                  type="checkbox"
-                  v-model="renewalFormData.declaration"
-                  required
-                  class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
-                />
-              </div>
-              <div class="ml-3 text-sm">
-                <label for="declaration" class="font-medium text-gray-700 required-label"
-                  >Declaration</label
-                >
-                <p class="text-gray-500 text-xs">
-                  I hereby declare that the information provided is true and correct.
-                </p>
+            <!-- Declaration -->
+            <div class="bg-gray-50 rounded-xl p-6 border border-gray-200">
+              <div class="flex items-start">
+                <div class="flex items-center h-5">
+                  <input
+                    id="declaration"
+                    type="checkbox"
+                    v-model="renewalFormData.declaration"
+                    required
+                    class="w-5 h-5 text-blue-600 border-2 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
+                  />
+                </div>
+                <div class="ml-3">
+                  <label for="declaration" class="font-semibold text-gray-900 text-sm">
+                    Declaration <span class="text-red-500">*</span>
+                  </label>
+                  <p class="text-gray-600 text-sm mt-1 leading-relaxed">
+                    I hereby declare that all information provided is true, accurate, and complete. I understand that providing false information may result in the rejection of this renewal application and potential legal consequences.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
 
-          <div v-if="isRenewing" class="flex items-center justify-center text-sm text-indigo-600">
-            <Loader class="animate-spin h-5 w-5 mr-2" />
-            Processing renewal...
+          <!-- Loading State -->
+          <div v-if="isRenewing" class="flex items-center justify-center py-8 text-blue-600">
+            <svg class="animate-spin h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span class="font-medium">Processing your renewal application...</span>
           </div>
 
-          <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+          <!-- Action Buttons -->
+          <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200">
             <button
               type="button"
               @click="closeRenewalDialog"
-              class="btn btn-outline"
               :disabled="isRenewing"
+              class="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               type="submit"
-              class="btn btn-primary"
               :disabled="isRenewing || !renewalFormData.declaration"
+              class="px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-medium hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
             >
-              Submit Renewal
+              <svg v-if="isRenewing" class="animate-spin h-4 w-4 mr-2 inline" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              {{ isRenewing ? 'Submitting...' : 'Submit Renewal Application' }}
             </button>
           </div>
         </form>
       </div>
     </div>
 
+    <!-- Certificate Dialog Component -->
     <CertificateDialog
       v-if="showCertificateDialog"
       :show="showCertificateDialog"
@@ -512,8 +528,14 @@
       @close="closeCertificateDialog"
     />
 
-    <PaymentModal ref="paymentModalRef" :amount="100" @payment-completed="handlePaymentCompleted" />
+    <!-- Payment Modal Component -->
+    <PaymentModal
+      ref="paymentModalRef"
+      :amount="100"
+      @payment-completed="handlePaymentCompleted"
+    />
   </div>
+</div>
 </template>
 
 <script setup>
@@ -521,12 +543,10 @@ import { ref, onMounted, watch } from 'vue'
 import { useAuthStore } from '@/stores/authStore'
 import { useToast } from 'vue-toastification'
 import apiServices from '@/services/services'
-import { Loader } from 'lucide-vue-next'
 import CertificateDialog from './CertificateDialog.vue'
-import InstituteHeader from '@/components/common/MHPC/InstituteHeader.vue'
-import InfoItem from '@/components/common/MHPC/InfoItem.vue'
 import PaymentModal from '@/components/common/PaymentModal.vue'
 
+// Reactive data
 const instituteTeachingCenters = ref([])
 const isLoading = ref(true)
 const apiError = ref(false)
@@ -549,6 +569,7 @@ const renewalFormData = ref({
 const toast = useToast()
 const authStore = useAuthStore()
 
+// Methods
 const fetchData = async () => {
   if (!authStore.user?.cid) {
     isLoading.value = false
@@ -560,75 +581,34 @@ const fetchData = async () => {
   apiError.value = false
   initialAuthCheckPending.value = false
   const userCid = authStore.user?.cid
+
   try {
     const response = await apiServices.getMhpcTeachingCenterByCid(userCid)
     const results = response.data.results || []
 
-    // --- START OF THE NEW, ROBUST LOGIC ---
-
-    // Use a Map to store the definitive version of each teaching center, keyed by its ID.
-    // This prevents duplicates and allows us to merge information correctly.
     const centerMap = new Map()
 
     results.forEach((item) => {
-      // Determine the core teaching center data and its ID from the current item.
       const isCapaRecord = !!item.teaching_center
       const tcData = isCapaRecord ? item.teaching_center : item
 
-      // Skip if the item is malformed and doesn't have an ID.
       if (!tcData || !tcData.id) return
 
       const tcId = tcData.id
-
-      // Get the existing center object from our map, or use the current one if it's the first time we've seen this ID.
       const existingCenter = centerMap.get(tcId) || tcData
-
       existingCenter.has_active_capa = existingCenter.has_active_capa || isCapaRecord
-
-      // Update the map with the (potentially modified) center object.
       centerMap.set(tcId, existingCenter)
     })
 
-    // Convert the values of the map back into an array for rendering.
     instituteTeachingCenters.value = Array.from(centerMap.values())
-
-    // --- END OF THE NEW LOGIC ---
   } catch (error) {
     console.error('Error fetching teaching centers:', error)
-    errorMessage.value =
-      error.response?.data?.message || 'Error fetching teaching center data. Please try again.'
+    errorMessage.value = error.response?.data?.message || 'Error fetching teaching center data. Please try again.'
     apiError.value = true
   } finally {
     isLoading.value = false
   }
 }
-
-watch(
-  () => authStore.user,
-  (newUser) => {
-    initialAuthCheckPending.value = false
-    if (newUser?.cid && (!instituteTeachingCenters.value.length || isLoading.value)) {
-      if (isLoading.value && instituteTeachingCenters.value.length === 0) {
-        fetchData()
-      }
-    }
-  },
-  { deep: true, immediate: true }
-)
-
-onMounted(async () => {
-  if (authStore.user?.cid && instituteTeachingCenters.value.length === 0 && isLoading.value) {
-    await fetchData()
-  }
-  setTimeout(() => {
-    if (initialAuthCheckPending.value) {
-      initialAuthCheckPending.value = false
-      if (!authStore.user?.cid && isLoading.value) {
-        isLoading.value = false
-      }
-    }
-  }, 1500)
-})
 
 const formatDate = (dateString) => {
   if (!dateString) return 'N/A'
@@ -669,23 +649,22 @@ const getExpirationTextClass = (center) => {
   return 'text-gray-700'
 }
 
-const getReviewDecisionClass = (decision, type = 'text', isActive = null) => {
-  const decisionStr = String(decision).toLowerCase()
-  if (decisionStr === 'approved') {
-    if (type === 'badge')
-      return isActive ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-700'
-    return isActive ? 'text-green-600 font-semibold' : 'text-blue-600 font-semibold'
+const getStatusPillClass = (center) => {
+  if (center.has_active_capa) return 'bg-red-100 text-red-800 border border-red-200 px-3 py-1 text-xs font-medium rounded-full'
+  if (isPaymentRequired(center)) return 'bg-yellow-100 text-yellow-800 border border-yellow-200 px-3 py-1 text-xs font-medium rounded-full'
+  if (center.valid_till && getDaysUntilExpiration(center) <= 0) return 'bg-red-100 text-red-800 border border-red-200 px-3 py-1 text-xs font-medium rounded-full'
+  if (center.is_active) return 'bg-green-100 text-green-800 border border-green-200 px-3 py-1 text-xs font-medium rounded-full'
+  return 'bg-gray-100 text-gray-800 border border-gray-200 px-3 py-1 text-xs font-medium rounded-full'
+}
+
+const getReviewDecisionPillClass = (center) => {
+  const decision = String(center.tc_review_decision_display || center.tc_review_decision).toLowerCase()
+  if (decision === 'approved') {
+    return center.is_active ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
   }
-  if (decisionStr.includes('pending')) {
-    if (type === 'badge') return 'bg-yellow-100 text-yellow-800'
-    return 'text-yellow-600 font-semibold'
-  }
-  if (decisionStr.includes('regretted') || decisionStr.includes('rejected')) {
-    if (type === 'badge') return 'bg-red-100 text-red-800'
-    return 'text-red-600 font-semibold'
-  }
-  if (type === 'badge') return 'bg-gray-100 text-gray-700'
-  return 'text-gray-600'
+  if (decision.includes('pending')) return 'bg-yellow-100 text-yellow-800'
+  if (decision.includes('regretted') || decision.includes('rejected')) return 'bg-red-100 text-red-800'
+  return 'bg-gray-100 text-gray-700'
 }
 
 const isPaymentRequired = (center) => {
@@ -695,33 +674,31 @@ const isPaymentRequired = (center) => {
 }
 
 const getStatusText = (center) => {
-  if (center.has_active_capa) return 'CAPA Pending'
+  if (center.has_active_capa) return 'CAPA Active - Renewal Blocked'
   if (isPaymentRequired(center)) {
     if (center.latest_renewal?.renewal_status === 'AWAITING_PAYMENT') {
-      return 'Renewal Approved - Pending Payment'
+      return 'Renewal Approved - Payment Required'
     }
-    return 'Approved - Pending Payment'
+    return 'Approved - Payment Required'
   }
-  if (center.valid_till && getDaysUntilExpiration(center) <= 0) return 'Expired Registration'
-  if (center.is_active) return 'Active Registration'
-  return 'Registration Inactive'
+  if (center.valid_till && getDaysUntilExpiration(center) <= 0) return 'Registration Expired'
+  if (center.is_active) return 'Active & Valid'
+  return 'Inactive'
 }
 
 const getStatusTextClass = (center) => {
   if (center.has_active_capa) return 'text-red-600 font-semibold'
   if (isPaymentRequired(center)) return 'text-yellow-600 font-semibold'
   if (center.valid_till && getDaysUntilExpiration(center) <= 0) return 'text-red-600 font-semibold'
-  if (center.is_active) return 'text-green-600'
+  if (center.is_active) return 'text-green-600 font-semibold'
   return 'text-gray-600'
 }
 
 const getPaymentStatusText = (center) => {
-  if (center.latest_renewal?.renewal_status === 'AWAITING_PAYMENT')
-    return 'Pending Payment (Renewal)'
-  if (center.payment_status === 'awaiting_payment') return 'Pending Payment (Initial)'
-  if (center.is_payment_complete || center.latest_renewal?.payment_status === 'completed')
-    return 'Completed'
-  return 'Not Applicable'
+  if (center.latest_renewal?.renewal_status === 'AWAITING_PAYMENT') return 'Renewal Payment Pending'
+  if (center.payment_status === 'awaiting_payment') return 'Initial Payment Pending'
+  if (center.is_payment_complete || center.latest_renewal?.payment_status === 'completed') return 'Payment Completed'
+  return 'No Payment Required'
 }
 
 const getPaymentStatusTextClass = (center) => {
@@ -730,24 +707,12 @@ const getPaymentStatusTextClass = (center) => {
 }
 
 const canRenew = (center) => {
-  // CAPA blocks all renewals - this is the most important check
-  if (center.has_active_capa) {
-    return false
-  }
-
-  // Must be approved first
+  if (center.has_active_capa) return false
   const isApproved = center.tc_review_decision === 'Approved'
-
-  // Must be expiring or expired (within 90 days)
   const daysUntilExpiration = getDaysUntilExpiration(center)
   const isExpiringOrExpired = daysUntilExpiration <= 90
-
-  // No renewal in progress
   const notRenewing = !isRenewalInProgress(center)
-
-  // No payment required
   const noPaymentRequired = !isPaymentRequired(center)
-
   return isApproved && isExpiringOrExpired && notRenewing && noPaymentRequired
 }
 
@@ -763,7 +728,6 @@ const handleFileUpload = (event) => {
 }
 
 const openRenewalDialog = (center) => {
-  // Double-check CAPA status before opening dialog
   if (center.has_active_capa) {
     toast.error('Cannot renew: This teaching center has pending CAPA that must be resolved first.')
     return
@@ -791,11 +755,8 @@ const confirmRenewal = async () => {
     return
   }
 
-  // Final CAPA check before submitting
   if (selectedCenter.value.has_active_capa) {
-    toast.error(
-      'Cannot proceed: This teaching center has pending CAPA that must be resolved first.'
-    )
+    toast.error('Cannot proceed: This teaching center has pending CAPA that must be resolved first.')
     closeRenewalDialog()
     return
   }
@@ -809,15 +770,11 @@ const confirmRenewal = async () => {
     }
 
     await apiServices.createTeachingCenterRenewal(selectedCenter.value.id, formDataPayload)
-
     await fetchData()
     toast.success('Teaching center renewal application submitted successfully!')
     closeRenewalDialog()
   } catch (error) {
-    const errorMsg =
-      error.response?.data?.detail ||
-      error.response?.data?.[0] ||
-      'Failed to submit renewal application.'
+    const errorMsg = error.response?.data?.detail || error.response?.data?.[0] || 'Failed to submit renewal application.'
     toast.error(errorMsg)
   } finally {
     isRenewing.value = false
@@ -846,98 +803,96 @@ const initiatePayment = (center) => {
 
 const handlePaymentCompleted = async (paymentData) => {
   if (!selectedCenter.value) {
-    toast.error('No center selected for payment.');
-    return;
+    toast.error('No center selected for payment.')
+    return
   }
 
-  isLoading.value = true;
-  const paymentId = paymentData.paymentHash;
-  const isForRenewal = selectedCenter.value.latest_renewal?.renewal_status === 'AWAITING_PAYMENT';
-  let redirectUrl = null;
-  const user = authStore.user;
+  isLoading.value = true
+  const paymentId = paymentData.paymentHash
+  const isForRenewal = selectedCenter.value.latest_renewal?.renewal_status === 'AWAITING_PAYMENT'
+  let redirectUrl = null
+  const user = authStore.user
 
   if (!user || !user.id || !user.cid || !user.email) {
-      toast.error('User information is missing. Please log in again.');
-      isLoading.value = false;
-      return;
+    toast.error('User information is missing. Please log in again.')
+    isLoading.value = false
+    return
   }
 
   try {
-    const paymentGatewayFormData = new FormData();
-    paymentGatewayFormData.append('refNo', paymentId);
-    paymentGatewayFormData.append('serviceCode', '100252'); 
-    paymentGatewayFormData.append('taxPayerName', selectedCenter.value.institute_details?.name_of_institution || user.cid);
-    paymentGatewayFormData.append('taxPayerNo', user.cid);
-    paymentGatewayFormData.append('taxPayerDocumentNo', user.cid);
-    paymentGatewayFormData.append('totalPayableAmount', 100);
-    paymentGatewayFormData.append('payableAmount', 100);
-    paymentGatewayFormData.append('description', isForRenewal ? 'MHPC Teaching Center Renewal Fee' : 'MHPC Teaching Center Initial Fee');
-    paymentGatewayFormData.append('mobileNo', user.contact_number || '17110000');
-    paymentGatewayFormData.append('payerEmail', user.email);
-    paymentGatewayFormData.append('user', user.id);
-    paymentGatewayFormData.append('application_no', selectedCenter.value.id);
-    paymentGatewayFormData.append('app_type', 'mhpc_teaching_center');
+    const paymentGatewayFormData = new FormData()
+    paymentGatewayFormData.append('refNo', paymentId)
+    paymentGatewayFormData.append('serviceCode', '100252')
+    paymentGatewayFormData.append('taxPayerName', selectedCenter.value.institute_details?.name_of_institution || user.cid)
+    paymentGatewayFormData.append('taxPayerNo', user.cid)
+    paymentGatewayFormData.append('taxPayerDocumentNo', user.cid)
+    paymentGatewayFormData.append('totalPayableAmount', 100)
+    paymentGatewayFormData.append('payableAmount', 100)
+    paymentGatewayFormData.append('description', isForRenewal ? 'MHPC Teaching Center Renewal Fee' : 'MHPC Teaching Center Initial Fee')
+    paymentGatewayFormData.append('mobileNo', user.contact_number || '17110000')
+    paymentGatewayFormData.append('payerEmail', user.email)
+    paymentGatewayFormData.append('user', user.id)
+    paymentGatewayFormData.append('application_no', selectedCenter.value.id)
+    paymentGatewayFormData.append('app_type', 'mhpc_teaching_center')
 
-    const paymentResponse = await apiServices.makePayment(paymentGatewayFormData);
+    const paymentResponse = await apiServices.makePayment(paymentGatewayFormData)
     if (paymentResponse.data?.content?.redirectUrl) {
-      redirectUrl = paymentResponse.data.content.redirectUrl;
+      redirectUrl = paymentResponse.data.content.redirectUrl
     }
 
-    const payload = { payment_id: paymentId };
+    const payload = { payment_id: paymentId }
     if (isForRenewal) {
-      const renewalId = selectedCenter.value.latest_renewal.id;
-      const centerId = selectedCenter.value.id;
-      await apiServices.confirmTeachingCenterRenewalPayment(centerId, renewalId, payload);
+      const renewalId = selectedCenter.value.latest_renewal.id
+      const centerId = selectedCenter.value.id
+      await apiServices.confirmTeachingCenterRenewalPayment(centerId, renewalId, payload)
     } else {
-      await apiServices.confirmInitialCenterPayment(selectedCenter.value.id, payload);
+      await apiServices.confirmInitialCenterPayment(selectedCenter.value.id, payload)
     }
 
-    toast.success(`Payment initiated successfully. Redirecting for payment completion. A link has also been sent to your email.`, { timeout: 8000 });
+    toast.success('Payment initiated successfully. Redirecting for payment completion. A link has also been sent to your email.', { timeout: 8000 })
 
     if (redirectUrl) {
-      window.open(redirectUrl, '_blank');
+      window.open(redirectUrl, '_blank')
     }
 
-    await fetchData();
+    await fetchData()
   } catch (error) {
-    console.error('Payment handling error:', error.response || error);
-    const errorMsg =
-      error.response?.data?.error ||
-      error.response?.data?.detail ||
-      'An error occurred while confirming your payment.';
-    toast.error(`${errorMsg} Please contact support.`);
+    console.error('Payment handling error:', error.response || error)
+    const errorMsg = error.response?.data?.error || error.response?.data?.detail || 'An error occurred while confirming your payment.'
+    toast.error(`${errorMsg} Please contact support.`)
   } finally {
-    isLoading.value = false;
+    isLoading.value = false
     if (paymentModalRef.value) {
-        paymentModalRef.value.closeModal();
+      paymentModalRef.value.closeModal()
     }
   }
-};
-</script>
+}
 
-<style scoped>
-.form-label {
-  @apply block text-sm font-medium text-gray-700 mb-1;
-}
-.required-label::after {
-  content: ' *';
-  color: #dc2626;
-  margin-left: 2px;
-}
-.form-input,
-.form-textarea {
-  @apply block w-full rounded-lg border-gray-300 shadow-sm p-3 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-0 disabled:bg-gray-100 disabled:cursor-not-allowed transition-colors duration-150;
-}
-.form-file-input {
-  @apply block w-full text-sm text-gray-600 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border file:border-gray-200 file:text-sm file:font-medium file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 disabled:opacity-70 disabled:cursor-not-allowed;
-}
-.btn {
-  @apply inline-flex items-center justify-center rounded-lg border py-2 px-4 text-xs font-semibold shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-1 transition-all duration-150 disabled:opacity-60 disabled:cursor-not-allowed;
-}
-.btn-primary {
-  @apply border-transparent bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500;
-}
-.btn-outline {
-  @apply border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-indigo-500;
-}
-</style>
+// Watchers and lifecycle hooks
+watch(
+  () => authStore.user,
+  (newUser) => {
+    initialAuthCheckPending.value = false
+    if (newUser?.cid && (!instituteTeachingCenters.value.length || isLoading.value)) {
+      if (isLoading.value && instituteTeachingCenters.value.length === 0) {
+        fetchData()
+      }
+    }
+  },
+  { deep: true, immediate: true }
+)
+
+onMounted(async () => {
+  if (authStore.user?.cid && instituteTeachingCenters.value.length === 0 && isLoading.value) {
+    await fetchData()
+  }
+  setTimeout(() => {
+    if (initialAuthCheckPending.value) {
+      initialAuthCheckPending.value = false
+      if (!authStore.user?.cid && isLoading.value) {
+        isLoading.value = false
+      }
+    }
+  }, 1500)
+})
+</script>
