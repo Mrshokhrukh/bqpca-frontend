@@ -30,7 +30,7 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
 import apiServices from '@/services/services'
-import CPDApplicationDetails from '../../engineeringcomponents/cpdCpdProvider/CPDApplicationDetails.vue'
+import CPDApplicationDetails from './CPDApplicationDetails.vue'
 import AfterApprovalParticipants from './AfterApprovalParticipants.vue'
 
 const toast = useToast()
