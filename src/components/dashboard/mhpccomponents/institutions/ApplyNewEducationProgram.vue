@@ -392,7 +392,7 @@ const initializeForEdit = async (appData) => {
   await Promise.all([fetchInstituteAndTeachingCenters(), fetchProgramMastersData()])
 
   formData.value.id = appData.id
-  formData.value.teaching_center_id = appData.teaching_center
+  formData.value.teaching_center_id = appData.teaching_center?.id || appData.teaching_center
   formData.value.program_master_id = appData.program_master?.id || appData.program_master
   formData.value.specific_program_title = appData.specific_program_title
   formData.value.existing_validation_letter_url = appData.curriculum_validation_letter
@@ -444,7 +444,7 @@ const handleSubmit = async () => {
   submissionPayload.append('institute_id', formData.value.institute_id)
   submissionPayload.append('program_master_id', formData.value.program_master_id)
   submissionPayload.append('specific_program_title', formData.value.specific_program_title.trim())
-  submissionPayload.append('teaching_center', formData.value.teaching_center_id)
+  submissionPayload.append('teaching_center_id', formData.value.teaching_center_id)
 
   if (formData.value.curriculum_validation_letter_file) {
     submissionPayload.append(
