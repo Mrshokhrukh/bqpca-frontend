@@ -2,7 +2,6 @@
   <div class="min-h-screen bg-gray-100 p-4 sm:p-6 lg:p-8">
     <div class="mx-auto">
       <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-        <!-- Header -->
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center p-6 border-b border-gray-200">
           <div>
             <h1 class="text-2xl font-bold text-gray-800">Accreditation Appeals</h1>
@@ -20,7 +19,6 @@
           </div>
         </div>
 
-        <!-- Table Content -->
         <div class="p-6">
           <div v-if="isLoading" class="text-center py-10">
             <svg class="animate-spin h-8 w-8 text-blue-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -42,9 +40,7 @@
                   <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Application Ref.</th>
                   <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reason for Appeal</th>
                   <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Submission Date</th>
-                  <!-- === NEW COLUMN HEADER === -->
                   <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Status</th>
-                  <!-- === RENAMED COLUMN HEADER === -->
                   <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Appeal Status</th>
                   <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
@@ -54,12 +50,11 @@
                   <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ appeal.application_reference_no }}</td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ appeal.appeal_reason_display }}</td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ new Date(appeal.created_at).toLocaleDateString() }}</td>
-                  <!-- === NEW COLUMN CELL FOR PAYMENT STATUS === -->
                   <td class="px-6 py-4 whitespace-nowrap text-sm">
                     <span v-if="appeal.status_appeal === 'draft'" class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
                       N/A
                     </span>
-                    <span v-else-if="appeal.is_payment_complete" class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                    <span v-else-if="appeal.is_appeal_fee_paid" class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
                       Paid
                     </span>
                     <span v-else class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-orange-100 text-orange-800">
@@ -82,14 +77,12 @@
       </div>
     </div>
 
-    <!-- Apply Modal (assumed to exist) -->
     <AccreApplyForAppeal
       :is-visible="isApplyModalVisible"
       @close="closeApplyModal"
       @appeal-submitted="handleAppealSubmitted"
     />
 
-    <!-- View Details Modal (receives the selected appeal) -->
     <AppealDetailsModal
       :is-visible="isViewModalVisible"
       :appeal="selectedAppeal"
@@ -118,14 +111,9 @@ const selectedAppeal = ref(null);
 const fetchData = async () => {
   isLoading.value = true;
   try {
-
     const response = await apiService.getAccreditationAppeals();
-    // Assuming API response includes `is_payment_complete` boolean for each appeal
     appeals.value = response.data.results || [];
-
-
-    canApplyForAppeal.value = true; // This should ideally be driven by API logic
-
+    canApplyForAppeal.value = true;
   } catch (error) {
     console.error("Failed to fetch appeal data:", error);
     toast.error("Failed to load appeal information. Please try again.");
@@ -144,13 +132,13 @@ const openViewModal = (appeal) => {
 };
 const closeViewModal = () => {
   isViewModalVisible.value = false;
-  selectedAppeal.value = null; // Clear selection on close
+  selectedAppeal.value = null;
 };
 
 const handleAppealSubmitted = () => {
   closeApplyModal();
   toast.success("Your appeal has been submitted successfully!");
-  fetchData(); // Refresh the list to show the new appeal
+  fetchData();
 };
 
 const getStatusClass = (status) => {
