@@ -263,8 +263,29 @@ export const useRenewalStore = defineStore('renewal', () => {
         throw new Error('Invalid response from server.')
       }
     } catch (error) {
-      const errorMsg = error.response?.data?.detail || error.message || 'Submission failed.'
-      toast.error(`Error: ${errorMsg}`)
+      let errorMessage = 'Failed to submit renewal application.'
+      if (error.response && error.response.data) {
+        if (typeof error.response.data === 'object' && error.response.data !== null) {
+          if (error.response.data.error) {
+            errorMessage = error.response.data.error
+          } else if (error.response.data.detail) {
+            errorMessage = error.response.data.detail
+          } else {
+            const errors = Object.values(error.response.data).flat()
+            if (errors.length > 0) {
+              errorMessage = errors.join(' ')
+            }
+          }
+        } else if (typeof error.response.data === 'string') {
+          errorMessage = error.response.data
+        }
+      } else if (error.request) {
+        errorMessage = 'No response from server. Please check your network connection.'
+      } else {
+        errorMessage = error.message
+      }
+      toast.error(errorMessage)
+      console.error('Renewal Submission Error:', error.response || error)
     } finally {
       isSubmitting.value = false
     }
