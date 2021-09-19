@@ -2,7 +2,7 @@
 <template>
   <div class="min-h-screen bg-gray-50 py-8">
     <div class="mx-auto px-4">
-      <!-- Header and Table (Unchanged) -->
+      <!-- Header (Unchanged) -->
       <div class="bg-white rounded-xl shadow-sm mb-8 p-6 border border-gray-100">
         <div>
           <h2 class="text-2xl font-bold text-gray-800">Appeal Applications</h2>
@@ -25,10 +25,11 @@
               <tr>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Institution</th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Appeal Reason</th>
-                <!-- NEW: Payment Status Header -->
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Status</th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Submitted On</th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Appeal Status</th>
+                <!-- === NEW COLUMN HEADER FOR FINAL GRADE === -->
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Final Grade</th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
@@ -41,16 +42,22 @@
                 <td class="px-6 py-4">
                   <div class="text-sm text-gray-900">{{ appeal.appeal_reason_display }}</div>
                 </td>
-                <!-- NEW: Payment Status Data Cell -->
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <span v-if="appeal.application_details" :class="['px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full', getPaymentStatusClass(appeal.application_details.is_payment_complete)]">
-                    {{ appeal.application_details.is_payment_complete ? 'Paid' : 'Pending' }}
+                  <span :class="['px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full', getPaymentStatusClass(appeal.is_appeal_fee_paid)]">
+                    {{ appeal.is_appeal_fee_paid ? 'Paid' : 'Pending' }}
                   </span>
-                   <span v-else class="text-xs text-gray-400">N/A</span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatDate(appeal.created_at) }}</td>
                 <td class="px-6 py-4 whitespace-nowrap">
                    <span :class="getStatusClass(appeal.status_appeal)" class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full">{{ appeal.status_appeal_display }}</span>
+                </td>
+                <!-- === NEW COLUMN CELL FOR FINAL GRADE === -->
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span v-if="appeal.application_details?.final_grade_awarded_details"
+                        class="px-2 py-1 inline-flex text-sm leading-5 font-bold rounded-full bg-indigo-100 text-indigo-800">
+                    {{ appeal.application_details.final_grade_awarded_details.rating_category_name }}
+                  </span>
+                  <span v-else class="text-xs text-gray-400">N/A</span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <button @click="viewAppeal(appeal)" class="text-indigo-600 hover:text-indigo-900 mr-3">View / Decide</button>
@@ -68,17 +75,14 @@
       <div class="flex items-center justify-center min-h-screen px-4 text-center sm:block sm:p-0">
         <div class="fixed inset-0 bg-gray-500 bg-opacity-75" @click="closeModal"></div>
         <div class="inline-block bg-white rounded-lg overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-6xl sm:w-full">
-          <!-- Header -->
           <div class="bg-indigo-600 px-6 py-4 flex items-center justify-between">
             <h3 class="text-lg font-medium text-white">
               Appeal Review: {{ selectedAppeal.application_details?.institute_profile_details?.name }}
             </h3>
             <button @click="closeModal" class="text-white text-2xl leading-none">×</button>
           </div>
-          <!-- Body -->
           <div class="px-6 py-4 max-h-[80vh] overflow-y-auto grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-            <!-- Left Column: Appellant Details (Unchanged) -->
             <div class="space-y-4">
                <h4 class="text-lg font-semibold text-gray-700 border-b pb-2">Appellant Submission</h4>
                 <div class="p-4 bg-gray-50 rounded-lg">
@@ -104,7 +108,6 @@
                 </div>
             </div>
 
-            <!-- Right Column: Officer Decision Panel (Unchanged) -->
             <div class="space-y-6">
               <div class="p-4 bg-blue-50 rounded-lg border border-blue-200">
                 <h4 class="text-lg font-semibold text-gray-800 border-b pb-2 mb-4">1. Appeal Decision</h4>
@@ -121,7 +124,6 @@
                 </div>
               </div>
 
-              <!-- This appears only if the appeal is approved -->
               <div v-if="isAppealApproved" class="p-4 bg-green-50 rounded-lg border border-green-300 animate-fade-in">
                 <h4 class="text-lg font-semibold text-gray-800 border-b pb-2 mb-4">2. Post-Appeal Outcome</h4>
                 <p class="text-sm text-gray-600 mb-4">The appeal is approved. Specify the new grade for the original accreditation application.</p>
@@ -142,7 +144,6 @@
 
             </div>
           </div>
-          <!-- Footer -->
           <div class="bg-gray-50 px-6 py-4 flex justify-end space-x-3">
             <button type="button" class="px-4 py-2 border rounded-md" @click="closeModal">Cancel</button>
             <button type="button" class="px-4 py-2 text-white bg-indigo-600 rounded-md" @click="saveDecision" :disabled="loading || !isDecisionValid">
@@ -165,10 +166,8 @@ const ratingCategories = ref([]);
 const loading = ref(false);
 const isModalOpen = ref(false);
 const selectedAppeal = ref(null);
-// Use a separate reactive object for the new post-appeal data
 const postAppeal = ref({ newGradeId: null });
 
-// Computed property to check if the "Approved" option is selected for the appeal
 const isAppealApproved = computed(() => {
   if (!selectedAppeal.value || !decisionOptions.value.length) return false;
   const selectedDecisionId = selectedAppeal.value.decision_by_bac_on_appeal_final;
@@ -178,7 +177,6 @@ const isAppealApproved = computed(() => {
   return selectedOption && selectedOption.decision_name?.toLowerCase().includes('approve');
 });
 
-// Computed property to validate the form before saving
 const isDecisionValid = computed(() => {
     if (!selectedAppeal.value?.decision_by_bac_on_appeal_final) return false;
     if (isAppealApproved.value && !postAppeal.value.newGradeId) return false;
@@ -208,25 +206,22 @@ const fetchInitialData = async () => {
 const saveDecision = async () => {
   if (!selectedAppeal.value?.id || !isDecisionValid.value) return;
 
-  // Construct the payload for the PATCH request
   const payload = {
     decision_by_bac_on_appeal_final: selectedAppeal.value.decision_by_bac_on_appeal_final,
     decision_details_bac_appeal: selectedAppeal.value.decision_details_bac_appeal,
   };
 
-  // If the appeal is approved, add the new grade ID to the payload
   if (isAppealApproved.value) {
     payload.new_application_grade_id = postAppeal.value.newGradeId;
   }
 
   loading.value = true;
   try {
-    // The backend now handles updating both the appeal and the original application
     await apiService.patchApplicationAppeal(selectedAppeal.value.id, payload);
 
     closeModal();
     alert('Decision saved successfully! The original application has been updated.');
-    await fetchInitialData(); // Refresh the list
+    await fetchInitialData();
   } catch (error)
   {
     console.error('Error saving decision:', error.response?.data);
@@ -253,7 +248,6 @@ const removeAppeal = async (id) => {
 
 const viewAppeal = (appeal) => {
   selectedAppeal.value = JSON.parse(JSON.stringify(appeal));
-  // Reset the post-appeal state each time the modal is opened
   postAppeal.value = { newGradeId: null };
   isModalOpen.value = true;
 };
@@ -262,15 +256,21 @@ const closeModal = () => { isModalOpen.value = false; selectedAppeal.value = nul
 
 const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-CA') : 'N/A';
 
-const getStatusClass = (s) => ({
-    'submitted': 'bg-blue-100 text-blue-800',
-    'decision_made': 'bg-green-100 text-green-800',
-    'under_review_bac': 'bg-yellow-100 text-yellow-800',
-}[s] || 'bg-gray-100 text-gray-800');
+const getStatusClass = (status) => {
+  const classes = {
+    submitted: 'bg-blue-100 text-blue-800',
+    under_review_bac: 'bg-yellow-100 text-yellow-800',
+    approved: 'bg-green-100 text-green-800',
+    rejected: 'bg-red-100 text-red-800',
+    draft: 'bg-gray-100 text-gray-800',
+    pending_payment: 'bg-orange-100 text-orange-800',
+  };
+  return classes[status] || 'bg-gray-100 text-gray-800';
+};
 
-// NEW: Helper function for payment status badge
-const getPaymentStatusClass = (isComplete) => {
-  return isComplete ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800';
+// --- THIS IS THE CORRECTED LOGIC ---
+const getPaymentStatusClass = (isPaid) => {
+  return isPaid ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800';
 };
 
 onMounted(fetchInitialData);
