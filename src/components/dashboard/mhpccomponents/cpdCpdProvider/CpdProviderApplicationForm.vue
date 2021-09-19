@@ -10,18 +10,16 @@
       <p class="ml-4 text-white text-xl">Processing...</p>
     </div>
 
-    <div v-if="validationErrors.length > 0 || successMessage" class="mb-6 space-y-3">
-      <div
-        v-if="validationErrors.length > 0"
-        class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md shadow"
-        role="alert"
-      >
-        <p class="font-bold">Please correct the following errors:</p>
-        <ul class="mt-2 list-disc list-inside text-sm">
-          <li v-for="(error, index) in validationErrors" :key="`error-${index}`">{{ error }}</li>
-        </ul>
-      </div>
-      
+    <div
+      v-if="validationErrors.length > 0"
+      id="validation-errors-box"
+      class="mb-6 rounded-md bg-red-100 p-4 shadow border-l-4 border-red-500 text-red-700"
+      role="alert"
+    >
+      <p class="font-bold">Please correct the following errors:</p>
+      <ul class="mt-2 list-disc list-inside text-sm">
+        <li v-for="(error, index) in validationErrors" :key="`error-${index}`">{{ error }}</li>
+      </ul>
     </div>
 
     <form @submit.prevent="handleSubmit" class="space-y-8">
@@ -780,7 +778,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed } from 'vue'
+import { ref, reactive, onMounted, computed, nextTick } from 'vue'
 import { useToast } from 'vue-toastification'
 import { useAuthStore } from '@/stores/authStore'
 import { useRouter } from 'vue-router'
@@ -1051,6 +1049,26 @@ const fetchParticipantName = async (participant) => {
     loading.value = false
     currentAction.value = ''
   }
+}
+
+const focusOnFirstError = () => {
+  nextTick(() => {
+    // Find the first validation message element for a form field
+    const firstErrorField = document.querySelector('.form-error-text, .text-red-500:not(span)')
+
+    if (firstErrorField) {
+      // If a field-specific error is found, scroll to it
+      firstErrorField.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    } else if (validationErrors.value.length > 0) {
+      // Otherwise, if there are general errors, scroll to the top error box
+      const errorBox = document.getElementById('validation-errors-box')
+      if (errorBox) {
+        errorBox.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+      }
+    }
+  })
 }
 
 const validateForm = (forDraft = false) => {
@@ -1502,7 +1520,7 @@ const resetFormState = () => {
   participantDetailsErrors.value = {}
   approvedCpdErrors.value = {}
 
-  
+
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
@@ -1561,7 +1579,8 @@ const handleSubmit = () => {
   if (validateForm(false)) {
     showConfirmation.value = true
   } else {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    toast.error('Please correct the errors on the form and try again.', { timeout: 4000 })
+    focusOnFirstError()
   }
 }
 
@@ -1570,7 +1589,8 @@ const confirmSubmit = async () => {
   showConfirmation.value = false
 
   if (!validateForm(false)) {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    toast.error('Please correct the errors on the form and try again.', { timeout: 4000 })
+    focusOnFirstError()
     currentAction.value = ''
     return
   }
@@ -1587,25 +1607,34 @@ const confirmSubmit = async () => {
     }, 3000)
   } catch (error) {
     console.error('Error submitting application:', error)
-    let errorMessage = 'Submission failed. Please review the errors below.'
+    const serverErrors = []
     if (error.response?.data) {
       Object.entries(error.response.data).forEach(([key, value]) => {
+        const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())
         if (key === 'detail' && typeof value === 'string') {
-          errorMessage += `\n${value}`
+          serverErrors.push(value)
         } else if (Array.isArray(value)) {
-          errorMessage += `\n${key}: ${value.join(', ')}`
+          serverErrors.push(`${formattedKey}: ${value.join(', ')}`)
         } else if (typeof value === 'object') {
           Object.entries(value).forEach(([subKey, subValue]) => {
-            errorMessage += `\n${key}.${subKey}: ${Array.isArray(subValue) ? subValue.join(', ') : subValue}`
+            serverErrors.push(
+              `${formattedKey} - ${subKey}: ${
+                Array.isArray(subValue) ? subValue.join(', ') : subValue
+              }`,
+            )
           })
         } else {
-          errorMessage += `\n${key}: ${value}`
+          serverErrors.push(`${formattedKey}: ${value}`)
         }
       })
-    } else {
-      errorMessage = 'An unexpected error occurred. Please try again.'
     }
-    toast.error(errorMessage)
+
+    if (serverErrors.length > 0) {
+      validationErrors.value.unshift(...serverErrors)
+      toast.error('Submission failed. Please review the errors shown at the top of the form.')
+    } else {
+      toast.error('An unexpected error occurred during submission. Please try again.')
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' })
   } finally {
     loading.value = false

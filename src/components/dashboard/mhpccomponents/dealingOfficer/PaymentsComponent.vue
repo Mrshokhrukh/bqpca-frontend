@@ -256,10 +256,8 @@
 
 <script setup>
 import { ref, computed, reactive, onMounted, watch } from 'vue'
-import apiServices from '@/services/services'
+import mhpcservices from '@/services/mhpcservices'
 import DOPageHeader from '@/components/common/MHPC/DOPageHeader.vue'
-
-const appName = 'certificate_of_good_standing_fee'
 
 const allPaymentRecords = ref([])
 const loading = ref(false)
@@ -282,21 +280,19 @@ const fetchPayments = async () => {
   loading.value = true
   allPaymentRecords.value = []
   try {
-    const response = await apiServices.getAllPayments(appName)
+    const response = await mhpcservices.getAllMhpcPayments()
 
-    if (response && response.status >= 200 && response.status < 300 && response.data) {
-      if (Array.isArray(response.data)) {
-        allPaymentRecords.value = response.data
-      } else if (typeof response.data === 'object' && response.data !== null) {
-        allPaymentRecords.value = [response.data]
-      } else {
-        console.warn('API returned unexpected data format:', response.data)
-      }
+    if (response && response.data && Array.isArray(response.data.results)) {
+      allPaymentRecords.value = response.data.results
+    } else if (response && Array.isArray(response.data)) {
+      allPaymentRecords.value = response.data
     } else {
-      console.error('API request failed:', response?.status, response?.statusText)
+      console.warn('API returned unexpected data format:', response.data)
+      allPaymentRecords.value = []
     }
   } catch (error) {
     console.error('Error fetching payments:', error)
+    allPaymentRecords.value = []
   } finally {
     loading.value = false
     currentPage.value = 1
@@ -400,7 +396,7 @@ const formatCurrency = (amount) => {
 
 const statusBadge = (status) => {
   const lowercaseStatus = String(status || '').toLowerCase()
-  if (lowercaseStatus.includes('success') || lowercaseStatus.includes('paid')) {
+  if (lowercaseStatus.includes('success') || lowercaseStatus.includes('paid') || lowercaseStatus.includes('completed')) {
     return 'bg-green-100 text-green-800'
   } else if (lowercaseStatus.includes('pending')) {
     return 'bg-yellow-100 text-yellow-800'

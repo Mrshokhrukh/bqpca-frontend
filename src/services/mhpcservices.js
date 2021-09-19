@@ -1209,4 +1209,8 @@ export default {
     // payload must be { remarks: "reason for rejection" }
     return apiClient.post(`/mhpc/admin/institute-renewals/${renewalId}/reject/`, payload)
   },
+
+  getAllMhpcPayments() {
+    return apiClient.get('/mhpc/payment-history/');
+  },
 }
