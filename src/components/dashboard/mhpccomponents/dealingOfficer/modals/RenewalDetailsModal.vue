@@ -134,6 +134,44 @@
                     </div>
                   </div>
 
+                  <div class="bg-white rounded-xl border p-4 shadow-sm">
+                    <h4 class="font-semibold text-gray-800 mb-3 flex items-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                      </svg>
+                      Payment Details
+                    </h4>
+                    <div class="space-y-2 text-sm">
+                      <div>
+                        <p class="text-xs text-gray-500">Payment Status</p>
+                        <p class="font-semibold capitalize" :class="paymentStatusDisplay.class">{{ paymentStatusDisplay.text }}</p>
+                      </div>
+                      <div v-if="renewalData.payment_id">
+                        <p class="text-xs text-gray-500">Payment ID</p>
+                        <p class="font-medium text-gray-800">{{ renewalData.payment_id }}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- <div class="bg-white rounded-xl border p-4 shadow-sm">
+                    <h4 class="font-semibold text-gray-800 mb-3 flex items-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                      </svg>
+                      Payment Details
+                    </h4>
+                    <div class="space-y-2 text-sm">
+                      <div>
+                        <p class="text-xs text-gray-500">Payment Status</p>
+                        <p class="font-semibold capitalize" :class="paymentStatusDisplay.class">{{ paymentStatusDisplay.text }}</p>
+                      </div>
+                      <div v-if="renewalData.payment_id">
+                        <p class="text-xs text-gray-500">Payment ID</p>
+                        <p class="font-medium text-gray-800">{{ renewalData.payment_id }}</p>
+                      </div>
+                    </div>
+                  </div> -->
+
                   <div
                     v-if="renewalData.is_counselor"
                     class="bg-white rounded-xl border p-4 shadow-sm"
@@ -367,6 +405,22 @@ const supervisionStatus = computed(() => {
     iconClass: 'text-red-500',
   }
 })
+
+const paymentStatusDisplay = computed(() => {
+  const status = props.renewalData?.payment_status;
+  switch (status) {
+    case 'completed':
+      return { text: 'Paid', class: 'text-green-700' };
+    case 'pending':
+      return { text: 'Pending', class: 'text-yellow-700' };
+    case 'failed':
+      return { text: 'Failed', class: 'text-red-700' };
+    case 'processing_payment':
+      return { text: 'Processing', class: 'text-blue-700' };
+    default:
+      return { text: 'N/A', class: 'text-gray-700' };
+  }
+});
 
 // --- NEW FETCH Functions ---
 const fetchDecisionSupportData = async (cid, isCounselor) => {
