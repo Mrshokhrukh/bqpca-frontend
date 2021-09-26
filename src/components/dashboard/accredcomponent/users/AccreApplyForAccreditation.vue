@@ -335,6 +335,7 @@ const isSavingDraft = ref(false);
 const errors = ref({});
 const paymentModal = ref(null);
 const showConfirmationModal = ref(false);
+const submissionInitiated = ref(false);
 
 const props = defineProps({
   applicationIdProp: {
@@ -594,6 +595,10 @@ const saveDraft = async () => {
 };
 
 const onPaymentCompleted = (paymentData) => {
+  if (paymentModal.value) {
+    paymentModal.value.closeModal();
+  }
+  submissionInitiated.value = true;
   application.value.is_payment_complete = false;
   application.value.payment_id_gateway = paymentData.paymentHash;
   application.value.status = 'pending_payment';
@@ -602,7 +607,9 @@ const onPaymentCompleted = (paymentData) => {
 
 const onPaymentModalClose = () => {
   console.log('Payment modal was closed.');
-  isSubmitting.value = false;
+  if (!submissionInitiated.value) {
+    isSubmitting.value = false;
+  }
 };
 
 const handleSubmitActual = async () => {
@@ -690,6 +697,7 @@ const handleSubmitActual = async () => {
     toast.error(errors.value.general || 'Failed to complete submission process. Please check any error messages.');
   } finally {
     isSubmitting.value = false;
+    submissionInitiated.value = false;
   }
 };
 

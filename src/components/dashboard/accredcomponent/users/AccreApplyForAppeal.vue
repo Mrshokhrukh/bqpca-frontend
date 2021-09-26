@@ -118,7 +118,6 @@
 import { ref, reactive, watch, computed, onMounted } from 'vue';
 import apiService from '@/services/services';
 import { useToast } from 'vue-toastification';
-// PAYMENT INTEGRATION: Import PaymentModal and authStore
 import PaymentModal from '@/components/common/PaymentModal.vue';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -131,7 +130,6 @@ const props = defineProps({
 const emit = defineEmits(['close', 'appeal-submitted']);
 
 const toast = useToast();
-// PAYMENT INTEGRATION: Initialize authStore
 const authStore = useAuthStore();
 const DRAFT_KEY_PREFIX = 'appeal_draft_for_app_';
 const loadingError = ref(null);
@@ -140,6 +138,7 @@ const isSubmitting = ref(false);
 const paymentModal = ref(null);
 const fileInputRef = ref(null);
 const appealReasonOptions = ref([]);
+const submissionInitiated = ref(false);
 
 const autoFilledDetails = reactive({
     'Name of Institution': 'N/A',
@@ -286,15 +285,20 @@ const handleSubmit = () => {
 };
 
 const onPaymentCompleted = (paymentData) => {
+  if (paymentModal.value) {
+    paymentModal.value.closeModal();
+  }
+  submissionInitiated.value = true;
   appeal.is_appeal_fee_paid = false;
   appeal.appeal_payment_id_gateway_ref = paymentData.paymentHash;
-  appeal.status_appeal = 'pending_payment';
   handleSubmitActual();
 };
 
 const onPaymentModalClose = () => {
-    toast.info('Payment was cancelled. Your appeal has not been submitted.');
-    isSubmitting.value = false;
+    if (!submissionInitiated.value) {
+        toast.info('Payment was cancelled. Your appeal has not been submitted.');
+        isSubmitting.value = false;
+    }
 };
 
 const handleSubmitActual = async () => {
@@ -308,7 +312,26 @@ const handleSubmitActual = async () => {
   }
 
   try {
-    // Step 1: Initiate payment with the gateway to get a redirect URL
+    // Step 1: Save the appeal data to our backend
+    const appealFormData = new FormData();
+    Object.keys(appeal).forEach(key => {
+        const value = appeal[key];
+        if (key === 'supporting_documents') return;
+        if (typeof value === 'boolean') {
+            appealFormData.append(key, value ? 'true' : 'false');
+        } else if (value !== null && value !== undefined) {
+            appealFormData.append(key, value);
+        }
+    });
+    appeal.supporting_documents.forEach((file) => {
+        appealFormData.append('supporting_documents', file, file.name);
+    });
+
+    appealFormData.set('status_appeal', 'pending_payment');
+
+    await apiService.createApplicationAppeal(appealFormData);
+
+    // Step 2: Initiate payment with the gateway
     const feeAmount = 1000.0;
     const paymentInitiationFormData = new FormData();
     paymentInitiationFormData.append('refNo', appeal.appeal_payment_id_gateway_ref);
@@ -335,29 +358,11 @@ const handleSubmitActual = async () => {
     } catch (paymentError) {
         console.error('Error making payment:', paymentError.response?.data || paymentError);
         const errorDetail = paymentError.response?.data ? JSON.stringify(paymentError.response.data) : paymentError.message;
-        toast.error('Payment request failed: ' + errorDetail);
-        isSubmitting.value = false;
+        toast.error('Appeal saved, but payment request failed: ' + errorDetail + '. You can try paying again later.');
         return;
     }
 
-    // Step 2: Save the appeal data to our backend
-    const appealFormData = new FormData();
-    Object.keys(appeal).forEach(key => {
-        const value = appeal[key];
-        if (key === 'supporting_documents') return;
-        if (typeof value === 'boolean') {
-            appealFormData.append(key, value ? 'true' : 'false');
-        } else if (value !== null && value !== undefined) {
-            appealFormData.append(key, value);
-        }
-    });
-    appeal.supporting_documents.forEach((file) => {
-        appealFormData.append('supporting_documents', file, file.name);
-    });
-
-    await apiService.createApplicationAppeal(appealFormData);
-
-    // Step 3: Success! Open payment page in new tab for user
+    // Step 3: Success! Open payment page and clean up
     toast.success(
       'Appeal submitted successfully, redirecting for payment. A link has also been sent to your email.',
       { timeout: 8000 }
@@ -375,11 +380,11 @@ const handleSubmitActual = async () => {
   } catch (error) {
     const errorMsg = error.response?.data?.detail || 'An unexpected error occurred while submitting the appeal.';
     toast.error(errorMsg);
-    // Revert status on failure so the user isn't stuck
     appeal.status_appeal = 'draft';
     appeal.is_appeal_fee_paid = false;
   } finally {
     isSubmitting.value = false;
+    submissionInitiated.value = false;
   }
 };
 
