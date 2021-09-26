@@ -541,8 +541,9 @@ export default {
   },
 
   // MHPC Renewals Endpoints
-  getMhpcRenewals(params = {}) {
-    return apiClient.get('/mhpc/mhpc-renewals/', { params })
+  getMhpcRenewals(cid) {
+    const url = cid ? `/mhpc/mhpc-renewals/?cid=${cid}` : '/mhpc/mhpc-renewals/';
+    return apiClient.get(url);
   },
   createMhpcRenewal(data) {
     return apiClient.post('/mhpc/mhpc-renewals/', data)
@@ -553,11 +554,16 @@ export default {
   updateMhpcRenewal(id, data) {
     return apiClient.put(`/mhpc/mhpc-renewals/${id}/`, data)
   },
-  patchMhpcRenewal(id, data) {
-    return apiClient.patch(`/mhpc/mhpc-renewals/${id}/`, data)
+  patchMhpcRenewal(id, data, cid) {
+    const url = cid ? `/mhpc/mhpc-renewals/${id}/?cid=${cid}` : `/mhpc/mhpc-renewals/${id}/`;
+    return apiClient.patch(url, data);
   },
   deleteMhpcRenewal(id) {
     return apiClient.delete(`/mhpc/mhpc-renewals/${id}/`)
+  },
+
+  confirmProfessionalRenewalPayment(renewalId, paymentData) {
+    return apiClient.post(`/mhpc/mhpc-renewals/${renewalId}/confirm-payment/`, paymentData)
   },
 
   // BHMC user qualifications
@@ -1208,5 +1214,9 @@ export default {
   rejectInstituteRenewal(renewalId, payload) {
     // payload must be { remarks: "reason for rejection" }
     return apiClient.post(`/mhpc/admin/institute-renewals/${renewalId}/reject/`, payload)
+  },
+
+  getAllMhpcPayments() {
+    return apiClient.get('/mhpc/payment-history/');
   },
 }
