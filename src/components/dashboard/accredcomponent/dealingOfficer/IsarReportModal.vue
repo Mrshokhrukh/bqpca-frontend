@@ -158,15 +158,45 @@
             <div class="rounded-lg border border-purple-200 bg-purple-50 p-4">
               <h4 class="mb-2 font-semibold text-gray-700">4. Consolidated Site Visit Report</h4>
               <p v-if="!canUploadConsolidatedReport" class="text-sm text-gray-600">This action is available after the physical verification has been confirmed.</p>
-              <div v-else class="space-y-4">
-                <div>
-                  <label for="consolidated-report-file" class="block text-sm font-medium text-gray-700">Consolidated Report File</label>
-                  <input id="consolidated-report-file" type="file" @change="handleConsolidatedReportFileChange" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:rounded-full file:border-0 file:bg-violet-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-violet-700 hover:file:bg-violet-100"/>
+
+              <!-- +++ START OF MODIFIED SECTION +++ -->
+              <div v-else>
+                <!-- STATE 1: SHOW EXISTING, SAVED REPORT -->
+                <div v-if="existingReportUrl && !isReplacingReport" class="space-y-3">
+                  <p class="text-sm font-medium text-gray-700">Current Report:</p>
+                  <div class="flex items-center justify-between rounded-md border bg-white p-3 shadow-sm">
+                    <div class="flex min-w-0 items-center gap-3">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 flex-shrink-0 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
+                      </svg>
+                      <span class="truncate font-semibold text-gray-800">{{ getFileNameFromUrl(existingReportUrl) }}</span>
+                    </div>
+                    <div class="flex flex-shrink-0 gap-2">
+                      <a :href="existingReportUrl" target="_blank" class="rounded-md bg-blue-600 px-3 py-1.5 text-sm text-white hover:bg-blue-700">Download</a>
+                      <button @click="isReplacingReport = true" class="rounded-md bg-yellow-500 px-3 py-1.5 text-sm text-white hover:bg-yellow-600">Replace</button>
+                    </div>
+                  </div>
                 </div>
-                <button @click="uploadConsolidatedReport" :disabled="!consolidatedReportFile || isProcessing" class="rounded bg-purple-600 px-4 py-2 text-white hover:bg-purple-700 disabled:cursor-not-allowed disabled:bg-purple-300">
-                  {{ isProcessing ? 'Uploading...' : 'Upload & Proceed' }}
-                </button>
+
+                <!-- STATE 2: UPLOAD A NEW REPORT (OR REPLACE EXISTING) -->
+                <div v-else class="space-y-4">
+                  <div>
+                    <label for="consolidated-report-file" class="block text-sm font-medium text-gray-700">
+                      {{ existingReportUrl ? 'Upload New Report File' : 'Consolidated Report File' }}
+                    </label>
+                    <input id="consolidated-report-file" type="file" @change="handleConsolidatedReportFileChange" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:rounded-full file:border-0 file:bg-violet-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-violet-700 hover:file:bg-violet-100"/>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <button @click="uploadConsolidatedReport" :disabled="!consolidatedReportFile || isProcessing" class="rounded bg-purple-600 px-4 py-2 text-white hover:bg-purple-700 disabled:cursor-not-allowed disabled:bg-purple-300">
+                      {{ isProcessing ? 'Uploading...' : 'Upload & Proceed' }}
+                    </button>
+                    <button v-if="isReplacingReport" @click="isReplacingReport = false; consolidatedReportFile = null" class="rounded bg-gray-200 px-4 py-2 text-gray-800 hover:bg-gray-300">
+                      Cancel
+                    </button>
+                  </div>
+                </div>
               </div>
+              <!-- +++ END OF MODIFIED SECTION +++ -->
             </div>
 
             <div class="rounded-lg border border-red-200 bg-red-50 p-4">
@@ -226,6 +256,24 @@ const consolidatedReportFile = ref(null);
 const finalRemarks = ref('');
 const selectedGradeId = ref(null);
 
+// +++ START OF NEW CODE +++
+const isReplacingReport = ref(false);
+
+const existingReportUrl = computed(() => {
+  return localIsarData.value?.application_details?.consolidated_site_visit_report_url || null;
+});
+
+const getFileNameFromUrl = (url) => {
+  if (!url) return 'File';
+  try {
+    // This safely extracts the filename from the full URL
+    return decodeURIComponent(url.substring(url.lastIndexOf('/') + 1));
+  } catch (e) {
+    return 'File';
+  }
+};
+// +++ END OF NEW CODE +++
+
 watch(() => props.isarData, (newData) => {
   if (newData) {
     localIsarData.value = JSON.parse(JSON.stringify(newData));
@@ -233,6 +281,9 @@ watch(() => props.isarData, (newData) => {
     consolidatedReportFile.value = null;
     finalRemarks.value = '';
     selectedGradeId.value = null;
+    // +++ START OF NEW CODE +++
+    isReplacingReport.value = false; // Reset the "replace" state when modal opens
+    // +++ END OF NEW CODE +++
 
     const existingVisit = localIsarData.value?.application_details?.site_visits?.[0];
     if (existingVisit) {
@@ -398,7 +449,7 @@ const updateSchedule = async () => {
     emit('action-completed');
   } catch (error) {
     console.error('Failed to update schedule:', error);
-    
+
     toast.error(error.response?.data?.detail || error.response?.data?.application[0] || 'An error occurred.');
   } finally {
     isProcessing.value = false;
