@@ -1,3 +1,4 @@
+<!-- User's COI Declaration Component - Complete & Updated -->
 <template>
   <div class="bg-gray-50 min-h-screen py-12 px-4 sm:px-6 lg:px-8">
     <div class="mx-auto">
@@ -141,7 +142,6 @@
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
                     </button>
                 </div>
-
                 <!-- Modal Body -->
                 <div class="p-6">
                     <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
@@ -176,7 +176,6 @@
                         </div>
                     </dl>
                 </div>
-
                 <!-- Modal Footer -->
                 <div class="flex items-center p-6 space-x-2 border-t border-gray-200 rounded-b">
                     <button @click="closeAssessorModal" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Close</button>
@@ -194,7 +193,6 @@ import apiService from '@/services/services';
 
 const toast = useToast();
 
-// --- Reactive State ---
 const allCoiRecords = ref([]);
 const loading = ref(true);
 const error = ref(null);
@@ -205,7 +203,6 @@ const showFinalDeclaration = ref(false);
 const assessorDetailsModalOpen = ref(false);
 const selectedAssessor = ref(null);
 
-
 const recordsForCurrentUser = computed(() => {
     if (!currentUser.value || !allCoiRecords.value) return [];
     return allCoiRecords.value.filter(record =>
@@ -213,17 +210,23 @@ const recordsForCurrentUser = computed(() => {
     );
 });
 
+// =========================================================================
+// --- THE CRITICAL FIX IS HERE ---
+// Change 'pending_assessor' to the new, correct status name from the backend.
+// =========================================================================
 const pendingRecords = computed(() => {
-    return recordsForCurrentUser.value.filter(record => record.status === 'pending_assessor');
+    return recordsForCurrentUser.value.filter(record => record.status === 'pending_institute_review');
 });
+// =========================================================================
+
 const hasCompletedRecords = computed(() => {
     if (loading.value || !currentUser.value || !allCoiRecords.value) return false;
     return recordsForCurrentUser.value.length > 0 && pendingRecords.value.length === 0;
 });
 
-
 const instituteName = computed(() => {
-    return pendingRecords.value[0]?.application_details?.institute_profile_details?.name || 'Your Institute';
+    const record = recordsForCurrentUser.value[0];
+    return record?.application_details?.institute_profile_details?.name || 'Your Institute';
 });
 
 const allDecisionsMade = computed(() => {
@@ -244,7 +247,6 @@ const approvedAssessors = computed(() => {
     return pendingRecords.value.filter(record => decisions.value[record.id]?.decision === 'no_conflict');
 });
 
-// --- Lifecycle & API ---
 onMounted(() => {
   const userString = localStorage.getItem('user');
   if (userString) {
@@ -256,7 +258,6 @@ onMounted(() => {
   }
 });
 
-
 const fetchCoiRecords = async () => {
   loading.value = true;
   error.value = null;
@@ -265,6 +266,10 @@ const fetchCoiRecords = async () => {
   try {
     const response = await apiService.getApplicationAssessorCOIs();
     allCoiRecords.value = response.data.results || [];
+    // Initialize decision state for pending records
+    pendingRecords.value.forEach(record => {
+        decisions.value[record.id] = { decision: null, remarks: '' };
+    });
   } catch (err) {
     console.error("Fetch COI error:", err);
     error.value = 'Failed to load assignments. Please try again.';
@@ -273,7 +278,6 @@ const fetchCoiRecords = async () => {
   }
 };
 
-// --- UI Interaction ---
 const updateDecision = (recordId, decision) => {
     if (!decisions.value[recordId]) {
         decisions.value[recordId] = { decision: '', remarks: '' };
@@ -303,31 +307,31 @@ const handleFinalSignAndSubmit = () => {
     submitAllDecisionsToServer();
 };
 
-// --- Server Communication ---
 const submitAllDecisionsToServer = async () => {
     const promises = [];
     for (const record of pendingRecords.value) {
         const decisionInfo = decisions.value[record.id];
         const formData = new FormData();
+        // This logic correctly sends 'true' for no conflict and 'false' for conflict.
+        const agrees = decisionInfo.decision === 'no_conflict';
+        formData.append('institute_agrees_with_assessor', String(agrees));
 
-        if (decisionInfo.decision === 'no_conflict') {
-            formData.append('institute_agrees_with_assessor', 'true');
-            formData.append('institute_rejection_remarks', 'No conflict declared by institute.');
-        } else {
-            formData.append('institute_agrees_with_assessor', 'false');
+        if (!agrees) {
             formData.append('institute_rejection_remarks', decisionInfo.remarks);
         }
-        promises.push(apiService.respondToCOI(record.id, formData));
+
+        // This is the API call to the backend `respond` action
+        promises.push(apiService.respondToCoiDeclaration(record.id, formData));
     }
 
     try {
         await Promise.all(promises);
         if (hasAnyConflict.value) {
-            toast.info("Your conflict declarations have been submitted. The administration will be notified to assign new assessors.");
+            toast.info("Your conflict declarations have been submitted. The administration will review them.");
         } else {
             toast.success("Declaration successfully signed and submitted!");
         }
-        await fetchCoiRecords();
+        await fetchCoiRecords(); // Refresh the data to show the "All Done" state
     } catch (err) {
         console.error("Submission error:", err);
         toast.error('An error occurred while submitting your declarations. Please try again.');
@@ -337,7 +341,6 @@ const submitAllDecisionsToServer = async () => {
     }
 };
 
-// --- Modal Handling ---
 const openAssessorModal = (assessor) => {
     selectedAssessor.value = assessor;
     assessorDetailsModalOpen.value = true;
