@@ -249,6 +249,8 @@ const combinedData = computed(() => {
         renewal_remarks: renewal.renewal_remarks,
         proposed_expiry_date: renewal.proposed_expiry_date,
         application_date: renewal.created_at,
+        payment_status: renewal.payment_status,
+        payment_id: renewal.payment_id,
         qualification_id: qualification.id,
         full_name: qualification.applicant_name || 'N/A',
         cid_no: qualification.application?.cid_no || 'N/A',

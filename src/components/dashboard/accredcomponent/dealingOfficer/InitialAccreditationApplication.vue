@@ -74,8 +74,6 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-// FIX: Corrected import statement typo from 'Initail' to 'Initial'.
-// Make sure your component file is named `InitialAccreditationApplicationModal.vue`.
 import InitialAccreditationApplicationModal from './InitialAccreditationApplicationModal.vue';
 import apiService from '@/services/services';
 

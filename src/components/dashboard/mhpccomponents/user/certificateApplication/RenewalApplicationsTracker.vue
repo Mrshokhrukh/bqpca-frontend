@@ -8,10 +8,12 @@
       <div class="p-4 sm:p-6 border-b border-gray-200 bg-gray-50">
         <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3">
           <div>
-            <h3 class="text-lg sm:text-xl font-bold text-gray-900">{{ renewal.full_name }}</h3>
+            <h3 class="text-lg sm:text-xl font-bold text-gray-900">
+              Renewal for: {{ renewal.user_qualification_details.actual_qualification_name_display }}
+            </h3>
             <div class="flex items-center text-xs text-gray-600 mt-1">
               <IdCard class="w-4 h-4 mr-1.5 text-blue-600" />
-              <span>Registration No: {{ renewal.registration_no }}</span>
+              <span>Reg. No: {{ renewal.registration_no }}</span>
               <span class="mx-2">|</span>
               <Calendar class="w-4 h-4 mr-1.5 text-blue-600" />
               <span>Applied On: {{ formatDate(renewal.created_at) }}</span>
@@ -32,6 +34,7 @@
       <div class="p-4 sm:p-6">
         <h4 class="text-base font-semibold text-gray-800 mb-4">Renewal Progress</h4>
         <div class="flex flex-col md:flex-row items-stretch gap-4">
+          <!-- Step 1: Admin Review -->
           <div class="flex-1 flex items-start space-x-3 p-3 rounded-xl bg-gray-50 border">
             <div class="mt-1 p-1.5 rounded-lg" :class="getStepInfo('review', renewal).iconBgClass">
               <component
@@ -51,6 +54,7 @@
             </div>
           </div>
 
+          <!-- Step 2: Payment -->
           <div class="flex-1 flex items-start space-x-3 p-3 rounded-xl bg-gray-50 border">
             <div class="mt-1 p-1.5 rounded-lg" :class="getStepInfo('payment', renewal).iconBgClass">
               <component
@@ -80,6 +84,7 @@
             </div>
           </div>
 
+          <!-- Step 3: Completed -->
           <div class="flex-1 flex items-start space-x-3 p-3 rounded-xl bg-gray-50 border">
             <div
               class="mt-1 p-1.5 rounded-lg"
@@ -111,10 +116,9 @@
 </template>
 
 <script setup>
-import { IdCard, Calendar, Clock, CreditCard, XCircle, ShieldCheck } from 'lucide-vue-next'
+import { IdCard, Calendar, Clock, CreditCard, XCircle, ShieldCheck, CheckCircle } from 'lucide-vue-next'
 import dayjs from 'dayjs'
 
-// Props definition
 defineProps({
   applications: {
     type: Array,
@@ -122,10 +126,8 @@ defineProps({
   },
 })
 
-// Emits definition
 defineEmits(['initiate-payment'])
 
-// Utility function to format dates
 const formatDate = (dateString) => {
   if (!dateString) return 'N/A'
   return dayjs(dateString).format('MMM D, YYYY')
@@ -148,12 +150,11 @@ const getOverallStatus = (renewal) => {
   return { text: 'In Progress', icon: Clock, badgeClass: 'bg-blue-100 text-blue-800' }
 }
 
-// A helper function to get styling and text for each step
 const getStepInfo = (step, renewal) => {
   const styles = {
     complete: {
       text: 'Complete',
-      icon: ShieldCheck,
+      icon: CheckCircle,
       iconBgClass: 'bg-green-100',
       iconClass: 'text-green-600',
       textClass: 'text-green-700',

@@ -2,7 +2,6 @@
 <template>
   <div class="min-h-screen bg-gray-50 py-8">
     <div class="mx-auto px-4">
-      <!-- Header (Unchanged) -->
       <div class="bg-white rounded-xl shadow-sm mb-8 p-6 border border-gray-100">
         <div>
           <h2 class="text-2xl font-bold text-gray-800">Appeal Applications</h2>
@@ -28,7 +27,6 @@
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Status</th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Submitted On</th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Appeal Status</th>
-                <!-- === NEW COLUMN HEADER FOR FINAL GRADE === -->
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Final Grade</th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
@@ -51,7 +49,6 @@
                 <td class="px-6 py-4 whitespace-nowrap">
                    <span :class="getStatusClass(appeal.status_appeal)" class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full">{{ appeal.status_appeal_display }}</span>
                 </td>
-                <!-- === NEW COLUMN CELL FOR FINAL GRADE === -->
                 <td class="px-6 py-4 whitespace-nowrap">
                   <span v-if="appeal.application_details?.final_grade_awarded_details"
                         class="px-2 py-1 inline-flex text-sm leading-5 font-bold rounded-full bg-indigo-100 text-indigo-800">
@@ -70,7 +67,7 @@
       </div>
     </div>
 
-    <!-- Appeal Details & Decision Modal (Unchanged) -->
+    <!-- Appeal Details & Decision Modal -->
     <div v-if="isModalOpen && selectedAppeal" class="fixed z-50 inset-0 overflow-y-auto">
       <div class="flex items-center justify-center min-h-screen px-4 text-center sm:block sm:p-0">
         <div class="fixed inset-0 bg-gray-500 bg-opacity-75" @click="closeModal"></div>
@@ -113,14 +110,14 @@
                 <h4 class="text-lg font-semibold text-gray-800 border-b pb-2 mb-4">1. Appeal Decision</h4>
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1">Approve or Reject this Appeal?</label>
-                  <select v-model="selectedAppeal.decision_by_bac_on_appeal_final" class="block w-full text-base border-gray-300 rounded-md">
+                  <select v-model="selectedAppeal.decision_by_bac_on_appeal_final" class="block w-full text-base border-gray-300 rounded-md" :disabled="isAppealDecided">
                     <option :value="null">-- Select Decision --</option>
                     <option v-for="option in decisionOptions" :key="option.id" :value="option.id">{{ option.decision_name }}</option>
                   </select>
                 </div>
                 <div class="mt-4">
                   <label class="block text-sm font-medium text-gray-700 mb-1">Appeal Decision Remarks</label>
-                  <textarea v-model="selectedAppeal.decision_details_bac_appeal" rows="4" class="block w-full sm:text-sm border-gray-300 rounded-md" placeholder="Provide a justification for the appeal decision. This is mandatory."></textarea>
+                  <textarea v-model="selectedAppeal.decision_details_bac_appeal" rows="4" class="block w-full sm:text-sm border-gray-300 rounded-md" placeholder="Provide a justification for the appeal decision. This is mandatory." :disabled="isAppealDecided"></textarea>
                 </div>
               </div>
 
@@ -130,7 +127,7 @@
                 <div class="space-y-4">
                   <div>
                     <label for="new-grade" class="block text-sm font-medium text-gray-700">New Final Grade Awarded</label>
-                    <select id="new-grade" v-model="postAppeal.newGradeId" class="block w-full mt-1 border-gray-300 rounded-md">
+                    <select id="new-grade" v-model="postAppeal.newGradeId" class="block w-full mt-1 border-gray-300 rounded-md" :disabled="isAppealDecided">
                       <option :value="null" disabled>Select new grade...</option>
                       <option v-for="grade in ratingCategories" :key="grade.id" :value="grade.id">
                         {{ grade.rating_category_name }}
@@ -144,12 +141,21 @@
 
             </div>
           </div>
+          <!-- === MODIFIED BUTTONS SECTION === -->
           <div class="bg-gray-50 px-6 py-4 flex justify-end space-x-3">
-            <button type="button" class="px-4 py-2 border rounded-md" @click="closeModal">Cancel</button>
-            <button type="button" class="px-4 py-2 text-white bg-indigo-600 rounded-md" @click="saveDecision" :disabled="loading || !isDecisionValid">
-              {{ loading ? 'Saving...' : 'Save & Finalize Decision' }}
-            </button>
+            <!-- If the appeal has NOT been decided yet, show action buttons -->
+            <template v-if="!isAppealDecided">
+              <button type="button" class="px-4 py-2 border rounded-md" @click="closeModal">Cancel</button>
+              <button type="button" class="px-4 py-2 text-white bg-indigo-600 rounded-md" @click="saveDecision" :disabled="loading || !isDecisionValid">
+                {{ loading ? 'Saving...' : 'Save & Finalize Decision' }}
+              </button>
+            </template>
+            <!-- If the appeal IS already decided, show only a Close button -->
+            <template v-else>
+              <button type="button" class="px-4 py-2 border rounded-md" @click="closeModal">Close</button>
+            </template>
           </div>
+          <!-- === END OF MODIFIED SECTION === -->
         </div>
       </div>
     </div>
@@ -158,8 +164,10 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
+import { useToast } from 'vue-toastification';
 import apiService from '@/services/services';
 
+const toast = useToast();
 const appeals = ref([]);
 const decisionOptions = ref([]);
 const ratingCategories = ref([]);
@@ -183,6 +191,11 @@ const isDecisionValid = computed(() => {
     return true;
 });
 
+const isAppealDecided = computed(() => {
+  if (!selectedAppeal.value) return false;
+  return ['approved', 'rejected'].includes(selectedAppeal.value.status_appeal);
+});
+
 
 const fetchInitialData = async () => {
   loading.value = true;
@@ -197,7 +210,7 @@ const fetchInitialData = async () => {
     ratingCategories.value = gradesResponse.data.results || gradesResponse.data;
   } catch (error) {
     console.error('Error fetching initial data:', error);
-    alert('Failed to load page data.');
+    toast.error('Failed to load page data.');
   } finally {
     loading.value = false;
   }
@@ -220,30 +233,51 @@ const saveDecision = async () => {
     await apiService.patchApplicationAppeal(selectedAppeal.value.id, payload);
 
     closeModal();
-    alert('Decision saved successfully! The original application has been updated.');
+    toast.success('Decision saved successfully! The original application has been updated.');
     await fetchInitialData();
   } catch (error)
   {
     console.error('Error saving decision:', error.response?.data);
-    alert(`Failed to save decision. Server responded with: ${JSON.stringify(error.response?.data)}`);
+    toast.error(`Failed to save decision. Server responded with: ${JSON.stringify(error.response?.data)}`);
   } finally {
     loading.value = false;
   }
 };
 
 const removeAppeal = async (id) => {
-  if (confirm('Are you sure you want to permanently delete this appeal? This action cannot be undone.')) {
-    loading.value = true;
-    try {
-        await apiService.deleteApplicationAppeal(id);
-        await fetchInitialData();
-    } catch(error) {
-        console.error('Error deleting appeal:', error);
-        alert('Could not delete the appeal.');
-    } finally {
-        loading.value = false;
-    }
-  }
+  toast('Are you sure you want to permanently delete this appeal? This action cannot be undone.', {
+    type: 'warning',
+    timeout: false,
+    closeOnClick: false,
+    draggable: false,
+    position: "top-center",
+    actions: [
+      {
+        text: 'Confirm',
+        class: '!font-bold',
+        onClick: async (e, toastObject) => {
+          toastObject.dismiss();
+          loading.value = true;
+          try {
+              await apiService.deleteApplicationAppeal(id);
+              await fetchInitialData();
+              toast.success('Appeal deleted successfully.');
+          } catch(error) {
+              console.error('Error deleting appeal:', error);
+              toast.error('Could not delete the appeal.');
+          } finally {
+              loading.value = false;
+          }
+        },
+      },
+      {
+        text: 'Cancel',
+        onClick: (e, toastObject) => {
+          toastObject.dismiss();
+        },
+      },
+    ],
+  });
 };
 
 const viewAppeal = (appeal) => {
@@ -268,7 +302,6 @@ const getStatusClass = (status) => {
   return classes[status] || 'bg-gray-100 text-gray-800';
 };
 
-// --- THIS IS THE CORRECTED LOGIC ---
 const getPaymentStatusClass = (isPaid) => {
   return isPaid ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800';
 };

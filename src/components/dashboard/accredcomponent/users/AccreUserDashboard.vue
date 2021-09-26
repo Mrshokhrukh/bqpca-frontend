@@ -121,7 +121,6 @@ const isCertificateModalOpen = ref(false);
 const selectedApplicationForCertificate = ref(null);
 const activeSchedule = ref(null);
 
-// === NEW: State for the active signature ===
 const activeSignature = ref({
   name: '',
   designation: '',
@@ -140,15 +139,13 @@ const fetchDashboardData = async () => {
   loading.value = true;
   error.value = null;
   try {
-    // --- UPDATED: Added fetch for active signature ---
     const [profileResult, appsResult, scheduleResult, signatureResult] = await Promise.allSettled([
       apiService.getMyInstituteProfile(),
       apiService.getAccreditationApplications(),
       apiService.getActiveApplicationSchedule(),
-      apiService.getMastersESignatures({ is_active: true }), // <-- NEW API CALL
+      apiService.getMastersESignatures({ is_active: true }),
     ]);
 
-    // Handle Institute Profile
     if (profileResult.status === 'fulfilled') {
       instituteProfile.value = profileResult.value.data;
     } else {
@@ -162,26 +159,23 @@ const fetchDashboardData = async () => {
       return;
     }
 
-    // Handle Applications
     if (appsResult.status === 'fulfilled') {
       applications.value = appsResult.value.data.results;
       checkForSiteVisit(applications.value);
     }
 
-    // Handle Active Schedule
     if (scheduleResult.status === 'fulfilled' && scheduleResult.value.data && Object.keys(scheduleResult.value.data).length > 0) {
       activeSchedule.value = scheduleResult.value.data;
     } else {
       activeSchedule.value = null;
     }
 
-    // === NEW: Handle Active Signature ===
     if (signatureResult.status === 'fulfilled' && signatureResult.value.data.results.length > 0) {
         const sig = signatureResult.value.data.results[0];
         activeSignature.value = {
             name: sig.name,
             designation: sig.designation,
-            signatureUrl: sig.signature, // The API provides the full URL
+            signatureUrl: sig.signature,
         };
     } else {
         console.warn("No active e-signature found in the system.");
@@ -270,6 +264,24 @@ const nextStep = computed(() => {
         };
     }
 
+    const trackingPageUrl = '/admin/user/accreditation/track_accreditation';
+
+    // Appealable statuses that have a final grade awarded
+    if (['rejected_not_accredited', 'approved_conditional'].includes(app.status)) {
+        // A grade must be awarded to allow for an appeal
+        if (app.final_grade_awarded_details) {
+            return {
+                icon: shallowRef(AlertTriangle),
+                title: "Decision Reached",
+                description: "A final decision has been made on your application. You may be eligible to appeal this decision.",
+                actionType: 'link',
+                link: trackingPageUrl,
+                actionText: "View Decision & Appeal",
+                cardClass: 'bg-orange-600'
+            };
+        }
+    }
+
     const steps = {
         'draft_initial': {
             icon: shallowRef(FileText),
@@ -277,23 +289,12 @@ const nextStep = computed(() => {
             description: `Your application (Ref: ${app.application_reference_no}) is saved. Continue editing before submission.`,
             actionType: 'link', link: `/admin/user/accreditation/edit-application/${app.id}`, actionText: "Continue Application"
         },
-        'pending_payment': {
-            icon: shallowRef(Clock),
-            title: "Payment Required",
-            description: "Complete the payment for your application to proceed to the HEQC review stage.",
-            actionType: 'link', link: `/admin/user/accreditation/payment/${app.id}`, actionText: "Proceed to Payment"
-        },
+        // REMOVED: The 'pending_payment' case is no longer needed as payment is instant.
         'initial_app_approved_awaiting_isar': {
             icon: shallowRef(Flag),
             title: "Submit Your ISAR",
             description: `Your initial application is approved! Submit your ISAR by ${formatDate(app.isar_submission_deadline)}.`,
-            actionType: 'link', link: `/admin/user/accreditation/submit-isar/${app.id}`, actionText: "Submit ISAR"
-        },
-        'rejected_not_accredited': {
-            icon: shallowRef(AlertTriangle),
-            title: "Decision Reached",
-            description: `A final decision has been made on your application. You may be eligible to appeal this decision.`,
-            actionType: 'link', link: `/admin/user/accreditation/track_accreditation`, actionText: "View Decision & Appeal"
+            actionType: 'link', link: trackingPageUrl, actionText: "Submit ISAR"
         },
     };
 

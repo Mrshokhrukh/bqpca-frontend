@@ -189,7 +189,10 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
+import { useToast } from 'vue-toastification';
 import apiService from '@/services/services';
+
+const toast = useToast();
 
 // --- Reactive State ---
 const allCoiRecords = ref([]);
@@ -283,7 +286,7 @@ const updateDecision = (recordId, decision) => {
 
 const handleSubmitDecisions = () => {
     if (!allDecisionsMade.value) {
-        alert("Please make a decision for all assessors and provide remarks for any conflicts.");
+        toast.warning("Please make a decision for all assessors and provide remarks for any conflicts.");
         return;
     }
     isSubmitting.value = true;
@@ -320,14 +323,14 @@ const submitAllDecisionsToServer = async () => {
     try {
         await Promise.all(promises);
         if (hasAnyConflict.value) {
-            alert("Your conflict declarations have been submitted. The administration will be notified to assign new assessors.");
+            toast.info("Your conflict declarations have been submitted. The administration will be notified to assign new assessors.");
         } else {
-            alert("Declaration successfully signed and submitted!");
+            toast.success("Declaration successfully signed and submitted!");
         }
         await fetchCoiRecords();
     } catch (err) {
         console.error("Submission error:", err);
-        alert('An error occurred while submitting your declarations. Please try again.');
+        toast.error('An error occurred while submitting your declarations. Please try again.');
         showFinalDeclaration.value = false;
     } finally {
         isSubmitting.value = false;

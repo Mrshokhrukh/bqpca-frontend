@@ -42,6 +42,7 @@
                   <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Submission Date</th>
                   <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Status</th>
                   <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Appeal Status</th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Final Grade</th>
                   <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
@@ -65,6 +66,12 @@
                     <span :class="getStatusClass(appeal.status_appeal)" class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full">
                       {{ appeal.status_appeal_display || appeal.status_appeal }}
                     </span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                    <span v-if="appeal.application_details?.final_grade_awarded_details" class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-indigo-100 text-indigo-800">
+                      {{ appeal.application_details.final_grade_awarded_details.rating_category_name }}
+                    </span>
+                    <span v-else class="text-xs text-gray-500">N/A</span>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <button @click="openViewModal(appeal)" class="text-indigo-600 hover:text-indigo-900 font-semibold">View Details</button>
@@ -111,13 +118,29 @@ const selectedAppeal = ref(null);
 const fetchData = async () => {
   isLoading.value = true;
   try {
-    const response = await apiService.getAccreditationAppeals();
-    appeals.value = response.data.results || [];
-    canApplyForAppeal.value = true;
+    const appealResponse = await apiService.getAccreditationAppeals();
+    appeals.value = appealResponse.data.results || [];
+
+    const finalDecisionStatuses = 'rejected_not_accredited,approved_accredited,approved_conditional';
+    const appResponse = await apiService.getAccreditationApplications({
+      ordering: '-updated_at',
+      status__in: finalDecisionStatuses,
+    });
+
+    const appealableAppsWithGrade = (appResponse.data.results || []).filter(app => app.final_grade_awarded_details);
+
+    if (appealableAppsWithGrade.length > 0) {
+      const latestFinishedApp = appealableAppsWithGrade[0];
+      canApplyForAppeal.value = !latestFinishedApp.appeal_record;
+    } else {
+      canApplyForAppeal.value = false;
+    }
+
   } catch (error) {
     console.error("Failed to fetch appeal data:", error);
     toast.error("Failed to load appeal information. Please try again.");
     appeals.value = [];
+    canApplyForAppeal.value = false;
   } finally {
     isLoading.value = false;
   }

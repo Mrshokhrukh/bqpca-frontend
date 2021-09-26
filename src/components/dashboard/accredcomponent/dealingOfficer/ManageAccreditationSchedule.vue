@@ -282,36 +282,74 @@ export default {
     },
     async toggleScheduleActive(schedule) {
       const action = schedule.is_active ? 'deactivate' : 'activate';
-      if (!confirm(`Are you sure you want to manually ${action} the schedule "${schedule.schedule_name}"?`)) {
-        return;
-      }
-      this.isLoading = true;
-      this.error = null;
-      try {
-        await apiService.patchMastersApplicationDuration(schedule.id, { is_active: !schedule.is_active });
-        await this.fetchSchedules();
-      } catch (err) {
-        console.error(`Error ${action}ing schedule:`, err.response?.data || err.message);
-        this.error = `Failed to ${action} schedule. ` + (err.response?.data?.detail || err.message);
-      } finally {
-        this.isLoading = false;
-      }
+      this.$toast(`Are you sure you want to manually ${action} the schedule "${schedule.schedule_name}"?`, {
+        type: 'warning',
+        timeout: false,
+        closeOnClick: false,
+        draggable: false,
+        position: "top-center",
+        actions: [
+          {
+            text: 'Confirm',
+            class: '!font-bold',
+            onClick: async (e, toastObject) => {
+              toastObject.dismiss();
+              this.isLoading = true;
+              this.error = null;
+              try {
+                await apiService.patchMastersApplicationDuration(schedule.id, { is_active: !schedule.is_active });
+                await this.fetchSchedules();
+              } catch (err) {
+                console.error(`Error ${action}ing schedule:`, err.response?.data || err.message);
+                this.error = `Failed to ${action} schedule. ` + (err.response?.data?.detail || err.message);
+              } finally {
+                this.isLoading = false;
+              }
+            },
+          },
+          {
+            text: 'Cancel',
+            onClick: (e, toastObject) => {
+              toastObject.dismiss();
+            },
+          },
+        ],
+      });
     },
     async confirmDeleteSchedule(schedule) {
-      if (!confirm(`Are you sure you want to permanently delete the schedule "${schedule.schedule_name}"? This action cannot be undone.`)) {
-        return;
-      }
-      this.isLoading = true;
-      this.error = null;
-      try {
-        await apiService.deleteMastersApplicationDuration(schedule.id);
-        await this.fetchSchedules();
-      } catch (err) {
-        console.error(`Error deleting schedule:`, err.response?.data || err.message);
-        this.error = `Failed to delete schedule. ` + (err.response?.data?.detail || err.message);
-      } finally {
-        this.isLoading = false;
-      }
+      this.$toast(`Are you sure you want to permanently delete the schedule "${schedule.schedule_name}"? This action cannot be undone.`, {
+        type: 'warning',
+        timeout: false,
+        closeOnClick: false,
+        draggable: false,
+        position: "top-center",
+        actions: [
+          {
+            text: 'Confirm',
+            class: '!font-bold',
+            onClick: async (e, toastObject) => {
+              toastObject.dismiss();
+              this.isLoading = true;
+              this.error = null;
+              try {
+                await apiService.deleteMastersApplicationDuration(schedule.id);
+                await this.fetchSchedules();
+              } catch (err) {
+                console.error(`Error deleting schedule:`, err.response?.data || err.message);
+                this.error = `Failed to delete schedule. ` + (err.response?.data?.detail || err.message);
+              } finally {
+                this.isLoading = false;
+              }
+            },
+          },
+          {
+            text: 'Cancel',
+            onClick: (e, toastObject) => {
+              toastObject.dismiss();
+            },
+          },
+        ],
+      });
     },
   },
 };

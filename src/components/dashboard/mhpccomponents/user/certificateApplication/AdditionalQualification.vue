@@ -348,11 +348,11 @@ import { GraduationCap } from 'lucide-vue-next' // Import the chosen icon
 defineProps({
   selectedType: {
     type: String,
-    required: true,
+    required: false,
   },
   modelValue: {
     type: Object,
-    required: true,
+    required: false,
   },
 })
 

@@ -8,7 +8,7 @@
             <h1 class="text-2xl font-semibold text-gray-900 mb-2">
               Learning Hospital Applications
             </h1>
-            <p class="text-sm text-gray-600">Track and manage your teaching center applications</p>
+            <p class="text-sm text-gray-600"> and manage your teaching center applications</p>
           </div>
 
           <!-- Action Buttons -->
@@ -729,7 +729,8 @@ const selectedApplication = ref(null)
 const isLoading = ref(false)
 const isPaymentProcessing = ref(false)
 const isApplicationFormModalOpen = ref(false)
-const teaching_hospital_registration = 100
+// --- FIX 1: Change to ref ---
+const teaching_hospital_registration = ref(100)
 const teachingCenterPaymentModalRef = ref(null)
 const selectedApplicationForPayment = ref(null)
 const savedDraft = ref(null)
@@ -985,59 +986,94 @@ const closeTeachingCenterPaymentModal = () => {
 }
 
 const handleTeachingCenterPaymentCompleted = async (paymentData) => {
-  if (!selectedApplicationForPayment.value) return;
+  if (!selectedApplicationForPayment.value) {
+    toast.error('No application selected for payment.');
+    return;
+  }
   isPaymentProcessing.value = true;
   let redirectUrl = null;
   const user = authStore.user;
+  const appToPay = selectedApplicationForPayment.value;
+  const paymentId = paymentData.paymentHash;
 
   if (!user || !user.id || !user.cid || !user.email) {
-      toast.error('User information is missing. Please log in again.');
-      isPaymentProcessing.value = false;
-      return;
+    toast.error('User information is missing. Please log in again.');
+    isPaymentProcessing.value = false;
+    return;
   }
 
+  // Step 1: Prepare payment data and call the payment gateway API to get a redirect URL.
   try {
-    const appToPay = selectedApplicationForPayment.value;
-    const paymentId = paymentData.paymentHash;
-
     const paymentGatewayFormData = new FormData();
+    // refNo should be a unique identifier for this payment attempt
     paymentGatewayFormData.append('refNo', paymentId);
-    paymentGatewayFormData.append('serviceCode', '100250'); 
+    paymentGatewayFormData.append('serviceCode', '100250');
     paymentGatewayFormData.append('taxPayerName', appToPay.institute_details?.name_of_institution || user.cid);
     paymentGatewayFormData.append('taxPayerNo', user.cid);
     paymentGatewayFormData.append('taxPayerDocumentNo', user.cid);
+    // Correctly use .value as teaching_hospital_registration is a ref
     paymentGatewayFormData.append('totalPayableAmount', teaching_hospital_registration.value);
     paymentGatewayFormData.append('payableAmount', teaching_hospital_registration.value);
     paymentGatewayFormData.append('description', 'MHPC Teaching Hospital Registration Fee');
     paymentGatewayFormData.append('mobileNo', user.contact_number || '17110000');
     paymentGatewayFormData.append('payerEmail', user.email);
     paymentGatewayFormData.append('user', user.id);
+    // Pass the actual application ID so the backend knows which application to link
     paymentGatewayFormData.append('application_no', appToPay.id);
     paymentGatewayFormData.append('app_type', 'mhpc_teaching_hospital');
 
     const paymentResponse = await apiServices.makePayment(paymentGatewayFormData);
+
     if (paymentResponse.data?.content?.redirectUrl) {
       redirectUrl = paymentResponse.data.content.redirectUrl;
+    } else {
+      // This is crucial: if the URL isn't in the response, we must stop and report an error.
+      console.error('Payment initiation response did not contain a redirectUrl:', paymentResponse.data);
+      throw new Error('Redirect URL not received from the payment gateway.');
     }
+  } catch (paymentError) {
+    console.error('Error initiating payment:', paymentError);
+    const errorMessage = paymentError.response?.data?.message || paymentError.message;
+    toast.error(`Failed to initiate payment: ${errorMessage}`);
+    isPaymentProcessing.value = false;
+    if (teachingCenterPaymentModalRef.value) {
+      teachingCenterPaymentModalRef.value.closeModal();
+    }
+    return; // Stop execution if payment initiation fails
+  }
 
+  // Step 2: If we successfully got a redirect URL, update our application's status in the backend.
+  try {
+    // This confirms that the payment process has started for this application.
     await apiServices.confirmTeachingCenterPayment(appToPay.id, { payment_id: paymentId });
 
-    toast.success(`Payment initiated successfully. Redirecting for payment completion. A link has also been sent to your email.`, { timeout: 8000 });
+    toast.success(
+      'Payment initiated. Redirecting to payment gateway. A link may also be sent to your email.',
+      { timeout: 8000 }
+    );
 
+    // Step 3: Redirect the user to the payment gateway page.
     if (redirectUrl) {
       window.open(redirectUrl, '_blank');
     }
 
+    // Refresh the local data to show the updated status (e.g., "Awaiting Payment").
     await fetchApplications();
-  } catch (error) {
-    console.error('Error confirming payment:', error);
+  } catch (confirmError) {
+    console.error('Error confirming payment status on our server:', confirmError);
     toast.error(
-      'Payment was successful, but failed to update the application. Please contact support.'
+      'Failed to update application status after payment initiation. Please contact support.',
+      { timeout: 8000 }
     );
+    // Even if this part fails, we should still redirect the user to complete the payment.
+    if (redirectUrl) {
+      toast.info('You can still complete the payment at the redirected page.');
+      window.open(redirectUrl, '_blank');
+    }
   } finally {
     isPaymentProcessing.value = false;
     if (teachingCenterPaymentModalRef.value) {
-        teachingCenterPaymentModalRef.value.closeModal();
+      teachingCenterPaymentModalRef.value.closeModal();
     }
     closeTeachingCenterPaymentModal();
   }

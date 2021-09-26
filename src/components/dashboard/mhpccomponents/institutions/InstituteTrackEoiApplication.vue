@@ -43,12 +43,6 @@
                 scope="col"
                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
               >
-                Physical Verification
-              </th>
-              <th
-                scope="col"
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
                 Remarks / Decision
               </th>
             </tr>
@@ -82,48 +76,6 @@
                 >
                   {{ mapApplicationStatus(application.application_status) }}
                 </span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                <div v-if="isPhysicalVerificationRelevant(application.application_status)">
-                  <div>
-                    Date:
-                    {{
-                      application.physical_verification_date
-                        ? formatDate(application.physical_verification_date)
-                        : 'Not Scheduled'
-                    }}
-                  </div>
-                  <div class="mt-1">
-                    Status:
-                    <span
-                      :class="[
-                        'px-1.5 py-0.5 inline-flex text-xs leading-4 font-semibold rounded-full',
-                        application.is_physical_verification
-                          ? 'bg-green-100 text-green-700'
-                          : 'bg-yellow-100 text-yellow-700',
-                      ]"
-                    >
-                      {{
-                        application.is_physical_verification
-                          ? 'Completed'
-                          : application.physical_verification_date
-                            ? 'Scheduled'
-                            : 'Pending'
-                      }}
-                    </span>
-                  </div>
-                  <div
-                    v-if="
-                      application.physical_verification_remarks &&
-                      application.is_physical_verification
-                    "
-                    class="mt-1 text-xs text-gray-500 italic truncate hover:whitespace-normal hover:overflow-visible"
-                    :title="application.physical_verification_remarks"
-                  >
-                    Officer Remarks: {{ application.physical_verification_remarks }}
-                  </div>
-                </div>
-                <div v-else class="text-xs text-gray-400 italic">N/A</div>
               </td>
               <td class="px-6 py-4 whitespace-normal text-sm text-gray-600 max-w-xs break-words">
                 <div v-if="application.application_status === 'EOI Rejected'" class="text-red-600">
@@ -310,20 +262,6 @@ const getApplicationStatusColor = (status) => {
     return 'bg-yellow-100 text-yellow-800'
   if (s.includes('dpr')) return 'bg-blue-100 text-blue-800'
   return 'bg-gray-100 text-gray-800'
-}
-
-const isPhysicalVerificationRelevant = (appStatus) => {
-  if (!appStatus) return false
-  const relevantStatuses = [
-    'EOI Pending Physical Verification',
-    'EOI Approved', // Relevant to show it was completed
-    'DPR Submitted', // Still relevantsdtfguhkjy
-    'DPR Pending Review',
-    'DPR Approved',
-    'Payment Pending',
-    'Fully Approved',
-  ]
-  return relevantStatuses.includes(appStatus)
 }
 
 const fetchApplications = async () => {
