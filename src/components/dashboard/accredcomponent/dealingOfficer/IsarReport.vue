@@ -3,6 +3,7 @@
     <div class="mx-auto">
       <h1 class="text-3xl font-bold text-gray-800 mb-6">Institutional Self Assessment Report</h1>
 
+      <!-- Loading and Error States -->
       <div v-if="isLoading" class="text-center p-10">
         <p class="text-gray-600">Loading applications...</p>
       </div>
@@ -10,6 +11,7 @@
         <p>{{ error }}</p>
       </div>
 
+      <!-- Main Application Table -->
       <div v-else class="bg-white shadow-md rounded-lg overflow-hidden">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-100">
@@ -17,30 +19,32 @@
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Institute Name</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Application ID</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Application Status</th>
-              <!-- === UPDATED COLUMN HEADER === -->
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Final Outcome</th>
               <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
+            <tr v-if="applications.length === 0">
+                <td colspan="5" class="text-center py-10 text-gray-500">No ISAR applications were found.</td>
+            </tr>
             <tr v-for="app in applications" :key="app.id" class="hover:bg-gray-50">
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                {{ app.application_details.institute_profile_details.name }}
+                <!-- Defensive coding: Check if nested properties exist -->
+                {{ app.application_details?.institute_profile_details?.name || 'N/A' }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">
-                {{ app.application_details.application_uid.slice(0, 8) }}
+                {{ app.application_details?.application_uid?.slice(0, 8) || 'N/A' }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm">
                 <span v-if="isRescheduleRequested(app)" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-orange-100 text-orange-800">
                   Reschedule Requested
                 </span>
-                <span v-else :class="getStatusClass(app.application_details.status)" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full">
-                  {{ app.application_details.status_display }}
+                <span v-else :class="getStatusClass(app.application_details?.status)" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full">
+                  {{ app.application_details?.status_display || 'Unknown Status' }}
                 </span>
               </td>
-              <!-- === UPDATED COLUMN DATA === -->
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                <div v-if="app.application_details.final_grade_awarded_details">
+                <div v-if="app.application_details?.final_grade_awarded_details">
                   <p class="font-bold text-gray-900">{{ app.application_details.final_grade_awarded_details.rating_category_name }}</p>
                   <p v-if="app.application_details.status === 'approved_accredited'" class="text-xs text-green-700">
                     Valid: {{ formatDate(app.application_details.accreditation_validity_from) }} - {{ formatDate(app.application_details.accreditation_validity_to) }}
@@ -54,14 +58,12 @@
                 </button>
               </td>
             </tr>
-             <tr v-if="applications.length === 0">
-                <td colspan="5" class="text-center py-10 text-gray-500">No ISAR applications requiring action were found.</td>
-            </tr>
           </tbody>
         </table>
       </div>
     </div>
 
+    <!-- Modal Component Call (Unchanged) -->
     <IsarReportModal
       v-if="isModalOpen && selectedApplication"
       :is-open="isModalOpen"
@@ -91,6 +93,7 @@ const fetchData = async () => {
   isLoading.value = true;
   error.value = null;
   try {
+    // These API calls remain correct
     const [appsRes, assessorsRes, ratingsRes] = await Promise.all([
       apiService.getIsarReports(),
       apiService.getMastersAssessorPools(),
@@ -124,7 +127,7 @@ const closeReportModal = () => {
 
 const handleActionCompletion = () => {
   closeReportModal();
-  fetchData();
+  fetchData(); // This correctly refreshes the list after an action
 };
 
 const isRescheduleRequested = (app) => {
@@ -137,7 +140,6 @@ const isRescheduleRequested = (app) => {
   );
 };
 
-// Simple date formatter
 const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
     try {
@@ -148,20 +150,29 @@ const formatDate = (dateString) => {
     }
 };
 
+// This function is correct as it maps the OVERALL APPLICATION status
 const getStatusClass = (status) => {
   const classes = {
     'draft_initial': 'bg-gray-100 text-gray-800',
+    'pending_payment': 'bg-yellow-100 text-yellow-800',
     'initial_app_submitted_heqc_review': 'bg-blue-100 text-blue-800',
     'initial_app_approved_awaiting_isar': 'bg-purple-100 text-purple-800',
     'isar_submitted_heqc_review': 'bg-blue-100 text-blue-800',
+    'isar_queried_by_heqc': 'bg-orange-100 text-orange-800',
+    'isar_accepted_by_heqc': 'bg-teal-100 text-teal-800',
+
+    // --- COI STATUSES (These are the application-level statuses, which is correct here) ---
     'coi_pending_declaration': 'bg-yellow-100 text-yellow-800',
     'coi_conflict_declared': 'bg-red-200 text-red-800',
     'coi_resolved_scheduling_visit': 'bg-teal-100 text-teal-800',
+
+    // --- SITE VISIT AND FINAL STATUSES ---
     'site_visit_scheduled': 'bg-indigo-100 text-indigo-800',
     'site_visit_confirmed': 'bg-indigo-200 text-indigo-900',
     'assessment_report_submitted': 'bg-cyan-100 text-cyan-800',
     'approved_accredited': 'bg-green-100 text-green-800',
     'rejected_not_accredited': 'bg-red-100 text-red-800',
+    'appealed': 'bg-pink-100 text-pink-800',
   };
   return classes[status] || 'bg-gray-100 text-gray-800';
 };

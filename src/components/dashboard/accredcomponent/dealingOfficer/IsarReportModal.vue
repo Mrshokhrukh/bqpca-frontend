@@ -1,3 +1,4 @@
+<!-- IsarReportModal.vue - Complete & Updated with all fixes -->
 <template>
   <div>
     <div v-if="isOpen" class="fixed inset-0 z-40 bg-black bg-opacity-50" @click="close"></div>
@@ -51,7 +52,7 @@
               <div v-else class="space-y-4">
                 <div v-if="isReassignmentNeeded" class="rounded-md border border-red-300 bg-red-100 p-3 text-sm text-red-800">
                   <p class="font-bold">Action Required: COI Dispute</p>
-                  <p>A conflict was disputed. First, remove the disputed assessor(s) from the list below, then select new ones to meet the minimum team size of 3.</p>
+                  <p>A conflict was declared by the institute. First, remove the disputed assessor(s) from the list below, then select new ones to meet the minimum team size of 3.</p>
                 </div>
                 <div class="flex flex-wrap items-start gap-4">
                   <div class="flex-grow">
@@ -77,20 +78,23 @@
               </div>
             </div>
 
+            <!-- ========================================================================= -->
+            <!-- CRITICAL FIX: Conflict of Interest (COI) Status Section -->
+            <!-- ========================================================================= -->
             <div class="rounded-lg border border-yellow-300 bg-yellow-50 p-4">
               <h4 class="mb-2 font-semibold text-gray-700">2. Conflict of Interest (COI) Status</h4>
               <div v-if="localIsarData?.application_details?.assessor_cois_details?.length" class="space-y-4">
                 <div v-for="coi in localIsarData.application_details.assessor_cois_details" :key="coi.id"
                      class="rounded-lg border bg-white p-3"
-                     :class="{ 'border-red-500 ring-2 ring-red-200': coi.status === 'disputed_by_institute' }">
+                     :class="{ 'border-red-500 ring-2 ring-red-200': coi.status === 'conflict_declared' }">
                   <div class="mb-2 flex items-center justify-between gap-4">
                     <div class="flex-grow">
                       <h5 class="font-semibold text-gray-800">{{ coi.assessor_details.name }}</h5>
                       <span class="text-xs text-gray-500">{{ coi.assessor_details.email }}</span>
                     </div>
-                    <button v-if="coi.status === 'disputed_by_institute'" @click="removeDisputedAssessor(coi)" :disabled="isProcessing" class="flex items-center gap-1 rounded-md bg-red-100 px-2 py-1 text-xs font-semibold text-red-700 hover:bg-red-200 disabled:cursor-not-allowed disabled:opacity-50">
+                    <button v-if="coi.status === 'conflict_declared'" @click="removeDisputedAssessor(coi)" :disabled="isProcessing" class="flex items-center gap-1 rounded-md bg-red-100 px-2 py-1 text-xs font-semibold text-red-700 hover:bg-red-200 disabled:cursor-not-allowed disabled:opacity-50">
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
-                      Remove
+                      Remove Assessor
                     </button>
                     <span v-else-if="coi.status" class="rounded-full px-2 py-0.5 text-xs font-medium" :class="getCoiStatusClass(coi.status)">
                       {{ coi.status_display }}
@@ -99,18 +103,26 @@
                   <div class="border-t border-gray-200 pt-2 text-sm">
                     <div>
                       <p class="font-medium text-gray-500">Institute's Declaration:</p>
-                      <p class="font-bold" :class="getInstituteResponseClass(coi.institute_agrees_with_assessor)">{{ formatInstituteResponse(coi.institute_agrees_with_assessor) }}</p>
-                      <p v-if="coi.institute_rejection_remarks" class="mt-1 text-xs text-red-700">| {{ coi.institute_rejection_remarks }}</p>
-                      <p v-else-if="coi.institute_agrees_with_assessor === true" class="mt-1 text-xs text-red-700">| No conflict declared by institute.</p>
+                      <p class="font-bold" :class="getInstituteResponseClass(coi.status)">
+                        {{ formatInstituteResponse(coi) }}
+                      </p>
+                      <p v-if="coi.institute_rejection_remarks" class="mt-1 text-xs text-gray-700">
+                        <strong>Reason:</strong> "{{ coi.institute_rejection_remarks }}"
+                      </p>
                     </div>
                   </div>
                 </div>
               </div>
               <p v-else class="text-sm text-gray-600">No assessors assigned. Use the panel above to begin.</p>
             </div>
+            <!-- ========================================================================= -->
+            <!-- END OF CRITICAL FIX SECTION -->
+            <!-- ========================================================================= -->
+
 
             <div class="rounded-lg border border-green-300 bg-green-50 p-4">
               <h4 class="mb-2 font-semibold text-gray-700">3. Physical Verification Schedule</h4>
+              <!-- This section's logic remains the same -->
               <div v-if="currentSiteVisit && !isRescheduling" class="mb-4 space-y-3 rounded-md border bg-white p-4">
                   <h5 class="font-semibold text-gray-800">Current Schedule Details</h5>
                     <div class="grid grid-cols-1 gap-4 text-sm md:grid-cols-3">
@@ -158,14 +170,32 @@
             <div class="rounded-lg border border-purple-200 bg-purple-50 p-4">
               <h4 class="mb-2 font-semibold text-gray-700">4. Consolidated Site Visit Report</h4>
               <p v-if="!canUploadConsolidatedReport" class="text-sm text-gray-600">This action is available after the physical verification has been confirmed.</p>
-              <div v-else class="space-y-4">
-                <div>
-                  <label for="consolidated-report-file" class="block text-sm font-medium text-gray-700">Consolidated Report File</label>
-                  <input id="consolidated-report-file" type="file" @change="handleConsolidatedReportFileChange" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:rounded-full file:border-0 file:bg-violet-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-violet-700 hover:file:bg-violet-100"/>
+              <div v-else>
+                <div v-if="existingReportUrl && !isReplacingReport" class="space-y-3">
+                  <p class="text-sm font-medium text-gray-700">Current Report:</p>
+                  <div class="flex items-center justify-between rounded-md border bg-white p-3 shadow-sm">
+                    <div class="flex min-w-0 items-center gap-3">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 flex-shrink-0 text-gray-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" /></svg>
+                      <span class="truncate font-semibold text-gray-800">{{ getFileNameFromUrl(existingReportUrl) }}</span>
+                    </div>
+                    <div class="flex flex-shrink-0 gap-2">
+                      <a :href="existingReportUrl" target="_blank" class="rounded-md bg-blue-600 px-3 py-1.5 text-sm text-white hover:bg-blue-700">Download</a>
+                      <button @click="isReplacingReport = true" class="rounded-md bg-yellow-500 px-3 py-1.5 text-sm text-white hover:bg-yellow-600">Replace</button>
+                    </div>
+                  </div>
                 </div>
-                <button @click="uploadConsolidatedReport" :disabled="!consolidatedReportFile || isProcessing" class="rounded bg-purple-600 px-4 py-2 text-white hover:bg-purple-700 disabled:cursor-not-allowed disabled:bg-purple-300">
-                  {{ isProcessing ? 'Uploading...' : 'Upload & Proceed' }}
-                </button>
+                <div v-else class="space-y-4">
+                  <div>
+                    <label for="consolidated-report-file" class="block text-sm font-medium text-gray-700">{{ existingReportUrl ? 'Upload New Report File' : 'Consolidated Report File' }}</label>
+                    <input id="consolidated-report-file" type="file" @change="handleConsolidatedReportFileChange" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:rounded-full file:border-0 file:bg-violet-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-violet-700 hover:file:bg-violet-100"/>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <button @click="uploadConsolidatedReport" :disabled="!consolidatedReportFile || isProcessing" class="rounded bg-purple-600 px-4 py-2 text-white hover:bg-purple-700 disabled:cursor-not-allowed disabled:bg-purple-300">
+                      {{ isProcessing ? 'Uploading...' : 'Upload & Proceed' }}
+                    </button>
+                    <button v-if="isReplacingReport" @click="isReplacingReport = false; consolidatedReportFile = null" class="rounded bg-gray-200 px-4 py-2 text-gray-800 hover:bg-gray-300">Cancel</button>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -225,6 +255,18 @@ const isRescheduling = ref(false);
 const consolidatedReportFile = ref(null);
 const finalRemarks = ref('');
 const selectedGradeId = ref(null);
+const isReplacingReport = ref(false);
+
+const existingReportUrl = computed(() => localIsarData.value?.application_details?.consolidated_site_visit_report_url || null);
+
+const getFileNameFromUrl = (url) => {
+  if (!url) return 'File';
+  try {
+    return decodeURIComponent(url.substring(url.lastIndexOf('/') + 1));
+  } catch (e) {
+    return 'File';
+  }
+};
 
 watch(() => props.isarData, (newData) => {
   if (newData) {
@@ -233,6 +275,7 @@ watch(() => props.isarData, (newData) => {
     consolidatedReportFile.value = null;
     finalRemarks.value = '';
     selectedGradeId.value = null;
+    isReplacingReport.value = false;
 
     const existingVisit = localIsarData.value?.application_details?.site_visits?.[0];
     if (existingVisit) {
@@ -248,22 +291,19 @@ watch(() => props.isarData, (newData) => {
   }
 }, { immediate: true, deep: true });
 
-const currentSiteVisit = computed(() => {
-  return localIsarData.value?.application_details?.site_visits?.[0] || null;
-});
+const currentSiteVisit = computed(() => localIsarData.value?.application_details?.site_visits?.[0] || null);
+const instituteRequestedReschedule = computed(() => currentSiteVisit.value && currentSiteVisit.value.is_confirmed_by_institute === false && !!currentSiteVisit.value.institute_confirmation_remarks);
 
-const instituteRequestedReschedule = computed(() => {
-  return currentSiteVisit.value && currentSiteVisit.value.is_confirmed_by_institute === false && !!currentSiteVisit.value.institute_confirmation_remarks;
-});
-
+// +++ CRITICAL FIX: Use new status name 'conflict_declared' +++
 const isReassignmentNeeded = computed(() => {
   if (!localIsarData.value?.application_details?.assessor_cois_details) return false;
-  return localIsarData.value.application_details.assessor_cois_details.some(coi => coi.status === 'disputed_by_institute');
+  return localIsarData.value.application_details.assessor_cois_details.some(coi => coi.status === 'conflict_declared');
 });
 
+// +++ CRITICAL FIX: Use new status name 'conflict_declared' +++
 const numberOfValidAssessors = computed(() => {
     if (!localIsarData.value?.application_details?.assessor_cois_details) return 0;
-    return localIsarData.value.application_details.assessor_cois_details.filter(coi => coi.status !== 'disputed_by_institute').length;
+    return localIsarData.value.application_details.assessor_cois_details.filter(coi => coi.status !== 'conflict_declared').length;
 });
 
 const isAssignmentActionNeeded = computed(() => {
@@ -288,19 +328,11 @@ const isAssignActionInvalid = computed(() => {
 });
 
 const canManageVisit = computed(() => !isAssignmentActionNeeded.value);
-
-const canUploadConsolidatedReport = computed(() => {
-    const status = localIsarData.value?.application_details?.status;
-    return ['site_visit_confirmed', 'site_visit_completed', 'assessment_report_submitted'].includes(status);
-});
-
-const canMakeFinalDecision = computed(() => {
-  return localIsarData.value?.application_details?.status === 'assessment_report_submitted';
-});
+const canUploadConsolidatedReport = computed(() => ['site_visit_confirmed', 'site_visit_completed', 'assessment_report_submitted'].includes(localIsarData.value?.application_details?.status));
+const canMakeFinalDecision = computed(() => localIsarData.value?.application_details?.status === 'assessment_report_submitted');
 
 const removeDisputedAssessor = (coiToRemove) => {
   const message = `Are you sure you want to remove ${coiToRemove.assessor_details.name}? This action cannot be undone.`;
-
   toast({
     component: ConfirmToast,
     props: { message: message },
@@ -319,31 +351,16 @@ const removeDisputedAssessor = (coiToRemove) => {
         }
       }
     }
-  }, {
-    type: TYPE.WARNING,
-    timeout: false,
-    closeOnClick: false,
-    pauseOnFocusLoss: false,
-    draggable: false,
-    closeButton: false,
-  });
+  }, { type: TYPE.WARNING, timeout: false, closeOnClick: false, pauseOnFocusLoss: false, draggable: false, closeButton: false });
 };
 
 const assignAssessors = async () => {
-  if (isAssignActionInvalid.value) {
-    toast.warning('The total number of assessors must be between 3 and 5.');
-    return;
-  }
+  if (isAssignActionInvalid.value) return toast.warning('The total number of assessors must be between 3 and 5.');
   isProcessing.value = true;
   try {
-    const assignmentPromises = selectedAssessorIds.value.map(assessorId => {
-      return apiService.createApplicationAssessorCOI({
-        application: localIsarData.value.application_details.id,
-        assessor: assessorId,
-      });
-    });
+    const assignmentPromises = selectedAssessorIds.value.map(assessorId => apiService.createApplicationAssessorCOI({ application: localIsarData.value.application_details.id, assessor: assessorId }));
     await Promise.all(assignmentPromises);
-    toast.success(`${selectedAssessorIds.value.length} new assessor(s) have been assigned and notified.`);
+    toast.success(`${selectedAssessorIds.value.length} new assessor(s) have been assigned.`);
     emit('action-completed');
   } catch (error) {
     console.error('Failed to assign assessors:', error);
@@ -358,11 +375,7 @@ const scheduleVisit = async () => {
   if (new Date(visitEndDate.value) < new Date(visitStartDate.value)) return toast.warning('End date cannot be before the start date.');
   isProcessing.value = true;
   try {
-    const payload = {
-      application: localIsarData.value.application_details.id,
-      start_datetime: `${visitStartDate.value}T09:00:00Z`,
-      end_datetime: `${visitEndDate.value}T17:00:00Z`,
-    };
+    const payload = { application: localIsarData.value.application_details.id, start_datetime: `${visitStartDate.value}T09:00:00Z`, end_datetime: `${visitEndDate.value}T17:00:00Z` };
     await apiService.createApplicationSiteVisit(payload);
     toast.success('Physical visit scheduled successfully!');
     emit('action-completed');
@@ -378,37 +391,22 @@ const updateSchedule = async () => {
   if (!visitStartDate.value || !visitEndDate.value) return toast.warning('Please select both a start and end date.');
   if (new Date(visitEndDate.value) < new Date(visitStartDate.value)) return toast.warning('End date cannot be before the start date.');
   if (!currentSiteVisit.value) return toast.error('Cannot find a visit to update.');
-
   isProcessing.value = true;
   try {
-    const payload = {
-
-      application: localIsarData.value.application_details.id,
-
-      start_datetime: `${visitStartDate.value}T09:00:00Z`,
-      end_datetime: `${visitEndDate.value}T17:00:00Z`,
-      is_confirmed_by_institute: false,
-      institute_confirmation_remarks: null,
-    };
-
+    const payload = { application: localIsarData.value.application_details.id, start_datetime: `${visitStartDate.value}T09:00:00Z`, end_datetime: `${visitEndDate.value}T17:00:00Z`, is_confirmed_by_institute: false, institute_confirmation_remarks: null };
     await apiService.updateApplicationSiteVisit(currentSiteVisit.value.id, payload);
-
     toast.success('Visit schedule has been updated successfully!');
     isRescheduling.value = false;
     emit('action-completed');
   } catch (error) {
     console.error('Failed to update schedule:', error);
-    
     toast.error(error.response?.data?.detail || error.response?.data?.application[0] || 'An error occurred.');
   } finally {
     isProcessing.value = false;
   }
 };
 
-const startRescheduling = () => {
-  isRescheduling.value = true;
-};
-
+const startRescheduling = () => { isRescheduling.value = true; };
 const cancelRescheduling = () => {
   isRescheduling.value = false;
   if (currentSiteVisit.value) {
@@ -417,9 +415,7 @@ const cancelRescheduling = () => {
   }
 };
 
-const handleConsolidatedReportFileChange = (event) => {
-  consolidatedReportFile.value = event.target.files[0];
-};
+const handleConsolidatedReportFileChange = (event) => { consolidatedReportFile.value = event.target.files[0]; };
 
 const uploadConsolidatedReport = async () => {
     if (!consolidatedReportFile.value) return toast.warning('Please select a report file.');
@@ -441,7 +437,6 @@ const uploadConsolidatedReport = async () => {
 
 const submitFinalDecision = async () => {
   const message = `You are about to submit the final decision. This will change the application status and cannot be easily undone. Are you sure?`;
-
   toast({
     component: ConfirmToast,
     props: { message },
@@ -450,71 +445,53 @@ const submitFinalDecision = async () => {
         if (!selectedGradeId.value) return toast.warning('Please select a final grade.');
         isProcessing.value = true;
         try {
-          const payload = {
-            final_grade_awarded: selectedGradeId.value,
-            remarks_heqc_final: finalRemarks.value,
-          };
+          const payload = { final_grade_awarded: selectedGradeId.value, remarks_heqc_final: finalRemarks.value };
           await apiService.makeFinalDecision(localIsarData.value.application_details.id, payload);
           toast.success('The final decision has been submitted successfully.');
           emit('action-completed');
         } catch (error) {
           console.error('Failed to make final decision:', error);
           toast.error(error.response?.data?.detail || 'An error occurred while finalizing the decision.');
-        } finally {
-          isProcessing.value = false;
-        }
+        } finally { isProcessing.value = false; }
       }
     }
-  }, {
-    type: TYPE.WARNING,
-    timeout: false, closeOnClick: false, pauseOnFocusLoss: false,
-    draggable: false, closeButton: false,
-  });
+  }, { type: TYPE.WARNING, timeout: false, closeOnClick: false, pauseOnFocusLoss: false, draggable: false, closeButton: false });
 };
 
 const close = () => emit('close');
-
 const getStatusClass = (status) => {
-  const classes = {
-    'coi_conflict_declared': 'bg-red-200 text-red-800',
-    'coi_pending_declaration': 'bg-orange-100 text-orange-800',
-    'coi_resolved_scheduling_visit': 'bg-teal-100 text-teal-800',
-    'site_visit_scheduled': 'bg-indigo-100 text-indigo-800',
-    'site_visit_confirmed': 'bg-indigo-200 text-indigo-900',
-    'assessment_report_submitted': 'bg-cyan-100 text-cyan-800',
-    'approved_accredited': 'bg-green-100 text-green-800',
-    'rejected_not_accredited': 'bg-red-100 text-red-800',
-  };
+  const classes = { 'coi_conflict_declared': 'bg-red-200 text-red-800', 'coi_pending_declaration': 'bg-orange-100 text-orange-800', 'coi_resolved_scheduling_visit': 'bg-teal-100 text-teal-800', 'site_visit_scheduled': 'bg-indigo-100 text-indigo-800', 'site_visit_confirmed': 'bg-indigo-200 text-indigo-900', 'assessment_report_submitted': 'bg-cyan-100 text-cyan-800', 'approved_accredited': 'bg-green-100 text-green-800', 'rejected_not_accredited': 'bg-red-100 text-red-800' };
   return classes[status] || 'bg-gray-100 text-gray-800';
 };
 
+// +++ CRITICAL FIX: Use new status names for COI records +++
 const getCoiStatusClass = (status) => {
   const classes = {
-    'pending_assessor': 'bg-gray-100 text-gray-800',
+    'pending_institute_review': 'bg-yellow-100 text-yellow-800',
     'approved_no_conflict': 'bg-green-100 text-green-800',
-    'disputed_by_institute': 'bg-red-100 text-red-800',
+    'conflict_declared': 'bg-red-200 text-red-800',
   };
   return classes[status] || 'bg-gray-100 text-gray-800';
 };
 
-const formatInstituteResponse = (agrees) => {
-  if (agrees === true) return 'Agreed';
-  if (agrees === false) return 'Disputed';
-  return 'Pending Response';
+// +++ CRITICAL FIX: Logic now reflects the new data model +++
+const formatInstituteResponse = (coi) => {
+  if (coi.status === 'approved_no_conflict') return 'No Conflict Declared by Institute';
+  if (coi.status === 'conflict_declared') return 'Conflict Declared by Institute';
+  if (coi.status === 'pending_institute_review') return 'Pending Institute Review';
+  return 'N/A';
 };
 
-const getInstituteResponseClass = (agrees) => {
-  if (agrees === true) return 'text-green-600';
-  if (agrees === false) return 'text-red-600';
-  return 'text-yellow-600';
+// +++ CRITICAL FIX: Logic now reflects the new data model +++
+const getInstituteResponseClass = (status) => {
+  if (status === 'approved_no_conflict') return 'text-green-600';
+  if (status === 'conflict_declared') return 'text-red-600';
+  if (status === 'pending_institute_review') return 'text-yellow-600';
+  return 'text-gray-500';
 };
 </script>
 
 <style scoped>
-.form-input {
-  @apply block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm;
-}
-dialog:not([open]) {
-  display: none;
-}
+.form-input { @apply block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm; }
+dialog:not([open]) { display: none; }
 </style>

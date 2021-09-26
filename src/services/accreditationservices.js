@@ -180,24 +180,37 @@ export default {
     return apiClient.delete(`/accreditations/isar-standard-documents/${id}/`);
   },
 
+
   // Application Assessor COIs endpoints
-  getApplicationAssessorCOIs() {
-    return apiClient.get(`/accreditations/application-assessor-cois/`);
+  getApplicationAssessorCOIs(params = {}) { // Added params for flexibility
+    return apiClient.get(`/accreditations/application-assessor-cois/`, { params });
   },
+
   createApplicationAssessorCOI(data) {
     return apiClient.post('/accreditations/application-assessor-cois/', data);
   },
+
   getApplicationAssessorCOI_BYid(id) {
     return apiClient.get(`/accreditations/application-assessor-cois/${id}/`);
   },
+
+  /**
+   * Submits an institute's declaration for a specific COI record.
+   * This is the single, correct function to use from your Vue component.
+   * @param {number} coiId The ID of the ApplicationAssessorCOI record.
+   * @param {FormData} formData The form data containing the declaration.
+   * @returns {Promise} Axios promise for the request.
+   */
+  respondToCoiDeclaration(coiId, formData) {
+    // CORRECTED: The path prefix '/api/v1/accreditation/' is REMOVED.
+    // The path now correctly starts with '/accreditations/'.
+    return apiClient.post(`/accreditations/application-assessor-cois/${coiId}/respond/`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+  },
+
   deleteApplicationAssessorCOI(id) {
     return apiClient.delete(`/accreditations/application-assessor-cois/${id}/`);
-  },
-  declareAssessorCOI(coiId, data) {
-    return apiClient.post(`/accreditations/application-assessor-cois/${coiId}/assessor-declaration/`, data);
-  },
-  respondToCOI(coiId, formData) {
-    return apiClient.post(`/accreditations/application-assessor-cois/${coiId}/respond/`, formData);
   },
 
   // Application Site Visits endpoints
