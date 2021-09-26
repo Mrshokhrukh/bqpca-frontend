@@ -26,140 +26,6 @@
               <div><p class="font-medium text-gray-500">Institute Name</p><p class="rounded-md bg-gray-100 p-2">{{ localIsarData?.application_details?.institute_profile_details?.name || 'N/A' }}</p></div>
               <div><p class="font-medium text-gray-500">Location</p><p class="rounded-md bg-gray-100 p-2">{{ localIsarData?.isar_location_details || 'N/A' }}</p></div>
               <div><p class="font-medium text-gray-500">Type of Institute</p><p class="rounded-md bg-gray-100 p-2">{{ localIsarData?.application_details?.institute_profile_details?.type_details?.name || 'N/A' }}</p></div>
-              <div><p class="font-medium text-gray-500">Affiliated to</p><p class="rounded-md bg-gray-100 p-2">{{ localIsarData?.isar_affiliated_to_details || 'N/A' }}</p></div>
-              <div><p class="font-medium text-gray-500">Date of last accreditation</p><p class="rounded-md bg-gray-100 p-2">{{ localIsarData?.isar_date_last_accreditation ? new Date(localIsarData.isar_date_last_accreditation).toLocaleDateString() : 'N/A' }}</p></div>
-              <div><p class="font-medium text-gray-500">Source of funding</p><p class="rounded-md bg-gray-100 p-2">{{ localIsarData?.application_details?.institute_profile_details?.source_of_funding_details?.name || 'N/A' }}</p></div>
-              <div><p class="font-medium text-gray-500">Cost of education</p><p class="rounded-md bg-gray-100 p-2">{{ localIsarData?.isar_cost_of_education_details || 'N/A' }}</p></div>
-              <div><p class="font-medium text-gray-500">Total area (in acres)</p><p class="rounded-md bg-gray-100 p-2">{{ localIsarData?.isar_total_area_acres_details || 'N/A' }}</p></div>
-              <div><p class="font-medium text-gray-500">Year of establishment</p><p class="rounded-md bg-gray-100 p-2">{{ localIsarData?.isar_year_establishment_details || 'N/A' }}</p></div>
-              <div><p class="font-medium text-gray-500">Head of institute</p><p class="rounded-md bg-gray-100 p-2">{{ localIsarData?.isar_head_of_institute_text_details || 'N/A' }}</p></div>
-              <div><p class="font-medium text-gray-500">Website</p><p class="rounded-md bg-gray-100 p-2"><a :href="localIsarData?.isar_website_details" target="_blank" class="text-blue-600 hover:underline">{{ localIsarData?.isar_website_details || 'N/A' }}</a></p></div>
-              <div><p class="font-medium text-gray-500">Telephone number</p><p class="rounded-md bg-gray-100 p-2">{{ localIsarData?.isar_telephone_details || 'N/A' }}</p></div>
-              <div><p class="font-medium text-gray-500">Email</p><p class="rounded-md bg-gray-100 p-2">{{ localIsarData?.isar_email_details || 'N/A' }}</p></div>
-              <div><p class="font-medium text-gray-500">Focal Person for IQA</p><p class="rounded-md bg-gray-100 p-2">{{ localIsarData?.isar_focal_person_iqa_details || 'N/A' }}</p></div>
-              <div class="lg:col-span-3"><p class="font-medium text-gray-500">Land registration certificate</p><p class="rounded-md bg-gray-100 p-2"><a v-if="localIsarData?.land_registration_certificate" :href="localIsarData.land_registration_certificate" target="_blank" class="text-blue-600 hover:underline">View Document</a><span v-else>Not provided</span></p></div>
-            </div>
-          </section>
-
-          <section class="mb-8">
-            <h3 class="mb-4 border-b pb-2 text-lg font-semibold">Part II (B): Institutional Profile</h3>
-
-            <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
-
-              <div class="rounded-lg border bg-white shadow-sm">
-                <div class="flex items-center gap-3 border-b bg-gray-50 p-3">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
-                  <h4 class="font-semibold text-gray-700">Academic Profile</h4>
-                </div>
-                <dl class="grid grid-cols-2 gap-x-6 gap-y-4 p-4 text-sm md:grid-cols-3">
-                  <div class="md:col-span-1"><dt class="text-gray-500">Departments</dt><dd class="font-semibold text-gray-800">{{ localIsarData?.isar_num_departments ?? 'N/A' }}</dd></div>
-                  <div class="md:col-span-1"><dt class="text-gray-500">UG Programmes</dt><dd class="font-semibold text-gray-800">{{ localIsarData?.isar_num_programmes_ug ?? 'N/A' }}</dd></div>
-                  <div class="md:col-span-1"><dt class="text-gray-500">PG Programmes</dt><dd class="font-semibold text-gray-800">{{ localIsarData?.isar_num_programmes_pg ?? 'N/A' }}</dd></div>
-                  <div class="md:col-span-1"><dt class="text-gray-500">Doctoral Programmes</dt><dd class="font-semibold text-gray-800">{{ localIsarData?.isar_num_programmes_doctoral ?? 'N/A' }}</dd></div>
-                  <div class="md:col-span-1"><dt class="text-gray-500">Other Programmes</dt><dd class="font-semibold text-gray-800">{{ localIsarData?.isar_num_programmes_other ?? 'N/A' }}</dd></div>
-                  <div class="md:col-span-1"><dt class="text-gray-500">With Electives</dt><dd class="font-semibold text-gray-800">{{ localIsarData?.isar_num_programmes_with_electives ?? 'N/A' }}</dd></div>
-                  <div class="md:col-span-3"><dt class="text-gray-500">New Programmes (last 5 yrs)</dt><dd class="font-semibold text-gray-800">{{ localIsarData?.isar_new_programmes_last_5_years_details ?? 'N/A' }}</dd></div>
-                  <div class="md:col-span-3 grid grid-cols-2">
-                      <div><dt class="text-gray-500">Working Days (last year)</dt><dd class="font-semibold text-gray-800">{{ localIsarData?.isar_num_working_days_last_year ?? 'N/A' }}</dd></div>
-                      <div><dt class="text-gray-500">Teaching Days (last year)</dt><dd class="font-semibold text-gray-800">{{ localIsarData?.isar_num_teaching_days_last_year ?? 'N/A' }}</dd></div>
-                  </div>
-                </dl>
-              </div>
-
-              <div class="rounded-lg border bg-white shadow-sm">
-                <div class="flex items-center gap-3 border-b bg-gray-50 p-3">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
-                  <h4 class="font-semibold text-gray-700">Faculty Profile</h4>
-                </div>
-                <dl class="grid grid-cols-2 gap-x-6 gap-y-5 p-4 text-sm md:grid-cols-2">
-                  <div>
-                    <dt class="text-gray-500">Total Faculty</dt>
-                    <dd class="text-xl font-bold text-gray-800">{{ (localIsarData?.isar_faculty_male || 0) + (localIsarData?.isar_faculty_female || 0) }}</dd>
-                    <div class="text-xs text-gray-600">Male: {{ localIsarData?.isar_faculty_male || 0 }} | Female: {{ localIsarData?.isar_faculty_female || 0 }}</div>
-                  </div>
-                   <div>
-                    <dt class="text-gray-500">Regular Faculty</dt>
-                    <dd class="font-semibold text-gray-800">{{ (localIsarData?.isar_regular_faculty_male || 0) + (localIsarData?.isar_regular_faculty_female || 0) }}</dd>
-                    <div class="text-xs text-gray-600">M: {{ localIsarData?.isar_regular_faculty_male || 0 }}, F: {{ localIsarData?.isar_regular_faculty_female || 0 }}</div>
-                  </div>
-                  <div>
-                    <dt class="text-gray-500">Contract Faculty</dt>
-                    <dd class="font-semibold text-gray-800">{{ (localIsarData?.isar_contract_faculty_male || 0) + (localIsarData?.isar_contract_faculty_female || 0) }}</dd>
-                     <div class="text-xs text-gray-600">M: {{ localIsarData?.isar_contract_faculty_male || 0 }}, F: {{ localIsarData?.isar_contract_faculty_female || 0 }}</div>
-                  </div>
-                  <div>
-                    <dt class="text-gray-500">Visiting Faculty</dt>
-                    <dd class="font-semibold text-gray-800">{{ (localIsarData?.isar_visiting_faculty_male || 0) + (localIsarData?.isar_visiting_faculty_female || 0) }}</dd>
-                     <div class="text-xs text-gray-600">M: {{ localIsarData?.isar_visiting_faculty_male || 0 }}, F: {{ localIsarData?.isar_visiting_faculty_female || 0 }}</div>
-                  </div>
-                  <div class="col-span-2 border-t pt-4">
-                      <h5 class="font-medium text-gray-600 mb-2">Qualifications</h5>
-                      <div class="grid grid-cols-3 gap-4">
-                          <div><dt class="text-gray-500">With Doctoral Degree</dt><dd class="font-semibold text-gray-800">{{ localIsarData?.isar_faculty_doctoral ?? 'N/A' }}</dd></div>
-                          <div><dt class="text-gray-500">With Master's Degree</dt><dd class="font-semibold text-gray-800">{{ localIsarData?.isar_faculty_masters ?? 'N/A' }}</dd></div>
-                          <div><dt class="text-gray-500">With Bachelor's</dt><dd class="font-semibold text-gray-800">{{ localIsarData?.isar_faculty_bachelors ?? 'N/A' }}</dd></div>
-                      </div>
-                  </div>
-                </dl>
-              </div>
-
-              <div class="rounded-lg border bg-white shadow-sm">
-                <div class="flex items-center gap-3 border-b bg-gray-50 p-3">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-                  <h4 class="font-semibold text-gray-700">Staff Profile</h4>
-                </div>
-                <dl class="grid grid-cols-1 gap-y-5 p-4 text-sm sm:grid-cols-3">
-                  <div>
-                    <dt class="text-gray-500">Technical Staff</dt>
-                    <dd class="font-semibold text-gray-800">{{ (localIsarData?.isar_technical_staff_male || 0) + (localIsarData?.isar_technical_staff_female || 0) }}</dd>
-                    <div class="text-xs text-gray-600">Male: {{ localIsarData?.isar_technical_staff_male || 0 }} | Female: {{ localIsarData?.isar_technical_staff_female || 0 }}</div>
-                  </div>
-                  <div>
-                    <dt class="text-gray-500">Admin Staff</dt>
-                    <dd class="font-semibold text-gray-800">{{ (localIsarData?.isar_admin_staff_male || 0) + (localIsarData?.isar_admin_staff_female || 0) }}</dd>
-                    <div class="text-xs text-gray-600">Male: {{ localIsarData?.isar_admin_staff_male || 0 }} | Female: {{ localIsarData?.isar_admin_staff_female || 0 }}</div>
-                  </div>
-                  <div>
-                    <dt class="text-gray-500">Support Staff</dt>
-                    <dd class="font-semibold text-gray-800">{{ (localIsarData?.isar_support_staff_male || 0) + (localIsarData?.isar_support_staff_female || 0) }}</dd>
-                    <div class="text-xs text-gray-600">Male: {{ localIsarData?.isar_support_staff_male || 0 }} | Female: {{ localIsarData?.isar_support_staff_female || 0 }}</div>
-                  </div>
-                </dl>
-              </div>
-
-              <div class="rounded-lg border bg-white shadow-sm">
-                <div class="flex items-center gap-3 border-b bg-gray-50 p-3">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 14l9-5-9-5-9 5 9 5z" /><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-5.998 12.078 12.078 0 01.665-6.479L12 14z" /><path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-5.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222 4 2.222V20M12 14.778L16 17l-4 2.222L8 17l4-2.222z" /></svg>
-                  <h4 class="font-semibold text-gray-700">Student Enrolment</h4>
-                </div>
-                 <dl class="grid grid-cols-2 gap-x-6 gap-y-5 p-4 text-sm md:grid-cols-2">
-                  <div class="col-span-2">
-                      <dt class="text-gray-500">Total Students</dt>
-                      <dd class="text-3xl font-bold text-blue-600">{{ totalStudentCount }}</dd>
-                  </div>
-                  <div>
-                    <dt class="text-gray-500">Diploma Students</dt>
-                    <dd class="font-semibold text-gray-800">{{ (localIsarData?.isar_students_diploma_male || 0) + (localIsarData?.isar_students_diploma_female || 0) }}</dd>
-                    <div class="text-xs text-gray-600">M: {{ localIsarData?.isar_students_diploma_male || 0 }}, F: {{ localIsarData?.isar_students_diploma_female || 0 }}</div>
-                  </div>
-                  <div>
-                    <dt class="text-gray-500">Bachelor's Students</dt>
-                    <dd class="font-semibold text-gray-800">{{ (localIsarData?.isar_students_bachelors_male || 0) + (localIsarData?.isar_students_bachelors_female || 0) }}</dd>
-                    <div class="text-xs text-gray-600">M: {{ localIsarData?.isar_students_bachelors_male || 0 }}, F: {{ localIsarData?.isar_students_bachelors_female || 0 }}</div>
-                  </div>
-                  <div>
-                    <dt class="text-gray-500">Master's Students</dt>
-                    <dd class="font-semibold text-gray-800">{{ (localIsarData?.isar_students_masters_male || 0) + (localIsarData?.isar_students_masters_female || 0) }}</dd>
-                    <div class="text-xs text-gray-600">M: {{ localIsarData?.isar_students_masters_male || 0 }}, F: {{ localIsarData?.isar_students_masters_female || 0 }}</div>
-                  </div>
-                  <div>
-                    <dt class="text-gray-500">Other Students</dt>
-                    <dd class="font-semibold text-gray-800">{{ (localIsarData?.isar_students_other_male || 0) + (localIsarData?.isar_students_other_female || 0) }}</dd>
-                    <div class="text-xs text-gray-600">M: {{ localIsarData?.isar_students_other_male || 0 }}, F: {{ localIsarData?.isar_students_other_female || 0 }}</div>
-                  </div>
-                </dl>
-              </div>
-
             </div>
           </section>
 
@@ -181,11 +47,6 @@
               <h4 class="mb-2 font-semibold text-gray-700">1. Assign Assessors</h4>
               <div v-if="!isAssignmentActionNeeded" class="space-y-2">
                 <p class="text-sm font-medium text-green-700">✓ A valid team of {{ numberOfValidAssessors }} assessors has been assigned. See COI status below.</p>
-                <ul class="list-disc space-y-1 rounded-md bg-white p-3 pl-8 text-sm">
-                  <li v-for="coi in localIsarData.application_details.assessor_cois_details" :key="coi.id">
-                    <span class="font-semibold">{{ coi.assessor_details.name }}</span> - <span class="text-gray-600">{{ coi.assessor_details.email }}</span>
-                  </li>
-                </ul>
               </div>
               <div v-else class="space-y-4">
                 <div v-if="isReassignmentNeeded" class="rounded-md border border-red-300 bg-red-100 p-3 text-sm text-red-800">
@@ -231,20 +92,16 @@
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
                       Remove
                     </button>
-                    <span v-else class="rounded-full px-2 py-0.5 text-xs font-medium" :class="getCoiStatusClass(coi.status)">
+                    <span v-else-if="coi.status" class="rounded-full px-2 py-0.5 text-xs font-medium" :class="getCoiStatusClass(coi.status)">
                       {{ coi.status_display }}
                     </span>
                   </div>
-                  <div class="grid grid-cols-1 gap-4 border-t border-gray-200 pt-2 text-sm md:grid-cols-2">
+                  <div class="border-t border-gray-200 pt-2 text-sm">
                     <div>
-                      <p class="font-medium text-gray-500">Assessor's Declaration:</p>
-                      <p class="font-bold" :class="getAssessorCoiClass(coi.assessor_has_coi)">{{ formatAssessorCoiStatus(coi.assessor_has_coi) }}</p>
-                      <p v-if="coi.assessor_coi_remarks" class="mt-1 text-xs text-gray-600">Remarks: {{ coi.assessor_coi_remarks }}</p>
-                    </div>
-                    <div>
-                      <p class="font-medium text-gray-500">Institute's Response:</p>
+                      <p class="font-medium text-gray-500">Institute's Declaration:</p>
                       <p class="font-bold" :class="getInstituteResponseClass(coi.institute_agrees_with_assessor)">{{ formatInstituteResponse(coi.institute_agrees_with_assessor) }}</p>
-                      <blockquote v-if="coi.institute_rejection_remarks" class="mt-1 border-l-2 border-red-500 pl-2 text-xs italic text-red-700">{{ coi.institute_rejection_remarks }}</blockquote>
+                      <p v-if="coi.institute_rejection_remarks" class="mt-1 text-xs text-red-700">| {{ coi.institute_rejection_remarks }}</p>
+                      <p v-else-if="coi.institute_agrees_with_assessor === true" class="mt-1 text-xs text-red-700">| No conflict declared by institute.</p>
                     </div>
                   </div>
                 </div>
@@ -254,7 +111,7 @@
 
             <div class="rounded-lg border border-green-300 bg-green-50 p-4">
               <h4 class="mb-2 font-semibold text-gray-700">3. Physical Verification Schedule</h4>
-              <div v-if="currentSiteVisit" class="mb-4 space-y-3 rounded-md border bg-white p-4">
+              <div v-if="currentSiteVisit && !isRescheduling" class="mb-4 space-y-3 rounded-md border bg-white p-4">
                   <h5 class="font-semibold text-gray-800">Current Schedule Details</h5>
                     <div class="grid grid-cols-1 gap-4 text-sm md:grid-cols-3">
                         <div>
@@ -282,7 +139,7 @@
               <p v-if="!canManageVisit" class="text-sm text-gray-600">This action is available after the Conflict of Interest process is resolved.</p>
               <div v-else>
                 <div v-if="currentSiteVisit && !isRescheduling" class="text-right">
-                  <button @click="startRescheduling" class="rounded bg-yellow-500 px-4 py-2 text-white hover:bg-yellow-600">Propose New Schedule</button>
+                  <button @click="startRescheduling" class="rounded bg-yellow-500 px-4 py-2 text-sm font-semibold text-white hover:bg-yellow-600">Propose New Schedule</button>
                 </div>
                 <div v-if="!currentSiteVisit || isRescheduling" class="flex flex-wrap items-end gap-4">
                   <div class="flex-grow"><label for="visit-start" class="block text-sm font-medium text-gray-700">Start Date</label><input type="date" id="visit-start" v-model="visitStartDate" class="form-input mt-1"></div>
@@ -300,14 +157,8 @@
 
             <div class="rounded-lg border border-purple-200 bg-purple-50 p-4">
               <h4 class="mb-2 font-semibold text-gray-700">4. Consolidated Site Visit Report</h4>
-              <div v-if="isReportAlreadyUploaded" class="space-y-2 rounded-md bg-white p-3">
-                <p class="text-sm font-medium text-green-700">✓ Report has been uploaded.</p>
-                <a :href="localIsarData.application_details.consolidated_site_visit_report" target="_blank" class="inline-flex items-center gap-2 rounded-md bg-purple-600 px-4 py-2 text-sm text-white hover:bg-purple-700">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
-                  View Uploaded Report
-                </a>
-              </div>
-              <div v-else-if="canUploadConsolidatedReport" class="space-y-4">
+              <p v-if="!canUploadConsolidatedReport" class="text-sm text-gray-600">This action is available after the physical verification has been confirmed.</p>
+              <div v-else class="space-y-4">
                 <div>
                   <label for="consolidated-report-file" class="block text-sm font-medium text-gray-700">Consolidated Report File</label>
                   <input id="consolidated-report-file" type="file" @change="handleConsolidatedReportFileChange" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:rounded-full file:border-0 file:bg-violet-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-violet-700 hover:file:bg-violet-100"/>
@@ -316,67 +167,28 @@
                   {{ isProcessing ? 'Uploading...' : 'Upload & Proceed' }}
                 </button>
               </div>
-              <p v-else class="text-sm text-gray-600">This action is available after the physical verification has been scheduled or confirmed.</p>
             </div>
 
             <div class="rounded-lg border border-red-200 bg-red-50 p-4">
               <h4 class="mb-2 font-semibold text-gray-700">5. Final Accreditation Decision</h4>
-              <div v-if="isDecisionAlreadyMade" class="space-y-3 rounded-md bg-white p-3 text-sm">
-                  <p class="font-medium text-green-700">✓ Final decision has been submitted.</p>
-                  <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                      <div>
-                          <p class="font-medium text-gray-500">Final Grade Awarded</p>
-                          <p class="font-bold text-lg text-gray-900">{{ localIsarData.application_details.final_grade_awarded_details.rating_category_name }}</p>
-                      </div>
-                      <div v-if="localIsarData.application_details.final_grade_awarded_details.is_accrediting_grade">
-                          <p class="font-medium text-gray-500">Accreditation Validity</p>
-                          <p class="font-bold text-gray-800">
-                              {{ formatDate(localIsarData.application_details.accreditation_validity_from) }} to {{ formatDate(localIsarData.application_details.accreditation_validity_to) }}
-                          </p>
-                      </div>
-                  </div>
-                  <div v-if="localIsarData.application_details.remarks_heqc_final">
-                      <p class="font-medium text-gray-500">Final Remarks</p>
-                      <blockquote class="mt-1 border-l-2 border-gray-300 pl-2 italic text-gray-700">
-                          "{{ localIsarData.application_details.remarks_heqc_final }}"
-                      </blockquote>
-                  </div>
-              </div>
-              <div v-else-if="canMakeFinalDecision" class="space-y-4">
+              <p v-if="!canMakeFinalDecision" class="text-sm text-gray-600">Final decision can be made after the consolidated report has been submitted.</p>
+              <div v-else class="space-y-4">
                 <div>
                   <label for="final-grade" class="block text-sm font-medium text-gray-700">Final Grade Awarded</label>
                   <select id="final-grade" v-model="selectedGradeId" class="form-input mt-1">
-                    <option :value="null" disabled>Select a grade to determine outcome...</option>
-                    <option v-for="grade in ratingCategories" :key="grade.id" :value="grade.id">
-                      {{ grade.rating_category_name }}
-                      <span v-if="grade.is_accrediting_grade"> (Accredited for {{ grade.validity_years }} years)</span>
-                      <span v-else> (Not Accredited)</span>
-                    </option>
+                    <option :value="null" disabled>Select a grade...</option>
+                    <option v-for="grade in ratingCategories" :key="grade.id" :value="grade.id">{{ grade.rating_category_name }}</option>
                   </select>
-                </div>
-                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                  <div>
-                    <label for="validity-from" class="block text-sm font-medium text-gray-700">Accreditation Validity From</label>
-                    <input type="date" id="validity-from" v-model="validityFrom" class="form-input mt-1 cursor-not-allowed bg-gray-200" disabled>
-                  </div>
-                  <div>
-                    <label for="validity-to" class="block text-sm font-medium text-gray-700">Accreditation Validity To</label>
-                    <input type="date" id="validity-to" v-model="validityTo" class="form-input mt-1 cursor-not-allowed bg-gray-200" disabled>
-                  </div>
                 </div>
                 <div>
                   <label for="final-remarks" class="block text-sm font-medium text-gray-700">Remarks for Final Decision</label>
-                  <textarea id="final-remarks" v-model="finalRemarks" rows="3" class="form-input mt-1" :placeholder="remarksPlaceholder"></textarea>
+                  <textarea id="final-remarks" v-model="finalRemarks" rows="3" class="form-input mt-1"></textarea>
                 </div>
-                <div class="flex">
-                  <button @click="submitFinalDecision" :disabled="!isFinalDecisionValid || isProcessing" class="rounded bg-red-600 px-6 py-2 text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-red-400">
-                    {{ isProcessing ? 'Submitting...' : 'Submit Final Decision' }}
-                  </button>
-                </div>
+                <button @click="submitFinalDecision" :disabled="!selectedGradeId || isProcessing" class="rounded bg-red-600 px-6 py-2 text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-red-400">
+                  {{ isProcessing ? 'Submitting...' : 'Submit Final Decision' }}
+                </button>
               </div>
-              <p v-else class="text-sm text-gray-600">Final decision can be made after the consolidated report has been submitted.</p>
             </div>
-
           </section>
         </div>
       </div>
@@ -390,8 +202,9 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue';
-import { useToast } from 'vue-toastification'; // ** NEW: Import useToast
+import { useToast, TYPE } from 'vue-toastification';
 import apiService from '@/services/services';
+import ConfirmToast from '@/components/common/ConfirmationToast.vue';
 
 const props = defineProps({
   isOpen: Boolean,
@@ -401,30 +214,25 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['close', 'action-completed']);
-const toast = useToast(); // ** NEW: Initialize toast
+const toast = useToast();
 
 const localIsarData = ref(null);
 const isProcessing = ref(false);
 const selectedAssessorIds = ref([]);
 const visitStartDate = ref('');
 const visitEndDate = ref('');
+const isRescheduling = ref(false);
 const consolidatedReportFile = ref(null);
 const finalRemarks = ref('');
 const selectedGradeId = ref(null);
-const validityFrom = ref('');
-const validityTo = ref('');
-const isRescheduling = ref(false);
 
 watch(() => props.isarData, (newData) => {
   if (newData) {
     localIsarData.value = JSON.parse(JSON.stringify(newData));
-    // Reset form fields
     selectedAssessorIds.value = [];
     consolidatedReportFile.value = null;
     finalRemarks.value = '';
     selectedGradeId.value = null;
-    validityFrom.value = '';
-    validityTo.value = '';
 
     const existingVisit = localIsarData.value?.application_details?.site_visits?.[0];
     if (existingVisit) {
@@ -440,29 +248,13 @@ watch(() => props.isarData, (newData) => {
   }
 }, { immediate: true, deep: true });
 
-watch(selectedGradeId, (newId) => {
-    if (!newId) {
-        validityFrom.value = '';
-        validityTo.value = '';
-        return;
-    }
-    const selectedCategory = props.ratingCategories.find(g => g.id === newId);
-    if (!selectedCategory) return;
-
-    if (selectedCategory.is_accrediting_grade && selectedCategory.validity_years > 0) {
-        const validityYears = selectedCategory.validity_years;
-        const fromDate = new Date();
-        const toDate = new Date(fromDate);
-        toDate.setFullYear(fromDate.getFullYear() + validityYears);
-        validityFrom.value = fromDate.toISOString().split('T')[0];
-        validityTo.value = toDate.toISOString().split('T')[0];
-    } else {
-        validityFrom.value = '';
-        validityTo.value = '';
-    }
+const currentSiteVisit = computed(() => {
+  return localIsarData.value?.application_details?.site_visits?.[0] || null;
 });
 
-// --- COMPUTED PROPERTIES ---
+const instituteRequestedReschedule = computed(() => {
+  return currentSiteVisit.value && currentSiteVisit.value.is_confirmed_by_institute === false && !!currentSiteVisit.value.institute_confirmation_remarks;
+});
 
 const isReassignmentNeeded = computed(() => {
   if (!localIsarData.value?.application_details?.assessor_cois_details) return false;
@@ -476,7 +268,7 @@ const numberOfValidAssessors = computed(() => {
 
 const isAssignmentActionNeeded = computed(() => {
     const hasAssessors = localIsarData.value?.application_details?.assessor_cois_details?.length > 0;
-    if (!hasAssessors) return true; // Initial assignment needed
+    if (!hasAssessors) return true;
     return isReassignmentNeeded.value || numberOfValidAssessors.value < 3;
 });
 
@@ -495,123 +287,60 @@ const isAssignActionInvalid = computed(() => {
   return totalFutureCount < 3 || totalFutureCount > 5;
 });
 
-const currentSiteVisit = computed(() => {
-  return localIsarData.value?.application_details?.site_visits?.[0] || null;
-});
-
-const instituteRequestedReschedule = computed(() => {
-  return currentSiteVisit.value && currentSiteVisit.value.is_confirmed_by_institute === false && !!currentSiteVisit.value.institute_confirmation_remarks;
-});
-
-const canManageVisit = computed(() => {
-  // Can only manage visit if the assessor assignment is complete and stable
-  return !isAssignmentActionNeeded.value;
-});
+const canManageVisit = computed(() => !isAssignmentActionNeeded.value);
 
 const canUploadConsolidatedReport = computed(() => {
     const status = localIsarData.value?.application_details?.status;
-    return ['site_visit_scheduled', 'site_visit_confirmed', 'site_visit_completed'].includes(status);
-});
-
-const isReportAlreadyUploaded = computed(() => {
-  return !!localIsarData.value?.application_details?.consolidated_site_visit_report;
+    return ['site_visit_confirmed', 'site_visit_completed', 'assessment_report_submitted'].includes(status);
 });
 
 const canMakeFinalDecision = computed(() => {
   return localIsarData.value?.application_details?.status === 'assessment_report_submitted';
 });
 
-const isDecisionAlreadyMade = computed(() => {
-  return !!localIsarData.value?.application_details?.final_grade_awarded_details;
-});
-
-const remarksPlaceholder = computed(() => {
-    if (selectedGradeId.value) {
-        const selectedCategory = props.ratingCategories.find(g => g.id === selectedGradeId.value);
-        if (selectedCategory && !selectedCategory.is_accrediting_grade) {
-            return 'Remarks are mandatory for non-accrediting grades.';
-        }
-    }
-    return 'Provide any final remarks (optional for accredited grades).';
-});
-
-const isFinalDecisionValid = computed(() => {
-  if (!selectedGradeId.value) return false;
-  const selectedCategory = props.ratingCategories.find(g => g.id === selectedGradeId.value);
-  if (selectedCategory && !selectedCategory.is_accrediting_grade) {
-    return !!finalRemarks.value.trim();
-  }
-  return true;
-});
-
-const totalStudentCount = computed(() => {
-    const data = localIsarData.value;
-    if (!data) return 0;
-    return (
-        (data.isar_students_diploma_male || 0) + (data.isar_students_diploma_female || 0) +
-        (data.isar_students_bachelors_male || 0) + (data.isar_students_bachelors_female || 0) +
-        (data.isar_students_masters_male || 0) + (data.isar_students_masters_female || 0) +
-        (data.isar_students_other_male || 0) + (data.isar_students_other_female || 0)
-    );
-});
-
-// --- API ACTION METHODS ---
-
 const removeDisputedAssessor = (coiToRemove) => {
   const message = `Are you sure you want to remove ${coiToRemove.assessor_details.name}? This action cannot be undone.`;
 
-  const onConfirm = async () => {
-    isProcessing.value = true;
-    try {
-      await apiService.deleteApplicationAssessorCOI(coiToRemove.id);
-      toast.success('Assessor removed successfully. Please select a replacement.');
-      emit('action-completed');
-    } catch (error) {
-      console.error('Failed to remove assessor:', error);
-      toast.error(error.response?.data?.detail || 'An error occurred while removing the assessor.');
-    } finally {
-      isProcessing.value = false;
+  toast({
+    component: ConfirmToast,
+    props: { message: message },
+    listeners: {
+      onConfirm: async () => {
+        isProcessing.value = true;
+        try {
+          await apiService.deleteApplicationAssessorCOI(coiToRemove.id);
+          toast.success('Assessor removed successfully. Please select a replacement.');
+          emit('action-completed');
+        } catch (error) {
+          console.error('Failed to remove assessor:', error);
+          toast.error(error.response?.data?.detail || 'An error occurred.');
+        } finally {
+          isProcessing.value = false;
+        }
+      }
     }
-  };
-
-  // Show confirmation toast
-  toast.warning(message, {
+  }, {
+    type: TYPE.WARNING,
     timeout: false,
     closeOnClick: false,
+    pauseOnFocusLoss: false,
     draggable: false,
-    position: "top-center",
-    actions: [
-      {
-        text: 'CONFIRM',
-        class: '!font-bold',
-        onClick: (e, toastObject) => {
-          toastObject.dismiss();
-          onConfirm();
-        },
-      },
-      {
-        text: 'CANCEL',
-        onClick: (e, toastObject) => {
-          toastObject.dismiss();
-        },
-      },
-    ],
+    closeButton: false,
   });
 };
 
 const assignAssessors = async () => {
   if (isAssignActionInvalid.value) {
-    toast.warning(`The total number of assessors must be between 3 and 5. You have ${numberOfValidAssessors.value} existing and are selecting ${selectedAssessorIds.value.length}.`);
+    toast.warning('The total number of assessors must be between 3 and 5.');
     return;
   }
   isProcessing.value = true;
   try {
     const assignmentPromises = selectedAssessorIds.value.map(assessorId => {
-      const payload = {
+      return apiService.createApplicationAssessorCOI({
         application: localIsarData.value.application_details.id,
         assessor: assessorId,
-      };
-      return apiService.createApplicationAssessorCOI(payload);
+      });
     });
     await Promise.all(assignmentPromises);
     toast.success(`${selectedAssessorIds.value.length} new assessor(s) have been assigned and notified.`);
@@ -639,7 +368,7 @@ const scheduleVisit = async () => {
     emit('action-completed');
   } catch (error) {
     console.error('Failed to schedule visit:', error);
-    toast.error(error.response?.data?.detail || 'An error occurred. Please try again.');
+    toast.error(error.response?.data?.detail || 'An error occurred.');
   } finally {
     isProcessing.value = false;
   }
@@ -649,73 +378,36 @@ const updateSchedule = async () => {
   if (!visitStartDate.value || !visitEndDate.value) return toast.warning('Please select both a start and end date.');
   if (new Date(visitEndDate.value) < new Date(visitStartDate.value)) return toast.warning('End date cannot be before the start date.');
   if (!currentSiteVisit.value) return toast.error('Cannot find a visit to update.');
+
   isProcessing.value = true;
   try {
     const payload = {
+
       application: localIsarData.value.application_details.id,
+
       start_datetime: `${visitStartDate.value}T09:00:00Z`,
       end_datetime: `${visitEndDate.value}T17:00:00Z`,
       is_confirmed_by_institute: false,
       institute_confirmation_remarks: null,
     };
+
     await apiService.updateApplicationSiteVisit(currentSiteVisit.value.id, payload);
-    toast.success('Physical visit has been successfully rescheduled!');
+
+    toast.success('Visit schedule has been updated successfully!');
     isRescheduling.value = false;
     emit('action-completed');
   } catch (error) {
-    console.error('Failed to reschedule visit:', error);
-    toast.error(error.response?.data?.detail || 'An error occurred. Please try again.');
+    console.error('Failed to update schedule:', error);
+    
+    toast.error(error.response?.data?.detail || error.response?.data?.application[0] || 'An error occurred.');
   } finally {
     isProcessing.value = false;
   }
 };
 
-const uploadConsolidatedReport = async () => {
-    if (!consolidatedReportFile.value) return toast.warning('Please select a consolidated report file to upload.');
-    isProcessing.value = true;
-    const formData = new FormData();
-    formData.append('consolidated_site_visit_report', consolidatedReportFile.value);
-    try {
-        await apiService.patchAccreditationApplication(localIsarData.value.application_details.id, formData);
-        await apiService.patchAccreditationApplication(localIsarData.value.application_details.id, { status: 'assessment_report_submitted' });
-        toast.success('Consolidated report uploaded successfully. You can now make the final decision.');
-        emit('action-completed');
-    } catch (error) {
-        console.error('Failed to upload consolidated report:', error);
-        toast.error(error.response?.data?.detail || 'An error occurred during file upload.');
-    } finally {
-        isProcessing.value = false;
-    }
+const startRescheduling = () => {
+  isRescheduling.value = true;
 };
-
-const submitFinalDecision = async () => {
-  if (!isFinalDecisionValid.value) {
-    toast.warning('Please complete the required fields. Remarks are mandatory if the grade results in non-accreditation.');
-    return;
-  }
-  isProcessing.value = true;
-  try {
-    const payload = {
-      final_grade_awarded: selectedGradeId.value,
-      final_remarks: finalRemarks.value,
-    };
-    await apiService.makeFinalDecision(localIsarData.value.application_details.id, payload);
-    const selectedCategory = props.ratingCategories.find(g => g.id === selectedGradeId.value);
-    const outcomeMessage = selectedCategory.is_accrediting_grade ? 'accredited' : 'marked as not accredited';
-    toast.success(`The application has been successfully ${outcomeMessage}.`);
-    emit('action-completed');
-    close();
-  } catch (error) {
-    console.error('Failed to make final decision:', error);
-    toast.error(error.response?.data?.detail || 'An error occurred while finalizing the decision.');
-  } finally {
-    isProcessing.value = false;
-  }
-};
-
-// --- HELPER & UTILITY METHODS ---
-
-const startRescheduling = () => isRescheduling.value = true;
 
 const cancelRescheduling = () => {
   isRescheduling.value = false;
@@ -725,46 +417,84 @@ const cancelRescheduling = () => {
   }
 };
 
-const handleConsolidatedReportFileChange = (event) => consolidatedReportFile.value = event.target.files[0];
+const handleConsolidatedReportFileChange = (event) => {
+  consolidatedReportFile.value = event.target.files[0];
+};
+
+const uploadConsolidatedReport = async () => {
+    if (!consolidatedReportFile.value) return toast.warning('Please select a report file.');
+    isProcessing.value = true;
+    const formData = new FormData();
+    formData.append('consolidated_site_visit_report', consolidatedReportFile.value);
+    try {
+        await apiService.patchAccreditationApplication(localIsarData.value.application_details.id, formData);
+        await apiService.patchAccreditationApplication(localIsarData.value.application_details.id, { status: 'assessment_report_submitted' });
+        toast.success('Report uploaded successfully.');
+        emit('action-completed');
+    } catch (error) {
+        console.error('Failed to upload report:', error);
+        toast.error(error.response?.data?.detail || 'An error occurred during file upload.');
+    } finally {
+        isProcessing.value = false;
+    }
+};
+
+const submitFinalDecision = async () => {
+  const message = `You are about to submit the final decision. This will change the application status and cannot be easily undone. Are you sure?`;
+
+  toast({
+    component: ConfirmToast,
+    props: { message },
+    listeners: {
+      onConfirm: async () => {
+        if (!selectedGradeId.value) return toast.warning('Please select a final grade.');
+        isProcessing.value = true;
+        try {
+          const payload = {
+            final_grade_awarded: selectedGradeId.value,
+            remarks_heqc_final: finalRemarks.value,
+          };
+          await apiService.makeFinalDecision(localIsarData.value.application_details.id, payload);
+          toast.success('The final decision has been submitted successfully.');
+          emit('action-completed');
+        } catch (error) {
+          console.error('Failed to make final decision:', error);
+          toast.error(error.response?.data?.detail || 'An error occurred while finalizing the decision.');
+        } finally {
+          isProcessing.value = false;
+        }
+      }
+    }
+  }, {
+    type: TYPE.WARNING,
+    timeout: false, closeOnClick: false, pauseOnFocusLoss: false,
+    draggable: false, closeButton: false,
+  });
+};
 
 const close = () => emit('close');
 
-const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
-    try { return new Date(dateString).toLocaleDateString('en-CA'); }
-    catch { return 'Invalid Date'; }
-};
-
 const getStatusClass = (status) => {
   const classes = {
-    'approved_accredited': 'bg-green-100 text-green-800', 'rejected_not_accredited': 'bg-red-100 text-red-800',
-    'assessment_report_submitted': 'bg-blue-100 text-blue-800', 'site_visit_scheduled': 'bg-yellow-100 text-yellow-800',
-    'site_visit_confirmed': 'bg-yellow-100 text-yellow-800', 'coi_resolved_scheduling_visit': 'bg-teal-100 text-teal-800',
-    'coi_pending_declaration': 'bg-orange-100 text-orange-800', 'coi_conflict_declared': 'bg-red-200 text-red-800',
-    'isar_accepted_by_heqc': 'bg-purple-100 text-purple-800',
+    'coi_conflict_declared': 'bg-red-200 text-red-800',
+    'coi_pending_declaration': 'bg-orange-100 text-orange-800',
+    'coi_resolved_scheduling_visit': 'bg-teal-100 text-teal-800',
+    'site_visit_scheduled': 'bg-indigo-100 text-indigo-800',
+    'site_visit_confirmed': 'bg-indigo-200 text-indigo-900',
+    'assessment_report_submitted': 'bg-cyan-100 text-cyan-800',
+    'approved_accredited': 'bg-green-100 text-green-800',
+    'rejected_not_accredited': 'bg-red-100 text-red-800',
   };
   return classes[status] || 'bg-gray-100 text-gray-800';
 };
 
 const getCoiStatusClass = (status) => {
   const classes = {
-    'pending_declaration': 'bg-gray-100 text-gray-800', 'no_conflict_declared': 'bg-green-100 text-green-800',
-    'conflict_declared': 'bg-yellow-100 text-yellow-800', 'disputed_by_institute': 'bg-red-100 text-red-800',
-    'resolved_no_conflict': 'bg-blue-100 text-blue-800',
+    'pending_assessor': 'bg-gray-100 text-gray-800',
+    'approved_no_conflict': 'bg-green-100 text-green-800',
+    'disputed_by_institute': 'bg-red-100 text-red-800',
   };
   return classes[status] || 'bg-gray-100 text-gray-800';
-};
-
-const formatAssessorCoiStatus = (hasCoi) => {
-  if (hasCoi === true) return 'Conflict Declared';
-  if (hasCoi === false) return 'No Conflict Declared';
-  return 'Pending Declaration';
-};
-
-const getAssessorCoiClass = (hasCoi) => {
-  if (hasCoi === true) return 'text-red-600';
-  if (hasCoi === false) return 'text-green-600';
-  return 'text-yellow-600';
 };
 
 const formatInstituteResponse = (agrees) => {

@@ -185,9 +185,7 @@ export default {
     return apiClient.get(`/accreditations/application-assessor-cois/`);
   },
   createApplicationAssessorCOI(data) {
-    return apiClient.post('/accreditations/application-assessor-cois/', data, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
+    return apiClient.post('/accreditations/application-assessor-cois/', data);
   },
   getApplicationAssessorCOI_BYid(id) {
     return apiClient.get(`/accreditations/application-assessor-cois/${id}/`);

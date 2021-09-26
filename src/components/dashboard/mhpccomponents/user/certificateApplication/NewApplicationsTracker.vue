@@ -43,14 +43,14 @@
                 :class="
                   isApplicationActive(application)
                     ? 'bg-green-100 text-green-800 border border-green-200'
-                    : 'bg-red-100 text-red-800 border border-red-200'
+                    : 'bg-yellow-100 text-yellow-800 border border-yellow-200'
                 "
               >
                 <span
                   class="w-2 h-2 rounded-full mr-1.5"
-                  :class="isApplicationActive(application) ? 'bg-green-500' : 'bg-red-500'"
+                  :class="isApplicationActive(application) ? 'bg-green-500' : 'bg-yellow-500'"
                 ></span>
-                {{ isApplicationActive(application) ? 'Active' : 'Inactive' }}
+                {{ application.user_qualifications[0]?.current_status || 'Unknown' }}
               </span>
             </div>
 
@@ -145,13 +145,14 @@
             >
               <div class="space-y-1">
                 <h5 class="text-lg font-semibold text-gray-900">
-                  {{ qualification.qualification_name_display }}
+                  {{ qualification.actual_qualification_name_display }}
                 </h5>
                 <p class="text-gray-600 text-xs">
                   {{ qualification.institute_university_display }}
                 </p>
               </div>
 
+              <!-- Status tracker -->
               <div class="flex items-center justify-center lg:justify-end w-full lg:w-auto">
                 <div class="flex flex-col sm:flex-row items-center">
                   <div class="flex flex-col items-center mb-2 sm:mb-0">
@@ -160,7 +161,7 @@
                       :class="[
                         qualification.application_review_status === 'Approved'
                           ? 'bg-green-100 text-green-700 ring-1 ring-green-200'
-                          : qualification.application_review_status === 'Rejected'
+                          : qualification.application_review_status === 'Regretted'
                             ? 'bg-red-100 text-red-700 ring-1 ring-red-200'
                             : 'bg-yellow-100 text-yellow-700 ring-1 ring-yellow-200',
                       ]"
@@ -170,7 +171,7 @@
                         class="w-4 h-4"
                       />
                       <XCircle
-                        v-else-if="qualification.application_review_status === 'Rejected'"
+                        v-else-if="qualification.application_review_status === 'Regretted'"
                         class="w-4 h-4"
                       />
                       <Clock v-else class="w-4 h-4" />
@@ -187,7 +188,7 @@
                       :class="[
                         qualification.physical_review_status === 'Approved'
                           ? 'bg-green-100 text-green-700 ring-1 ring-green-200'
-                          : qualification.physical_review_status === 'Rejected'
+                          : qualification.physical_review_status === 'Regretted'
                             ? 'bg-red-100 text-red-700 ring-1 ring-red-200'
                             : 'bg-yellow-100 text-yellow-700 ring-1 ring-yellow-200',
                       ]"
@@ -197,7 +198,7 @@
                         class="w-4 h-4"
                       />
                       <XCircle
-                        v-else-if="qualification.physical_review_status === 'Rejected'"
+                        v-else-if="qualification.physical_review_status === 'Regretted'"
                         class="w-4 h-4"
                       />
                       <Clock v-else class="w-4 h-4" />
@@ -244,7 +245,7 @@
                       :class="[
                         qualification.endorsement_decision === 'Approved'
                           ? 'bg-green-100 text-green-700 ring-1 ring-green-200'
-                          : qualification.endorsement_decision === 'Rejected'
+                          : qualification.endorsement_decision === 'Regretted'
                             ? 'bg-red-100 text-red-700 ring-1 ring-red-200'
                             : 'bg-yellow-100 text-yellow-700 ring-1 ring-yellow-200',
                       ]"
@@ -254,7 +255,7 @@
                         class="w-4 h-4"
                       />
                       <XCircle
-                        v-else-if="qualification.endorsement_decision === 'Rejected'"
+                        v-else-if="qualification.endorsement_decision === 'Regretted'"
                         class="w-4 h-4"
                       />
                       <Clock v-else class="w-4 h-4" />
@@ -356,6 +357,17 @@
               </div>
             </div>
 
+            <!-- ✅ ADD THIS NEW BUTTON FOR RENEWAL -->
+            <button
+              v-if="qualification.current_status === 'EXPIRED'"
+              @click="initiateRenewal(qualification)"
+              class="relative mt-3 inline-flex items-center px-3 py-1.5 text-xs bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all shadow-md"
+            >
+              <CalendarClock class="w-3 h-3 mr-1.5" />
+              <span>Initiate Renewal</span>
+            </button>
+
+            <!-- Your existing payment button for NEW applications -->
             <button
               v-if="
                 qualification.physical_review_status === 'Approved' &&
@@ -397,7 +409,12 @@ import {
   CheckCircle,
   XCircle,
   Clock,
+  CalendarClock, // <-- Import the new icon
 } from 'lucide-vue-next'
+import apiService from '@/services/services' // Make sure this path is correct
+import { useToast } from 'vue-toastification'
+
+const toast = useToast()
 
 defineProps({
   applications: {
@@ -406,14 +423,12 @@ defineProps({
   },
 })
 
-defineEmits(['open-certificate', 'initiate-payment'])
+const emit = defineEmits(['open-certificate', 'initiate-payment', 'renewal-initiated'])
 
 const isApplicationActive = (application) => {
-  return (
-    application.user_qualifications?.some(
-      (qualification) => qualification.endorsement_decision === 'Approved',
-    ) ?? false
-  )
+  // An application is considered active if its primary qualification is active.
+  const primaryQual = application.user_qualifications?.find((q) => q.is_primary_qualification)
+  return primaryQual?.current_status === 'ACTIVE'
 }
 
 const shouldShowViewCertificateButton = (application) => {
@@ -429,6 +444,26 @@ const getPaymentButtonText = (application, qualification) => {
     return 'Re-process Payment'
   } else {
     return 'Proceed to Payment'
+  }
+}
+
+// Method to handle the new "Initiate Renewal" button click
+const initiateRenewal = async (qualification) => {
+  if (!confirm('Are you sure you want to start the renewal process for this qualification?')) {
+    return
+  }
+  try {
+    // This calls the backend action to create a new Renewal object
+    await apiService.initiateMhpcQualificationRenewal(qualification.id)
+    toast.success(
+      'Renewal process has been successfully initiated! You can now track it in the Renewal section.',
+    )
+    // Emit an event to tell the parent component to refresh all data
+    emit('renewal-initiated')
+  } catch (error) {
+    console.error('Error initiating renewal:', error)
+    const errorMsg = error.response?.data?.error || 'Failed to start the renewal process.'
+    toast.error(errorMsg)
   }
 }
 </script>

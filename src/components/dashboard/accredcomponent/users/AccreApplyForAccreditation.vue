@@ -256,7 +256,8 @@
       </div>
     </div>
 
-    <div v-if="showConfirmationModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-opacity" @click="cancelSubmission">
+
+      <div v-if="showConfirmationModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-opacity" @click="handleCancelSubmission">
       <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md transform transition-all" @click.stop>
         <div class="text-center">
           <svg class="mx-auto h-12 w-12 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.79 4 4s-1.79 4-4 4c-1.742 0-3.223-.835-3.772-2M12 12h.01M12 12v.01"></path></svg>
@@ -271,20 +272,21 @@
           <button
             type="button"
             class="inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:text-sm"
-            @click="cancelSubmission"
+            @click="handleCancelSubmission"
           >
             Cancel
           </button>
           <button
             type="button"
             class="inline-flex w-full justify-center rounded-md border border-transparent bg-green-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 sm:text-sm"
-            @click="confirmAndProceed"
+            @click="handleConfirmSubmission"
           >
             Confirm & Proceed
           </button>
         </div>
       </div>
     </div>
+
   </div>
 </template>
 
@@ -294,6 +296,7 @@ import { useToast } from 'vue-toastification';
 import { useAuthStore } from '@/stores/authStore';
 import apiService from '@/services/services';
 import PaymentModal from '@/components/common/PaymentModal.vue';
+import ConfirmationModal from '@/components/common/ConfirmationModal.vue';
 
 const toast = useToast();
 const authStore = useAuthStore();
@@ -737,7 +740,7 @@ const handleFinalSubmitApplication = async () => {
   showConfirmationModal.value = true;
 };
 
-const confirmAndProceed = () => {
+const handleConfirmSubmission = () => {
   showConfirmationModal.value = false;
   if (paymentModal.value) {
     isSubmitting.value = true;
@@ -747,7 +750,7 @@ const confirmAndProceed = () => {
   }
 };
 
-const cancelSubmission = () => {
+const handleCancelSubmission = () => {
   showConfirmationModal.value = false;
   toast.info("Submission cancelled.");
 };
@@ -785,6 +788,7 @@ onMounted(async () => {
     pageLoading.value = false;
   }
 });
+
 </script>
 
 <style scoped>

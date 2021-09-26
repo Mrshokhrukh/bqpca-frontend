@@ -195,8 +195,10 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useToast } from 'vue-toastification'
 import apiService from '@/services/accreditationservices'
 
+const toast = useToast()
 const applicationId = ref(1) // Placeholder: Replace with actual application ID
 const assessorId = ref(1) // Placeholder: Replace with actual assessor ID
 
@@ -247,7 +249,7 @@ const handleFileUpload = (event) => {
 
 const handleSubmit = async () => {
   if (!formData.value.assessorReportFile) {
-    alert('Please upload an assessor report file.')
+    toast.error('Please upload an assessor report file.')
     return
   }
 
@@ -259,11 +261,11 @@ const handleSubmit = async () => {
 
   try {
     await apiService.uploadAssessorReport(data)
-    alert('Assessor report submitted successfully!')
+    toast.success('Assessor report submitted successfully!')
     // Optionally, reset form or navigate
   } catch (error) {
     console.error('Error submitting assessor report:', error)
-    alert('Failed to submit assessor report. Please try again.')
+    toast.error('Failed to submit assessor report. Please try again.')
   }
 }
 </script>
