@@ -607,6 +607,8 @@ const onPaymentModalClose = () => {
 
 const handleSubmitActual = async () => {
   isSubmitting.value = true;
+  errors.value = {};
+  let appResponse;
   let redirectUrl = null;
 
   const user = authStore.user;
@@ -617,12 +619,32 @@ const handleSubmitActual = async () => {
   }
 
   try {
-    // FIX: Hardcode fee amount to 1000.0 as requested and format it.
+    // Step 1: Save the application data to our backend first
+    const applicationFormData = prepareApplicationFormData();
+    
+    // Ensure status is set correctly for submission
+    applicationFormData.set('status', 'pending_payment');
+
+    if (application.value.id) {
+      appResponse = await apiService.patchAccreditationApplication(application.value.id, applicationFormData);
+    } else {
+      appResponse = await apiService.createAccreditationApplication(applicationFormData);
+    }
+
+    if (!appResponse.data?.id) {
+        throw new Error("Backend did not return a valid application object.");
+    }
+    
+    // Update local state with potentially new application ID
+    const createdOrUpdatedAppId = appResponse.data.id;
+    await loadExistingApplication(createdOrUpdatedAppId);
+
+
+    // Step 2: Initiate payment with the gateway
     const feeAmount = 1000.0;
     const formattedFeeAmount = feeAmount.toFixed(2);
-
-    // Step 1: Initiate payment with the gateway
     const paymentInitiationFormData = new FormData();
+    
     paymentInitiationFormData.append('refNo', application.value.payment_id_gateway);
     paymentInitiationFormData.append('serviceCode', '100194');
     paymentInitiationFormData.append('taxPayerName', application.value.institute_profile_name_display);
@@ -647,31 +669,20 @@ const handleSubmitActual = async () => {
     } catch (paymentError) {
       console.error('Error making payment:', paymentError.response?.data || paymentError);
       const errorDetail = paymentError.response?.data ? JSON.stringify(paymentError.response.data) : paymentError.message;
-      toast.error('Payment request failed: ' + errorDetail);
-      isSubmitting.value = false;
+      // Since application is already created, we should inform the user about the payment failure.
+      toast.error('Application saved, but payment request failed: ' + errorDetail + '. You can try paying again from the application page.');
       return;
     }
 
-    // Step 2: Save the application data to our backend
-    const applicationFormData = prepareApplicationFormData();
-    let appResponse;
-    if (application.value.id) {
-        appResponse = await apiService.patchAccreditationApplication(application.value.id, applicationFormData);
-    } else {
-        appResponse = await apiService.createAccreditationApplication(applicationFormData);
-    }
-
     // Step 3: Success, redirect user to payment page
-    if (appResponse.status === 200 || appResponse.status === 201) {
-        toast.success(
-            'Application submitted successfully, redirecting for payment. A link has also been sent to your email.',
-            { timeout: 8000 }
-        );
-        if (redirectUrl) {
-            window.open(redirectUrl, '_blank');
-        }
-        await loadExistingApplication(appResponse.data.id);
+    toast.success(
+        'Application submitted successfully, redirecting for payment. A link has also been sent to your email.',
+        { timeout: 8000 }
+    );
+    if (redirectUrl) {
+        window.open(redirectUrl, '_blank');
     }
+    // The application is already reloaded by loadExistingApplication.
 
   } catch (error) {
     console.error("Error during final submission:", error.response?.data || error);
