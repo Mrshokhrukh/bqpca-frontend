@@ -266,6 +266,22 @@ const nextStep = computed(() => {
 
     const trackingPageUrl = '/admin/user/accreditation/track_accreditation';
 
+    // Appealable statuses that have a final grade awarded
+    if (['rejected_not_accredited', 'approved_conditional'].includes(app.status)) {
+        // A grade must be awarded to allow for an appeal
+        if (app.final_grade_awarded_details) {
+            return {
+                icon: shallowRef(AlertTriangle),
+                title: "Decision Reached",
+                description: "A final decision has been made on your application. You may be eligible to appeal this decision.",
+                actionType: 'link',
+                link: trackingPageUrl,
+                actionText: "View Decision & Appeal",
+                cardClass: 'bg-orange-600'
+            };
+        }
+    }
+
     const steps = {
         'draft_initial': {
             icon: shallowRef(FileText),
@@ -279,12 +295,6 @@ const nextStep = computed(() => {
             title: "Submit Your ISAR",
             description: `Your initial application is approved! Submit your ISAR by ${formatDate(app.isar_submission_deadline)}.`,
             actionType: 'link', link: trackingPageUrl, actionText: "Submit ISAR"
-        },
-        'rejected_not_accredited': {
-            icon: shallowRef(AlertTriangle),
-            title: "Decision Reached",
-            description: `A final decision has been made on your application. You may be eligible to appeal this decision.`,
-            actionType: 'link', link: trackingPageUrl, actionText: "View Decision & Appeal"
         },
     };
 

@@ -216,12 +216,12 @@ const initializeForm = async () => {
       ordering: '-updated_at',
       status__in: finalDecisionStatuses,
     });
-    const appealableApps = appResponse.data.results || [];
-    if (appealableApps.length === 0) {
-        loadingError.value = "You do not have any applications with a final decision that are eligible for appeal.";
+    const appealableAppsWithGrade = (appResponse.data.results || []).filter(app => app.final_grade_awarded_details);
+    if (appealableAppsWithGrade.length === 0) {
+        loadingError.value = "You do not have any applications with a final decision and an awarded grade that are eligible for appeal.";
         return;
     }
-    const targetApp = appealableApps[0];
+    const targetApp = appealableAppsWithGrade[0];
     if (targetApp.appeal_record) {
       loadingError.value = `An appeal has already been filed for application UID ${targetApp.application_uid}. You cannot file another.`;
       return;
@@ -285,26 +285,23 @@ const handleSubmit = () => {
   paymentModal.value.openModal();
 };
 
-// PAYMENT INTEGRATION: This function is called when the payment modal emits 'payment-completed'
 const onPaymentCompleted = (paymentData) => {
-  appeal.is_appeal_fee_paid = false; // Will be confirmed by webhook
+  appeal.is_appeal_fee_paid = false;
   appeal.appeal_payment_id_gateway_ref = paymentData.paymentHash;
   appeal.status_appeal = 'pending_payment';
-  handleSubmitActual(); // Proceed with the actual submission
+  handleSubmitActual();
 };
 
-// PAYMENT INTEGRATION: This function is called when the payment modal is closed by the user
 const onPaymentModalClose = () => {
     toast.info('Payment was cancelled. Your appeal has not been submitted.');
     isSubmitting.value = false;
 };
 
-// PAYMENT INTEGRATION: This is the new core submission logic
 const handleSubmitActual = async () => {
   let redirectUrl = null;
   const user = authStore.user;
 
-  if (!user || !user.cid || !user.email || !user.contact_number) {
+  if (!user || !user.cid || !user.email || !user.contact_number || !user.id) {
     toast.error("User details are missing. Cannot proceed with payment.");
     isSubmitting.value = false;
     return;
@@ -360,9 +357,9 @@ const handleSubmitActual = async () => {
 
     await apiService.createApplicationAppeal(appealFormData);
 
-    // Step 3: Success! Redirect user to payment page
+    // Step 3: Success! Open payment page in new tab for user
     toast.success(
-      'Appeal submitted, redirecting for payment. A link is also sent to your email.',
+      'Appeal submitted successfully, redirecting for payment. A link has also been sent to your email.',
       { timeout: 8000 }
     );
     if (redirectUrl) {
@@ -378,7 +375,7 @@ const handleSubmitActual = async () => {
   } catch (error) {
     const errorMsg = error.response?.data?.detail || 'An unexpected error occurred while submitting the appeal.';
     toast.error(errorMsg);
-    // Revert status on failure
+    // Revert status on failure so the user isn't stuck
     appeal.status_appeal = 'draft';
     appeal.is_appeal_fee_paid = false;
   } finally {

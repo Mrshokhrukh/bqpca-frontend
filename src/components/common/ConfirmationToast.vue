@@ -1,55 +1,41 @@
 <template>
-  <div class="confirmation-toast p-2">
-    <p class="text-sm font-semibold text-gray-800 mb-3">{{ message }}</p>
-    <div class="flex justify-end gap-2">
+  <div class="flex flex-col items-start p-2">
+    <p class="text-sm font-medium text-white mb-3">{{ message }}</p>
+    <div class="flex w-full justify-end gap-3">
       <button
-        @click="onConfirm"
-        class="px-3 py-1 bg-green-500 text-white text-xs font-bold rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-      >
-        Confirm
-      </button>
-      <button
-        @click="onCancel"
-        class="px-3 py-1 bg-gray-200 text-gray-700 text-xs font-bold rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
+        @click="cancel"
+        class="rounded-md border border-gray-300 bg-white px-3 py-1 text-xs font-semibold text-gray-700 hover:bg-gray-50"
       >
         Cancel
+      </button>
+      <button
+        @click="confirm"
+        class="rounded-md bg-yellow-500 px-3 py-1 text-xs font-semibold text-white hover:bg-yellow-600"
+      >
+        Confirm
       </button>
     </div>
   </div>
 </template>
 
 <script setup>
-// 1. ADD this import for `inject`
-import { defineProps, defineEmits, inject } from 'vue';
+import { useToast } from 'vue-toastification';
 
 const props = defineProps({
-  message: {
-    type: String,
-    default: 'Are you sure?'
-  },
-  // 2. REMOVE `closeToast` from the props definition.
-  // closeToast: Function, // <-- REMOVE THIS LINE
+  // The toastId is automatically passed by vue-toastification
+  toastId: { type: [String, Number], required: true },
+  message: { type: String, default: 'Are you sure?' }
 });
 
-const emit = defineEmits(['confirm', 'cancel']);
+const emit = defineEmits(['onConfirm']);
+const toast = useToast();
 
-// 3. GET the closeToast function using `inject`.
-// The key 'closeToast' is provided by the vue-toastification library.
-const closeToast = inject('closeToast');
-
-const onConfirm = () => {
-  emit('confirm');
-  // 4. CALL the injected function directly (no more `props.`)
-  if (closeToast) {
-    closeToast();
-  }
+const confirm = () => {
+  emit('onConfirm');
+  toast.dismiss(props.toastId);
 };
 
-const onCancel = () => {
-  emit('cancel');
-  // 5. CALL the injected function directly (no more `props.`)
-  if (closeToast) {
-    closeToast();
-  }
+const cancel = () => {
+  toast.dismiss(props.toastId);
 };
 </script>

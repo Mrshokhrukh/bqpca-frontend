@@ -39,24 +39,44 @@
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
               <tr v-for="app in accreditedApplications" :key="app.id">
-                <td class="px-6 py-4 whitespace-nowrap">
+                <td class="px-6 py-4 whitespace-nowrap align-top">
                   <div class="text-sm font-medium text-gray-900">{{ app.institute_profile_details.name }}</div>
                   <div class="text-xs text-gray-500">{{ app.application_reference_no }}</div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ formatDate(app.accreditation_validity_to) }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  <ul v-if="app.post_accreditation_reports && app.post_accreditation_reports.length > 0" class="space-y-2">
-                    <li v-for="report in app.post_accreditation_reports" :key="report.id" class="flex items-center justify-between">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 align-top">{{ formatDate(app.accreditation_validity_to) }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 align-top">
+                  <!-- Display Logic for Implementation Plan -->
+                  <div v-if="getReport(app, 'implementation_plan')" class="mb-3">
+                    <div class="flex items-center justify-between">
                       <div>
-                        <span :class="statusClass(report.status)" class="mr-2 inline-block h-2 w-2 rounded-full"></span>
-                        <span class="font-medium">{{ report.report_type_display }}</span>
+                        <span :class="statusClass(getReport(app, 'implementation_plan').status)" class="mr-2 inline-block h-2 w-2 rounded-full"></span>
+                        <span class="font-medium">Implementation Plan</span>
                       </div>
-                      <span class="text-xs text-gray-400 ml-4">Due: {{ formatDate(report.due_date) }}</span>
-                    </li>
-                  </ul>
-                   <div v-else class="text-xs text-gray-400 italic">No reports generated yet.</div>
+                      <span class="text-xs text-gray-400 ml-4">Due: {{ formatDate(getReport(app, 'implementation_plan').due_date) }}</span>
+                    </div>
+                    <!-- SHOW OFFICER FEEDBACK -->
+                    <div v-if="getReport(app, 'implementation_plan').status === 'needs_revision'" class="mt-2 ml-4 p-2 bg-orange-50 border-l-4 border-orange-400 text-orange-800 text-xs">
+                      <p class="font-bold">Revision Required:</p>
+                      <p class="italic">"{{ getReport(app, 'implementation_plan').remarks_heqc || 'No specific remarks provided.' }}"</p>
+                    </div>
+                  </div>
+                  <!-- Display Logic for Progress Report -->
+                  <div v-if="getReport(app, 'progress_report')">
+                    <div class="flex items-center justify-between">
+                      <div>
+                        <span :class="statusClass(getReport(app, 'progress_report').status)" class="mr-2 inline-block h-2 w-2 rounded-full"></span>
+                        <span class="font-medium">Progress Report</span>
+                      </div>
+                      <span class="text-xs text-gray-400 ml-4">Due: {{ formatDate(getReport(app, 'progress_report').due_date) }}</span>
+                    </div>
+                    <!-- SHOW OFFICER FEEDBACK -->
+                    <div v-if="getReport(app, 'progress_report').status === 'needs_revision'" class="mt-2 ml-4 p-2 bg-orange-50 border-l-4 border-orange-400 text-orange-800 text-xs">
+                      <p class="font-bold">Revision Required:</p>
+                      <p class="italic">"{{ getReport(app, 'progress_report').remarks_heqc || 'No specific remarks provided.' }}"</p>
+                    </div>
+                  </div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-y-2">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-y-2 align-top">
                   <!-- ACTION FOR IMPLEMENTATION PLAN -->
                   <div v-if="getReport(app, 'implementation_plan')">
                       <button
@@ -64,24 +84,30 @@
                         @click="openPlanModal(app, getReport(app, 'implementation_plan'))"
                         class="action-button bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500"
                       >
-                        {{ getReport(app, 'implementation_plan').status === 'needs_revision' ? 'Resubmit' : 'Submit' }} Plan (B)
+                        {{ getReport(app, 'implementation_plan').status === 'needs_revision' ? 'Resubmit Plan (B)' : 'Submit Plan (B)' }}
                       </button>
-                      <div v-else class="text-xs text-green-600 italic">
-                        Plan Submitted
+                      <!-- IMPROVED STATUS TEXT -->
+                      <div v-else class="text-xs italic text-gray-600">
+                        <span v-if="getReport(app, 'implementation_plan').status === 'submitted'">Submitted (Under Review)</span>
+                        <span v-else-if="getReport(app, 'implementation_plan').status === 'reviewed'" class="text-green-700">Reviewed & Complete</span>
+                        <span v-else>{{ getReport(app, 'implementation_plan').status_display }}</span>
                       </div>
                   </div>
 
                   <!-- ACTION FOR PROGRESS REPORT -->
-                  <div v-if="getReport(app, 'progress_report')">
+                  <div v-if="getReport(app, 'progress_report')" class="mt-2">
                        <button
                         v-if="isSubmittable(getReport(app, 'progress_report'))"
                         @click="openProgressModal(app, getReport(app, 'progress_report'))"
                         class="action-button bg-sky-600 hover:bg-sky-700 focus:ring-sky-500"
                       >
-                         {{ getReport(app, 'progress_report').status === 'needs_revision' ? 'Resubmit' : 'Submit' }} Progress (C)
+                         {{ getReport(app, 'progress_report').status === 'needs_revision' ? 'Resubmit Progress (C)' : 'Submit Progress (C)' }}
                       </button>
-                      <div v-else class="text-xs text-green-600 italic">
-                        Progress Report Submitted
+                      <!-- IMPROVED STATUS TEXT -->
+                      <div v-else class="text-xs italic text-gray-600">
+                        <span v-if="getReport(app, 'progress_report').status === 'submitted'">Submitted (Under Review)</span>
+                        <span v-else-if="getReport(app, 'progress_report').status === 'reviewed'" class="text-green-700">Reviewed & Complete</span>
+                        <span v-else>{{ getReport(app, 'progress_report').status_display }}</span>
                       </div>
                   </div>
                 </td>
@@ -192,7 +218,7 @@
 .form-input, .form-textarea { @apply mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm; }
 .form-submit-btn { @apply inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-6 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:bg-indigo-300 disabled:cursor-not-allowed; }
 .form-cancel-btn { @apply inline-flex justify-center rounded-md border border-gray-300 bg-white py-2 px-6 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2; }
-.action-button { @apply inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-md shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2; }
+.action-button { @apply w-full text-center inline-flex items-center justify-center px-3 py-1 border border-transparent text-xs font-medium rounded-md shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2; }
 </style>
 
 <script setup>
@@ -206,13 +232,10 @@ const standards = ref([]);
 const isLoading = ref(true);
 const isSubmitting = ref(false);
 const error = ref(null);
-
 const isPlanModalOpen = ref(false);
 const isProgressModalOpen = ref(false);
-
 const selectedApplication = ref(null);
 const selectedReport = ref(null);
-
 const implementationPlanItems = ref([]);
 const progressReportData = ref({});
 const toast = useToast();
@@ -234,45 +257,17 @@ onMounted(async () => {
   await fetchData();
 });
 
-// --- CORE DATA FETCHING LOGIC ---
+// --- CORE DATA FETCHING ---
 async function fetchData() {
   try {
     isLoading.value = true;
     error.value = null;
-
     const [appsResponse, standardsResponse] = await Promise.all([
       apiService.getAccreditationApplications(),
       apiService.getMastersStandards()
     ]);
-
-    let fetchedApps = appsResponse.data.results || appsResponse.data;
+    applications.value = appsResponse.data.results || appsResponse.data;
     standards.value = standardsResponse.data.results || standardsResponse.data;
-
-    // "Check and Create" Logic: For each accredited app, this ensures the post-accreditation
-    // report records exist on the backend. It triggers the application model's save() hook.
-    const reportEnsuringPromises = fetchedApps
-      .filter(app => app.status === 'approved_accredited' && (!app.post_accreditation_reports || app.post_accreditation_reports.length === 0))
-      .map(app => {
-        console.log(`Reports for App ID ${app.id} missing. Triggering backend creation.`);
-        // Re-saving the application via a PATCH request will trigger the backend's save() hook.
-        return apiService.patchAccreditationApplication(app.id, { status: app.status })
-            .then(response => response.data)
-            .catch(err => {
-                console.error(`Failed to ensure reports for app ${app.id}`, err);
-                return app; // On failure, return original to prevent crash
-            });
-      });
-
-    if (reportEnsuringPromises.length > 0) {
-        const updatedAppsData = await Promise.all(reportEnsuringPromises);
-        updatedAppsData.forEach(updatedApp => {
-            const index = fetchedApps.findIndex(a => a.id === updatedApp.id);
-            if (index !== -1) fetchedApps[index] = updatedApp;
-        });
-    }
-
-    applications.value = fetchedApps;
-
   } catch (err) {
     console.error("Failed to load IQAR data:", err);
     error.value = err.response?.data?.detail || "Could not load application data.";
@@ -283,21 +278,17 @@ async function fetchData() {
 }
 
 // --- MODAL AND SUBMISSION LOGIC ---
-
-// Plan Modal (B)
 const openPlanModal = (app, report) => {
   selectedApplication.value = app;
   selectedReport.value = report;
   initializeImplementationPlan(report);
   isPlanModalOpen.value = true;
 };
-
 const closePlanModal = () => {
   isPlanModalOpen.value = false;
   implementationPlanItems.value = [];
   clearSelections();
 };
-
 const initializeImplementationPlan = (report) => {
   const existingItems = report.implementation_plan_items || [];
   implementationPlanItems.value = standards.value.map(standard => {
@@ -307,7 +298,6 @@ const initializeImplementationPlan = (report) => {
     };
   });
 };
-
 const handlePlanSubmit = async () => {
   isSubmitting.value = true;
   try {
@@ -325,8 +315,6 @@ const handlePlanSubmit = async () => {
     isSubmitting.value = false;
   }
 };
-
-// Progress Modal (C)
 const openProgressModal = (app, report) => {
   selectedApplication.value = app;
   selectedReport.value = report;
@@ -338,13 +326,11 @@ const openProgressModal = (app, report) => {
   };
   isProgressModalOpen.value = true;
 };
-
 const closeProgressModal = () => {
   isProgressModalOpen.value = false;
   progressReportData.value = {};
   clearSelections();
 };
-
 const handleProgressSubmit = async () => {
   isSubmitting.value = true;
   try {
@@ -362,26 +348,21 @@ const handleProgressSubmit = async () => {
     isSubmitting.value = false;
   }
 };
-
 const clearSelections = () => {
     selectedApplication.value = null;
     selectedReport.value = null;
 }
 
 // --- HELPER FUNCTIONS ---
-
 const getReport = (app, reportType) => {
     if (!app.post_accreditation_reports) return null;
     return app.post_accreditation_reports.find(r => r.report_type === reportType);
 }
-
 const isSubmittable = (report) => {
     if (!report) return false;
     return report.status === 'pending' || report.status === 'needs_revision';
 }
-
 const getStandardName = (standardId) => standards.value.find(s => s.id === standardId)?.standard_name || 'Unknown';
-
 const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
     if (dateString.includes('T')) {
@@ -389,7 +370,6 @@ const formatDate = (dateString) => {
     }
     return new Date(`${dateString}T00:00:00`).toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' });
 };
-
 const statusClass = (status) => ({
     'pending': 'bg-yellow-400',
     'needs_revision': 'bg-orange-400',
@@ -397,7 +377,6 @@ const statusClass = (status) => ({
     'accepted': 'bg-green-400',
     'reviewed': 'bg-purple-400'
 }[status] || 'bg-gray-400');
-
 const handleApiError = (err, defaultMessage) => {
   console.error(defaultMessage, err);
   const errorDetail = err.response?.data?.detail || JSON.stringify(err.response?.data);

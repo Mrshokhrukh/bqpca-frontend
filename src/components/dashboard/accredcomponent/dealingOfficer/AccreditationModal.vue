@@ -263,9 +263,7 @@
           <h4 class="text-lg font-semibold text-gray-700 mb-3">Current Academic Activities</h4>
           <p class="text-sm text-gray-500 mb-2">*(List academic programs and student count)*</p>
           <div class="rounded border border-gray-200 p-3 bg-white">
-            <pre class="text-sm text-gray-900 whitespace-pre-line">{{
-              localApplication.academicActivities || 'N/A'
-            }}</pre>
+            <pre class="text-sm text-gray-900 whitespace-pre-line">{{ localApplication.academicActivities || 'N/A' }}</pre>
           </div>
         </div>
 
@@ -306,9 +304,7 @@
           <h4 class="text-lg font-semibold text-gray-700 mb-3">Financial Resources</h4>
           <p class="text-sm text-gray-500 mb-2">*(Details of financial resources)*</p>
           <div class="rounded border border-gray-200 p-3 bg-white">
-            <pre class="text-sm text-gray-900 whitespace-pre-line">{{
-              localApplication.financialResources || 'N/A'
-            }}</pre>
+            <pre class="text-sm text-gray-900 whitespace-pre-line">{{ localApplication.financialResources || 'N/A' }}</pre>
           </div>
         </div>
 
@@ -363,9 +359,7 @@
               :key="index"
               class="text-sm text-gray-500"
             >
-              <a :href="doc.url" target="_blank" class="text-blue-500 hover:underline">{{
-                doc.name
-              }}</a>
+              <a :href="doc.url" target="_blank" class="text-blue-500 hover:underline">{{ doc.name }}</a>
             </li>
             <li
               v-if="localApplication.supportingDocuments.length === 0"
@@ -421,11 +415,27 @@
         </button>
       </div>
     </div>
+
+    <!-- Confirmation Dialog -->
+    <div v-if="isConfirming" class="fixed inset-0 bg-black bg-opacity-75 z-[60] flex items-center justify-center">
+      <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-sm">
+        <h3 class="text-lg font-bold">{{ confirmDialogOptions.title }}</h3>
+        <p class="mt-2 text-sm text-gray-600">{{ confirmDialogOptions.message }}</p>
+        <div class="mt-6 flex justify-end space-x-3">
+          <button @click="isConfirming = false" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">{{ confirmDialogOptions.cancelText }}</button>
+          <button @click="handleConfirm" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">{{ confirmDialogOptions.confirmText }}</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 </template>
 
 <script setup>
 import { ref, watchEffect } from 'vue'
+import { useToast } from 'vue-toastification'
+
+const toast = useToast()
 
 const props = defineProps({
   isOpen: Boolean,
@@ -444,51 +454,75 @@ const emit = defineEmits(['close-modal'])
 
 const isRejecting = ref(false)
 const rejectionMessage = ref('')
+const isConfirming = ref(false);
+const confirmDialogOptions = ref({
+  title: '',
+  message: '',
+  confirmText: 'Confirm',
+  cancelText: 'Cancel',
+  onConfirm: () => {},
+});
+
+const handleConfirm = () => {
+  if (confirmDialogOptions.value.onConfirm) {
+    confirmDialogOptions.value.onConfirm();
+  }
+  isConfirming.value = false;
+};
 
 const confirmApprove = () => {
-  if (
-    confirm(`Are you sure you want to APPROVE application ${localApplication.value.applicationId}?`)
-  ) {
-    approveApplication()
-  }
-}
+  confirmDialogOptions.value = {
+    title: 'Confirm Approval',
+    message: `Are you sure you want to APPROVE application ${localApplication.value.applicationId}? This action cannot be undone.`,
+    confirmText: 'Yes, Approve',
+    cancelText: 'No, Cancel',
+    onConfirm: approveApplication,
+  };
+  isConfirming.value = true;
+};
 
 const confirmReject = () => {
   if (isRejecting.value) {
-    rejectApplication()
+    rejectApplication();
   } else {
-    isRejecting.value = true // Show rejection message textarea
+    isRejecting.value = true; // Show rejection message textarea
   }
-}
+};
 
 const approveApplication = () => {
-  console.log('Approve Application:', localApplication.value.applicationId)
+  console.log('Approve Application:', localApplication.value.applicationId);
   // In a real app, you would send an API request to update the application status to "Approved"
-  emit('close-modal')
-}
+  emit('close-modal');
+};
 
 const rejectApplication = () => {
   if (rejectionMessage.value.trim() === '') {
-    alert('Please provide a rejection message.')
-    return
+    toast.error('Please provide a rejection message.');
+    return;
   }
-  if (
-    confirm(`Are you sure you want to REJECT application ${localApplication.value.applicationId}?`)
-  ) {
+
+  const onConfirmReject = () => {
     console.log(
       'Reject Application:',
       localApplication.value.applicationId,
       'Reason:',
-      rejectionMessage.value,
-    )
+      rejectionMessage.value
+    );
     // In a real app, you would send an API request to update the application status to "Rejected" and save the rejection message
-    emit('close-modal')
-    isRejecting.value = false // Hide rejection message textarea after rejection
-    rejectionMessage.value = '' // Clear the rejection message
-  } else {
-    isRejecting.value = false // Hide rejection message textarea if rejection cancelled
-  }
-}
+    emit('close-modal');
+    isRejecting.value = false; // Hide rejection message textarea after rejection
+    rejectionMessage.value = ''; // Clear the rejection message
+  };
+
+  confirmDialogOptions.value = {
+    title: 'Confirm Rejection',
+    message: `Are you sure you want to REJECT application ${localApplication.value.applicationId}? This action cannot be undone.`,
+    confirmText: 'Yes, Reject',
+    cancelText: 'No, Cancel',
+    onConfirm: onConfirmReject,
+  };
+  isConfirming.value = true;
+};
 
 const editApplication = () => {
   console.log('Edit Application:', localApplication.value.applicationId)

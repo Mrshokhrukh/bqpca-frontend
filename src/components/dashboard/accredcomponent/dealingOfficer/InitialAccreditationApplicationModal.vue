@@ -84,22 +84,56 @@
     </div>
   </transition>
 
-  <!-- ********** NEW: In-Component Confirmation Dialog ********** -->
+  <!-- Confirmation Dialog -->
   <transition name="fade">
-    <div v-if="isConfirming" class="fixed inset-0 z-[60] flex items-center justify-center bg-black bg-opacity-60" @click.self="handleCancelConfirmation">
-      <div class="relative w-full max-w-md rounded-lg bg-white shadow-xl mx-4 transform transition-all">
-        <div class="flex items-start justify-between p-5 border-b rounded-t">
-          <h3 class="text-xl font-semibold text-gray-900">{{ confirmDialogOptions.title }}</h3>
-          <button @click="handleCancelConfirmation" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center">
-            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+    <div
+      v-if="isConfirming"
+      class="fixed inset-0 z-[100] flex items-center justify-center bg-black bg-opacity-50"
+      @click.self="handleCancelConfirmation"
+    >
+      <div class="relative mx-4 w-full max-w-md rounded-lg bg-white shadow-xl">
+        <!-- Dialog Header -->
+        <div class="flex items-center justify-between border-b border-gray-200 p-4">
+          <h3 class="text-lg font-semibold text-gray-900">{{ confirmDialogOptions.title }}</h3>
+          <button @click="handleCancelConfirmation" class="rounded-full p-1 text-gray-400 hover:bg-gray-200 hover:text-gray-600 focus:outline-none">
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
           </button>
         </div>
-        <div class="p-6"><p class="text-base leading-relaxed text-gray-600 whitespace-pre-wrap">{{ confirmDialogOptions.message }}</p></div>
-        <div class="flex items-center justify-end p-6 space-x-2 border-t border-gray-200 rounded-b">
-          <button @click="handleCancelConfirmation" type="button" class="px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+
+        <!-- Dialog Body -->
+        <div class="p-6">
+          <div class="flex items-start space-x-3">
+            <!-- Warning Icon -->
+            <div class="flex-shrink-0">
+              <svg class="h-6 w-6 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.728-.833-2.498 0L3.316 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+            </div>
+            <div class="flex-1">
+              <p class="text-sm text-gray-700">{{ confirmDialogOptions.message }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dialog Footer -->
+        <div class="flex justify-end space-x-3 border-t border-gray-200 px-6 py-4">
+          <button
+            @click="handleCancelConfirmation"
+            class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          >
             {{ confirmDialogOptions.cancelText }}
           </button>
-          <button @click="handleConfirm" type="button" :class="['inline-flex justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2', confirmDialogOptions.confirmVariant === 'danger' ? 'bg-red-600 hover:bg-red-700 focus:ring-red-500' : 'bg-green-600 hover:bg-green-700 focus:ring-green-500']">
+          <button
+            @click="handleConfirm"
+            :class="[
+              'inline-flex items-center rounded-md border border-transparent px-4 py-2 text-sm font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2',
+              confirmDialogOptions.confirmVariant === 'danger'
+                ? 'bg-red-600 hover:bg-red-700 focus:ring-red-500'
+                : 'bg-green-600 hover:bg-green-700 focus:ring-green-500'
+            ]"
+          >
             {{ confirmDialogOptions.confirmText }}
           </button>
         </div>
@@ -128,7 +162,7 @@ const isSubmittingDecision = ref(false);
 const decisionType = ref('');
 const decisionError = ref('');
 
-// ********** NEW: State for the in-component confirmation dialog **********
+// Confirmation dialog state
 const isConfirming = ref(false);
 const confirmDialogOptions = ref({
   title: '',
@@ -176,7 +210,7 @@ const fetchApplicationDetails = async () => {
   }
 };
 
-// ********** MODIFIED: This function now just opens the confirmation dialog **********
+// Show confirmation dialog instead of toast
 const requestConfirmation = (type) => {
   decisionError.value = '';
   if (type === 'reject' && !remarks.value.trim()) {
@@ -185,19 +219,21 @@ const requestConfirmation = (type) => {
     return;
   }
 
+  // Set up confirmation dialog options
   confirmDialogOptions.value = {
-    title: type === 'approve' ? 'Confirm Approval' : 'Confirm Rejection',
-    message: `You are about to ${type} this application.\nThis action will notify the institute and cannot be undone.\n\nAre you sure you want to proceed?`,
-    confirmText: type === 'approve' ? 'Approve' : 'Reject',
+    title: type === 'approve' ? 'Approve Application' : 'Reject Application',
+    message: `You are about to ${type} this application. This action will notify the institute and cannot be undone. Are you sure you want to proceed?`,
+    confirmText: type === 'approve' ? 'Yes, Approve' : 'Yes, Reject',
     cancelText: 'Cancel',
     confirmVariant: type === 'approve' ? 'success' : 'danger',
-    onConfirm: () => submitDecision(type), // Set the callback to the actual submission function
+    onConfirm: () => submitDecision(type),
   };
 
+  // Show the confirmation dialog
   isConfirming.value = true;
 };
 
-// ********** NEW: This is the actual submission logic **********
+// Submit decision after confirmation
 const submitDecision = async (type) => {
   isSubmittingDecision.value = true;
   decisionType.value = type;
@@ -236,7 +272,7 @@ const submitDecision = async (type) => {
   }
 };
 
-// ********** NEW: Handlers for the confirmation dialog buttons **********
+// Confirmation dialog handlers
 const handleConfirm = () => {
   if (confirmDialogOptions.value.onConfirm) {
     confirmDialogOptions.value.onConfirm();

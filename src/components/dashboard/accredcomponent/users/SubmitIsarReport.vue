@@ -67,8 +67,10 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { useToast } from 'vue-toastification';
 import apiService from '@/services/services';
 
+const toast = useToast();
 const route = useRoute();
 const router = useRouter();
 const loading = ref(true);
@@ -132,11 +134,11 @@ const submitIsarReport = async () => {
 
   try {
     await apiService.createIsarReport(formData);
-    alert('ISAR report submitted successfully!');
+    toast.success('ISAR report submitted successfully!');
     // Optionally, redirect the user
   } catch (err) {
     console.error("Error submitting ISAR report:", err);
-    alert('Failed to submit ISAR report.');
+    toast.error('Failed to submit ISAR report.');
   }
 };
 </script>

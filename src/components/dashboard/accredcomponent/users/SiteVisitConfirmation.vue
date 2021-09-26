@@ -123,8 +123,10 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
+import { useToast } from 'vue-toastification';
 import apiService from '@/services/services';
 
+const toast = useToast();
 const application = ref(null);
 const loading = ref(true);
 const error = ref(null);
@@ -214,7 +216,7 @@ const fetchData = async () => {
 const handleConfirmation = async (isReschedule, reason = '') => {
   if (!siteVisitDetails.value) return;
   if (isReschedule && !reason.trim()) {
-    alert('Please provide a reason for the reschedule request.');
+    toast.warning('Please provide a reason for the reschedule request.');
     return;
   }
 
@@ -245,7 +247,7 @@ const handleConfirmation = async (isReschedule, reason = '') => {
     }
   } catch (err) {
     console.error('Error during confirmation:', err);
-    alert(err.response?.data?.detail || 'An error occurred. Please try again.');
+    toast.error(err.response?.data?.detail || 'An error occurred. Please try again.');
   } finally {
     isProcessing.value = false;
   }

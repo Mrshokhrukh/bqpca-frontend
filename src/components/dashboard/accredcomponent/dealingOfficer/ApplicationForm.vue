@@ -503,6 +503,9 @@
 
 <script setup>
 import { ref, reactive, watch } from 'vue'
+import { useToast } from 'vue-toastification'
+
+const toast = useToast()
 
 const props = defineProps({
   application: {
@@ -670,10 +673,10 @@ const enableEditing = () => {
   isEditing.value = true // Enable editing mode
 }
 const saveAsDraft = () => {
-  alert('saving')
+  toast.info('Saving as draft...')
 }
 const submitApplication = () => {
-  alert('saving')
+  toast.info('Submitting application...')
 }
 
 const viewApplication = () => {
