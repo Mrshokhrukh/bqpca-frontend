@@ -294,6 +294,29 @@ const handleSaveDraft = async () => {
   }
 }
 
+const handleDeleteDraft = async () => {
+  if (!draftId.value) {
+    toast.warning('No draft selected to delete.')
+    return
+  }
+
+  if (!window.confirm('Are you sure you want to permanently delete this draft?')) {
+    return
+  }
+
+  isSubmitting.value = true
+  try {
+    await apiService.deleteMhpcCpdRecord(draftId.value)
+    toast.success('Draft deleted successfully.')
+    resetForm() // Clears the form and draftId
+  } catch (error) {
+    console.error('Error deleting draft:', error)
+    toast.error('Failed to delete draft. It may have already been removed.')
+  } finally {
+    isSubmitting.value = false
+  }
+}
+
 const handleSubmit = async () => {
   if (!validateForm()) {
     toast.error('Please correct the errors in the form before submitting.')
