@@ -639,20 +639,22 @@ const updateLocalParticipant = (updatedItem) => {
 const mapApiResponseToParticipant = (item) => ({
   id: item.id,
   fullName: item.full_name,
-  registrationNoDisplay: item.registration_no_display,
+  registrationNoDisplay: item.registration_no,
   cpdTitle: item.title_of_cpd,
   cpdCredits: item.cpd_credit,
+  cpdHours: item.cpd_hours,
   cidNumber: item.cid_no,
   gender: item.gender,
   relevance: item.relevance_to_profession,
-  participationCategoryDisplay: item.participation_category_display || 'N/A',
-  participantSubCategoryDisplay: item.participant_sub_category_display || 'N/A',
+  participationCategoryDisplay: item.personnel_category_display || 'N/A',
+  participantSubCategoryDisplay: item.personnel_sub_category_display || 'N/A',
   activityTypeDisplay: item.type_of_cpd_activity_display || 'N/A',
   attachment: item.attachment
     ? { url: item.attachment, name: item.attachment.split('/').pop() }
     : null, // Include name
   reviewStatus: item.review_status || 'Pending',
   remarks: item.remark,
+  rawItem: item,
 })
 
 const fetchData = async () => {
@@ -661,7 +663,9 @@ const fetchData = async () => {
     // Fetching all records, filtering happens client-side for this component
     const response = await apiServices.getMhpcCpdRecords({ page_size: 1000 }) // Adjust page_size if needed
     if (response && response.data && Array.isArray(response.data.results)) {
-      participants.value = response.data.results.map(mapApiResponseToParticipant)
+      participants.value = response.data.results
+        .map(mapApiResponseToParticipant)
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
     } else {
       console.error('Error fetching CPD records: Unexpected response format', response)
       participants.value = []

@@ -191,6 +191,10 @@
                   <dd class="text-gray-800 col-span-2">{{ participant.cpdTitle }}</dd>
                 </div>
                 <div class="grid grid-cols-3 gap-2">
+                  <dt class="text-gray-500 font-medium col-span-1">CPD Hours</dt>
+                  <dd class="text-gray-800 col-span-2">{{ participant.cpdHours || 'N/A' }}</dd>
+                </div>
+                <div class="grid grid-cols-3 gap-2">
                   <dt class="text-gray-500 font-medium col-span-1">Relevance</dt>
                   <dd class="text-gray-800 col-span-2">{{ participant.relevance }}</dd>
                 </div>

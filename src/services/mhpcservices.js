@@ -875,8 +875,18 @@ export default {
   },
 
   // get cpd records based on cid
-  getMhpcCpdRecordsByCid(cid) {
-    return apiClient.get(`/mhpc/mhpc-cpd-records/list-my-cpd/?cid=${cid}`)
+  getMhpcCpdRecordsByCid(cid, status = null) {
+    let url = `/mhpc/mhpc-cpd-records/list-my-cpd/?cid=${cid}`;
+    if (status) {
+      url += `&status=${status}`;
+    }
+    return apiClient.get(url, {
+      headers: {
+        'Cache-Control': 'no-cache',
+        Pragma: 'no-cache',
+        Expires: '0',
+      },
+    });
   },
 
   // MHPC CPD Records

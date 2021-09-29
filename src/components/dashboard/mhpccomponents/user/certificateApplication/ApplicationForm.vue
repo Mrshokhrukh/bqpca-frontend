@@ -1684,20 +1684,8 @@ const handleSubmitActual = async () => {
 
     if (needsUpdate) {
       try {
-        // Append existing data to avoid wiping them out on the backend
-        profileUpdateData.append(
-          'contact_number',
-          authStore.user.contact_number || localFormData.contact_no
-        )
-        profileUpdateData.append('email', authStore.user.email || localFormData.email_address)
-
-        // Assuming you have an apiService method like updateProfile(userId, data)
-        await apiService.updateProfile(authStore.user.id, profileUpdateData)
-
-        // Also update the local store so the UI reflects the change immediately
-        authStore.user.village = localFormData.village
-        authStore.user.gewog = localFormData.gewog
-        authStore.user.dzongkhag = localFormData.dzongkhag
+        // Use the store action which handles both API call and state update
+        await authStore.updateUserProfile(profileUpdateData)
 
         toast.info('Your profile location has been updated.')
       } catch (profileError) {
