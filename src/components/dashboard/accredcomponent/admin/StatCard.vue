@@ -1,6 +1,6 @@
 <!-- File: src/components/dashboard/accredcomponent/admin/StatCard.vue -->
 <template>
-  <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200 flex items-start justify-between">
+  <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200 flex items-start justify-between transition-all duration-300 hover:shadow-md hover:-translate-y-1">
     <div>
       <p class="text-sm font-medium text-slate-500">{{ label }}</p>
       <p class="text-3xl font-bold text-slate-900 mt-1">{{ value }}</p>

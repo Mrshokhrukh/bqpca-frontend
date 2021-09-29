@@ -1,502 +1,191 @@
 <template>
-  <div class="p-6">
-    <h2 class="text-xl font-semibold mb-4">
+  <div class="p-6 bg-gray-50 min-h-screen">
+    <div class="bg-white p-6 rounded-lg shadow-md">
+    <h2 class="text-2xl font-bold mb-6 text-gray-800">
       Application Details - {{ application.institute_name }}
     </h2>
 
-    <!-- Institution Profile -->
-    <div class="mb-4 border p-4 rounded">
-      <h3 class="font-semibold mb-2">Institution Profile</h3>
-      <div class="mb-2">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="institutionName"
-          >Name of Institution:</label
-        >
-        <select
-          v-model="formData.institutionName"
-          id="institutionName"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          :disabled="!isEditing"
-        >
-          <option value="Institution1">Institution 1</option>
-          <option value="Institution2">Institution 2</option>
-          <!-- Add more institutions -->
-        </select>
-      </div>
-      <div class="mb-2">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="address"
-          >Address/Location:</label
-        >
-        <input
-          v-model="formData.address"
-          type="text"
-          id="address"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          :disabled="!isEditing"
-        />
-      </div>
-      <!-- Gewog, Dzongkhag, Contact Number, etc. - Add similar input fields here -->
-      <div class="mb-2">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="contactNumber"
-          >Contact Number:</label
-        >
-        <input
-          v-model="formData.contactNumber"
-          type="number"
-          id="contactNumber"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          :disabled="!isEditing"
-        />
+    <!-- Main Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+      <!-- Left Column -->
+      <div class="lg:col-span-2 space-y-6">
+        
+        <!-- Institution Profile -->
+        <div class="border p-4 rounded-lg bg-white shadow-sm">
+          <h3 class="font-semibold text-lg mb-4 text-gray-700">Institution Profile</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-gray-700 text-sm font-bold mb-2" for="institutionName">Name of Institution:</label>
+              <select v-model="formData.institutionName" id="institutionName" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" :disabled="!isEditing">
+                <option value="Institution1">Institution 1</option>
+                <option value="Institution2">Institution 2</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-gray-700 text-sm font-bold mb-2" for="address">Address/Location:</label>
+              <input v-model="formData.address" type="text" id="address" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" :disabled="!isEditing" />
+            </div>
+            <div>
+              <label class="block text-gray-700 text-sm font-bold mb-2" for="contactNumber">Contact Number:</label>
+              <input v-model="formData.contactNumber" type="number" id="contactNumber" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" :disabled="!isEditing" />
+            </div>
+            <div>
+              <label class="block text-gray-700 text-sm font-bold mb-2" for="emailAddress">Email Address:</label>
+              <input v-model="formData.emailAddress" type="text" id="emailAddress" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" :disabled="!isEditing" />
+            </div>
+            <div>
+              <label class="block text-gray-700 text-sm font-bold mb-2" for="telephoneNumber">Telephone Number:</label>
+              <input v-model="formData.telephoneNumber" type="number" id="telephoneNumber" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" :disabled="!isEditing" />
+            </div>
+            <div>
+              <label class="block text-gray-700 text-sm font-bold mb-2" for="yearEstablished">Year of Establishment:</label>
+              <input v-model="formData.yearEstablished" type="number" id="yearEstablished" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" :disabled="!isEditing" />
+            </div>
+            <div>
+              <label class="block text-gray-700 text-sm font-bold mb-2" for="institutionType">Type of Institution:</label>
+              <select v-model="formData.institutionType" id="institutionType" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" :disabled="!isEditing">
+                <option value="Constituent">Constituent</option>
+                <option value="Affiliated">Affiliated</option>
+                <option value="Others">Others</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-gray-700 text-sm font-bold mb-2" for="affiliatedTo">Affiliated to, if relevant:</label>
+              <input v-model="formData.affiliatedTo" type="text" id="affiliatedTo" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" :disabled="!isEditing" />
+            </div>
+            <div>
+              <label class="block text-gray-700 text-sm font-bold mb-2" for="levelOfAutonomy">Level of Autonomy (if affiliated):</label>
+              <input v-model="formData.levelOfAutonomy" type="text" id="levelOfAutonomy" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" :disabled="!isEditing" />
+            </div>
+            <div>
+              <label class="block text-gray-700 text-sm font-bold mb-2" for="sourceOfFunding">Source of funding:</label>
+              <select v-model="formData.sourceOfFunding" id="sourceOfFunding" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" :disabled="!isEditing">
+                <option value="Government">Government</option>
+                <option value="Private">Private</option>
+                <option value="Donor">Donor</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-gray-700 text-sm font-bold mb-2" for="totalArea">Total area (in acres):</label>
+              <input v-model="formData.totalArea" type="number" id="totalArea" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" :disabled="!isEditing" />
+            </div>
+            <div>
+              <label class="block text-gray-700 text-sm font-bold mb-2" for="website">Website:</label>
+              <input v-model="formData.website" type="text" id="website" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" :disabled="!isEditing" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Standards -->
+        <div class="border p-4 rounded-lg bg-white shadow-sm">
+          <h3 class="font-semibold text-lg mb-4 text-gray-700">Standards</h3>
+          <button v-if="isEditing" @click="addStandard" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded inline-flex items-center">
+            <Plus class="w-4 h-4 mr-2" />
+            Add Standard
+          </button>
+        </div>
+
+        <!-- Supporting Documents -->
+        <div class="border p-4 rounded-lg bg-white shadow-sm">
+          <h3 class="font-semibold text-lg mb-4 text-gray-700">Supporting Documents</h3>
+          <div class="mb-2">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="supportingDocument">Supporting Document:</label>
+            <input type="file" id="supportingDocument" @change="handleSupportingDocumentUpload" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" :disabled="!isEditing" />
+            <span v-if="formData.supportingDocumentName" class="text-sm text-gray-500">Selected file: {{ formData.supportingDocumentName }}</span>
+          </div>
+          <div class="mb-2">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="supportingDocumentRemarks">Remarks (if any):</label>
+            <textarea v-model="formData.supportingDocumentRemarks" id="supportingDocumentRemarks" rows="2" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" :disabled="!isEditing"></textarea>
+          </div>
+          <button v-if="isEditing" @click="addSupportingDocument" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded inline-flex items-center">
+            <Plus class="w-4 h-4 mr-2" />
+            Add Supporting Document
+          </button>
+        </div>
+
       </div>
 
-      <div class="mb-2">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="emailAddress"
-          >Email Address:</label
-        >
-        <input
-          v-model="formData.emailAddress"
-          type="text"
-          id="emailAddress"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          :disabled="!isEditing"
-        />
-      </div>
-      <div class="mb-2">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="telephoneNumber"
-          >Telephone Number:</label
-        >
-        <input
-          v-model="formData.telephoneNumber"
-          type="number"
-          id="telephoneNumber"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          :disabled="!isEditing"
-        />
+      <!-- Right Column -->
+      <div class="space-y-6">
+        <!-- Past Accreditation Details -->
+        <div class="border p-4 rounded-lg bg-white shadow-sm">
+          <h3 class="font-semibold text-lg mb-4 text-gray-700">Past Accreditation Details</h3>
+          <div>
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="accreditationRating">Accreditation Rating:</label>
+            <input v-model="formData.accreditationRating" type="text" id="accreditationRating" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" :disabled="!isEditing" />
+          </div>
+          <div class="mt-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="accreditationValidity">Accreditation Validity:</label>
+            <input v-model="formData.accreditationValidity" type="date" id="accreditationValidity" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" :disabled="!isEditing" />
+          </div>
+        </div>
+
+        <!-- Details of the Head of the Institute -->
+        <div class="border p-4 rounded-lg bg-white shadow-sm">
+          <h3 class="font-semibold text-lg mb-4 text-gray-700">Details of the Head of the Institute</h3>
+          <div>
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="headName">Name:</label>
+            <input v-model="formData.headName" type="text" id="headName" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" :disabled="!isEditing" />
+          </div>
+          <div class="mt-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="headContactNumber">Contact Number:</label>
+            <input v-model="formData.headContactNumber" type="number" id="headContactNumber" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" :disabled="!isEditing" />
+          </div>
+          <div class="mt-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="headEmailAddress">Email Address:</label>
+            <input v-model="formData.headEmailAddress" type="text" id="headEmailAddress" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" :disabled="!isEditing" />
+          </div>
+        </div>
+
+        <!-- Name of the IQA Focal -->
+        <div class="border p-4 rounded-lg bg-white shadow-sm">
+          <h3 class="font-semibold text-lg mb-4 text-gray-700">Name of the IQA Focal</h3>
+          <div>
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="iqaFocalName">Name:</label>
+            <input v-model="formData.iqaFocalName" type="text" id="iqaFocalName" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" :disabled="!isEditing" />
+          </div>
+          <div class="mt-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="iqaFocalContactNumber">Contact Number:</label>
+            <input v-model="formData.iqaFocalContactNumber" type="number" id="iqaFocalContactNumber" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" :disabled="!isEditing" />
+          </div>
+          <div class="mt-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="iqaFocalEmailAddress">Email Address:</label>
+            <input v-model="formData.iqaFocalEmailAddress" type="text" id="iqaFocalEmailAddress" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" :disabled="!isEditing" />
+          </div>
+        </div>
+
       </div>
 
-      <div class="mb-2">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="yearEstablished"
-          >Year of Establishment:</label
-        >
-        <input
-          v-model="formData.yearEstablished"
-          type="number"
-          id="yearEstablished"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          :disabled="!isEditing"
-        />
-      </div>
-      <div class="mb-2">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="institutionType"
-          >Type of Institution:</label
-        >
-        <select
-          v-model="formData.institutionType"
-          id="institutionType"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          :disabled="!isEditing"
-        >
-          <option value="Constituent">Constituent</option>
-          <option value="Affiliated">Affiliated</option>
-          <option value="Others">Others</option>
-        </select>
-      </div>
-      <div class="mb-2">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="affiliatedTo"
-          >Affiliated to, if relevant:</label
-        >
-        <input
-          v-model="formData.affiliatedTo"
-          type="text"
-          id="affiliatedTo"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          :disabled="!isEditing"
-        />
-      </div>
-      <div class="mb-2">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="levelOfAutonomy"
-          >Level of Autonomy (if affiliated):</label
-        >
-        <input
-          v-model="formData.levelOfAutonomy"
-          type="text"
-          id="levelOfAutonomy"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          :disabled="!isEditing"
-        />
-      </div>
-      <div class="mb-2">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="sourceOfFunding"
-          >Source of funding:</label
-        >
-        <select
-          v-model="formData.sourceOfFunding"
-          id="sourceOfFunding"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          :disabled="!isEditing"
-        >
-          <option value="Government">Government</option>
-          <option value="Private">Private</option>
-          <option value="Donor">Donor</option>
-        </select>
-      </div>
-      <div class="mb-2">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="totalArea"
-          >Total area (in acres):</label
-        >
-        <input
-          v-model="formData.totalArea"
-          type="number"
-          id="totalArea"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          :disabled="!isEditing"
-        />
-      </div>
-      <div class="mb-2">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="website">Website:</label>
-        <input
-          v-model="formData.website"
-          type="text"
-          id="website"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          :disabled="!isEditing"
-        />
-      </div>
     </div>
-
-    <!-- Past Accreditation Details -->
-    <div class="mb-4 border p-4 rounded">
-      <h3 class="font-semibold mb-2">Past Accreditation Details</h3>
-      <div class="mb-2">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="accreditationRating"
-          >Accreditation Rating:</label
-        >
-        <input
-          v-model="formData.accreditationRating"
-          type="text"
-          id="accreditationRating"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          :disabled="!isEditing"
-        />
-      </div>
-      <div class="mb-2">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="accreditationValidity"
-          >Accreditation Validity:</label
-        >
-        <input
-          v-model="formData.accreditationValidity"
-          type="date"
-          id="accreditationValidity"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          :disabled="!isEditing"
-        />
-      </div>
-    </div>
-
-    <!-- Details of the Head of the Institute -->
-    <div class="mb-4 border p-4 rounded">
-      <h3 class="font-semibold mb-2">Details of the Head of the Institute</h3>
-      <div class="mb-2">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="headName">Name:</label>
-        <input
-          v-model="formData.headName"
-          type="text"
-          id="headName"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          :disabled="!isEditing"
-        />
-      </div>
-      <div class="mb-2">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="headContactNumber"
-          >Contact Number:</label
-        >
-        <input
-          v-model="formData.headContactNumber"
-          type="number"
-          id="headContactNumber"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          :disabled="!isEditing"
-        />
-      </div>
-      <div class="mb-2">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="headEmailAddress"
-          >Email Address:</label
-        >
-        <input
-          v-model="formData.headEmailAddress"
-          type="text"
-          id="headEmailAddress"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          :disabled="!isEditing"
-        />
-      </div>
-    </div>
-
-    <!-- Name of the IQA Focal -->
-    <div class="mb-4 border p-4 rounded">
-      <h3 class="font-semibold mb-2">Name of the IQA Focal</h3>
-      <div class="mb-2">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="iqaFocalName">Name:</label>
-        <input
-          v-model="formData.iqaFocalName"
-          type="text"
-          id="iqaFocalName"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          :disabled="!isEditing"
-        />
-      </div>
-      <div class="mb-2">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="iqaFocalContactNumber"
-          >Contact Number:</label
-        >
-        <input
-          v-model="formData.iqaFocalContactNumber"
-          type="number"
-          id="iqaFocalContactNumber"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          :disabled="!isEditing"
-        />
-      </div>
-      <div class="mb-2">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="iqaFocalEmailAddress"
-          >Email Address:</label
-        >
-        <input
-          v-model="formData.iqaFocalEmailAddress"
-          type="text"
-          id="iqaFocalEmailAddress"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          :disabled="!isEditing"
-        />
-      </div>
-    </div>
-
-    <!-- Current Academic Activities (in numbers) -->
-    <div class="mb-4 border p-4 rounded">
-      <h3 class="font-semibold mb-2">Current Academic Activities (in numbers)</h3>
-      <div class="mb-2">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="numberOfDepartments"
-          >Number of Departments:</label
-        >
-        <input
-          v-model="formData.numberOfDepartments"
-          type="number"
-          id="numberOfDepartments"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          :disabled="!isEditing"
-        />
-      </div>
-      <div class="mb-2">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="qualificationCategory"
-          >Qualification Category:</label
-        >
-        <select
-          v-model="formData.qualificationCategory"
-          id="qualificationCategory"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          :disabled="!isEditing"
-        >
-          <option value="Category1">Category 1</option>
-          <option value="Category2">Category 2</option>
-          <!-- Add more categories -->
-        </select>
-      </div>
-      <div class="mb-2">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="numberOfProgrammes"
-          >Number of Programmes:</label
-        >
-        <button
-          v-if="isEditing"
-          @click="addProgram"
-          class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-        >
-          Add Programme
-        </button>
-      </div>
-      <div class="mb-2">
-        <label
-          class="block text-gray-700 text-sm font-bold mb-2"
-          for="numberOfProgrammesWithElective"
-          >Number of Programmes with elective:</label
-        >
-        <input
-          v-model="formData.numberOfProgrammesWithElective"
-          type="number"
-          id="numberOfProgrammesWithElective"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          :disabled="!isEditing"
-        />
-      </div>
-      <div class="mb-2">
-        <label
-          class="block text-gray-700 text-sm font-bold mb-2"
-          for="numberOfProgrammeThroughMixedMode"
-          >Number of Programme through Mixed mode:</label
-        >
-        <input
-          v-model="formData.numberOfProgrammeThroughMixedMode"
-          type="number"
-          id="numberOfProgrammeThroughMixedMode"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          :disabled="!isEditing"
-        />
-      </div>
-    </div>
-
-    <!-- Teaching Staff (in numbers) -->
-    <div class="mb-4 border p-4 rounded">
-      <h3 class="font-semibold mb-2">Teaching Staff (in numbers)</h3>
-      <div class="mb-2">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="facultyF"
-          >Number of Faculty (F):</label
-        >
-        <input
-          v-model="formData.facultyF"
-          type="number"
-          id="facultyF"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          :disabled="!isEditing"
-        />
-      </div>
-      <div class="mb-2">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="facultyM"
-          >Number of Faculty (M):</label
-        >
-        <input
-          v-model="formData.facultyM"
-          type="number"
-          id="facultyM"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          :disabled="!isEditing"
-        />
-      </div>
-      <!-- Add similar input fields for other categories of teaching staff -->
-    </div>
-
-    <!-- Non-Teaching Staff (in numbers) -->
-    <div class="mb-4 border p-4 rounded">
-      <h3 class="font-semibold mb-2">Non-Teaching Staff (in numbers)</h3>
-      <div class="mb-2">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="technicalMale"
-          >Technical Male:</label
-        >
-        <input
-          v-model="formData.technicalMale"
-          type="number"
-          id="technicalMale"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          :disabled="!isEditing"
-        />
-      </div>
-      <div class="mb-2">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="technicalFemale"
-          >Technical Female:</label
-        >
-        <input
-          v-model="formData.technicalFemale"
-          type="number"
-          id="technicalFemale"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          :disabled="!isEditing"
-        />
-      </div>
-      <!-- Add similar input fields for other categories of non-teaching staff -->
-    </div>
-
-    <!-- Standards -->
-    <div class="mb-4 border p-4 rounded">
-      <h3 class="font-semibold mb-2">Standards</h3>
-      <!-- Dynamically generate form fields for standards based on data from master -->
-      <button
-        v-if="isEditing"
-        @click="addStandard"
-        class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-      >
-        Add Standard
-      </button>
-    </div>
-
-    <!-- Supporting Documents -->
-    <div class="mb-4 border p-4 rounded">
-      <h3 class="font-semibold mb-2">Supporting Documents</h3>
-      <div class="mb-2">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="supportingDocument"
-          >Supporting Document:</label
-        >
-        <input
-          type="file"
-          id="supportingDocument"
-          @change="handleSupportingDocumentUpload"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          :disabled="!isEditing"
-        />
-        <span v-if="formData.supportingDocumentName" class="text-sm text-gray-500"
-          >Selected file: {{ formData.supportingDocumentName }}</span
-        >
-      </div>
-      <div class="mb-2">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="supportingDocumentRemarks"
-          >Remarks (if any):</label
-        >
-        <textarea
-          v-model="formData.supportingDocumentRemarks"
-          id="supportingDocumentRemarks"
-          rows="2"
-          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          :disabled="!isEditing"
-        ></textarea>
-      </div>
-      <button
-        v-if="isEditing"
-        @click="addSupportingDocument"
-        class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-      >
-        Add Supporting Document
-      </button>
-    </div>
-
-    <!-- Add review, assessor, site visit and results from before-->
 
     <!-- Buttons -->
-    <div class="flex justify-end">
-      <button
-        @click="closeModal"
-        class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded mr-2"
-      >
+    <div class="flex justify-end mt-6 space-x-4">
+      <button @click="closeModal" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
+        <X class="w-4 h-4 mr-2" />
         Cancel
       </button>
-      <button
-        v-if="isEditing"
-        @click="saveAsDraft"
-        class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mr-2"
-      >
+      <button v-if="isEditing" @click="saveAsDraft" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded inline-flex items-center">
+        <Save class="w-4 h-4 mr-2" />
         Save as Draft
       </button>
-      <button
-        v-if="!isEditing"
-        @click="enableEditing"
-        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2"
-      >
+      <button v-if="!isEditing" @click="enableEditing" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded inline-flex items-center">
+        <Edit class="w-4 h-4 mr-2" />
         Edit
       </button>
-      <button
-        v-if="isEditing"
-        @click="saveData"
-        class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mr-2"
-      >
+      <button v-if="isEditing" @click="saveData" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded inline-flex items-center">
+        <Check class="w-4 h-4 mr-2" />
         Save
       </button>
-      <button
-        @click="viewApplication"
-        class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
-      >
+      <button @click="viewApplication" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded inline-flex items-center">
+        <Eye class="w-4 h-4 mr-2" />
         View
       </button>
-      <button
-        @click="submitApplication"
-        class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-      >
+      <button @click="submitApplication" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded inline-flex items-center">
+        <Send class="w-4 h-4 mr-2" />
         Submit
       </button>
+    </div>
     </div>
   </div>
 </template>
@@ -504,6 +193,7 @@
 <script setup>
 import { ref, reactive, watch } from 'vue'
 import { useToast } from 'vue-toastification'
+import { Plus, X, Save, Edit, Check, Eye, Send } from 'lucide-vue-next'
 
 const toast = useToast()
 

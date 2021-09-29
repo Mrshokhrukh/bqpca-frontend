@@ -1366,6 +1366,13 @@ const validateForm = () => {
     isValid = false
   }
 
+  const validUploadedDocs = supportingDocuments.value.filter((d) => d.type && d.files.length > 0)
+
+  if (validUploadedDocs.length === 0) {
+    errors.mandatory_documents = 'At least one supporting document must be uploaded.'
+    isValid = false
+  }
+
   supportingDocuments.value.forEach((doc, index) => {
     if (doc.type && doc.files.length === 0) {
       errors[`document_file_${index}`] = 'Please upload a file for this selected document type.'
@@ -1377,7 +1384,6 @@ const validateForm = () => {
   })
 
   const mandatoryDocIds = currentMandatoryDocIds.value
-  const validUploadedDocs = supportingDocuments.value.filter((d) => d.type && d.files.length > 0)
   const uploadedDocTypeIds = new Set(validUploadedDocs.map((d) => d.type))
 
   const missingMandatoryDocNames = []
@@ -1555,13 +1561,25 @@ const handleNext = async () => {
         }
       }
     }
-    apiFormData.append('applicant', user.id)
-    apiFormData.append('is_draft', 'False')
+
     try {
-      const response = await apiService.createMhpcNewApplication(apiFormData)
+      const idToCheck = props.selectedType === 'cid' ? localFormData.cid_no : localFormData.workPermitNo;
+      const existingAppsResponse = await apiService.getMhpcFullApplicationListByCid(idToCheck);
+      const existingApp = existingAppsResponse.data?.results?.[0];
+
+      let response;
+      if (existingApp) {
+        response = await apiService.patchMhpcNewApplication(existingApp.id, apiFormData);
+        toast.success('Personal information updated successfully!');
+      } else {
+        apiFormData.append('applicant', user.id)
+        apiFormData.append('is_draft', 'False')
+        response = await apiService.createMhpcNewApplication(apiFormData)
+        toast.success('Personal information saved successfully!');
+      }
+
       applicationId.value = response.data.id
       localFormData.application = response.data.id
-      toast.success('Personal information saved successfully!')
       stage.value = 2
     } catch (error) {
       console.error('Error submitting personal information:', error.response?.data || error.message)

@@ -17,20 +17,7 @@
           class="absolute top-0 right-0 bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-md"
           title="Edit Application"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 0L11.828 15.1l-3.414.6.6-3.414L18.172 2.586z"
-            />
-          </svg>
+          <Edit class="h-5 w-5" />
         </button>
 
         <h2 class="text-2xl font-bold text-gray-900 text-center" id="modal-title">
@@ -390,27 +377,31 @@
       <div class="mt-8 flex justify-center space-x-4">
         <button
           @click="confirmApprove"
-          class="bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-md font-semibold"
+          class="bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-md font-semibold inline-flex items-center"
         >
+          <Check class="w-4 h-4 mr-2" />
           Approve
         </button>
         <button
           @click="confirmReject"
-          class="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-md font-semibold"
+          class="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-md font-semibold inline-flex items-center"
         >
+          <X class="w-4 h-4 mr-2" />
           Reject
         </button>
         <button
           v-if="localApplication.status === 'Approved'"
           @click="generateCertificate"
-          class="bg-purple-500 hover:bg-purple-600 text-white px-5 py-2 rounded-md font-semibold"
+          class="bg-purple-500 hover:bg-purple-600 text-white px-5 py-2 rounded-md font-semibold inline-flex items-center"
         >
+          <FileText class="w-4 h-4 mr-2" />
           Generate Certificate
         </button>
         <button
           @click="$emit('close-modal')"
-          class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-5 py-2 rounded-md font-semibold"
+          class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-5 py-2 rounded-md font-semibold inline-flex items-center"
         >
+          <XCircle class="w-4 h-4 mr-2" />
           Close
         </button>
       </div>
@@ -434,6 +425,7 @@
 <script setup>
 import { ref, watchEffect } from 'vue'
 import { useToast } from 'vue-toastification'
+import { Edit, Check, X, FileText, XCircle } from 'lucide-vue-next'
 
 const toast = useToast()
 

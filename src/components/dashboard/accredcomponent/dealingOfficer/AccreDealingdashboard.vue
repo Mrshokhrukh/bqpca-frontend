@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-100">
+  <div class="min-h-screen">
     <div class="mx-auto p-6">
       <header class="mb-8">
         <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
@@ -12,83 +12,10 @@
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div class="bg-white rounded-xl shadow-md overflow-hidden">
-          <div class="p-6">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm font-semibold text-gray-700 uppercase tracking-wide">
-                  Total Applications (This Year)
-                </p>
-                <div class="flex items-baseline mt-2">
-                    <p class="text-3xl font-bold text-gray-900">
-                        <span v-if="loading">...</span>
-                        <span v-else>{{ stats.totalThisYear }}</span>
-                    </p>
-                </div>
-              </div>
-              <div class="p-3 rounded-full bg-indigo-100 text-indigo-500">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-white rounded-xl shadow-md overflow-hidden">
-          <div class="p-6">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm font-semibold text-gray-700 uppercase tracking-wide">
-                  Active Processes
-                </p>
-                <p class="text-3xl font-bold text-gray-900 mt-2">
-                    <span v-if="loading">...</span>
-                    <span v-else>{{ stats.activeProcesses }}</span>
-                </p>
-              </div>
-              <div class="p-3 rounded-full bg-blue-100 text-blue-500">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-white rounded-xl shadow-md overflow-hidden">
-          <div class="p-6">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm font-semibold text-gray-700 uppercase tracking-wide">
-                  Accredited Institutes
-                </p>
-                <p class="text-3xl font-bold text-gray-900 mt-2">
-                    <span v-if="loading">...</span>
-                    <span v-else>{{ stats.accredited }}</span>
-                </p>
-              </div>
-              <div class="p-3 rounded-full bg-green-100 text-green-500">
-                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-white rounded-xl shadow-md overflow-hidden">
-          <div class="p-6">
-            <div class="flex items-center justify-between">
-              <div>
-                <p class="text-sm font-semibold text-gray-700 uppercase tracking-wide">
-                  Completed Processes
-                </p>
-                <p class="text-3xl font-bold text-gray-900 mt-2">
-                    <span v-if="loading">...</span>
-                    <span v-else>{{ stats.completed }}</span>
-                </p>
-              </div>
-              <div class="p-3 rounded-full bg-gray-200 text-gray-600">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a1 1 0 011-1h14a1 1 0 110 2H3a1 1 0 01-1-1z" /></svg>
-              </div>
-            </div>
-          </div>
-        </div>
+        <StatCard icon="Calendar" :value="stats.totalThisYear" label="Total Applications (This Year)" color="indigo" />
+        <StatCard icon="Clock" :value="stats.activeProcesses" label="Active Processes" color="blue" />
+        <StatCard icon="CheckCircle" :value="stats.accredited" label="Accredited Institutes" color="green" />
+        <StatCard icon="ClipboardCheck" :value="stats.completed" label="Completed Processes" color="gray" />
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
@@ -111,10 +38,7 @@
                 <tr v-if="loading">
                   <td colspan="5" class="px-6 py-12 text-center text-gray-500">
                     <div class="flex justify-center items-center">
-                      <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
+                      <Loader2 class="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-500" />
                       Loading recent activity...
                     </div>
                   </td>
@@ -162,6 +86,8 @@
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import apiService from '@/services/services';
+import StatCard from '../admin/StatCard.vue';
+import { Calendar, Clock, CheckCircle, ClipboardCheck, Loader2 } from 'lucide-vue-next';
 
 const router = useRouter();
 

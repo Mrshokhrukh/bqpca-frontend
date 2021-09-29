@@ -34,6 +34,38 @@
           </div>
         </div>
 
+        <!-- COI Declaration Section -->
+        <div v-if="application.status === 'coi_pending_declaration'" class="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+            <h3 class="font-semibold text-lg mb-2 text-yellow-800">Action Required: Conflict of Interest (COI) Declaration</h3>
+            <p class="text-sm text-yellow-700 mb-4">A team of assessors has been proposed for your application. Please proceed to the declaration page to review the assessors and submit your conflict of interest status for each member.</p>
+            <div class="mt-4 text-right">
+                <button @click="navigateToCoiPage" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-colors">
+                    Go to COI Declaration Page
+                </button>
+            </div>
+        </div>
+
+        <!-- Physical Verification Schedule -->
+        <div v-if="application.status === 'coi_resolved_scheduling_visit' || application.status === 'site_visit_scheduled'" class="bg-green-50 p-4 rounded-lg">
+            <h3 class="font-semibold text-lg mb-2 text-green-800">Physical Verification Schedule</h3>
+            <div v-if="application.site_visits && application.site_visits.length > 0">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <p class="text-gray-500">Start Date</p>
+                        <p class="font-medium text-gray-900">{{ formatDate(application.site_visits[0].start_datetime) }}</p>
+                    </div>
+                    <div>
+                        <p class="text-gray-500">End Date</p>
+                        <p class="font-medium text-gray-900">{{ formatDate(application.site_visits[0].end_datetime) }}</p>
+                    </div>
+                </div>
+                <div class="mt-4 text-right">
+                    <button @click="confirmSchedule(application.site_visits[0].id)" class="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded text-sm">Confirm Schedule</button>
+                </div>
+            </div>
+            <p v-else class="text-sm text-gray-500">The site visit has not been scheduled yet.</p>
+        </div>
+
         <!-- Courses -->
         <div>
           <h3 class="font-semibold text-lg mb-2">Courses Submitted</h3>
@@ -76,13 +108,34 @@
 </template>
 
 <script setup>
+import { useToast } from 'vue-toastification';
+import apiService from '@/services/services';
+import { useRouter } from 'vue-router';
 
 defineProps({
   isOpen: Boolean,
   application: Object,
 });
 
-defineEmits(['close']);
+const emit = defineEmits(['close', 'coi-updated']);
+const toast = useToast();
+const router = useRouter();
+
+const navigateToCoiPage = () => {
+    router.push('/admin/user/accreditation/coi_confirmation');
+    emit('close');
+};
+
+const confirmSchedule = async (visitId) => {
+    try {
+        await apiService.confirmApplicationSiteVisit(visitId, { reschedule_request: 'false' });
+        toast.success('Site visit schedule has been confirmed.');
+        emit('coi-updated'); // Re-fetch data on parent
+    } catch (error) {
+        console.error("Failed to confirm schedule:", error);
+        toast.error(error.response?.data?.detail || "An error occurred.");
+    }
+};
 
 const formatDate = (dateString) => {
   if (!dateString) return 'N/A';
@@ -98,6 +151,9 @@ const getStatusClass = (statusKey) => {
         'initial_app_rejected': 'bg-red-100 text-red-800',
         'initial_app_approved_awaiting_isar': 'bg-green-100 text-green-800',
         'isar_submitted_heqc_review': 'bg-indigo-100 text-indigo-800',
+        'coi_pending_declaration': 'bg-yellow-200 text-yellow-900',
+        'coi_conflict_declared': 'bg-red-200 text-red-900',
+        'coi_resolved_scheduling_visit': 'bg-green-200 text-green-900',
         'approved_accredited': 'bg-green-200 text-green-900 font-bold',
         'rejected_not_accredited': 'bg-red-200 text-red-900 font-bold',
     };

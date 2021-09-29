@@ -489,7 +489,11 @@ export default {
     return apiClient.put(`/mhpc/mhpc-new-application/${id}/`, data)
   },
   patchMhpcNewApplication(id, data) {
-    return apiClient.patch(`/mhpc/mhpc-new-application/${id}/`, data)
+    return apiClient.patch(`/mhpc/mhpc-new-application/${id}/`, data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
   },
   deleteMhpcNewApplication(id) {
     return apiClient.delete(`/mhpc/mhpc-new-application/${id}/`)

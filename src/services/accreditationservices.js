@@ -201,9 +201,7 @@ export default {
    * @param {FormData} formData The form data containing the declaration.
    * @returns {Promise} Axios promise for the request.
    */
-  respondToCoiDeclaration(coiId, formData) {
-    // CORRECTED: The path prefix '/api/v1/accreditation/' is REMOVED.
-    // The path now correctly starts with '/accreditations/'.
+  respondToCOI(coiId, formData) {
     return apiClient.post(`/accreditations/application-assessor-cois/${coiId}/respond/`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     });

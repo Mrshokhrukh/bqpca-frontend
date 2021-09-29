@@ -52,7 +52,7 @@
               <div v-else class="space-y-4">
                 <div v-if="isReassignmentNeeded" class="rounded-md border border-red-300 bg-red-100 p-3 text-sm text-red-800">
                   <p class="font-bold">Action Required: COI Dispute</p>
-                  <p>A conflict was declared by the institute. First, remove the disputed assessor(s) from the list below, then select new ones to meet the minimum team size of 3.</p>
+                  <p>A conflict was declared by the institute. First, remove the disputed assessor(s) from the list below, then select new ones to meet the required team size.</p>
                 </div>
                 <div class="flex flex-wrap items-start gap-4">
                   <div class="flex-grow">
@@ -67,20 +67,17 @@
                       <p v-if="!availableAssessorsForAssignment.length" class="text-center text-xs text-gray-500">No new assessors available.</p>
                     </div>
                     <p class="mt-1 text-xs text-gray-500">
-                      Currently: <strong>{{ numberOfValidAssessors }}</strong> valid assessors. After selection: <strong>{{ numberOfValidAssessors + selectedAssessorIds.length }}</strong> total. A team of 3 to 5 is required.
+                      Currently: <strong>{{ numberOfValidAssessors }}</strong> valid assessors. After selection: <strong>{{ numberOfValidAssessors + selectedAssessorIds.length }}</strong> total. A team of {{ requiredAssessorCount }} to 5 is required.
                     </p>
                   </div>
                   <button @click="assignAssessors" :disabled="isAssignActionInvalid || isProcessing" class="mt-6 rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-300">
-                    <span v-if="isProcessing">Assigning...</span>
-                    <span v-else>Assign Selected</span>
+                    <span v-if="isProcessing">Saving Team...</span>
+                    <span v-else>Save Team Changes</span>
                   </button>
                 </div>
               </div>
             </div>
 
-            <!-- ========================================================================= -->
-            <!-- CRITICAL FIX: Conflict of Interest (COI) Status Section -->
-            <!-- ========================================================================= -->
             <div class="rounded-lg border border-yellow-300 bg-yellow-50 p-4">
               <h4 class="mb-2 font-semibold text-gray-700">2. Conflict of Interest (COI) Status</h4>
               <div v-if="localIsarData?.application_details?.assessor_cois_details?.length" class="space-y-4">
@@ -115,14 +112,9 @@
               </div>
               <p v-else class="text-sm text-gray-600">No assessors assigned. Use the panel above to begin.</p>
             </div>
-            <!-- ========================================================================= -->
-            <!-- END OF CRITICAL FIX SECTION -->
-            <!-- ========================================================================= -->
-
 
             <div class="rounded-lg border border-green-300 bg-green-50 p-4">
               <h4 class="mb-2 font-semibold text-gray-700">3. Physical Verification Schedule</h4>
-              <!-- This section's logic remains the same -->
               <div v-if="currentSiteVisit && !isRescheduling" class="mb-4 space-y-3 rounded-md border bg-white p-4">
                   <h5 class="font-semibold text-gray-800">Current Schedule Details</h5>
                     <div class="grid grid-cols-1 gap-4 text-sm md:grid-cols-3">
@@ -151,7 +143,7 @@
               <p v-if="!canManageVisit" class="text-sm text-gray-600">This action is available after the Conflict of Interest process is resolved.</p>
               <div v-else>
                 <div v-if="currentSiteVisit && !isRescheduling" class="text-right">
-                  <button @click="startRescheduling" class="rounded bg-yellow-500 px-4 py-2 text-sm font-semibold text-white hover:bg-yellow-600">Propose New Schedule</button>
+                  <button v-if="!currentSiteVisit.is_confirmed_by_institute" @click="startRescheduling" class="rounded bg-yellow-500 px-4 py-2 text-sm font-semibold text-white hover:bg-yellow-600">Propose New Schedule</button>
                 </div>
                 <div v-if="!currentSiteVisit || isRescheduling" class="flex flex-wrap items-end gap-4">
                   <div class="flex-grow"><label for="visit-start" class="block text-sm font-medium text-gray-700">Start Date</label><input type="date" id="visit-start" v-model="visitStartDate" class="form-input mt-1"></div>
@@ -256,6 +248,8 @@ const consolidatedReportFile = ref(null);
 const finalRemarks = ref('');
 const selectedGradeId = ref(null);
 const isReplacingReport = ref(false);
+const initialAssessorCount = ref(0);
+const assessorIdsToRemove = ref([]);
 
 const existingReportUrl = computed(() => localIsarData.value?.application_details?.consolidated_site_visit_report_url || null);
 
@@ -271,6 +265,8 @@ const getFileNameFromUrl = (url) => {
 watch(() => props.isarData, (newData) => {
   if (newData) {
     localIsarData.value = JSON.parse(JSON.stringify(newData));
+    initialAssessorCount.value = newData.application_details?.assessor_cois_details?.length || 0;
+    assessorIdsToRemove.value = [];
     selectedAssessorIds.value = [];
     consolidatedReportFile.value = null;
     finalRemarks.value = '';
@@ -294,22 +290,24 @@ watch(() => props.isarData, (newData) => {
 const currentSiteVisit = computed(() => localIsarData.value?.application_details?.site_visits?.[0] || null);
 const instituteRequestedReschedule = computed(() => currentSiteVisit.value && currentSiteVisit.value.is_confirmed_by_institute === false && !!currentSiteVisit.value.institute_confirmation_remarks);
 
-// +++ CRITICAL FIX: Use new status name 'conflict_declared' +++
 const isReassignmentNeeded = computed(() => {
   if (!localIsarData.value?.application_details?.assessor_cois_details) return false;
   return localIsarData.value.application_details.assessor_cois_details.some(coi => coi.status === 'conflict_declared');
 });
 
-// +++ CRITICAL FIX: Use new status name 'conflict_declared' +++
 const numberOfValidAssessors = computed(() => {
     if (!localIsarData.value?.application_details?.assessor_cois_details) return 0;
     return localIsarData.value.application_details.assessor_cois_details.filter(coi => coi.status !== 'conflict_declared').length;
 });
 
+const requiredAssessorCount = computed(() => {
+    return Math.max(3, initialAssessorCount.value);
+});
+
 const isAssignmentActionNeeded = computed(() => {
     const hasAssessors = localIsarData.value?.application_details?.assessor_cois_details?.length > 0;
     if (!hasAssessors) return true;
-    return isReassignmentNeeded.value || numberOfValidAssessors.value < 3;
+    return isReassignmentNeeded.value || numberOfValidAssessors.value < requiredAssessorCount.value;
 });
 
 const availableAssessorsForAssignment = computed(() => {
@@ -322,49 +320,92 @@ const availableAssessorsForAssignment = computed(() => {
 
 const isAssignActionInvalid = computed(() => {
   const selectedCount = selectedAssessorIds.value.length;
-  if (selectedCount === 0) return true;
+  if (selectedCount === 0 && assessorIdsToRemove.value.length === 0) return true;
   const totalFutureCount = numberOfValidAssessors.value + selectedCount;
-  return totalFutureCount < 3 || totalFutureCount > 5;
+  return totalFutureCount < requiredAssessorCount.value || totalFutureCount > 5;
 });
 
-const canManageVisit = computed(() => !isAssignmentActionNeeded.value);
-const canUploadConsolidatedReport = computed(() => ['site_visit_confirmed', 'site_visit_completed', 'assessment_report_submitted'].includes(localIsarData.value?.application_details?.status));
-const canMakeFinalDecision = computed(() => localIsarData.value?.application_details?.status === 'assessment_report_submitted');
+const STATUS_ORDER = [
+    'draft_initial', 'pending_payment', 'initial_app_submitted_heqc_review', 
+    'initial_app_rejected', 'initial_app_approved_awaiting_isar', 'isar_submitted_heqc_review', 
+    'isar_queried_by_heqc', 'isar_accepted_by_heqc', 'coi_pending_declaration', 
+    'coi_conflict_declared', 'coi_resolved_scheduling_visit', 'site_visit_scheduled', 
+    'site_visit_confirmed', 'site_visit_completed', 'assessment_report_submitted', 
+    'approved_accredited', 'approved_conditional', 'rejected_not_accredited', 
+    'appealed', 'closed_withdrawn', 'closed_completed'
+];
+
+const getStatusIndex = (status) => STATUS_ORDER.indexOf(status);
+
+const canManageVisit = computed(() => {
+  const currentStatus = localIsarData.value?.application_details?.status;
+  if (!currentStatus) return false;
+  return getStatusIndex(currentStatus) >= getStatusIndex('coi_resolved_scheduling_visit');
+});
+
+const canUploadConsolidatedReport = computed(() => {
+  const currentStatus = localIsarData.value?.application_details?.status;
+  if (!currentStatus) return false;
+  return getStatusIndex(currentStatus) >= getStatusIndex('site_visit_confirmed');
+});
+
+const canMakeFinalDecision = computed(() => {
+  const currentStatus = localIsarData.value?.application_details?.status;
+  if (!currentStatus) return false;
+  return getStatusIndex(currentStatus) >= getStatusIndex('assessment_report_submitted');
+});
 
 const removeDisputedAssessor = (coiToRemove) => {
-  const message = `Are you sure you want to remove ${coiToRemove.assessor_details.name}? This action cannot be undone.`;
+  const message = `This will mark ${coiToRemove.assessor_details.name} for removal. You must select a replacement and click 'Save Team Changes' to confirm. Continue?`;
   toast({
     component: ConfirmToast,
     props: { message: message },
     listeners: {
-      onConfirm: async () => {
-        isProcessing.value = true;
-        try {
-          await apiService.deleteApplicationAssessorCOI(coiToRemove.id);
-          toast.success('Assessor removed successfully. Please select a replacement.');
-          emit('action-completed');
-        } catch (error) {
-          console.error('Failed to remove assessor:', error);
-          toast.error(error.response?.data?.detail || 'An error occurred.');
-        } finally {
-          isProcessing.value = false;
+      onConfirm: () => {
+        if (!assessorIdsToRemove.value.includes(coiToRemove.id)) {
+            assessorIdsToRemove.value.push(coiToRemove.id);
         }
+        
+        const index = localIsarData.value.application_details.assessor_cois_details.findIndex(c => c.id === coiToRemove.id);
+        if (index > -1) {
+            localIsarData.value.application_details.assessor_cois_details.splice(index, 1);
+        }
+        
+        toast.info(`${coiToRemove.assessor_details.name} marked for removal. Please select a replacement.`);
       }
     }
-  }, { type: TYPE.WARNING, timeout: false, closeOnClick: false, pauseOnFocusLoss: false, draggable: false, closeButton: false });
+  }, { type: TYPE.INFO, timeout: 10000, closeOnClick: false, pauseOnFocusLoss: false, draggable: false, closeButton: true });
 };
 
 const assignAssessors = async () => {
-  if (isAssignActionInvalid.value) return toast.warning('The total number of assessors must be between 3 and 5.');
+  const finalCount = numberOfValidAssessors.value + selectedAssessorIds.value.length;
+  if (finalCount < requiredAssessorCount.value) {
+      return toast.warning(`Please select ${requiredAssessorCount.value - numberOfValidAssessors.value} more assessor(s). A team of ${requiredAssessorCount.value} is required.`);
+  }
+  if (finalCount > 5) {
+      return toast.warning(`The maximum team size is 5. Please deselect some assessors.`);
+  }
+
   isProcessing.value = true;
   try {
-    const assignmentPromises = selectedAssessorIds.value.map(assessorId => apiService.createApplicationAssessorCOI({ application: localIsarData.value.application_details.id, assessor: assessorId }));
-    await Promise.all(assignmentPromises);
-    toast.success(`${selectedAssessorIds.value.length} new assessor(s) have been assigned.`);
+    const removalPromises = assessorIdsToRemove.value.map(id => apiService.deleteApplicationAssessorCOI(id));
+    await Promise.all(removalPromises);
+
+    if (selectedAssessorIds.value.length > 0) {
+        const assignmentPayload = {
+            application: localIsarData.value.application_details.id,
+            assessor_ids: selectedAssessorIds.value
+        };
+        await apiService.createApplicationAssessorCOI(assignmentPayload);
+    }
+    
+    toast.success('Assessor team updated successfully.');
+    assessorIdsToRemove.value = [];
     emit('action-completed');
+
   } catch (error) {
-    console.error('Failed to assign assessors:', error);
-    toast.error(error.response?.data?.detail || 'An error occurred during assignment.');
+    console.error('Failed to save assessor changes:', error);
+    toast.error(error.response?.data?.detail || 'An error occurred while saving changes.');
   } finally {
     isProcessing.value = false;
   }
@@ -464,7 +505,6 @@ const getStatusClass = (status) => {
   return classes[status] || 'bg-gray-100 text-gray-800';
 };
 
-// +++ CRITICAL FIX: Use new status names for COI records +++
 const getCoiStatusClass = (status) => {
   const classes = {
     'pending_institute_review': 'bg-yellow-100 text-yellow-800',
@@ -474,7 +514,6 @@ const getCoiStatusClass = (status) => {
   return classes[status] || 'bg-gray-100 text-gray-800';
 };
 
-// +++ CRITICAL FIX: Logic now reflects the new data model +++
 const formatInstituteResponse = (coi) => {
   if (coi.status === 'approved_no_conflict') return 'No Conflict Declared by Institute';
   if (coi.status === 'conflict_declared') return 'Conflict Declared by Institute';
@@ -482,7 +521,6 @@ const formatInstituteResponse = (coi) => {
   return 'N/A';
 };
 
-// +++ CRITICAL FIX: Logic now reflects the new data model +++
 const getInstituteResponseClass = (status) => {
   if (status === 'approved_no_conflict') return 'text-green-600';
   if (status === 'conflict_declared') return 'text-red-600';

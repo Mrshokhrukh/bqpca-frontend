@@ -82,22 +82,45 @@
         </div>
       </div>
 
-      <!-- Final Declaration "Annexure" View (only shown if no conflicts) -->
+      <!-- Final Declaration "Annexure" View -->
       <div v-else-if="showFinalDeclaration" class="bg-white shadow-2xl rounded-lg overflow-hidden animate-fade-in">
         <div class="px-8 py-6 bg-gray-50 border-b border-gray-200">
           <p class="text-right text-sm font-semibold text-gray-500">ANNEXURE I</p>
-          <h2 class="text-2xl font-bold text-center text-gray-800">No Conflict-of-Interest Statement</h2>
+          <h2 class="text-2xl font-bold text-center text-gray-800">Declaration Statement</h2>
           <p class="text-center text-sm text-gray-600 mt-1">A. By the Institution</p>
         </div>
         <div class="p-8">
           <h3 class="font-bold text-gray-800 mb-4">DECLARATION OF CONFLICT OF INTEREST</h3>
-          <p class="text-gray-700 leading-relaxed">The institute, <strong class="text-gray-900">{{ instituteName }}</strong>, assures that the following assessors have no affiliation with our institution, directly or indirectly, in the immediate past one year:</p>
-          <ol class="list-decimal list-inside mt-4 space-y-2 bg-gray-50 p-4 rounded-md border">
-            <li v-for="record in approvedAssessors" :key="record.id" class="text-gray-800"><span class="font-semibold">{{ record.assessor_details.name }}</span></li>
-          </ol>
-          <p class="mt-6 text-gray-700 leading-relaxed">Further, the Institution will not appoint any of the members of the proposed team of assessors for any assignment in the institution for one year after the assessment of the Institution by the assessors.</p>
+          
+          <!-- Case 1: No conflicts declared -->
+          <div v-if="!hasAnyConflict">
+            <p class="text-gray-700 leading-relaxed">The institute, <strong class="text-gray-900">{{ instituteName }}</strong>, assures that the following assessors have no affiliation with our institution, directly or indirectly, in the immediate past one year:</p>
+            <ol class="list-decimal list-inside mt-4 space-y-2 bg-gray-50 p-4 rounded-md border">
+              <li v-for="record in approvedAssessors" :key="record.id" class="text-gray-800"><span class="font-semibold">{{ record.assessor_details.name }}</span></li>
+            </ol>
+            <p class="mt-6 text-gray-700 leading-relaxed">Further, the Institution will not appoint any of the members of the proposed team of assessors for any assignment in the institution for one year after the assessment of the Institution by the assessors.</p>
+          </div>
+
+          <!-- Case 2: Conflicts have been declared -->
+          <div v-else>
+            <p class="text-gray-700 leading-relaxed">You are about to submit your conflict of interest decisions for the proposed assessors. Please review your declarations below:</p>
+            <ul class="mt-4 space-y-3 bg-gray-50 p-4 rounded-md border">
+              <li v-for="record in pendingRecords" :key="record.id" class="text-gray-800 border-b border-gray-200 pb-2 last:border-b-0 last:pb-0">
+                  <div class="flex justify-between items-center">
+                    <span class="font-semibold">{{ record.assessor_details.name }}</span>
+                    <span :class="decisions[record.id].decision === 'has_conflict' ? 'text-red-600 font-bold px-2 py-1 bg-red-100 rounded-md' : 'text-green-600 font-bold px-2 py-1 bg-green-100 rounded-md'">
+                        {{ decisions[record.id].decision === 'has_conflict' ? 'Conflict Declared' : 'No Conflict' }}
+                    </span>
+                  </div>
+                  <p v-if="decisions[record.id].decision === 'has_conflict'" class="text-sm text-gray-600 mt-1 pl-2">
+                      <strong>Reason:</strong> {{ decisions[record.id].remarks }}
+                  </p>
+              </li>
+            </ul>
+          </div>
+
           <div class="mt-8 pt-6 border-t border-gray-300">
-            <p class="text-sm font-medium text-gray-800">I hereby confirm that the above information is true to the best of my knowledge. In the event the above declaration is found to be incorrect,</p>
+            <p class="text-sm font-medium text-gray-800">I hereby confirm that the information provided is true to the best of my knowledge. In the event the above declaration is found to be incorrect,</p>
             <ul class="list-disc list-inside mt-2 space-y-1 text-gray-700 text-sm">
                 <li>the accreditation of the Institution shall be suspended/canceled immediately and must be reassessed, and</li>
                 <li>the Institution shall bear all the costs associated to the reassessment of accreditation</li>
@@ -293,13 +316,8 @@ const handleSubmitDecisions = () => {
         toast.warning("Please make a decision for all assessors and provide remarks for any conflicts.");
         return;
     }
-    isSubmitting.value = true;
-    if (hasAnyConflict.value) {
-        submitAllDecisionsToServer();
-    } else {
-        showFinalDeclaration.value = true;
-        isSubmitting.value = false;
-    }
+    // Always show the final declaration, regardless of conflicts.
+    showFinalDeclaration.value = true;
 };
 
 const handleFinalSignAndSubmit = () => {
@@ -321,7 +339,7 @@ const submitAllDecisionsToServer = async () => {
         }
 
         // This is the API call to the backend `respond` action
-        promises.push(apiService.respondToCoiDeclaration(record.id, formData));
+        promises.push(apiService.respondToCOI(record.id, formData));
     }
 
     try {
