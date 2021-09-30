@@ -115,16 +115,11 @@
               <label class="block text-sm font-medium text-gray-700 required">CID No.</label>
               <input
                 v-model="localFormData.cid_no"
-                type="number"
-                maxlength="11"
-                oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
-                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
-                placeholder="Enter 11-digit CID number"
-                @input="fetchDCRCData"
+                type="text"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 bg-gray-100"
+                readonly
               />
-              <span v-if="errors.cid_no" class="text-xs text-red-500 mt-1">{{
-                errors.cid_no
-              }}</span>
+              <span v-if="errors.cid_no" class="text-xs text-red-500 mt-1">{{ errors.cid_no }}</span>
             </div>
 
             <div class="col-span-1">
@@ -592,7 +587,8 @@
                 <select
                   :id="`doc_type_${index}`"
                   v-model="doc.type"
-                  class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 text-sm"
+                  class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 text-sm bg-gray-100"
+                  disabled
                 >
                   <option value="">Select Document Type</option>
                   <option
@@ -1077,6 +1073,11 @@ onMounted(async () => {
         localFormData.registration_type = filteredRegistrationTypes.value[0].id
       }
     }
+
+    if (props.selectedType === 'cid' && authStore.user?.cid) {
+      localFormData.cid_no = authStore.user.cid
+      await fetchDCRCData()
+    }
   } catch (error) {
     console.error('Error fetching master data:', error)
     toast.error(
@@ -1199,14 +1200,29 @@ watch(
 )
 
 watch(
-  () => localFormData.registration_type,
-  () => {
+  [() => localFormData.registration_type, fetchedDocumentTypes],
+  ([newRegType], [oldRegType]) => {
     delete errors.mandatory_documents
     supportingDocuments.value.forEach((_, index) => {
       delete errors[`document_type_${index}`]
       delete errors[`document_file_${index}`]
     })
-  }
+
+    if (!newRegType || fetchedDocumentTypes.value.length === 0) {
+      supportingDocuments.value = [{ type: '', files: [] }]
+      return
+    }
+
+    if (newRegType !== oldRegType) {
+      const mandatoryIds = currentMandatoryDocIds.value
+      if (mandatoryIds.length > 0) {
+        supportingDocuments.value = mandatoryIds.map((id) => ({ type: id, files: [] }))
+      } else {
+        supportingDocuments.value = [{ type: '', files: [] }]
+      }
+    }
+  },
+  { deep: true }
 )
 
 const validateFormStageOne = () => {
