@@ -175,8 +175,7 @@ import DOPageHeader from '@/components/common/MHPC/DOPageHeader.vue'
 /* --------------------
    Reactive state
    -------------------- */
-
-const allPaymentRecords = ref()
+const allPaymentRecords = ref([])
 const loading = ref(false)
 
 const transactionSearch = ref('')
@@ -188,14 +187,18 @@ const dateRange = reactive({ start: '', end: '' })
 const currentPage = ref(1)
 const perPage = ref(10)
 
+
 /* API fetch */
 const fetchPayments = async () => {
   loading.value = true
   allPaymentRecords.value = []
   try {
     const response = await mhpcservices.getAllMhpcPayments()
+
+
     if (response && response.data && Array.isArray(response.data.results)) {
-      allPaymentRecords.value = response.data.results
+      allPaymentRecords.value = response.data.results;
+
     } else if (response && Array.isArray(response.data)) {
       allPaymentRecords.value = response.data
     } else {
@@ -238,6 +241,9 @@ watch(transactionSearch, (val) => {
     debouncedSearch.value = val
   }, 250)
 })
+
+
+
 
 /* Done -> Dynamic dropdown for payment (based on description) */
 const paymentTypeFilterOptions = computed(() => {
