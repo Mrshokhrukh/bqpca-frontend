@@ -188,9 +188,7 @@ const dateRange = reactive({ start: '', end: '' })
 const currentPage = ref(1)
 const perPage = ref(10)
 
-/* --------------------
-   API fetch
-   -------------------- */
+/* API fetch */
 const fetchPayments = async () => {
   loading.value = true
   allPaymentRecords.value = []
@@ -219,9 +217,7 @@ onUnmounted(() => {
 })
 
 
-/* --------------------
-   Helpers
-   -------------------- */
+/*  Helpers */
 const normalize = (s) => String(s || '').trim().toLowerCase()
 
 const displayDescription = (p) => {
@@ -235,19 +231,15 @@ const parseAmount = (amt) => {
   return parseFloat(cleaned)
 }
 
-/* --------------------
-   Debounce search for performance
-   -------------------- */
+/* Debounce search for performance */
 watch(transactionSearch, (val) => {
   if (searchDebounceTimer) clearTimeout(searchDebounceTimer)
   searchDebounceTimer = setTimeout(() => {
     debouncedSearch.value = val
-  }, 250) 
+  }, 250)
 })
 
-/* --------------------
-   Done -> Dynamic dropdown for payment (based on description)
-   -------------------- */
+/* Done -> Dynamic dropdown for payment (based on description) */
 const paymentTypeFilterOptions = computed(() => {
   const set = new Set()
   for (const p of allPaymentRecords.value) {
@@ -267,11 +259,11 @@ watch(paymentTypeFilterOptions, (opts) => {
   }
 })
 
-/* --------------------
+/* 
    Filtering logic (search, category, date range)
    - search -> debounced search for performance
-   - Category matching is -> case-insensitive and uses substring match
-   --------------------  */
+   - Category matching is case-insensitive and uses substring match
+ */
 
 const filteredPayments = computed(() => {
   let payments = allPaymentRecords.value.slice()
@@ -314,9 +306,7 @@ const filteredPayments = computed(() => {
   return payments
 })
 
-/* --------------------
-   Pagination
-   -------------------- */
+/* Pagination */
 const totalPages = computed(() => {
   return Math.max(1, Math.ceil(filteredPayments.value.length / perPage.value))
 })
@@ -338,9 +328,7 @@ const nextPage = () => {
   if (currentPage.value < totalPages.value) currentPage.value++
 }
 
-/* --------------------
-   Small utilities for UI formatting
-   -------------------- */
+/*  Small utilities for UI formatting */
 const formatDate = (dateString) => {
   if (!dateString) return '-'
   try {
