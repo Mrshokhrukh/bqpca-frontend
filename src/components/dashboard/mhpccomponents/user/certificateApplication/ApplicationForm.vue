@@ -720,6 +720,7 @@ import { useRouter } from 'vue-router'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import PageHeader from '@/components/common/MHPC/PageHeader.vue'
 import { UserPlus } from 'lucide-vue-next'
+import { countries } from './countries.js'
 
 // Initialize the store and router
 const authStore = useAuthStore()
@@ -814,235 +815,11 @@ const updateFormDocuments = () => {
     }))
 }
 
-const countries = [
-  'Afghanistan',
-  'Albania',
-  'Algeria',
-  'Andorra',
-  'Angola',
-  'Antigua and Barbuda',
-  'Argentina',
-  'Armenia',
-  'Australia',
-  'Austria',
-  'Azerbaijan',
-  'Bahamas',
-  'Bahrain',
-  'Bangladesh',
-  'Barbados',
-  'Belarus',
-  'Belgium',
-  'Belize',
-  'Benin',
-  'Bhutan',
-  'Bolivia',
-  'Bosnia and Herzegovina',
-  'Botswana',
-  'Brazil',
-  'Brunei',
-  'Bulgaria',
-  'Burkina Faso',
-  'Burundi',
-  'Cambodia',
-  'Cameroon',
-  'Canada',
-  'Cape Verde',
-  'Central African Republic',
-  'Chad',
-  'Chile',
-  'China',
-  'Colombia',
-  'Comoros',
-  'Congo',
-  'Costa Rica',
-  'Croatia',
-  'Cuba',
-  'Cyprus',
-  'Czech Republic',
-  'Denmark',
-  'Djibouti',
-  'Dominica',
-  'Dominican Republic',
-  'East Timor',
-  'Ecuador',
-  'Egypt',
-  'El Salvador',
-  'Equatorial Guinea',
-  'Eritrea',
-  'Estonia',
-  'Ethiopia',
-  'Fiji',
-  'Finland',
-  'France',
-  'Gabon',
-  'Gambia',
-  'Georgia',
-  'Germany',
-  'Ghana',
-  'Greece',
-  'Grenada',
-  'Guatemala',
-  'Guinea',
-  'Guinea-Bissau',
-  'Guyana',
-  'Haiti',
-  'Honduras',
-  'Hungary',
-  'Iceland',
-  'India',
-  'Indonesia',
-  'Iran',
-  'Iraq',
-  'Ireland',
-  'Israel',
-  'Italy',
-  'Ivory Coast',
-  'Jamaica',
-  'Japan',
-  'Jordan',
-  'Kazakhstan',
-  'Kenya',
-  'Kiribati',
-  'Korea, North',
-  'Korea, South',
-  'Kuwait',
-  'Kyrgyzstan',
-  'Laos',
-  'Latvia',
-  'Lebanon',
-  'Lesotho',
-  'Liberia',
-  'Libya',
-  'Liechtenstein',
-  'Lithuania',
-  'Luxembourg',
-  'Macedonia',
-  'Madagascar',
-  'Malawi',
-  'Malaysia',
-  'Maldives',
-  'Mali',
-  'Malta',
-  'Marshall Islands',
-  'Mauritania',
-  'Mauritius',
-  'Mexico',
-  'Micronesia',
-  'Moldova',
-  'Monaco',
-  'Mongolia',
-  'Montenegro',
-  'Morocco',
-  'Mozambique',
-  'Myanmar',
-  'Namibia',
-  'Nauru',
-  'Nepal',
-  'Netherlands',
-  'New Zealand',
-  'Nicaragua',
-  'Niger',
-  'Nigeria',
-  'Norway',
-  'Oman',
-  'Pakistan',
-  'Palau',
-  'Panama',
-  'Papua New Guinea',
-  'Paraguay',
-  'Peru',
-  'Philippines',
-  'Poland',
-  'Portugal',
-  'Qatar',
-  'Romania',
-  'Russia',
-  'Saint Kitts and Nevis',
-  'Saint Lucia',
-  'Saint Vincent',
-  'Samoa',
-  'San Marino',
-  'Sao Tome and Principe',
-  'Saudi Arabia',
-  'Senegal',
-  'Serbia',
-  'Seychelles',
-  'Sierra Leone',
-  'Singapore',
-  'Slovakia',
-  'Slovenia',
-  'Solomon Islands',
-  'Somalia',
-  'South Africa',
-  'South Sudan',
-  'Spain',
-  'Sri Lanka',
-  'Sudan',
-  'Suriname',
-  'Swaziland',
-  'Sweden',
-  'Switzerland',
-  'Syria',
-  'Taiwan',
-  'Tajikistan',
-  'Tanzania',
-  'Thailand',
-  'Togo',
-  'Tonga',
-  'Trinidad and Tobago',
-  'Tunisia',
-  'Turkey',
-  'Turkmenistan',
-  'Tuvalu',
-  'Uganda',
-  'Ukraine',
-  'United Arab Emirates',
-  'United Kingdom',
-  'United States',
-  'Uruguay',
-  'Uzbekistan',
-  'Vanuatu',
-  'Vatican City',
-  'Venezuela',
-  'Vietnam',
-  'Yemen',
-  'Zambia',
-  'Zimbabwe',
-]
 
 const qualificationTypes = ref([])
 const allQualifications = ref([])
 const universities = ref([])
 const allRegistrationTypesFromAPI = ref([])
-
-const REGISTRATION_TYPE_KEYWORDS = {
-  full: ['full', 'new'],
-  provisional: ['provisional'],
-  temporary: ['temporary'],
-}
-
-const MANDATORY_DOC_KEYWORDS = {
-  provisional: [
-    'graduation certificate',
-    'provisional certificate',
-    'course completion certificate',
-    'marksheet',
-    'internship completion',
-    'class x',
-    'class xii',
-    'citizenship identity card',
-    'security clearance',
-    'recognition of qualification',
-  ],
-  temporary: [
-    'graduation certificate',
-    'work offer letter',
-    'request letter',
-    'passport copy',
-    'visa copy',
-    'permit copy',
-  ],
-}
 
 onMounted(async () => {
   isLoadingMasters.value = true
@@ -1148,44 +925,29 @@ const getRegistrationTypeName = (typeId) => {
   return type ? type.name : 'Selected Registration'
 }
 
-const getRegistrationTypeCategory = (typeId) => {
-  const type = allRegistrationTypesFromAPI.value.find((rt) => rt.id === typeId)
-  if (!type) return null
-  const nameLower = type.name.toLowerCase()
-  if (REGISTRATION_TYPE_KEYWORDS.full.some((keyword) => nameLower.includes(keyword))) {
-    return 'full'
-  } else if (
-    REGISTRATION_TYPE_KEYWORDS.provisional.some((keyword) => nameLower.includes(keyword))
-  ) {
-    return 'provisional'
-  } else if (REGISTRATION_TYPE_KEYWORDS.temporary.some((keyword) => nameLower.includes(keyword))) {
-    return 'temporary'
-  }
-  return null
-}
+// const getRegistrationTypeCategory = (typeId) => {
+//   const type = allRegistrationTypesFromAPI.value.find((rt) => rt.id === typeId)
+//   if (!type) return null
+//   const nameLower = type.name.toLowerCase()
+//   if (REGISTRATION_TYPE_KEYWORDS.full.some((keyword) => nameLower.includes(keyword))) {
+//     return 'full'
+//   } else if (
+//     REGISTRATION_TYPE_KEYWORDS.provisional.some((keyword) => nameLower.includes(keyword))
+//   ) {
+//     return 'provisional'
+//   } else if (REGISTRATION_TYPE_KEYWORDS.temporary.some((keyword) => nameLower.includes(keyword))) {
+//     return 'temporary'
+//   }
+//   return null
+// }
 
 const currentMandatoryDocIds = computed(() => {
-  const category = getRegistrationTypeCategory(localFormData.registration_type)
-  if (category === 'full') {
-    return fetchedDocumentTypes.value.map((dt) => dt.id)
-  } else if (category === 'provisional' || category === 'temporary') {
-    const keywords = MANDATORY_DOC_KEYWORDS[category]
-    return fetchedDocumentTypes.value
-      .filter((dt) => {
-        const docNameLower = dt.document_name.toLowerCase()
-        return keywords.some((keyword) => docNameLower.includes(keyword.toLowerCase()))
-      })
-      .map((dt) => dt.id)
-  }
-  return []
-})
+  return fetchedDocumentTypes.value.map(doc => doc.id);
+});
 
 const currentRequiredDocNames = computed(() => {
-  const mandatoryIds = currentMandatoryDocIds.value
-  return fetchedDocumentTypes.value
-    .filter((dt) => mandatoryIds.includes(dt.id))
-    .map((dt) => dt.document_name)
-})
+  return fetchedDocumentTypes.value.map(doc => doc.document_name);
+});
 
 const isCIDValid = computed(() => {
   return /^\d{11}$/.test(localFormData.cid_no)
@@ -1213,13 +975,11 @@ watch(
       return
     }
 
-    if (newRegType !== oldRegType) {
-      const mandatoryIds = currentMandatoryDocIds.value
-      if (mandatoryIds.length > 0) {
-        supportingDocuments.value = mandatoryIds.map((id) => ({ type: id, files: [] }))
-      } else {
-        supportingDocuments.value = [{ type: '', files: [] }]
-      }
+    const mandatoryIds = currentMandatoryDocIds.value
+    if (mandatoryIds.length > 0) {
+      supportingDocuments.value = mandatoryIds.map((id) => ({ type: id, files: [] }))
+    } else {
+      supportingDocuments.value = [{ type: '', files: [] }]
     }
   },
   { deep: true }
