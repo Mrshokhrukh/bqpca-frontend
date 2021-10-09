@@ -70,7 +70,7 @@
                   )" :key="'primary-' + qualification.id">
                     <span class="text-xs text-gray-600">{{
                       qualification.qualification_name_display || 'N/A'
-                      }}</span>
+                    }}</span>
                   </div>
                 </template>
                 <template v-else>
@@ -88,7 +88,7 @@
                       {{ getIndividualQualificationStatus(qualification) }}
                     </span>
                     <span class="text-xs text-gray-600 ml-1">({{ qualification.qualification_name_display || 'N/A'
-                      }})</span>
+                    }})</span>
                   </div>
                 </template>
                 <template v-else> N/A </template>

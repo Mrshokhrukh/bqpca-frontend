@@ -126,7 +126,7 @@
                 to
                 <span class="font-medium">{{
                   Math.min(currentPage * perPage, filteredPayments.length)
-                  }}</span>
+                }}</span>
                 of
                 <span class="font-medium">{{ filteredPayments.length }}</span>
                 results
@@ -194,13 +194,9 @@ const fetchPayments = async () => {
   allPaymentRecords.value = []
   try {
     const response = await mhpcservices.getAllMhpcPayments()
-
-
-    if (response && response.data && Array.isArray(response.data.results)) {
+   
+    if (response.data.results && Array.isArray(response.data.results)) {
       allPaymentRecords.value = response.data.results;
-
-    } else if (response && Array.isArray(response.data)) {
-      allPaymentRecords.value = response.data
     } else {
       console.warn('API returned unexpected data format:', response && response.data)
       allPaymentRecords.value = []
