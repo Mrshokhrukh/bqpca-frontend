@@ -22,9 +22,7 @@
                 <label for="report-file" class="block text-sm font-medium text-gray-700">Report File</label>
                 <div class="mt-2 flex items-center justify-center rounded-lg border-2 border-dashed border-gray-300 px-6 py-10">
                   <div class="text-center">
-                    <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
-                      <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
+                    <UploadCloud class="mx-auto h-12 w-12 text-gray-400" />
                     <div class="mt-4 flex text-sm text-gray-600">
                       <label for="report-file-input" class="relative cursor-pointer rounded-md bg-white font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2">
                         <span>Upload a file</span>
@@ -64,6 +62,8 @@
                   :disabled="!reportFile || isLoading"
                   class="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-indigo-300"
                 >
+                  <Loader2 v-if="isLoading" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" />
+                  <Upload v-else class="-ml-1 mr-3 h-5 w-5 text-white" />
                   <span v-if="isLoading">Uploading...</span>
                   <span v-else>Submit Report</span>
                 </button>
@@ -75,9 +75,7 @@
         <!-- Success State -->
         <div v-if="uploadSuccess" class="text-center">
            <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
-             <svg class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-               <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-             </svg>
+             <Check class="h-6 w-6 text-green-600" />
            </div>
            <h3 class="mt-4 text-lg font-medium leading-6 text-gray-900">Report Uploaded Successfully</h3>
            <p class="mt-2 text-sm text-gray-500">The dealing officer has been notified and can now review your report.</p>
@@ -100,6 +98,7 @@
   import { ref } from 'vue';
   import { useRoute } from 'vue-router';
   import apiService from '@/services/services';
+  import { UploadCloud, Loader2, Upload, Check } from 'lucide-vue-next';
   
   // --- State from the Parent Component ---
   const route = useRoute();

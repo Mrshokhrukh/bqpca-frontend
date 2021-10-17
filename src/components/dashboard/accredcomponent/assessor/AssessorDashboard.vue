@@ -18,41 +18,10 @@
       <div v-else>
         <!-- STATISTIC CARDS -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <!-- Card 1: Total Assignments -->
-          <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-blue-500">
-            <div class="flex items-center">
-              <ClipboardList class="h-6 w-6 text-blue-500" />
-              <span class="ml-3 text-sm font-medium text-gray-500">Total Assignments</span>
-            </div>
-            <p class="text-3xl font-bold text-gray-900 mt-2">{{ totalAssignments }}</p>
-          </div>
-
-          <!-- Card 2: Pending COI Declarations -->
-          <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-yellow-500">
-            <div class="flex items-center">
-              <ShieldQuestion class="h-6 w-6 text-yellow-500" />
-              <span class="ml-3 text-sm font-medium text-gray-500">Pending COI</span>
-            </div>
-            <p class="text-3xl font-bold text-gray-900 mt-2">{{ pendingCOIsCount }}</p>
-          </div>
-
-          <!-- Card 3: Completed COI -->
-          <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-green-500">
-            <div class="flex items-center">
-              <CheckCircle class="h-6 w-6 text-green-500" />
-              <span class="ml-3 text-sm font-medium text-gray-500">COIs Submitted</span>
-            </div>
-            <p class="text-3xl font-bold text-gray-900 mt-2">{{ completedCOIsCount }}</p>
-          </div>
-
-          <!-- Card 4: Conflicts Declared -->
-          <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-red-500">
-            <div class="flex items-center">
-              <AlertTriangle class="h-6 w-6 text-red-500" />
-              <span class="ml-3 text-sm font-medium text-gray-500">Conflicts Declared</span>
-            </div>
-            <p class="text-3xl font-bold text-gray-900 mt-2">{{ conflictsDeclaredCount }}</p>
-          </div>
+          <StatCard icon="ClipboardList" :value="totalAssignments" label="Total Assignments" color="blue" />
+          <StatCard icon="ShieldQuestion" :value="pendingCOIsCount" label="Pending COI" color="yellow" />
+          <StatCard icon="CheckCircle" :value="completedCOIsCount" label="COIs Submitted" color="green" />
+          <StatCard icon="AlertTriangle" :value="conflictsDeclaredCount" label="Conflicts Declared" color="red" />
         </div>
 
         <!-- ACTIONABLE ITEMS LIST -->
@@ -75,7 +44,8 @@
                     <p class="text-sm text-gray-500">ID: {{ item.application_details.application_uid.slice(0, 8) }}</p>
                   </td>
                   <td class="px-6 py-4 text-right">
-                    <button @click="handleDeclareCoi(item)" class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">
+                    <button @click="handleDeclareCoi(item)" class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 inline-flex items-center">
+                      <Edit class="w-4 h-4 mr-2" />
                       Declare COI
                     </button>
                   </td>
@@ -93,11 +63,13 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import apiService from '@/services/services'; // Adjust path if needed
+import StatCard from '../admin/StatCard.vue';
 import {
   ClipboardList,
   ShieldQuestion,
   CheckCircle,
   AlertTriangle,
+  Edit
 } from 'lucide-vue-next';
 
 // --- State Management ---

@@ -247,7 +247,12 @@ const {
   totalCpdCredits
 } = storeToRefs(cpdStore)
 
-const filteredApplications = computed(() => allCpdRecords.value || [])
+const filteredApplications = computed(() => {
+  if (!allCpdRecords.value) return []
+  return allCpdRecords.value.filter(
+    (record) => record.status && record.status.toLowerCase() !== 'draft',
+  )
+})
 
 onMounted(() => {
   authStore.initializeAuth()

@@ -89,7 +89,7 @@
             </div>
             <div>
               <label for="land_registration_certificate" class="block text-sm font-medium text-gray-700">Land Registration Certificate</label>
-              <input type="file" id="land_registration_certificate" @change="handleFileChange($event, 'land_registration_certificate')" class="form-file" accept=".pdf,.jpg,.png" />
+              <input type="file" id="land_registration_certificate" @change="handleFileChange($event, 'land_registration_certificate')" class="form-file" accept=".pdf,.jpg,.png" required />
             </div>
           </div>
 
@@ -277,6 +277,7 @@
 
 <script setup>
 import { ref, watch, computed, onMounted } from 'vue';
+import { useToast } from 'vue-toastification';
 import apiService from '@/services/services';
 
 const props = defineProps({
@@ -285,6 +286,7 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['close', 'submit-isar']);
+const toast = useToast();
 
 const formData = ref({});
 const filesToUpload = ref({});
@@ -395,6 +397,25 @@ const handleFileChange = (event, key) => {
 };
 
 const handleSubmit = () => {
+  // Validate required files
+  let allFilesUploaded = true;
+  if (!filesToUpload.value['land_registration_certificate']) {
+    allFilesUploaded = false;
+    toast.error('Please upload the Land Registration Certificate.');
+  }
+
+  for (const standard of standards.value) {
+    const fileKey = `isar_standard_document_file_${standard.id}`;
+    if (!filesToUpload.value[fileKey]) {
+      allFilesUploaded = false;
+      toast.error(`Please upload the document for "${standard.standard_name}".`);
+    }
+  }
+
+  if (!allFilesUploaded) {
+    return; // Stop submission if validation fails
+  }
+
   const submissionData = new FormData();
 
   // Append all text/number data from formData

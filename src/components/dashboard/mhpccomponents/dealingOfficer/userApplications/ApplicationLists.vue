@@ -248,11 +248,12 @@ const headerDescription = computed(() => {
 
 const filteredApplications = computed(() => {
   return applications.value
+    .filter((app) => Array.isArray(app.user_qualifications) && app.user_qualifications.length > 0)
     .filter(
       (app) =>
         app.registration_type_name !== 'Renewal' &&
         app.registration_type_name !== 'Additional Qualification' &&
-        app.registration_type_name !== 'Re-Registration',
+        app.registration_type_name !== 'Re-Registration'
     )
     .filter((app) => {
       if (filterStatus.value && filterStatus.value !== 'all') {

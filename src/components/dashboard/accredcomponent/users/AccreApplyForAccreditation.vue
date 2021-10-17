@@ -22,19 +22,19 @@
       <strong class="font-bold">Error!</strong>
       <span class="block sm:inline ml-2">{{ errors.general }}</span>
       <span class="absolute top-0 bottom-0 right-0 px-4 py-3 cursor-pointer" @click="errors.general = null">
-        <svg class="fill-current h-6 w-6 text-red-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><title>Close</title><path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/></svg>
+        <X class="h-6 w-6 text-red-500" />
       </span>
     </div>
     <div v-if="!pageLoading && errors.profile" class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative mb-6" role="alert">
       <strong class="font-bold">Heads Up!</strong>
       <span class="block sm:inline ml-2">{{ errors.profile }}</span>
       <span class="absolute top-0 bottom-0 right-0 px-4 py-3 cursor-pointer" @click="errors.profile = null">
-        <svg class="fill-current h-6 w-6 text-yellow-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><title>Close</title><path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/></svg>
+        <X class="h-6 w-6 text-yellow-500" />
       </span>
     </div>
 
     <div v-if="!pageLoading && !activeSchedule.id && !application.id && !errors.general && !errors.profile" class="bg-blue-100 border border-blue-400 text-blue-700 px-6 py-8 rounded-lg shadow-md text-center mb-10">
-      <svg class="inline-block w-10 h-10 text-blue-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+      <Info class="inline-block w-10 h-10 text-blue-500 mb-4" />
       <h4 class="text-2xl font-semibold mb-3">No Active Application Schedule</h4>
       <p class="text-lg">There is currently no active accreditation application schedule. Please check back later or contact HEQC.</p>
     </div>
@@ -43,7 +43,7 @@
 
       <div class="bg-white p-6 rounded-lg shadow-lg border-t-4 border-blue-500">
         <div class="flex items-center text-blue-700 mb-4">
-          <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          <Info class="w-6 h-6 mr-2" />
           <h3 class="text-xl font-semibold">Application Overview</h3>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-6">
@@ -68,13 +68,15 @@
           </div>
           <div v-if="application.id" class="col-span-full">
             <label class="block text-sm font-medium text-gray-600 mb-1">Application Status:</label>
-            <span :class="['px-3 py-1.5 rounded-full text-sm font-semibold inline-flex items-center', statusBadgeClass(application.status)]" v-html="statusIconChar(application.status) + ' ' + (application.status_display || application.status)">
+            <span :class="['px-3 py-1.5 rounded-full text-sm font-semibold inline-flex items-center', statusBadgeClass(application.status)]">
+              <component :is="statusIcon(application.status)" class="w-4 h-4 mr-2" />
+              {{ application.status_display || application.status }}
             </span>
           </div>
           <div class="col-span-full" v-if="application.id && application.isar_submission_deadline">
             <label class="block text-sm font-medium text-gray-600 mb-1">ISAR Submission Deadline:</label>
             <span class="px-3 py-1.5 rounded-full text-sm font-semibold bg-gray-200 text-gray-700 inline-flex items-center">
-              <span class="mr-1">📅</span>
+              <Calendar class="w-4 h-4 mr-2" />
               {{ application.isar_submission_deadline }}
             </span>
           </div>
@@ -82,9 +84,7 @@
       </div>
 
       <div v-if="isFormLocked" class="bg-blue-50 border-l-4 border-blue-500 text-blue-800 p-8 rounded-lg shadow-md text-center">
-        <svg class="mx-auto h-12 w-12 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-          <path vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
+        <CheckCircle2 class="mx-auto h-12 w-12 text-blue-400" />
         <h3 class="mt-4 text-2xl font-semibold text-blue-900">Application Submitted</h3>
         <p class="mt-2 text-base text-gray-700">
           This application has been submitted and is currently in the <strong>'{{ application.status_display }}'</strong> stage.
@@ -98,7 +98,7 @@
 
         <fieldset class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
           <legend class="text-base font-semibold text-gray-800 px-3 py-1.5 bg-gray-100 rounded-full inline-flex items-center -ml-3 -mt-10 mb-4 shadow-sm">
-            <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+            <ClipboardList class="w-5 h-5 mr-2 text-gray-500" />
             Accreditation Cycle Applying For <span class="text-red-500 ml-1">*</span>
           </legend>
           <div class="form-group">
@@ -111,7 +111,7 @@
               <option value="other">Other Cycle (Specify Below)</option>
             </select>
             <p v-if="errors.accreditation_cycle" class="text-red-600 text-sm mt-1 flex items-center">
-              <span class="mr-1">⚠</span>
+              <AlertTriangle class="w-4 h-4 mr-1" />
               {{ errors.accreditation_cycle.join ? errors.accreditation_cycle.join(', ') : errors.accreditation_cycle }}
             </p>
           </div>
@@ -120,7 +120,7 @@
             <input type="text" id="accreditation_cycle_other_specify" v-model="application.accreditation_cycle_other_specify"
                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
             <p v-if="errors.accreditation_cycle_other_specify" class="text-red-600 text-sm mt-1 flex items-center">
-              <span class="mr-1">⚠</span>
+              <AlertTriangle class="w-4 h-4 mr-1" />
               {{ errors.accreditation_cycle_other_specify.join ? errors.accreditation_cycle_other_specify.join(', ') : errors.accreditation_cycle_other_specify }}
             </p>
           </div>
@@ -128,16 +128,16 @@
 
         <fieldset class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
           <legend class="text-base font-semibold text-gray-800 px-3 py-1.5 bg-gray-100 rounded-full inline-flex items-center -ml-3 -mt-10 mb-4 shadow-sm">
-            <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            <FileCheck class="w-5 h-5 mr-2 text-gray-500" />
             Part I: Document Checklist
           </legend>
           <p class="text-gray-600 mb-6">Please upload all required supporting documents. Files should be clear and legible.</p>
           <div v-if="loadingChecklistTypes" class="text-center py-4 text-gray-600">
-            <span class="animate-spin inline-block w-5 h-5 border-2 border-gray-300 border-t-transparent rounded-full mr-2"></span>
+            <Loader2 class="animate-spin inline-block w-5 h-5 mr-2" />
             Loading document types...
           </div>
           <div v-if="checklistDocumentTypes.length === 0 && !loadingChecklistTypes" class="bg-blue-50 text-blue-700 px-4 py-3 rounded relative text-center">
-            <span class="mr-2">ℹ</span> No checklist document types found for "application" category. Please ensure they are configured or contact support.
+            <Info class="w-5 h-5 inline-block mr-2" /> No checklist document types found for "application" category. Please ensure they are configured or contact support.
           </div>
           <div v-for="docType in checklistDocumentTypes" :key="docType.id" class="mb-5">
             <label :for="'doc_type_' + docType.id" class="block text-sm font-medium text-gray-700 mb-2">
@@ -152,11 +152,11 @@
               <a v-if="getExistingDocumentUrl(docType.id)" :href="getExistingDocumentUrl(docType.id)" target="_blank"
                  class="flex-shrink-0 px-4 py-2 bg-blue-100 text-blue-700 text-sm font-medium rounded-lg hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150 inline-flex items-center truncate max-w-[150px] sm:max-w-[200px]"
                  :title="'View Current: ' + getFileName(getExistingDocumentUrl(docType.id))">
-                <span class="mr-2">📄</span> {{ getFileName(getExistingDocumentUrl(docType.id)) }}
+                <FileText class="w-4 h-4 mr-2" /> {{ getFileName(getExistingDocumentUrl(docType.id)) }}
               </a>
             </div>
             <p v-if="errors[`document_file_type_${docType.id}`]" class="text-red-600 text-sm mt-1 flex items-center">
-              <span class="mr-1">⚠</span>
+              <AlertTriangle class="w-4 h-4 mr-1" />
               {{ errors[`document_file_type_${docType.id}`].join ? errors[`document_file_type_${docType.id}`].join(', ') : errors[`document_file_type_${docType.id}`] }}
             </p>
           </div>
@@ -164,19 +164,19 @@
 
         <fieldset class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
           <legend class="text-base font-semibold text-gray-800 px-3 py-1.5 bg-gray-100 rounded-full inline-flex items-center -ml-3 -mt-10 mb-4 shadow-sm">
-            <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.747 0-3.332.477-4.5 1.253"></path></svg>
+            <BookOpen class="w-5 h-5 mr-2 text-gray-500" />
             Part II: Course/Programme Details
           </legend>
           <p class="text-gray-600 mb-6">Add details for each course/programme for which accreditation is being sought.</p>
           <div v-if="application.application_courses.length === 0" class="bg-blue-50 text-blue-700 px-4 py-6 rounded-lg text-center mb-6">
-            <span class="mr-2">💡</span> Click "Add New Course/Programme" to begin.
+            <Lightbulb class="w-5 h-5 inline-block mr-2" /> Click "Add New Course/Programme" to begin.
           </div>
           <div v-for="(course, index) in application.application_courses" :key="course.id || `new-${index}`" class="course-entry bg-blue-50 p-6 rounded-lg shadow-sm border border-blue-200 mb-6">
             <div class="flex justify-between items-center mb-4 pb-2 border-b border-blue-100">
               <h5 class="text-lg font-semibold text-blue-700">Course/Programme {{ index + 1 }}</h5>
               <button type="button" @click="removeCourseProgramme(index)"
                       class="px-3 py-1 bg-red-50 text-red-700 text-sm font-medium rounded-md hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150 inline-flex items-center">
-                <span class="mr-1">🗑</span> Remove
+                <Trash2 class="w-4 h-4 mr-1" /> Remove
               </button>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-6">
@@ -185,7 +185,7 @@
                 <input type="text" :id="'course_title_' + index" v-model="course.course_programme_title" required
                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                 <p v-if="errors[`application_courses_json.${index}.course_programme_title`]" class="text-red-600 text-sm mt-1 flex items-center">
-                  <span class="mr-1">⚠</span>
+                  <AlertTriangle class="w-4 h-4 mr-1" />
                   {{ errors[`application_courses_json.${index}.course_programme_title`].join(', ') }}
                 </p>
               </div>
@@ -194,7 +194,7 @@
                 <input type="text" :id="'awarding_body_' + index" v-model="course.awarding_body"
                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                 <p v-if="errors[`application_courses_json.${index}.awarding_body`]" class="text-red-600 text-sm mt-1 flex items-center">
-                  <span class="mr-1">⚠</span>
+                  <AlertTriangle class="w-4 h-4 mr-1" />
                   {{ errors[`application_courses_json.${index}.awarding_body`].join(', ') }}
                 </p>
               </div>
@@ -203,7 +203,7 @@
                 <input type="text" :id="'level_bqf_' + index" v-model="course.level_as_per_bqf" required
                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                 <p v-if="errors[`application_courses_json.${index}.level_as_per_bqf`]" class="text-red-600 text-sm mt-1 flex items-center">
-                  <span class="mr-1">⚠</span>
+                  <AlertTriangle class="w-4 h-4 mr-1" />
                   {{ errors[`application_courses_json.${index}.level_as_per_bqf`].join(', ') }}
                 </p>
               </div>
@@ -212,7 +212,7 @@
                 <input type="number" :id="'student_no_' + index" v-model.number="course.current_student_number" min="0" required
                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                 <p v-if="errors[`application_courses_json.${index}.current_student_number`]" class="text-red-600 text-sm mt-1 flex items-center">
-                  <span class="mr-1">⚠</span>
+                  <AlertTriangle class="w-4 h-4 mr-1" />
                   {{ errors[`application_courses_json.${index}.current_student_number`].join(', ') }}
                 </p>
               </div>
@@ -220,10 +220,10 @@
           </div>
           <button type="button" @click="addCourseProgramme"
                   class="mt-2 w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition ease-in-out duration-150 inline-flex items-center justify-center">
-            <span class="mr-2">＋</span> Add New Course/Programme
+            <Plus class="w-5 h-5 mr-2" /> Add New Course/Programme
           </button>
           <p v-if="errors.application_courses_json && (typeof errors.application_courses_json === 'string' || Array.isArray(errors.application_courses_json))" class="text-red-600 text-sm mt-3 flex items-center">
-            <span class="mr-1">⚠</span>
+            <AlertTriangle class="w-4 h-4 mr-1" />
             {{ Array.isArray(errors.application_courses_json) ? errors.application_courses_json.join(', ') : errors.application_courses_json }}
           </p>
         </fieldset>
@@ -235,8 +235,8 @@
             :disabled="isSubmitting"
             class="flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-gray-700 bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition ease-in-out duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <span v-if="isSavingDraft" class="animate-spin mr-2 w-5 h-5 border-2 border-gray-700 border-t-transparent rounded-full"></span>
-            <span v-else class="mr-2">💾</span>
+            <Loader2 v-if="isSavingDraft" class="animate-spin mr-2 w-5 h-5" />
+            <Save v-else class="mr-2 w-5 h-5" />
             {{ application.id ? 'Update Draft' : 'Save Draft' }}
           </button>
           <button
@@ -245,13 +245,13 @@
             :disabled="isSubmitting"
             class="flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition ease-in-out duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <span v-if="isSubmitting" class="animate-spin mr-2 w-5 h-5 border-2 border-white border-t-transparent rounded-full"></span>
-            <span v-else class="mr-2">✅</span>
+            <Loader2 v-if="isSubmitting" class="animate-spin mr-2 w-5 h-5" />
+            <CheckCircle v-else class="mr-2 w-5 h-5" />
             {{ isSubmitting ? 'Processing...' : 'Submit Application' }}
           </button>
         </div>
         <p v-if="isSubmitting" class="text-center text-gray-500 text-sm mt-3 flex items-center justify-center">
-          <span class="mr-2">⏳</span> Processing your request, please wait...
+          <Loader2 class="animate-spin mr-2 w-5 h-5" /> Processing your request, please wait...
         </p>
       </div>
     </div>
@@ -260,7 +260,7 @@
       <div v-if="showConfirmationModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-opacity" @click="handleCancelSubmission">
       <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md transform transition-all" @click.stop>
         <div class="text-center">
-          <svg class="mx-auto h-12 w-12 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.79 4 4s-1.79 4-4 4c-1.742 0-3.223-.835-3.772-2M12 12h.01M12 12v.01"></path></svg>
+          <HelpCircle class="mx-auto h-12 w-12 text-blue-500" />
           <h3 class="mt-2 text-lg font-semibold text-gray-900">Confirm Submission</h3>
           <div class="mt-2">
             <p class="text-sm text-gray-600">
@@ -297,6 +297,29 @@ import { useAuthStore } from '@/stores/authStore';
 import apiService from '@/services/services';
 import PaymentModal from '@/components/common/PaymentModal.vue';
 import ConfirmationModal from '@/components/common/ConfirmationModal.vue';
+import {
+  Info,
+  X,
+  CheckCircle2,
+  ClipboardList,
+  AlertTriangle,
+  FileCheck,
+  Loader2,
+  FileText,
+  BookOpen,
+  Lightbulb,
+  Trash2,
+  Plus,
+  Save,
+  CheckCircle,
+  HelpCircle,
+  Calendar,
+  Pencil,
+  CreditCard,
+  Clock,
+  XCircle,
+  Check,
+} from 'lucide-vue-next';
 
 const toast = useToast();
 const authStore = useAuthStore();
@@ -361,16 +384,16 @@ const statusBadgeClass = (statusKey) => {
   return mapping[statusKey] || 'bg-gray-100 text-gray-700 border border-gray-200';
 };
 
-const statusIconChar = (statusKey) => {
+const statusIcon = (statusKey) => {
   const mapping = {
-    'draft_initial': '🖊',
-    'pending_payment': '💳',
-    'initial_app_submitted_heqc_review': '⏳',
-    'initial_app_rejected': '❌',
-    'initial_app_approved_awaiting_isar': '✅',
-    'isar_submitted_heqc_review': '📆',
+    'draft_initial': Pencil,
+    'pending_payment': CreditCard,
+    'initial_app_submitted_heqc_review': Clock,
+    'initial_app_rejected': XCircle,
+    'initial_app_approved_awaiting_isar': Check,
+    'isar_submitted_heqc_review': Calendar,
   };
-  return mapping[statusKey] || 'ℹ';
+  return mapping[statusKey] || Info;
 };
 
 const fetchInitialDataMasters = async () => {

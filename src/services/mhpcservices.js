@@ -489,7 +489,11 @@ export default {
     return apiClient.put(`/mhpc/mhpc-new-application/${id}/`, data)
   },
   patchMhpcNewApplication(id, data) {
-    return apiClient.patch(`/mhpc/mhpc-new-application/${id}/`, data)
+    return apiClient.patch(`/mhpc/mhpc-new-application/${id}/`, data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
   },
   deleteMhpcNewApplication(id) {
     return apiClient.delete(`/mhpc/mhpc-new-application/${id}/`)
@@ -871,8 +875,18 @@ export default {
   },
 
   // get cpd records based on cid
-  getMhpcCpdRecordsByCid(cid) {
-    return apiClient.get(`/mhpc/mhpc-cpd-records/list-my-cpd/?cid=${cid}`)
+  getMhpcCpdRecordsByCid(cid, status = null) {
+    let url = `/mhpc/mhpc-cpd-records/list-my-cpd/?cid=${cid}`;
+    if (status) {
+      url += `&status=${status}`;
+    }
+    return apiClient.get(url, {
+      headers: {
+        'Cache-Control': 'no-cache',
+        Pragma: 'no-cache',
+        Expires: '0',
+      },
+    });
   },
 
   // MHPC CPD Records

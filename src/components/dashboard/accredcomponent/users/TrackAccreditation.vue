@@ -124,6 +124,7 @@
         :is-open="isModalOpen"
         :application="selectedApplication"
         @close="closeModal"
+        @coi-updated="fetchData"
     />
 
     <IsarReportModal

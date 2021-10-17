@@ -1,5 +1,6 @@
 <template>
-  <div class="schedule-management mx-auto mt-8 p-6 bg-gray-50 shadow-lg rounded-lg">
+  <div class="min-h-screen">
+    <div class="schedule-management mx-auto mt-8 p-6 bg-gray-50 shadow-lg rounded-lg">
     <div class="flex justify-between items-center mb-6">
       <h3 class="text-2xl font-semibold text-blue-700">Accreditation Schedule Management</h3>
       <button
@@ -161,6 +162,7 @@
         </div>
       </div>
     </div>
+  </div>
   </div>
 </template>
 

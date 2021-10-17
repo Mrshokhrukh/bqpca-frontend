@@ -1,64 +1,58 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">
+  <div class="min-h-screen bg-gray-50/50 p-4 sm:p-6 lg:p-8">
     <div class="mx-auto">
       <!-- Header Section -->
-      <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8 mb-8">
-        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+      <div class="bg-white rounded-2xl shadow-lg border border-gray-200/80 p-6 mb-8">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <div>
-            <h1 class="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+            <h1 class="text-3xl font-bold text-gray-900">
               Accreditation Reports
             </h1>
-            <p class="text-slate-600 mt-2 text-lg">Manage and monitor institutional accreditation applications</p>
+            <p class="text-gray-600 mt-1">Manage and monitor institutional accreditation applications.</p>
           </div>
           <button
             @click="exportToCSV"
             :disabled="isLoading || mappedApplications.length === 0"
-            class="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+            class="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
           >
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
             Export to CSV
           </button>
         </div>
       </div>
 
       <!-- Filters Section -->
-      <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8 mb-8">
-        <h2 class="text-2xl font-semibold text-slate-800 mb-6 flex items-center gap-3">
-          <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z" />
-          </svg>
-          Search & Filters
+      <div class="bg-white rounded-2xl shadow-lg border border-gray-200/80 p-6 mb-8">
+        <h2 class="text-xl font-semibold text-gray-800 mb-5 flex items-center gap-3">
+          <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z" /></svg>
+          Filter & Search
         </h2>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
           <!-- Search -->
           <div class="xl:col-span-2">
-            <label for="search" class="block text-sm font-semibold text-slate-700 mb-2">Search Applications</label>
+            <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Search</label>
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg class="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
+                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
               </div>
               <input
                 id="search"
                 type="text"
                 v-model="searchQuery"
-                placeholder="Search by Institute Name or Reference No..."
-                class="block w-full pl-10 pr-4 py-3 border border-slate-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/50 backdrop-blur-sm transition-all duration-200 hover:bg-white/70"
+                placeholder="By Institute Name or Ref No..."
+                class="block w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
               />
             </div>
           </div>
 
           <!-- Status Filter -->
           <div>
-            <label for="status" class="block text-sm font-semibold text-slate-700 mb-2">Status</label>
+            <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
             <select
               id="status"
               v-model="statusFilter"
-              class="block w-full px-4 py-3 border border-slate-200 bg-white/50 backdrop-blur-sm rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 hover:bg-white/70"
+              class="block w-full px-4 py-2.5 border border-gray-300 bg-white rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
             >
               <option value="">All Statuses</option>
               <option v-for="option in statusOptions" :key="option.value" :value="option.value">
@@ -69,11 +63,11 @@
 
           <!-- Grade Filter -->
           <div>
-            <label for="grade" class="block text-sm font-semibold text-slate-700 mb-2">Grade</label>
+            <label for="grade" class="block text-sm font-medium text-gray-700 mb-1">Grade</label>
             <select
               id="grade"
               v-model="gradeFilter"
-              class="block w-full px-4 py-3 border border-slate-200 bg-white/50 backdrop-blur-sm rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 hover:bg-white/70"
+              class="block w-full px-4 py-2.5 border border-gray-300 bg-white rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
             >
               <option value="">All Grades</option>
               <option v-for="grade in grades" :key="grade.id" :value="grade.id">
@@ -82,169 +76,110 @@
             </select>
           </div>
 
-          <!-- Start Date -->
-          <div>
-            <label for="start-date" class="block text-sm font-semibold text-slate-700 mb-2">Start Date</label>
-            <input
-              type="date"
-              id="start-date"
-              v-model="startDate"
-              class="block w-full px-4 py-3 border border-slate-200 bg-white/50 backdrop-blur-sm rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 hover:bg-white/70"
-            />
-          </div>
-
-          <!-- End Date -->
-          <div>
-            <label for="end-date" class="block text-sm font-semibold text-slate-700 mb-2">End Date</label>
-            <input
-              type="date"
-              id="end-date"
-              v-model="endDate"
-              class="block w-full px-4 py-3 border border-slate-200 bg-white/50 backdrop-blur-sm rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 hover:bg-white/70"
-            />
+          <!-- Date Range -->
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label for="start-date" class="block text-sm font-medium text-gray-700 mb-1">From</label>
+              <input
+                type="date"
+                id="start-date"
+                v-model="startDate"
+                class="block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+              />
+            </div>
+            <div>
+              <label for="end-date" class="block text-sm font-medium text-gray-700 mb-1">To</label>
+              <input
+                type="date"
+                id="end-date"
+                v-model="endDate"
+                class="block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+              />
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Data Table Section -->
-      <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 overflow-hidden">
-        <div class="bg-gradient-to-r from-indigo-500 to-purple-600 px-8 py-6">
-          <h2 class="text-2xl font-semibold text-white flex items-center gap-3">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            Applications Data
-          </h2>
-        </div>
-
+      <div class="bg-white rounded-2xl shadow-lg border border-gray-200/80 overflow-hidden">
         <div class="overflow-x-auto">
           <table class="min-w-full">
-            <thead class="bg-slate-50/80">
+            <thead class="bg-gray-50">
               <tr>
-                <th class="px-6 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider border-b border-slate-200">
-                  <div class="flex items-center gap-2">
-                    <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
-                    </svg>
-                    Reference No
-                  </div>
+                <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                  Institute Details
                 </th>
-                <th class="px-6 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider border-b border-slate-200">
-                  <div class="flex items-center gap-2">
-                    <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                    </svg>
-                    Institute Name
-                  </div>
+                <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                  Submission Date
                 </th>
-                <th class="px-6 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider border-b border-slate-200">
-                  <div class="flex items-center gap-2">
-                    <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a1 1 0 011-1h6a1 1 0 011 1v4m4 0H4m0 0v10a1 1 0 001 1h14a1 1 0 001-1V7M4 7h16m-4 4v4m-4-4v4m-4-4v4" />
-                    </svg>
-                    Submission Date
-                  </div>
+                <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                  Final Grade
                 </th>
-                <th class="px-6 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider border-b border-slate-200">
-                  <div class="flex items-center gap-2">
-                    <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    Final Grade
-                  </div>
-                </th>
-                <th class="px-6 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider border-b border-slate-200">
-                  <div class="flex items-center gap-2">
-                    <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                    </svg>
-                    Status
-                  </div>
+                <th class="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+                  Status
                 </th>
               </tr>
             </thead>
-            <tbody class="bg-white/60 backdrop-blur-sm divide-y divide-slate-200">
+            <tbody class="bg-white divide-y divide-gray-200">
               <!-- Loading State -->
               <tr v-if="isLoading">
-                <td colspan="5" class="px-6 py-16 text-center">
+                <td colspan="4" class="px-6 py-24 text-center">
                   <div class="flex flex-col items-center gap-4">
-                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-                    <p class="text-lg text-slate-600">Loading applications...</p>
+                    <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600"></div>
+                    <p class="text-base text-gray-600">Loading applications...</p>
                   </div>
                 </td>
               </tr>
 
               <!-- Error State -->
               <tr v-else-if="error">
-                <td colspan="5" class="px-6 py-16 text-center">
+                <td colspan="4" class="px-6 py-24 text-center">
                   <div class="flex flex-col items-center gap-4">
-                    <div class="rounded-full bg-red-100 p-4">
-                      <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                      </svg>
+                    <div class="rounded-full bg-red-100 p-3">
+                      <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" /></svg>
                     </div>
-                    <p class="text-lg text-red-600 font-semibold">{{ error }}</p>
+                    <p class="text-base text-red-600 font-semibold">{{ error }}</p>
                   </div>
                 </td>
               </tr>
 
               <!-- No Data State -->
               <tr v-else-if="mappedApplications.length === 0">
-                <td colspan="5" class="px-6 py-16 text-center">
+                <td colspan="4" class="px-6 py-24 text-center">
                   <div class="flex flex-col items-center gap-4">
-                    <div class="rounded-full bg-slate-100 p-4">
-                      <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                      </svg>
+                    <div class="rounded-full bg-gray-100 p-3">
+                      <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                     </div>
-                    <div class="space-y-2">
-                      <p class="text-lg text-slate-600 font-semibold">No applications found</p>
-                      <p class="text-slate-500">Try adjusting your search criteria or filters</p>
+                    <div class="space-y-1">
+                      <p class="text-base text-gray-600 font-semibold">No applications found</p>
+                      <p class="text-sm text-gray-500">Try adjusting your search criteria or filters</p>
                     </div>
                   </div>
                 </td>
               </tr>
 
               <!-- Data Rows -->
-              <tr v-else v-for="app in mappedApplications" :key="app.id" class="hover:bg-white/80 transition-colors duration-200">
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="flex items-center">
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-slate-100 text-slate-800">
-                      {{ app.referenceNo }}
-                    </span>
-                  </div>
+              <tr v-else v-for="app in mappedApplications" :key="app.id" class="hover:bg-gray-50/70 transition-colors duration-200">
+                <td class="px-6 py-5 whitespace-nowrap">
+                  <div class="font-medium text-gray-900">{{ app.instituteName }}</div>
+                  <div class="text-sm text-gray-500 font-mono">{{ app.referenceNo }}</div>
                 </td>
-                <td class="px-6 py-4">
-                  <div class="text-sm">
-                    <div class="font-semibold text-slate-900">{{ app.instituteName }}</div>
-                  </div>
+                <td class="px-6 py-5 whitespace-nowrap">
+                  <span class="text-sm text-gray-800">{{ app.submissionDate }}</span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="flex items-center gap-2">
-                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a1 1 0 011-1h6a1 1 0 011 1v4m4 0H4m0 0v10a1 1 0 001 1h14a1 1 0 001-1V7M4 7h16" />
-                    </svg>
-                    <span class="text-sm text-slate-900">{{ app.submissionDate }}</span>
-                  </div>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-gradient-to-r from-blue-100 to-indigo-100 text-indigo-800 border border-indigo-200">
+                <td class="px-6 py-5 whitespace-nowrap">
+                  <span v-if="app.finalGrade !== 'N/A'" class="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-blue-100 text-blue-800 border border-blue-200">
                     {{ app.finalGrade }}
                   </span>
+                   <span v-else class="text-sm text-gray-400 italic">Pending</span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap">
+                <td class="px-6 py-5 whitespace-nowrap">
                   <span
-                    class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold shadow-sm"
+                    class="relative inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold"
                     :class="getStatusClass(app.statusKey)"
                   >
-                    <span
-                      class="absolute inset-0 rounded-full opacity-20"
-                      :class="getStatusBackgroundClass(app.statusKey)"
-                    ></span>
-                    <span class="relative flex items-center gap-2">
-                      <div class="w-2 h-2 rounded-full" :class="getStatusIndicatorClass(app.statusKey)"></div>
-                      {{ app.status }}
-                    </span>
+                    <span class="w-2 h-2 mr-2 rounded-full" :class="getStatusIndicatorClass(app.statusKey)"></span>
+                    {{ app.status }}
                   </span>
                 </td>
               </tr>

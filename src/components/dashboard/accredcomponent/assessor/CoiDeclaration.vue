@@ -5,7 +5,8 @@
 
       <!-- State: Loading -->
       <div v-if="loading" class="text-center py-12">
-        <p class="text-gray-600">Loading your assigned applications...</p>
+        <Loader2 class="animate-spin inline-block w-8 h-8 text-gray-500" />
+        <p class="text-gray-600 mt-4">Loading your assigned applications...</p>
       </div>
 
       <!-- State: Error -->
@@ -46,7 +47,8 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <!-- This logic is still correct: the button is disabled if a declaration has been made -->
-                  <button @click="openCoiModal(item)" class="text-indigo-600 hover:text-indigo-900 disabled:text-gray-400 disabled:cursor-not-allowed" :disabled="item.assessor_has_coi !== null">
+                  <button @click="openCoiModal(item)" class="text-indigo-600 hover:text-indigo-900 disabled:text-gray-400 disabled:cursor-not-allowed inline-flex items-center" :disabled="item.assessor_has_coi !== null">
+                    <Edit class="w-4 h-4 mr-2" />
                     {{ item.assessor_has_coi !== null ? 'Declaration Submitted' : 'Declare COI' }}
                   </button>
                 </td>
@@ -57,11 +59,46 @@
       </div>
     </div>
 
-    <!-- COI Declaration Modal (No changes needed here) -->
+    <!-- COI Declaration Modal -->
     <div v-if="isCoiModalOpen" class="fixed inset-0 bg-gray-600 bg-opacity-75 overflow-y-auto h-full w-full z-50 flex items-center justify-center" @click.self="closeCoiModal">
        <div class="relative mx-auto p-6 border w-11/12 md:w-1/2 lg:w-1/3 shadow-lg rounded-md bg-white">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-semibold">Conflict of Interest Declaration</h3>
+            <button @click="closeCoiModal" class="p-2 hover:bg-gray-200 rounded-full">
+                <X class="w-6 h-6" />
+            </button>
+        </div>
         <form @submit.prevent="submitCoiDeclaration">
-            <!-- Modal content is unchanged -->
+            <div class="mb-4">
+                <p class="font-medium">Do you have a conflict of interest with this institution?</p>
+                <div class="flex items-center space-x-4 mt-2">
+                    <label class="flex items-center">
+                        <input type="radio" v-model="coiFormData.has_coi" :value="true" class="form-radio h-4 w-4 text-indigo-600">
+                        <span class="ml-2">Yes</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" v-model="coiFormData.has_coi" :value="false" class="form-radio h-4 w-4 text-indigo-600">
+                        <span class="ml-2">No</span>
+                    </label>
+                </div>
+            </div>
+
+            <div v-if="coiFormData.has_coi === true" class="mb-4">
+                <label for="remarks" class="block text-sm font-medium text-gray-700">Remarks</label>
+                <textarea v-model="coiFormData.remarks" id="remarks" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
+            </div>
+
+            <div v-if="submissionError" class="bg-red-100 text-red-700 p-3 rounded-md mb-4">
+                {{ submissionError }}
+            </div>
+
+            <div class="flex justify-end space-x-4">
+                <button type="button" @click="closeCoiModal" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Cancel</button>
+                <button type="submit" :disabled="isSubmitting" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:bg-indigo-300">
+                    <Loader2 v-if="isSubmitting" class="animate-spin inline-block w-5 h-5" />
+                    <span v-else>Submit</span>
+                </button>
+            </div>
         </form>
       </div>
     </div>
@@ -71,6 +108,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import apiService from '@/services/services';
+import { Loader2, Edit, X } from 'lucide-vue-next';
 
 // --- Reactive State (Unchanged) ---
 const loading = ref(true);

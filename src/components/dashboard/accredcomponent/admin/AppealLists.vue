@@ -71,7 +71,8 @@
               >
                 Institution
                 <span v-if="sorting.key === 'institution_name'">
-                  {{ sorting.order === 'asc' ? '▲' : '▼' }}
+                  <ArrowUp v-if="sorting.order === 'asc'" class="w-4 h-4 inline" />
+                  <ArrowDown v-else class="w-4 h-4 inline" />
                 </span>
               </th>
               <th
@@ -81,7 +82,8 @@
               >
                 Appeal Reason
                 <span v-if="sorting.key === 'appeal_reason'">
-                  {{ sorting.order === 'asc' ? '▲' : '▼' }}
+                  <ArrowUp v-if="sorting.order === 'asc'" class="w-4 h-4 inline" />
+                  <ArrowDown v-else class="w-4 h-4 inline" />
                 </span>
               </th>
               <th
@@ -91,7 +93,8 @@
               >
                 Status
                 <span v-if="sorting.key === 'bac_decision'">
-                  {{ sorting.order === 'asc' ? '▲' : '▼' }}
+                  <ArrowUp v-if="sorting.order === 'asc'" class="w-4 h-4 inline" />
+                  <ArrowDown v-else class="w-4 h-4 inline" />
                 </span>
               </th>
               <th
@@ -116,14 +119,16 @@
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                 <button
                   @click="viewAppeal(appeal.id)"
-                  class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2"
+                  class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2 inline-flex items-center"
                 >
+                  <Eye class="w-4 h-4 mr-2" />
                   View
                 </button>
                 <button
                   @click="editAppeal(appeal)"
-                  class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded"
+                  class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded inline-flex items-center"
                 >
+                  <Edit class="w-4 h-4 mr-2" />
                   Edit
                 </button>
               </td>
@@ -168,14 +173,16 @@
         <div class="flex justify-end">
           <button
             @click="saveAppealChanges"
-            class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mr-2"
+            class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mr-2 inline-flex items-center"
           >
+            <Save class="w-4 h-4 mr-2" />
             Save
           </button>
           <button
             @click="closeEditModal"
-            class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+            class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded inline-flex items-center"
           >
+            <X class="w-4 h-4 mr-2" />
             Cancel
           </button>
         </div>
@@ -187,6 +194,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import services from '@/services/services'
+import { ArrowUp, ArrowDown, Eye, Edit, Save, X } from 'lucide-vue-next'
 // import { useRouter } from 'vue-router';
 
 // const router = useRouter();

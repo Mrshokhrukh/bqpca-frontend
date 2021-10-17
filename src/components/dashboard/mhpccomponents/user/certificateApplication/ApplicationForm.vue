@@ -115,16 +115,11 @@
               <label class="block text-sm font-medium text-gray-700 required">CID No.</label>
               <input
                 v-model="localFormData.cid_no"
-                type="number"
-                maxlength="11"
-                oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
-                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
-                placeholder="Enter 11-digit CID number"
-                @input="fetchDCRCData"
+                type="text"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 bg-gray-100"
+                readonly
               />
-              <span v-if="errors.cid_no" class="text-xs text-red-500 mt-1">{{
-                errors.cid_no
-              }}</span>
+              <span v-if="errors.cid_no" class="text-xs text-red-500 mt-1">{{ errors.cid_no }}</span>
             </div>
 
             <div class="col-span-1">
@@ -592,7 +587,8 @@
                 <select
                   :id="`doc_type_${index}`"
                   v-model="doc.type"
-                  class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 text-sm"
+                  class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 text-sm bg-gray-100"
+                  disabled
                 >
                   <option value="">Select Document Type</option>
                   <option
@@ -724,6 +720,7 @@ import { useRouter } from 'vue-router'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 import PageHeader from '@/components/common/MHPC/PageHeader.vue'
 import { UserPlus } from 'lucide-vue-next'
+import { countries } from './countries.js'
 
 // Initialize the store and router
 const authStore = useAuthStore()
@@ -818,235 +815,11 @@ const updateFormDocuments = () => {
     }))
 }
 
-const countries = [
-  'Afghanistan',
-  'Albania',
-  'Algeria',
-  'Andorra',
-  'Angola',
-  'Antigua and Barbuda',
-  'Argentina',
-  'Armenia',
-  'Australia',
-  'Austria',
-  'Azerbaijan',
-  'Bahamas',
-  'Bahrain',
-  'Bangladesh',
-  'Barbados',
-  'Belarus',
-  'Belgium',
-  'Belize',
-  'Benin',
-  'Bhutan',
-  'Bolivia',
-  'Bosnia and Herzegovina',
-  'Botswana',
-  'Brazil',
-  'Brunei',
-  'Bulgaria',
-  'Burkina Faso',
-  'Burundi',
-  'Cambodia',
-  'Cameroon',
-  'Canada',
-  'Cape Verde',
-  'Central African Republic',
-  'Chad',
-  'Chile',
-  'China',
-  'Colombia',
-  'Comoros',
-  'Congo',
-  'Costa Rica',
-  'Croatia',
-  'Cuba',
-  'Cyprus',
-  'Czech Republic',
-  'Denmark',
-  'Djibouti',
-  'Dominica',
-  'Dominican Republic',
-  'East Timor',
-  'Ecuador',
-  'Egypt',
-  'El Salvador',
-  'Equatorial Guinea',
-  'Eritrea',
-  'Estonia',
-  'Ethiopia',
-  'Fiji',
-  'Finland',
-  'France',
-  'Gabon',
-  'Gambia',
-  'Georgia',
-  'Germany',
-  'Ghana',
-  'Greece',
-  'Grenada',
-  'Guatemala',
-  'Guinea',
-  'Guinea-Bissau',
-  'Guyana',
-  'Haiti',
-  'Honduras',
-  'Hungary',
-  'Iceland',
-  'India',
-  'Indonesia',
-  'Iran',
-  'Iraq',
-  'Ireland',
-  'Israel',
-  'Italy',
-  'Ivory Coast',
-  'Jamaica',
-  'Japan',
-  'Jordan',
-  'Kazakhstan',
-  'Kenya',
-  'Kiribati',
-  'Korea, North',
-  'Korea, South',
-  'Kuwait',
-  'Kyrgyzstan',
-  'Laos',
-  'Latvia',
-  'Lebanon',
-  'Lesotho',
-  'Liberia',
-  'Libya',
-  'Liechtenstein',
-  'Lithuania',
-  'Luxembourg',
-  'Macedonia',
-  'Madagascar',
-  'Malawi',
-  'Malaysia',
-  'Maldives',
-  'Mali',
-  'Malta',
-  'Marshall Islands',
-  'Mauritania',
-  'Mauritius',
-  'Mexico',
-  'Micronesia',
-  'Moldova',
-  'Monaco',
-  'Mongolia',
-  'Montenegro',
-  'Morocco',
-  'Mozambique',
-  'Myanmar',
-  'Namibia',
-  'Nauru',
-  'Nepal',
-  'Netherlands',
-  'New Zealand',
-  'Nicaragua',
-  'Niger',
-  'Nigeria',
-  'Norway',
-  'Oman',
-  'Pakistan',
-  'Palau',
-  'Panama',
-  'Papua New Guinea',
-  'Paraguay',
-  'Peru',
-  'Philippines',
-  'Poland',
-  'Portugal',
-  'Qatar',
-  'Romania',
-  'Russia',
-  'Saint Kitts and Nevis',
-  'Saint Lucia',
-  'Saint Vincent',
-  'Samoa',
-  'San Marino',
-  'Sao Tome and Principe',
-  'Saudi Arabia',
-  'Senegal',
-  'Serbia',
-  'Seychelles',
-  'Sierra Leone',
-  'Singapore',
-  'Slovakia',
-  'Slovenia',
-  'Solomon Islands',
-  'Somalia',
-  'South Africa',
-  'South Sudan',
-  'Spain',
-  'Sri Lanka',
-  'Sudan',
-  'Suriname',
-  'Swaziland',
-  'Sweden',
-  'Switzerland',
-  'Syria',
-  'Taiwan',
-  'Tajikistan',
-  'Tanzania',
-  'Thailand',
-  'Togo',
-  'Tonga',
-  'Trinidad and Tobago',
-  'Tunisia',
-  'Turkey',
-  'Turkmenistan',
-  'Tuvalu',
-  'Uganda',
-  'Ukraine',
-  'United Arab Emirates',
-  'United Kingdom',
-  'United States',
-  'Uruguay',
-  'Uzbekistan',
-  'Vanuatu',
-  'Vatican City',
-  'Venezuela',
-  'Vietnam',
-  'Yemen',
-  'Zambia',
-  'Zimbabwe',
-]
 
 const qualificationTypes = ref([])
 const allQualifications = ref([])
 const universities = ref([])
 const allRegistrationTypesFromAPI = ref([])
-
-const REGISTRATION_TYPE_KEYWORDS = {
-  full: ['full', 'new'],
-  provisional: ['provisional'],
-  temporary: ['temporary'],
-}
-
-const MANDATORY_DOC_KEYWORDS = {
-  provisional: [
-    'graduation certificate',
-    'provisional certificate',
-    'course completion certificate',
-    'marksheet',
-    'internship completion',
-    'class x',
-    'class xii',
-    'citizenship identity card',
-    'security clearance',
-    'recognition of qualification',
-  ],
-  temporary: [
-    'graduation certificate',
-    'work offer letter',
-    'request letter',
-    'passport copy',
-    'visa copy',
-    'permit copy',
-  ],
-}
 
 onMounted(async () => {
   isLoadingMasters.value = true
@@ -1076,6 +849,11 @@ onMounted(async () => {
       } else if (filteredRegistrationTypes.value.length > 0) {
         localFormData.registration_type = filteredRegistrationTypes.value[0].id
       }
+    }
+
+    if (props.selectedType === 'cid' && authStore.user?.cid) {
+      localFormData.cid_no = authStore.user.cid
+      await fetchDCRCData()
     }
   } catch (error) {
     console.error('Error fetching master data:', error)
@@ -1147,44 +925,29 @@ const getRegistrationTypeName = (typeId) => {
   return type ? type.name : 'Selected Registration'
 }
 
-const getRegistrationTypeCategory = (typeId) => {
-  const type = allRegistrationTypesFromAPI.value.find((rt) => rt.id === typeId)
-  if (!type) return null
-  const nameLower = type.name.toLowerCase()
-  if (REGISTRATION_TYPE_KEYWORDS.full.some((keyword) => nameLower.includes(keyword))) {
-    return 'full'
-  } else if (
-    REGISTRATION_TYPE_KEYWORDS.provisional.some((keyword) => nameLower.includes(keyword))
-  ) {
-    return 'provisional'
-  } else if (REGISTRATION_TYPE_KEYWORDS.temporary.some((keyword) => nameLower.includes(keyword))) {
-    return 'temporary'
-  }
-  return null
-}
+// const getRegistrationTypeCategory = (typeId) => {
+//   const type = allRegistrationTypesFromAPI.value.find((rt) => rt.id === typeId)
+//   if (!type) return null
+//   const nameLower = type.name.toLowerCase()
+//   if (REGISTRATION_TYPE_KEYWORDS.full.some((keyword) => nameLower.includes(keyword))) {
+//     return 'full'
+//   } else if (
+//     REGISTRATION_TYPE_KEYWORDS.provisional.some((keyword) => nameLower.includes(keyword))
+//   ) {
+//     return 'provisional'
+//   } else if (REGISTRATION_TYPE_KEYWORDS.temporary.some((keyword) => nameLower.includes(keyword))) {
+//     return 'temporary'
+//   }
+//   return null
+// }
 
 const currentMandatoryDocIds = computed(() => {
-  const category = getRegistrationTypeCategory(localFormData.registration_type)
-  if (category === 'full') {
-    return fetchedDocumentTypes.value.map((dt) => dt.id)
-  } else if (category === 'provisional' || category === 'temporary') {
-    const keywords = MANDATORY_DOC_KEYWORDS[category]
-    return fetchedDocumentTypes.value
-      .filter((dt) => {
-        const docNameLower = dt.document_name.toLowerCase()
-        return keywords.some((keyword) => docNameLower.includes(keyword.toLowerCase()))
-      })
-      .map((dt) => dt.id)
-  }
-  return []
-})
+  return fetchedDocumentTypes.value.map(doc => doc.id);
+});
 
 const currentRequiredDocNames = computed(() => {
-  const mandatoryIds = currentMandatoryDocIds.value
-  return fetchedDocumentTypes.value
-    .filter((dt) => mandatoryIds.includes(dt.id))
-    .map((dt) => dt.document_name)
-})
+  return fetchedDocumentTypes.value.map(doc => doc.document_name);
+});
 
 const isCIDValid = computed(() => {
   return /^\d{11}$/.test(localFormData.cid_no)
@@ -1199,14 +962,27 @@ watch(
 )
 
 watch(
-  () => localFormData.registration_type,
-  () => {
+  [() => localFormData.registration_type, fetchedDocumentTypes],
+  ([newRegType], [oldRegType]) => {
     delete errors.mandatory_documents
     supportingDocuments.value.forEach((_, index) => {
       delete errors[`document_type_${index}`]
       delete errors[`document_file_${index}`]
     })
-  }
+
+    if (!newRegType || fetchedDocumentTypes.value.length === 0) {
+      supportingDocuments.value = [{ type: '', files: [] }]
+      return
+    }
+
+    const mandatoryIds = currentMandatoryDocIds.value
+    if (mandatoryIds.length > 0) {
+      supportingDocuments.value = mandatoryIds.map((id) => ({ type: id, files: [] }))
+    } else {
+      supportingDocuments.value = [{ type: '', files: [] }]
+    }
+  },
+  { deep: true }
 )
 
 const validateFormStageOne = () => {
@@ -1366,6 +1142,13 @@ const validateForm = () => {
     isValid = false
   }
 
+  const validUploadedDocs = supportingDocuments.value.filter((d) => d.type && d.files.length > 0)
+
+  if (validUploadedDocs.length === 0) {
+    errors.mandatory_documents = 'At least one supporting document must be uploaded.'
+    isValid = false
+  }
+
   supportingDocuments.value.forEach((doc, index) => {
     if (doc.type && doc.files.length === 0) {
       errors[`document_file_${index}`] = 'Please upload a file for this selected document type.'
@@ -1377,7 +1160,6 @@ const validateForm = () => {
   })
 
   const mandatoryDocIds = currentMandatoryDocIds.value
-  const validUploadedDocs = supportingDocuments.value.filter((d) => d.type && d.files.length > 0)
   const uploadedDocTypeIds = new Set(validUploadedDocs.map((d) => d.type))
 
   const missingMandatoryDocNames = []
@@ -1555,13 +1337,25 @@ const handleNext = async () => {
         }
       }
     }
-    apiFormData.append('applicant', user.id)
-    apiFormData.append('is_draft', 'False')
+
     try {
-      const response = await apiService.createMhpcNewApplication(apiFormData)
+      const idToCheck = props.selectedType === 'cid' ? localFormData.cid_no : localFormData.workPermitNo;
+      const existingAppsResponse = await apiService.getMhpcFullApplicationListByCid(idToCheck);
+      const existingApp = existingAppsResponse.data?.results?.[0];
+
+      let response;
+      if (existingApp) {
+        response = await apiService.patchMhpcNewApplication(existingApp.id, apiFormData);
+        toast.success('Personal information updated successfully!');
+      } else {
+        apiFormData.append('applicant', user.id)
+        apiFormData.append('is_draft', 'False')
+        response = await apiService.createMhpcNewApplication(apiFormData)
+        toast.success('Personal information saved successfully!');
+      }
+
       applicationId.value = response.data.id
       localFormData.application = response.data.id
-      toast.success('Personal information saved successfully!')
       stage.value = 2
     } catch (error) {
       console.error('Error submitting personal information:', error.response?.data || error.message)
@@ -1666,20 +1460,8 @@ const handleSubmitActual = async () => {
 
     if (needsUpdate) {
       try {
-        // Append existing data to avoid wiping them out on the backend
-        profileUpdateData.append(
-          'contact_number',
-          authStore.user.contact_number || localFormData.contact_no
-        )
-        profileUpdateData.append('email', authStore.user.email || localFormData.email_address)
-
-        // Assuming you have an apiService method like updateProfile(userId, data)
-        await apiService.updateProfile(authStore.user.id, profileUpdateData)
-
-        // Also update the local store so the UI reflects the change immediately
-        authStore.user.village = localFormData.village
-        authStore.user.gewog = localFormData.gewog
-        authStore.user.dzongkhag = localFormData.dzongkhag
+        // Use the store action which handles both API call and state update
+        await authStore.updateUserProfile(profileUpdateData)
 
         toast.info('Your profile location has been updated.')
       } catch (profileError) {

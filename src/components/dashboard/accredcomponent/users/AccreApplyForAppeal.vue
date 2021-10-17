@@ -1,92 +1,103 @@
 <template>
   <div v-if="isVisible" class="fixed inset-0 bg-black bg-opacity-60 z-40 flex justify-center items-center p-4" @click.self="closeModal">
-    <div class="bg-white rounded-2xl shadow-2xl overflow-hidden w-full max-w-4xl max-h-[95vh] flex flex-col">
-      <div class="bg-gradient-to-r from-indigo-100 via-blue-50 to-indigo-100 p-6 flex justify-between items-center border-b">
+    <div class="bg-gray-50 rounded-2xl shadow-2xl overflow-hidden w-full max-w-4xl max-h-[95vh] flex flex-col">
+      <!-- Header -->
+      <div class="bg-white p-6 flex justify-between items-center border-b border-gray-200">
         <div>
-            <h2 class="text-2xl font-bold text-gray-900">Accreditation Appeal</h2>
+            <h2 class="text-2xl font-bold text-gray-800">Accreditation Appeal</h2>
             <p v-if="appeal.application" class="text-gray-600 text-sm mt-1">
-                Filing an appeal for Application UID: <strong class="text-indigo-700">{{ appealedApplicationUID }}</strong>
+                Filing an appeal for Application UID: <strong class="text-indigo-700 font-semibold">{{ appealedApplicationUID }}</strong>
             </p>
         </div>
-        <button @click="closeModal" class="text-gray-500 hover:text-gray-800 text-3xl leading-none">×</button>
+        <button @click="closeModal" class="p-2 rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
       </div>
 
+      <!-- Main Content -->
       <div class="overflow-y-auto flex-grow">
           <div v-if="loadingError" class="p-8 text-center">
               <p class="text-lg text-red-600 font-semibold">Cannot Proceed with Appeal</p>
               <p class="text-gray-700 mt-2">{{ loadingError }}</p>
-              <button @click="closeModal" class="mt-4 inline-block px-4 py-2 bg-blue-600 text-white rounded-lg">Close</button>
+              <button @click="closeModal" class="mt-6 inline-flex items-center px-6 py-2 bg-blue-600 text-white rounded-lg shadow-sm hover:bg-blue-700 transition-colors">Close</button>
           </div>
 
-          <form v-else-if="appeal.application" @submit.prevent="handleSubmit" class="p-6">
-              <div class="mb-6">
-                <h3 class="text-lg font-semibold text-gray-900 px-2">1. Appellant Details</h3>
-                <p class="mt-1 text-sm text-gray-500 px-2">These details are auto-filled from your institution profile.</p>
-                <div class="mt-4 p-6 grid grid-cols-1 md:grid-cols-2 gap-6 bg-gray-50 rounded-lg">
+          <form v-else-if="appeal.application" @submit.prevent="handleSubmit" class="p-6 space-y-8">
+              <!-- Section 1: Appellant Details -->
+              <fieldset class="p-6 bg-white rounded-xl shadow-sm border">
+                <legend class="text-lg font-semibold text-gray-800 px-2">1. Appellant Details</legend>
+                <p class="text-sm text-gray-500 mb-6">These details are auto-filled from your institution profile and cannot be edited here.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                   <div v-for="(value, key) in autoFilledDetails" :key="key">
-                    <label class="block text-sm font-medium text-gray-700">{{ key }}</label>
-                    <input type="text" :value="value" readonly class="mt-1 block w-full rounded-lg border-gray-300 p-2.5 bg-gray-100 cursor-not-allowed" />
+                    <label class="block text-sm font-medium text-gray-500">{{ key }}</label>
+                    <input type="text" :value="value" readonly class="mt-1 block w-full rounded-lg border-gray-200 p-2.5 bg-gray-100 cursor-not-allowed text-gray-700" />
                   </div>
                 </div>
-              </div>
+              </fieldset>
 
-              <div class="mb-6">
-                <h3 class="text-lg font-semibold text-gray-900 px-2">2. Appeal Details</h3>
-                <div class="p-2 space-y-4">
+              <!-- Section 2: Appeal Details -->
+              <fieldset class="p-6 bg-white rounded-xl shadow-sm border">
+                <legend class="text-lg font-semibold text-gray-800 px-2">2. Appeal Details</legend>
+                <p class="text-sm text-gray-500 mb-6">Provide the grounds for your appeal and any supporting evidence.</p>
+                <div class="space-y-6">
                   <div>
-                    <label class="block text-sm font-medium text-gray-700">Reason for Appeal/Type</label>
-                    <select v-model="appeal.reason_for_appeal_master" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm" required>
-                      <option value="" disabled>Select Reason</option>
+                    <label for="appeal-reason" class="block text-sm font-medium text-gray-700">Reason for Appeal/Type <span class="text-red-500">*</span></label>
+                    <select id="appeal-reason" v-model="appeal.reason_for_appeal_master" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm p-2.5 focus:ring-indigo-500 focus:border-indigo-500" required>
+                      <option value="" disabled>Select a reason</option>
                       <option v-for="reason in appealReasonOptions" :key="reason.id" :value="reason.id">{{ reason.appeal_name }}</option>
                     </select>
                   </div>
 
                   <div v-if="isOtherReasonSelected">
-                    <label class="block text-sm font-medium text-gray-700">If Others (specify)</label>
-                    <input type="text" v-model="appeal.reason_if_others_specify_appeal" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm" :required="isOtherReasonSelected" />
+                    <label for="other-reason" class="block text-sm font-medium text-gray-700">If "Others", please specify <span class="text-red-500">*</span></label>
+                    <input id="other-reason" type="text" v-model="appeal.reason_if_others_specify_appeal" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm p-2.5 focus:ring-indigo-500 focus:border-indigo-500" :required="isOtherReasonSelected" />
                   </div>
 
                   <div>
-                    <label class="block text-sm font-medium text-gray-700">Reason of Appeal</label>
-                    <textarea v-model="appeal.detailed_reason_of_appeal_text" rows="3" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm" required></textarea>
+                    <label for="detailed-reason" class="block text-sm font-medium text-gray-700">Detailed Justification of Appeal <span class="text-red-500">*</span></label>
+                    <textarea id="detailed-reason" v-model="appeal.detailed_reason_of_appeal_text" rows="4" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm p-2.5 focus:ring-indigo-500 focus:border-indigo-500" required></textarea>
                   </div>
 
-                  <div>
+                  <div class="border-t pt-6">
                     <label class="inline-flex items-center">
-                      <input type="checkbox" v-model="appeal.attempted_to_resolve_with_heqc_appeal" class="rounded border-gray-300 text-blue-600 shadow-sm" />
-                      <span class="ml-2 text-gray-700">Attempted to Resolve with HEQC</span>
+                      <input type="checkbox" v-model="appeal.attempted_to_resolve_with_heqc_appeal" class="h-4 w-4 rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" />
+                      <span class="ml-3 text-sm text-gray-700">I have attempted to resolve this issue with HEQC prior to this appeal.</span>
                     </label>
                   </div>
 
-                  <div v-if="appeal.attempted_to_resolve_with_heqc_appeal" class="grid md:grid-cols-2 gap-6">
+                  <div v-if="appeal.attempted_to_resolve_with_heqc_appeal" class="grid md:grid-cols-2 gap-6 p-4 bg-gray-50 rounded-lg border">
                     <div>
-                      <label class="block text-sm font-medium text-gray-700">Outcome</label>
-                      <input type="text" v-model="appeal.outcome_if_attempted_heqc_appeal" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm" :required="appeal.attempted_to_resolve_with_heqc_appeal" />
+                      <label for="heqc-outcome" class="block text-sm font-medium text-gray-700">Outcome of HEQC Meeting <span class="text-red-500">*</span></label>
+                      <input id="heqc-outcome" type="text" v-model="appeal.outcome_if_attempted_heqc_appeal" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm p-2.5 focus:ring-indigo-500 focus:border-indigo-500" :required="appeal.attempted_to_resolve_with_heqc_appeal" />
                     </div>
                     <div>
-                      <label class="block text-sm font-medium text-gray-700">Date of Meeting</label>
-                      <input type="date" v-model="appeal.date_of_heqc_meeting_appeal" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm" :required="appeal.attempted_to_resolve_with_heqc_appeal" />
+                      <label for="heqc-date" class="block text-sm font-medium text-gray-700">Date of Meeting <span class="text-red-500">*</span></label>
+                      <input id="heqc-date" type="date" v-model="appeal.date_of_heqc_meeting_appeal" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm p-2.5 focus:ring-indigo-500 focus:border-indigo-500" :required="appeal.attempted_to_resolve_with_heqc_appeal" />
                     </div>
                   </div>
 
                   <div>
-                    <label class="block text-sm font-medium text-gray-700">Supporting Document (multiple files allowed)</label>
-                    <input type="file" multiple @change="onFileChange" ref="fileInputRef" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+                    <label for="supporting-docs" class="block text-sm font-medium text-gray-700">Supporting Documents (Optional, multiple files allowed)</label>
+                    <input id="supporting-docs" type="file" multiple @change="onFileChange" ref="fileInputRef" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
                   </div>
 
                   <div>
-                    <label class="block text-sm font-medium text-gray-700">Remarks (if any)</label>
-                    <textarea v-model="appeal.remarks" rows="3" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm" placeholder="Add any additional remarks here"></textarea>
+                    <label for="remarks" class="block text-sm font-medium text-gray-700">Additional Remarks (Optional)</label>
+                    <textarea id="remarks" v-model="appeal.remarks" rows="3" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm p-2.5 focus:ring-indigo-500 focus:border-indigo-500" placeholder="Add any other relevant information here"></textarea>
                   </div>
                 </div>
-              </div>
+              </fieldset>
 
-              <div class="mb-6 px-2">
-                <label class="inline-flex items-center">
-                  <input type="checkbox" v-model="appeal.declaration_appeal_truthfulness" class="rounded border-gray-300 text-blue-600 shadow-sm" required />
-                  <span class="ml-2 text-gray-700">I hereby declare that the information provided is true and accurate.</span>
-                </label>
-              </div>
+              <!-- Section 3: Declaration -->
+              <fieldset class="p-6 bg-white rounded-xl shadow-sm border">
+                <legend class="text-lg font-semibold text-gray-800 px-2">3. Declaration</legend>
+                <div class="mt-4">
+                  <label class="flex items-start">
+                    <input type="checkbox" v-model="appeal.declaration_appeal_truthfulness" class="flex-shrink-0 h-4 w-4 mt-1 rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" required />
+                    <span class="ml-3 text-sm text-gray-700">I hereby declare that the information provided in this appeal is true, complete, and accurate to the best of my knowledge. I understand that any false statement may lead to the rejection of this appeal.</span>
+                  </label>
+                </div>
+              </fieldset>
           </form>
 
           <div v-else class="p-8 text-center flex justify-center items-center h-full">
@@ -94,12 +105,22 @@
           </div>
       </div>
 
-      <div v-if="appeal.application && !loadingError" class="flex items-center justify-end space-x-4 p-6 border-t bg-gray-50">
-          <button type="button" @click="saveDraft" :disabled="isFormEmpty || isSubmitting" class="px-6 py-3 border rounded-lg text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50">Save as Draft</button>
-          <button type="button" @click="closeModal" class="px-6 py-3 border rounded-lg text-gray-700 bg-white hover:bg-gray-50">Cancel</button>
-          <button type="button" @click="handleSubmit" :disabled="!isFormFullyValid || isSubmitting" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50">
-            <span v-if="isSubmitting">Processing...</span>
-            <span v-else>Proceed to Payment & Submit</span>
+      <!-- Footer with Buttons -->
+      <div v-if="appeal.application && !loadingError" class="flex items-center justify-end space-x-4 p-6 border-t bg-gray-100">
+          <button type="button" @click="saveDraft" :disabled="isFormEmpty || isSubmitting" class="inline-flex items-center px-6 py-3 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 transition-colors">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
+            Save as Draft
+          </button>
+          <button type="button" @click="closeModal" class="inline-flex items-center px-6 py-3 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+            Cancel
+          </button>
+          <button type="button" @click="handleSubmit" :disabled="!isFormFullyValid || isSubmitting" class="inline-flex items-center px-6 py-3 border border-transparent rounded-lg text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:bg-indigo-400 transition-colors">
+            <svg v-if="isSubmitting" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <svg v-else class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+            {{ isSubmitting ? 'Processing...' : 'Proceed to Payment & Submit' }}
           </button>
       </div>
     </div>
