@@ -19,35 +19,41 @@
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
             <tr>
-              <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Institute Name</th>
-              <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Applicant Name</th>
-              <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Submitted On</th>
-              <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
-              <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Current Expiry</th>
-              <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+              <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                Institute Name</th>
+              <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                Applicant Name</th>
+              <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                Submitted On</th>
+              <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                Status</th>
+              <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                Current Expiry</th>
+              <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                Actions</th>
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
             <tr v-for="renewal in renewals" :key="renewal.id" class="hover:bg-gray-50 transition-colors">
               <td class="px-6 py-4 whitespace-nowrap">
                 <!-- The data structure from admin-renewals might be different. Adjust if needed. -->
-                <div class="text-sm font-medium text-gray-900">{{ renewal.institute.name_of_institution }}</div>
+                <div class="text-sm font-medium text-gray-900">
+                  {{ renewal.teaching_center.institute_details.name_of_institution }}</div>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ renewal.institute.full_name }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{
+                renewal.applicant_name ?? "N/A" }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatDate(renewal.created_at) }}</td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span :class="getStatusClass(renewal.renewal_status)">
-                  {{ renewal.status_display }}
+                  <!-- {{ renewal.status_display }} -->
+                  {{ renewal.renewal_status }}
                 </span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatDate(renewal.institute.valid_till) }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatDate(renewal.valid_till) }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                 <div class="flex space-x-3">
-                  <button
-                    @click="openModal(renewal)"
-                    :disabled="renewal.renewal_status !== 'PENDING'"
-                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200 disabled:bg-gray-300 disabled:cursor-not-allowed"
-                  >
+                  <button @click="openModal(renewal)" :disabled="renewal.renewal_status !== 'PENDING'"
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200 disabled:bg-gray-300 disabled:cursor-not-allowed">
                     Review
                   </button>
                 </div>
@@ -63,12 +69,8 @@
       </div>
     </div>
 
-    <InstituteRenewalApplicationDetailsModal
-      :is-open="isModalOpen"
-      :application-details="selectedRenewal"
-      @close-modal="closeModal"
-      @application-updated="fetchRenewals"
-    />
+    <InstituteRenewalApplicationDetailsModal :is-open="isModalOpen" :application-details="selectedRenewal"
+      @close-modal="closeModal" @application-updated="fetchRenewals" />
   </div>
 </template>
 
@@ -96,7 +98,14 @@ const fetchRenewals = async () => {
     const response = await apiService.getAdminAllRenewals()
     // The admin-renewals endpoint might only list institute renewals,
     // but filtering here ensures you only show what's relevant to this page.
-    renewals.value = response.data.results.filter(r => r.renewal_type === 'institute') || []
+    // renewals.value = response.data.results.filter(r => r.renewal_type === 'institute') || []
+    renewals.value = response.data.results
+
+    console.log(response.data.results);
+
+
+    // console.log(response.data.results)
+
   } catch (error) {
     console.error('Error fetching admin renewals:', error)
     toast.error('Failed to load renewal applications.')
@@ -110,9 +119,10 @@ const openModal = (renewal) => {
   selectedRenewal.value = {
     ...renewal, // Pass the whole object
     renewalId: renewal.id,
-    instituteName: renewal.institute.name_of_institution,
-    applicantName: renewal.institute.full_name,
-    expiryDate: renewal.institute.valid_till,
+    instituteName: renewal.teaching_center.institute_details.name_of_institution,
+    applicantName: renewal.teaching_center.institute_details.name_of_institution,
+    // expiryDate: renewal.institute.valid_till,
+    expiryDate: renewal.created_at,
     lastUpdated: renewal.created_at,
     officerRemarks: renewal.officer_remarks || ''
   };

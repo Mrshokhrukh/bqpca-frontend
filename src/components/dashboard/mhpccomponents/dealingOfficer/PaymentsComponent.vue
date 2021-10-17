@@ -1,16 +1,11 @@
 <!-- <template>
   <div class="min-h-screen bg-gray-50">
     <div class="mx-auto py-12 px-4 sm:px-6 lg:px-8">
-      <DOPageHeader
-        title="Payment History"
+      <DOPageHeader title="Payment History"
         description="View payment records for BMHC certifications, renewals, CPDs, and more."
-        :search-query="transactionSearch"
-        @update:searchQuery="transactionSearch = $event"
-        search-placeholder="Search by Payment Advice No..."
-        :filter-value="paymentTypeFilter"
-        @update:filterValue="paymentTypeFilter = $event"
-        :filter-options="paymentTypeFilterOptions"
-      />
+        :search-query="transactionSearch" @update:searchQuery="transactionSearch = $event"
+        search-placeholder="Search by Payment Advice No..." :filter-value="paymentTypeFilter"
+        @update:filterValue="paymentTypeFilter = $event" :filter-options="paymentTypeFilterOptions" />
 
       <div class="bg-white rounded-xl shadow-md p-6 mb-6">
         <h2 class="text-lg font-medium text-gray-800 mb-4">Additional Filters </h2>
@@ -192,16 +187,24 @@ const dateRange = reactive({ start: '', end: '' })
 const currentPage = ref(1)
 const perPage = ref(10)
 
-/* --------------------
-   API fetch
-   -------------------- */
+const paymentTypeFilterOptions = ref([
+  { value: 'all', text: 'All Payment Types' },
+  { value: 'certification', text: 'Certification' },
+  { value: 'renewal', text: 'Renewal' },
+  { value: 'cpd', text: 'CPD Activity' },
+  { value: 'cogs', text: 'COGS Issuance' },
+  { value: 'good standing', text: 'Good Standing' },
+])
+
 const fetchPayments = async () => {
   loading.value = true
   allPaymentRecords.value = []
   try {
     const response = await mhpcservices.getAllMhpcPayments()
+
     if (response && response.data && Array.isArray(response.data.results)) {
-      allPaymentRecords.value = response.data.results
+      allPaymentRecords.value = response.data.results;
+
     } else if (response && Array.isArray(response.data)) {
       allPaymentRecords.value = response.data
     } else {
@@ -218,77 +221,22 @@ const fetchPayments = async () => {
 }
 
 onMounted(fetchPayments)
-onUnmounted(() => {
-  if (searchDebounceTimer) clearTimeout(searchDebounceTimer)
-})
 
-/* --------------------
-   Helpers
-   -------------------- */
-const normalize = (s) => String(s || '').trim().toLowerCase()
-
-const displayDescription = (p) => {
-  return p?.description ?? p?.paymentFor ?? p?.payment_for ?? ''
-}
-
-const parseAmount = (amt) => {
-  if (amt == null) return NaN
-  if (typeof amt === 'number') return amt
-  const cleaned = String(amt).replace(/,/g, '').replace(/[^\d.-]/g, '')
-  return parseFloat(cleaned)
-}
-
-/* --------------------
-   Debounce search for performance
-   -------------------- */
-watch(transactionSearch, (val) => {
-  if (searchDebounceTimer) clearTimeout(searchDebounceTimer)
-  searchDebounceTimer = setTimeout(() => {
-    debouncedSearch.value = val
-  }, 250) // 250ms debounce
-})
-
-/* --------------------
-   Dynamic dropdown options derived from description (payment for)
-   -------------------- */
-const paymentTypeFilterOptions = computed(() => {
-  const set = new Set()
-  for (const p of allPaymentRecords.value) {
-    const desc = displayDescription(p)
-    if (desc && String(desc).trim()) set.add(String(desc).trim())
-  }
-  const items = Array.from(set).sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
-  // return in same shape as your DOPageHeader expects: { value, text }
-  return [{ value: 'all', text: 'All Payment Types' }, ...items.map(i => ({ value: i, text: i }))]
-})
-
-// If current selected filter is not present in options (e.g. after new fetch), reset to 'all'
-watch(paymentTypeFilterOptions, (opts) => {
-  const values = opts.map(o => o.value)
-  if (!values.includes(paymentTypeFilter.value)) {
-    paymentTypeFilter.value = 'all'
-  }
-})
-
-/* --------------------
-   - Category matching is case-insensitive and uses substring match
-   -------------------- */
 const filteredPayments = computed(() => {
   let payments = allPaymentRecords.value.slice()
 
-  // 1) search by paymentAdviceNo (debounced)
-  const q = normalize(debouncedSearch.value)
-  if (q) {
-    payments = payments.filter(p => (String(p.paymentAdviceNo || '')).toLowerCase().includes(q))
+  if (transactionSearch.value) {
+    const query = transactionSearch.value.toLowerCase()
+    payments = payments.filter(
+      (p) => p.paymentAdviceNo && p.paymentAdviceNo.toLowerCase().includes(query),
+    )
   }
 
-  //  filter by paymentType (description)
-  if (paymentTypeFilter.value && paymentTypeFilter.value !== 'all') {
-    const filterNorm = normalize(paymentTypeFilter.value)
-    payments = payments.filter(p => {
-      const descNorm = normalize(displayDescription(p))
-      return descNorm.includes(filterNorm) // substring match (case-insensitive)
-    })
+  if (paymentTypeFilter.value !== 'all') {
+    const filterText = paymentTypeFilter.value.toLowerCase()
+    payments = payments.filter(
+      (p) => p.description && p.description.toLowerCase().includes(filterText),
+    )
   }
 
   // date range filter (if both start and end provided)
@@ -314,9 +262,6 @@ const filteredPayments = computed(() => {
   return payments
 })
 
-/* --------------------
-   Pagination
-   -------------------- */
 const totalPages = computed(() => {
   return Math.max(1, Math.ceil(filteredPayments.value.length / perPage.value))
 })
@@ -338,9 +283,6 @@ const nextPage = () => {
   if (currentPage.value < totalPages.value) currentPage.value++
 }
 
-/* --------------------
-   Small utilities for UI formatting
-   -------------------- */
 const formatDate = (dateString) => {
   if (!dateString) return '-'
   try {
