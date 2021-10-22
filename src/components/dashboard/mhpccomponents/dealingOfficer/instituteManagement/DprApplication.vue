@@ -19,25 +19,12 @@
     <!-- Search Input -->
     <div class="grid grid-cols-1 md:grid-cols-1 gap-4 mb-8">
       <div class="relative">
-        <input
-          v-model="searchQuery"
-          type="text"
-          placeholder="Search by App ID or Name..."
-          class="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        />
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-5 w-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-          />
+        <input v-model="searchQuery" type="text" placeholder="Search by App ID or Name..."
+          class="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2"
+          fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
         </svg>
       </div>
     </div>
@@ -48,39 +35,29 @@
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
             <tr>
-              <th
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Application ID
               </th>
-              <th
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Applicant Name
               </th>
-              <th
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Date Submitted
               </th>
-              <th
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Status
               </th>
-              <th
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                Payment Status
+              </th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Actions
               </th>
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
-            <tr
-              v-for="application in filteredApplications"
-              :key="application.id"
-              class="hover:bg-gray-50 transition-colors"
-            >
+            <tr v-for="application in filteredApplications" :key="application.id"
+              class="hover:bg-gray-50 transition-colors">
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                 #{{ application.id }}
               </td>
@@ -95,12 +72,17 @@
                   {{ application.do_dpr_review_decision }}
                 </span>
               </td>
+
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span :class="getPaymentStatusClass(application.is_payment_complete)">
+                  {{ application.is_payment_complete ? "Completed" : "Awaiting Payment" }}
+                </span>
+              </td>
+
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                 <div class="flex space-x-3">
-                  <button
-                    @click="openApplication(application)"
-                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200"
-                  >
+                  <button @click="openApplication(application)"
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">
                     View
                   </button>
                 </div>
@@ -112,17 +94,9 @@
     </div>
 
     <!-- Modal -->
-    <DprModal
-      v-if="isModalOpen"
-      :isOpen="isModalOpen"
-      :application="selectedApplication"
-      @close="closeApplication"
-      @save="saveApplication"
-      @approve="onApplicationApproved"
-      @reject="onApplicationRejected"
-      @application-updated="fetchApplications"
-      :key="selectedApplication ? selectedApplication.id : 'no-application'"
-    />
+    <DprModal v-if="isModalOpen" :isOpen="isModalOpen" :application="selectedApplication" @close="closeApplication"
+      @save="saveApplication" @approve="onApplicationApproved" @reject="onApplicationRejected"
+      @application-updated="fetchApplications" :key="selectedApplication ? selectedApplication.id : 'no-application'" />
   </div>
 </template>
 
@@ -148,7 +122,6 @@ const fetchApplications = async () => {
   try {
     const response = await apiService.getMhpcInstitutes() // Use apiService
     applications.value = response.data.results
-    console.log(applications.value)
   } catch (err) {
     error.value = err
     console.error('Error fetching applications:', err)
@@ -230,6 +203,12 @@ const getStatusClasses = (application) => {
       'bg-red-100 text-red-800': application.do_dpr_review_decision === 'Regretted',
     },
   ]
+}
+
+const getPaymentStatusClass = (statusKey) => {
+  let initialClass = 'px-3 py-1 rounded-full text-xs font-medium';
+  if (statusKey) return `${initialClass} bg-green-100 text-green-800`
+  return `${initialClass} bg-purple-100 text-purple-800`
 }
 
 const pendingCount = computed(() => {
