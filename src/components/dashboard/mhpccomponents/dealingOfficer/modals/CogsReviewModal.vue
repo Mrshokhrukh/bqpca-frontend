@@ -305,7 +305,7 @@
                   <div class="mb-6">
                     <label for="endorsementDecision" class="block text-sm font-medium text-gray-700 mb-1">Endorsement
                       Decision</label>
-                    <select v-if="isEditing" id="endorsementDecision" v-model="editableApplication.endorsement_decision"
+                    <select v-if="isEditing" :disabled="!application.is_payment_complete" id="endorsementDecision" v-model="editableApplication.endorsement_decision"
                       class="modal-input">
                       <option>Pending</option>
                       <option>Approved</option>
