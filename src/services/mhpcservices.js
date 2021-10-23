@@ -505,7 +505,9 @@ export default {
     return apiClient.get(`/mhpc/mhpc-new-application/?cid=${cid}`)
   },
   getMhpcApprovedApplicationList() {
-    return apiClient.get(`/mhpc/mhpc-new-application/qualification-endorsement/?endorsement_decision=APPROVED`)
+    return apiClient.get(
+      `/mhpc/mhpc-new-application/qualification-endorsement/?endorsement_decision=APPROVED`,
+    )
   },
 
   /**
@@ -546,8 +548,8 @@ export default {
 
   // MHPC Renewals Endpoints
   getMhpcRenewals(cid) {
-    const url = cid ? `/mhpc/mhpc-renewals/?cid=${cid}` : '/mhpc/mhpc-renewals/';
-    return apiClient.get(url);
+    const url = cid ? `/mhpc/mhpc-renewals/?cid=${cid}` : '/mhpc/mhpc-renewals/'
+    return apiClient.get(url)
   },
   createMhpcRenewal(data) {
     return apiClient.post('/mhpc/mhpc-renewals/', data)
@@ -559,8 +561,8 @@ export default {
     return apiClient.put(`/mhpc/mhpc-renewals/${id}/`, data)
   },
   patchMhpcRenewal(id, data, cid) {
-    const url = cid ? `/mhpc/mhpc-renewals/${id}/?cid=${cid}` : `/mhpc/mhpc-renewals/${id}/`;
-    return apiClient.patch(url, data);
+    const url = cid ? `/mhpc/mhpc-renewals/${id}/?cid=${cid}` : `/mhpc/mhpc-renewals/${id}/`
+    return apiClient.patch(url, data)
   },
   deleteMhpcRenewal(id) {
     return apiClient.delete(`/mhpc/mhpc-renewals/${id}/`)
@@ -681,29 +683,29 @@ export default {
     return apiClient.delete(`/mhpc/mhpc-institutes/${id}/`)
   },
   getInstituteRenewalsForInstitute(instituteId) {
-    return apiClient.get(`/mhpc/institutes/${instituteId}/renewals/`);
+    return apiClient.get(`/mhpc/institutes/${instituteId}/renewals/`)
   },
   createInstituteRenewal(formData) {
     return apiClient.post('/mhpc/mhpc-institute-renewals/', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
-    });
+    })
   },
 
   confirmInstituteRenewalPayment(renewalId, paymentData) {
     return apiClient.post(
       `/mhpc/mhpc-institute-renewals/${renewalId}/confirm-payment/`,
-      paymentData
-    );
+      paymentData,
+    )
   },
 
   approveInstituteRenewal(renewalId, data) {
-    return apiClient.post(`/mhpc/mhpc-institute-renewals/${renewalId}/approve/`, data);
+    return apiClient.post(`/mhpc/mhpc-institute-renewals/${renewalId}/approve/`, data)
   },
 
   rejectInstituteRenewal(renewalId, data) {
-    return apiClient.post(`/mhpc/mhpc-institute-renewals/${renewalId}/reject/`, data);
+    return apiClient.post(`/mhpc/mhpc-institute-renewals/${renewalId}/reject/`, data)
   },
 
   //MHPC COUrses api
@@ -806,7 +808,10 @@ export default {
   },
 
   confirmTeachingCenterPayment(applicationId, payload) {
-    return apiClient.post(`/mhpc/mhpc-teaching-centers/${applicationId}/confirm-initial-payment/`, payload);
+    return apiClient.post(
+      `/mhpc/mhpc-teaching-centers/${applicationId}/confirm-initial-payment/`,
+      payload,
+    )
   },
 
   confirmInitialCenterPayment(centerId, paymentData) {
@@ -816,13 +821,11 @@ export default {
     )
   },
 
-
   createTeachingCenterRenewal(centerId, formData) {
     return apiClient.post(`/mhpc/mhpc-teaching-centers/${centerId}/renewals/`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     })
   },
-
 
   confirmTeachingCenterRenewalPayment(centerId, renewalId, paymentData) {
     if (!centerId || !renewalId) {
@@ -836,23 +839,21 @@ export default {
     )
   },
 
-
   /**
- * (RENAMED) Fetches all renewal applications (Institutes, Centers, etc.) for Admin/Dealing Officer review.
- * @param {object} params - Optional query parameters for filtering/pagination.
- * @returns {Promise}
- */
+   * (RENAMED) Fetches all renewal applications (Institutes, Centers, etc.) for Admin/Dealing Officer review.
+   * @param {object} params - Optional query parameters for filtering/pagination.
+   * @returns {Promise}
+   */
   getAdminAllRenewals(params = {}) {
-    return apiClient.get('/mhpc/admin-renewals/', { params })
+    return apiClient.get('/mhpc/admin/institute-renewals/', { params })
   },
 
-
   approveTeachingCenterRenewal(renewalId, data) {
-    return apiClient.post(`/mhpc/admin-renewals/${renewalId}/approve/`, data)
+    return apiClient.post(`/mhpc/admin/institute-renewals/${renewalId}/approve/`, data)
   },
 
   rejectTeachingCenterRenewal(renewalId, data) {
-    return apiClient.post(`/mhpc/admin-renewals/${renewalId}/reject/`, data)
+    return apiClient.post(`/mhpc/admin/institute-renewals/${renewalId}/reject/`, data)
   },
 
   getMhpcCpdRecords() {
@@ -876,9 +877,9 @@ export default {
 
   // get cpd records based on cid
   getMhpcCpdRecordsByCid(cid, status = null) {
-    let url = `/mhpc/mhpc-cpd-records/list-my-cpd/?cid=${cid}`;
+    let url = `/mhpc/mhpc-cpd-records/list-my-cpd/?cid=${cid}`
     if (status) {
-      url += `&status=${status}`;
+      url += `&status=${status}`
     }
     return apiClient.get(url, {
       headers: {
@@ -886,7 +887,7 @@ export default {
         Pragma: 'no-cache',
         Expires: '0',
       },
-    });
+    })
   },
 
   // MHPC CPD Records
@@ -968,9 +969,9 @@ export default {
   uploadAttendancePhoto(id, formData) {
     return apiClient.post(`/mhpc/mhpc-cpd-tasks/${id}/upload-attendance-photo/`, formData, {
       headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    });
+        'Content-Type': 'multipart/form-data',
+      },
+    })
   },
   // --- Complaint Management Endpoints ---
   getComplaints(params = {}) {
@@ -1043,12 +1044,11 @@ export default {
     return apiClient.delete(`/mhpc/mhpc-module/${id}/`)
   },
   getMhpcModuleMasters() {
-
     return apiClient.get('/mhpc/mhpc-module-masters/')
   },
   bulkCreateModuleFacultyAssignments(payload) {
     // This correctly calls /mhpc/mhpc-faculty-assignment/bulk-configure/
-    return apiClient.post('/mhpc/mhpc-faculty-assignment/bulk-configure/', payload);
+    return apiClient.post('/mhpc/mhpc-faculty-assignment/bulk-configure/', payload)
   },
   /**
    * (NEW FUNCTION TO ADD)
@@ -1061,10 +1061,8 @@ export default {
    */
   patchMhpcFacultyAssignment(assignmentId, data) {
     // The URL targets a specific assignment ID, e.g., /mhpc/mhpc-faculty-assignment/123/
-    return apiClient.patch(`/mhpc/mhpc-faculty-assignment/${assignmentId}/`, data);
+    return apiClient.patch(`/mhpc/mhpc-faculty-assignment/${assignmentId}/`, data)
   },
-
-
 
   // --- MHPC Program Master Endpoints ---
   getMhpcProgramMasters() {
@@ -1109,8 +1107,7 @@ export default {
     return apiClient.delete(`/mhpc/mhpc-program-offered/${id}/`)
   },
   recordMhpcProgramPayment(programId, paymentData) {
-
-    return apiClient.post(`/mhpc/mhpc-program-offered/${programId}/record-payment/`, paymentData);
+    return apiClient.post(`/mhpc/mhpc-program-offered/${programId}/record-payment/`, paymentData)
   },
 
   // --- MHPC Semester Endpoints ---
@@ -1173,9 +1170,8 @@ export default {
     return apiClient.delete(`/mhpc/mhpc-clinical-preceptors/${id}/`)
   },
   getEligiblePreceptors() {
-    return apiClient.get('/mhpc/preceptor-lookups/eligible-professionals/');
+    return apiClient.get('/mhpc/preceptor-lookups/eligible-professionals/')
   },
-
 
   reviewClinicalPreceptor(id, data) {
     return apiClient.patch(`/mhpc/mhpc-clinical-preceptors/${id}/review/`, data)
@@ -1231,6 +1227,6 @@ export default {
   },
 
   getAllMhpcPayments() {
-    return apiClient.get('/mhpc/payment-history/');
+    return apiClient.get('/mhpc/payment-history/')
   },
 }

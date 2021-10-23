@@ -51,30 +51,12 @@
 
       <!-- KPI Cards -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <KPICard
-          title="Overall Status"
-          :value="institute.application_status_display"
-          :icon="ShieldCheck"
-          icon-color="text-blue-600"
-        />
-        <KPICard
-          title="Active Programs"
-          :value="programs.length"
-          :icon="GraduationCap"
-          icon-color="text-indigo-600"
-        />
-        <KPICard
-          title="Training Centers"
-          :value="teachingCenters.length"
-          :icon="Hospital"
-          icon-color="text-green-600"
-        />
-        <KPICard
-          title="Faculty Members"
-          :value="faculty.length"
-          :icon="Users"
-          icon-color="text-purple-600"
-        />
+        <KPICard title="Overall Status" :value="institute.application_status_display" :icon="ShieldCheck"
+          icon-color="text-blue-600" />
+        <KPICard title="Active Programs" :value="programs.length" :icon="GraduationCap" icon-color="text-indigo-600" />
+        <KPICard title="Training Centers" :value="teachingCenters.length" :icon="Hospital"
+          icon-color="text-green-600" />
+        <KPICard title="Faculty Members" :value="faculty.length" :icon="Users" icon-color="text-purple-600" />
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -84,27 +66,10 @@
           <div class="bg-white p-6 rounded-2xl shadow-lg">
             <h3 class="text-xl font-bold text-gray-900 mb-4">Quick Actions</h3>
             <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-              <ActionButton
-                label="New Program"
-                :icon="PlusCircle"
-                @click="navigateToAction('/programs')"
-              />
-              <ActionButton
-                label="Manage Faculty"
-                :icon="Users"
-                @click="navigateToAction('/faculty')"
-              />
-              <ActionButton
-                label="View CAPAs"
-                :icon="ClipboardCheck"
-                @click="navigateToAction('/capa')"
-              />
-              <ActionButton
-                label="Renew Institute"
-                :icon="RefreshCw"
-                @click="renewInstitute"
-                :is-primary="true"
-              />
+              <ActionButton label="New Program" :icon="PlusCircle" @click="navigateToAction('/programs')" />
+              <ActionButton label="Manage Faculty" :icon="Users" @click="navigateToAction('/faculty')" />
+              <ActionButton label="View CAPAs" :icon="ClipboardCheck" @click="navigateToAction('/capa')" />
+              <ActionButton label="Renew Institute" :icon="RefreshCw" @click="renewInstitute" :is-primary="true" />
             </div>
           </div>
 
@@ -112,17 +77,12 @@
           <div class="bg-white p-6 rounded-2xl shadow-lg">
             <div class="border-b border-gray-200">
               <nav class="-mb-px flex space-x-6" aria-label="Tabs">
-                <button
-                  v-for="tab in tabs"
-                  :key="tab.name"
-                  @click="activeTab = tab.name"
-                  :class="[
-                    activeTab === tab.name
-                      ? 'border-indigo-500 text-indigo-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300',
-                    'whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm',
-                  ]"
-                >
+                <button v-for="tab in tabs" :key="tab.name" @click="activeTab = tab.name" :class="[
+                  activeTab === tab.name
+                    ? 'border-indigo-500 text-indigo-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300',
+                  'whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm',
+                ]">
                   {{ tab.label }}
                 </button>
               </nav>
@@ -130,55 +90,37 @@
             <div class="mt-6">
               <div v-if="activeTab === 'programs'">
                 <ul v-if="programs.length" class="space-y-3">
-                  <li
-                    v-for="program in programs"
-                    :key="program.id"
-                    class="p-3 bg-gray-50 rounded-lg flex justify-between items-center"
-                  >
+                  <li v-for="program in programs" :key="program.id"
+                    class="p-3 bg-gray-50 rounded-lg flex justify-between items-center">
                     <span class="font-medium text-gray-800">{{
                       program.specific_program_title
                     }}</span>
-                    <span
-                      :class="getStatusClass(program.status)"
-                      class="px-3 py-1 text-xs font-semibold rounded-full"
-                      >{{ program.status }}</span
-                    >
+                    <span :class="getStatusClass(program.status)"
+                      class="px-3 py-1 text-xs font-semibold rounded-full">{{ program.status }}</span>
                   </li>
                 </ul>
                 <p v-else class="text-gray-500">No programs offered.</p>
               </div>
               <div v-if="activeTab === 'centers'">
                 <ul v-if="teachingCenters.length" class="space-y-3">
-                  <li
-                    v-for="center in teachingCenters"
-                    :key="center.id"
-                    class="p-3 bg-gray-50 rounded-lg flex justify-between items-center"
-                  >
+                  <li v-for="center in teachingCenters" :key="center.id"
+                    class="p-3 bg-gray-50 rounded-lg flex justify-between items-center">
                     <span class="font-medium text-gray-800">{{ center.center_name }}</span>
-                    <span
-                      :class="getStatusClass(center.tc_review_decision)"
-                      class="px-3 py-1 text-xs font-semibold rounded-full"
-                      >{{ center.tc_review_decision }}</span
-                    >
+                    <span :class="getStatusClass(center.tc_review_decision)"
+                      class="px-3 py-1 text-xs font-semibold rounded-full">{{ center.tc_review_decision }}</span>
                   </li>
                 </ul>
                 <p v-else class="text-gray-500">No teaching centers found.</p>
               </div>
               <div v-if="activeTab === 'capa'">
                 <ul v-if="capas.length" class="space-y-3">
-                  <li
-                    v-for="capa in capas"
-                    :key="capa.id"
-                    class="p-3 bg-gray-50 rounded-lg flex justify-between items-center"
-                  >
+                  <li v-for="capa in capas" :key="capa.id"
+                    class="p-3 bg-gray-50 rounded-lg flex justify-between items-center">
                     <span class="font-medium text-gray-800 truncate pr-4">{{
                       capa.observation_description
                     }}</span>
-                    <span
-                      :class="getStatusClass(capa.status)"
-                      class="px-3 py-1 text-xs font-semibold rounded-full"
-                      >{{ capa.status }}</span
-                    >
+                    <span :class="getStatusClass(capa.status)" class="px-3 py-1 text-xs font-semibold rounded-full">{{
+                      capa.status }}</span>
                   </li>
                 </ul>
                 <p v-else class="text-gray-500">No CAPA reports found.</p>
@@ -206,10 +148,7 @@
               </div>
               <div class="pt-3">
                 <div class="w-full bg-gray-200 rounded-full h-2.5">
-                  <div
-                    class="bg-green-600 h-2.5 rounded-full"
-                    :style="{ width: validityPercentage + '%' }"
-                  ></div>
+                  <div class="bg-green-600 h-2.5 rounded-full" :style="{ width: validityPercentage + '%' }"></div>
                 </div>
                 <p class="text-xs text-center mt-1 text-gray-500">
                   {{ daysUntilExpiration }} days remaining
@@ -399,9 +338,11 @@ onMounted(fetchInstituteData)
 .btn {
   @apply inline-flex items-center justify-center rounded-lg border py-2.5 px-5 text-sm font-semibold shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200 disabled:opacity-60;
 }
+
 .btn-primary {
   @apply border-transparent bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500;
 }
+
 .btn-secondary {
   @apply border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-indigo-500;
 }

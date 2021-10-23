@@ -38,7 +38,7 @@
               <td class="px-6 py-4 whitespace-nowrap">
                 <!-- The data structure from admin-renewals might be different. Adjust if needed. -->
                 <div class="text-sm font-medium text-gray-900">
-                  {{ renewal.teaching_center.institute_details.name_of_institution }}</div>
+                  {{ renewal.institute.name_of_institution }}</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{
                 renewal.applicant_name ?? "N/A" }}</td>
@@ -101,11 +101,6 @@ const fetchRenewals = async () => {
     // renewals.value = response.data.results.filter(r => r.renewal_type === 'institute') || []
     renewals.value = response.data.results
 
-    console.log(response.data.results);
-
-
-    // console.log(response.data.results)
-
   } catch (error) {
     console.error('Error fetching admin renewals:', error)
     toast.error('Failed to load renewal applications.')
@@ -119,8 +114,8 @@ const openModal = (renewal) => {
   selectedRenewal.value = {
     ...renewal, // Pass the whole object
     renewalId: renewal.id,
-    instituteName: renewal.teaching_center.institute_details.name_of_institution,
-    applicantName: renewal.teaching_center.institute_details.name_of_institution,
+    instituteName: renewal.institute.name_of_institution,
+    applicantName: renewal.institute.name_of_institution,
     // expiryDate: renewal.institute.valid_till,
     expiryDate: renewal.created_at,
     lastUpdated: renewal.created_at,
