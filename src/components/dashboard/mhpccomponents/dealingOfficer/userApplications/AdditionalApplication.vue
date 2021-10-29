@@ -1,16 +1,10 @@
 <template>
   <div class="p-8 min-h-screen bg-gray-50">
     <!-- Use the DOPageHeader Component -->
-    <DOPageHeader
-      title="Additional Qualification Applications"
-      :description="headerDescription"
-      :search-query="searchQuery"
-      @update:searchQuery="searchQuery = $event"
-      search-placeholder="Search by name, CID or registration number..."
-      :filter-value="filterStatus"
-      @update:filterValue="filterStatus = $event"
-      :filter-options="statusFilterOptions"
-    />
+    <DOPageHeader title="Additional Qualification Applications" :description="headerDescription"
+      :search-query="searchQuery" @update:searchQuery="searchQuery = $event"
+      search-placeholder="Search by name, CID or registration number..." :filter-value="filterStatus"
+      @update:filterValue="filterStatus = $event" :filter-options="statusFilterOptions" />
 
     <!-- Removed the old header and filter grid -->
 
@@ -19,44 +13,28 @@
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
             <tr>
-              <th
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 ID
               </th>
-              <th
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Applicant
               </th>
-              <th
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Registration No.
               </th>
-              <th
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Primary Qualification
               </th>
-              <th
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Additional Qualification(s)
               </th>
-              <th
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Status
               </th>
-              <th
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Date
               </th>
-              <th
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
-              >
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Actions
               </th>
             </tr>
@@ -67,22 +45,15 @@
                 No applications found matching your criteria.
               </td>
             </tr>
-            <tr
-              v-for="app in paginatedApplications"
-              :key="app.id"
-              class="hover:bg-gray-50 transition-colors"
-            >
+            <tr v-for="app in paginatedApplications" :key="app.id" class="hover:bg-gray-50 transition-colors">
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                 #{{ app.id }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center">
-                  <img
-                    :src="app.passport_photo || 'https://placehold.co/32x32/EFEFEF/AAAAAA?text=N/A'"
-                    alt="Applicant photo"
-                    class="h-8 w-8 rounded-full object-cover mr-3"
-                    onerror="this.src='https://placehold.co/32x32/EFEFEF/AAAAAA?text=N/A'"
-                  />
+                  <img :src="app.passport_photo || 'https://placehold.co/32x32/EFEFEF/AAAAAA?text=N/A'"
+                    alt="Applicant photo" class="h-8 w-8 rounded-full object-cover mr-3"
+                    onerror="this.src='https://placehold.co/32x32/EFEFEF/AAAAAA?text=N/A'" />
                   <div>
                     <div class="text-sm font-medium text-gray-900">
                       {{ app.full_name || 'N/A' }}
@@ -96,12 +67,9 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                 <template v-if="app.user_qualifications?.some((q) => q.is_primary_qualification)">
-                  <div
-                    v-for="qualification in app.user_qualifications.filter(
-                      (q) => q.is_primary_qualification,
-                    )"
-                    :key="'primary-' + qualification.id"
-                  >
+                  <div v-for="qualification in app.user_qualifications.filter(
+                    (q) => q.is_primary_qualification,
+                  )" :key="'primary-' + qualification.id">
                     <span class="text-xs text-gray-600">{{
                       qualification.qualification_name_display || 'N/A'
                     }}</span>
@@ -115,22 +83,14 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                 <template v-if="app.user_qualifications?.some((q) => !q.is_primary_qualification)">
-                  <div
-                    v-for="qualification in app.user_qualifications.filter(
-                      (q) => !q.is_primary_qualification,
-                    )"
-                    :key="'additional-' + qualification.id"
-                    class="mb-1 last:mb-0"
-                  >
-                    <span
-                      :class="getQualificationStatusClasses(qualification)"
-                      class="px-2 py-1 rounded text-xs"
-                    >
+                  <div v-for="qualification in app.user_qualifications.filter(
+                    (q) => !q.is_primary_qualification,
+                  )" :key="'additional-' + qualification.id" class="mb-1 last:mb-0">
+                    <span :class="getQualificationStatusClasses(qualification)" class="px-2 py-1 rounded text-xs">
                       {{ getIndividualQualificationStatus(qualification) }}
                     </span>
-                    <span class="text-xs text-gray-600 ml-1"
-                      >({{ qualification.qualification_name_display || 'N/A' }})</span
-                    >
+                    <span class="text-xs text-gray-600 ml-1">({{ qualification.qualification_name_display || 'N/A'
+                    }})</span>
                   </div>
                 </template>
                 <template v-else> N/A </template>
@@ -145,10 +105,8 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                 <div class="flex space-x-3">
-                  <button
-                    @click="viewDetails(app)"
-                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200"
-                  >
+                  <button @click="viewDetails(app)"
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm transition-colors duration-200">
                     View
                   </button>
                 </div>
@@ -160,23 +118,15 @@
     </div>
 
     <!-- Pagination -->
-    <div
-      v-if="totalPages > 1"
-      class="mt-6 flex items-center justify-between bg-white p-4 rounded-lg shadow-sm border border-gray-100"
-    >
+    <div v-if="totalPages > 1"
+      class="mt-6 flex items-center justify-between bg-white p-4 rounded-lg shadow-sm border border-gray-100">
       <div class="flex-1 flex justify-between sm:hidden">
-        <button
-          @click="prevPage"
-          :disabled="currentPage === 1"
-          class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
-        >
+        <button @click="prevPage" :disabled="currentPage === 1"
+          class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50">
           Previous
         </button>
-        <button
-          @click="nextPage"
-          :disabled="currentPage === totalPages"
-          class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
-        >
+        <button @click="nextPage" :disabled="currentPage === totalPages"
+          class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50">
           Next
         </button>
       </div>
@@ -193,53 +143,29 @@
           </p>
         </div>
         <div>
-          <nav
-            class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
-            aria-label="Pagination"
-          >
-            <button
-              @click="prevPage"
-              :disabled="currentPage === 1"
-              class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 transition-opacity"
-            >
+          <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+            <button @click="prevPage" :disabled="currentPage === 1"
+              class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 transition-opacity">
               <span class="sr-only">Previous</span>
-              <svg
-                class="h-5 w-5"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  fill-rule="evenodd"
+              <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                aria-hidden="true">
+                <path fill-rule="evenodd"
                   d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                  clip-rule="evenodd"
-                />
+                  clip-rule="evenodd" />
               </svg>
             </button>
             <span
-              class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700"
-            >
+              class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
               Page {{ currentPage }} of {{ totalPages }}
             </span>
-            <button
-              @click="nextPage"
-              :disabled="currentPage === totalPages"
-              class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 transition-opacity"
-            >
+            <button @click="nextPage" :disabled="currentPage === totalPages"
+              class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 transition-opacity">
               <span class="sr-only">Next</span>
-              <svg
-                class="h-5 w-5"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  fill-rule="evenodd"
+              <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                aria-hidden="true">
+                <path fill-rule="evenodd"
                   d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                  clip-rule="evenodd"
-                />
+                  clip-rule="evenodd" />
               </svg>
             </button>
           </nav>
@@ -248,15 +174,9 @@
     </div>
 
     <!-- Modal -->
-    <ViewDetailsModal
-      :isOpen="isModalOpen"
-      :application="selectedApplication"
-      @close="closeModal"
-      @update="handleUpdate"
-      :personnel-categories="personnelCategories"
-      :personnel-subcategories="personnelSubcategories"
-      :sectors="sectors"
-    />
+    <ViewDetailsModal :isOpen="isModalOpen" :application="selectedApplication" @close="closeModal"
+      @update="handleUpdate" :personnel-categories="personnelCategories"
+      :personnel-subcategories="personnelSubcategories" :sectors="sectors" />
   </div>
 </template>
 
