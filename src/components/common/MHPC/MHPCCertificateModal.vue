@@ -1,28 +1,15 @@
 <template>
-  <div
-    v-if="application"
-    class="fixed inset-0 z-[100] overflow-y-auto"
-    aria-labelledby="modal-title"
-    role="dialog"
-    aria-modal="true"
-  >
-    <div
-      class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0"
-    >
-      <div
-        class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
-        aria-hidden="true"
-        @click="closeModal"
-      ></div>
+  <div v-if="application" class="fixed inset-0 z-[100] overflow-y-auto" aria-labelledby="modal-title" role="dialog"
+    aria-modal="true">
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+      <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" @click="closeModal">
+      </div>
       <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true"></span>
 
       <div
-        class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full"
-      >
+        class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
         <div id="certificate-content" class="bg-white px-8 pt-8 pb-6 relative min-h-[842px]">
-          <div
-            class="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none"
-          >
+          <div class="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none">
             <img src="@/assets/mhpc-logo.png" alt="Watermark" class="w-2/3 max-w-xl" />
           </div>
 
@@ -84,20 +71,17 @@
 
               <div class="font-semibold">Qualification(s):</div>
               <div class="space-y-1">
-                <div v-for="qual in application.user_qualifications" :key="qual.id">
-                  {{ qual.qualification_type_display }} | {{ qual.qualification_name_display }} |
-                  {{ qual.completion_year }}
+                <div v-for="qual in application.user_qualifications.filter(q => q.endorsement_decision === 'Approved')"
+                  :key="qual.id">
+                  {{ qual.qualification_type_display }} | {{ qual.qualification_name_display }} | {{
+                    qual.completion_year }}
                 </div>
               </div>
             </div>
 
             <div class="absolute top-0 right-12">
-              <img
-                v-if="application.passport_photo"
-                :src="application.passport_photo"
-                alt="Passport Photo"
-                class="h-32 w-32 object-cover rounded-md border-2 border-gray-300 shadow-sm"
-              />
+              <img v-if="application.passport_photo" :src="application.passport_photo" alt="Passport Photo"
+                class="h-32 w-32 object-cover rounded-md border-2 border-gray-300 shadow-sm" />
             </div>
 
             <div class="mt-8 px-12 space-y-4 text-sm">
@@ -114,12 +98,7 @@
 
             <div class="mt-12 px-12 flex justify-between items-end">
               <div>
-                <img
-                  v-if="directorSignature"
-                  :src="directorSignature"
-                  alt="Signature"
-                  class="h-16"
-                />
+                <img v-if="directorSignature" :src="directorSignature" alt="Signature" class="h-16" />
                 <div class="mt-2 text-sm">
                   <p class="font-medium">{{ directorName }}</p>
                   <p>{{ directorDesignation }}</p>
@@ -130,11 +109,9 @@
               </div>
 
               <div class="text-center">
-                <vue-qrcode
-                  :value="qrCodeData"
+                <vue-qrcode :value="qrCodeData"
                   :options="{ width: 100, margin: 1, color: { dark: '#000000', light: '#ffffff' } }"
-                  class="border-4 border-gray-200 rounded-md p-2"
-                />
+                  class="border-4 border-gray-200 rounded-md p-2" />
                 <p class="mt-2 text-xs text-gray-600">Scan to verify</p>
               </div>
             </div>
@@ -147,18 +124,14 @@
         </div>
 
         <div class="bg-gray-50 px-6 py-4 flex justify-end space-x-2">
-          <button
-            type="button"
+          <button type="button"
             class="inline-flex justify-center rounded-md border border-transparent px-4 py-2 bg-green-600 text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
-            @click="downloadCertificate"
-          >
+            @click="downloadCertificate">
             Download
           </button>
-          <button
-            type="button"
+          <button type="button"
             class="inline-flex justify-center rounded-md border border-transparent px-4 py-2 bg-blue-600 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-500 transition-colors"
-            @click="closeModal"
-          >
+            @click="closeModal">
             Close
           </button>
         </div>
@@ -246,5 +219,4 @@ const downloadCertificate = () => {
 }
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>
