@@ -24,6 +24,9 @@
                 Status
               </th>
               <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                Payment Status
+              </th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Date
               </th>
               <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
@@ -52,6 +55,11 @@
               <td class="px-6 py-4 whitespace-nowrap">
                 <span :class="getStatusClasses(app)">
                   {{ getStatus(app) }}
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span :class="getPaymentClasses(app)">
+                  {{ getPaymentStatus(app) }}
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -232,30 +240,84 @@ const getStatus = (app) => {
     return 'Pending' // Default if no qualifications yet
   }
 
-  // Check if any qualification is regretted
-  const isRegretted = app.user_qualifications.some(
-    (q) =>
-      q.application_review_status === 'Regretted' ||
-      q.physical_review_status === 'Regretted' ||
-      q.endorsement_decision === 'Regretted',
-  )
-  if (isRegretted) {
+  let status = app.user_qualifications[0].endorsement_decision
+
+  if (status === 'Regretted') {
     return 'Regretted'
   }
 
-  // Check if ALL qualifications are approved
-  const allApproved = app.user_qualifications.every(
-    (q) =>
-      q.application_review_status === 'Approved' &&
-      q.physical_review_status === 'Approved' &&
-      q.endorsement_decision === 'Approved',
-  )
-  if (allApproved) {
+  if (status === 'Approved') {
     return 'Approved'
   }
 
+  if (status === 'Pending') {
+    return 'Pending'
+  }
+
+  // Check if any qualification is regretted
+  // const isRegretted = app.user_qualifications.some(
+  //   (q) =>
+  //     q.application_review_status === 'Regretted' ||
+  //     q.physical_review_status === 'Regretted' ||
+  //     q.endorsement_decision === 'Regretted',
+  // )
+  // if (isRegretted) {
+  //   return 'Regretted'
+  // }
+
+  // // Check if ALL qualifications are approved
+  // const allApproved = app.user_qualifications.every(
+  //   (q) =>
+  //     q.application_review_status === 'Approved' &&
+  //     q.physical_review_status === 'Approved' &&
+  //     q.endorsement_decision === 'Approved',
+  // )
+  // if (allApproved) {
+  //   return 'Approved'
+  // }
+
   // Otherwise, it's still pending some action
   return 'Pending'
+}
+
+const getPaymentStatus = (app) => {
+  if (!Array.isArray(app.user_qualifications) || app.user_qualifications.length === 0) {
+    return 'Pending' // Default if no qualifications yet
+  }
+  let status = app.user_qualifications[0].payment_status
+
+  if (status === 'pending') {
+    return 'Pending'
+  }
+
+  if (status === 'completed') {
+    return 'Completed'
+  }
+
+  if (status === 'failed') {
+    return 'Failed'
+  }
+
+  if (status === 'rejected') {
+    return 'Rejected'
+  }
+
+  if (status === 'processing payment') {
+    return 'Completed'
+  }
+
+  return 'Pending'
+}
+
+const getPaymentClasses = (app) => {
+  const status = app.user_qualifications[0].payment_status
+  return [
+    'px-3 py-1 inline-flex items-center justify-center text-xs leading-5 font-semibold rounded-full shadow-sm', // Base classes for consistency
+    {
+      'bg-yellow-100 text-yellow-800': status === 'pending',
+      'bg-green-100 text-green-800': status === 'completed',
+    },
+  ]
 }
 
 const getStatusClasses = (app) => {
