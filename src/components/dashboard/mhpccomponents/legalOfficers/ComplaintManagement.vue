@@ -4,25 +4,12 @@
 
     <!-- Loading Indicator for main complaints list -->
     <div v-if="isLoading && !complaints.length" class="text-center py-10">
-      <svg
-        class="animate-spin h-8 w-8 text-blue-600 mx-auto"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-      >
-        <circle
-          class="opacity-25"
-          cx="12"
-          cy="12"
-          r="10"
-          stroke="currentColor"
-          stroke-width="4"
-        ></circle>
-        <path
-          class="opacity-75"
-          fill="currentColor"
-          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-        ></path>
+      <svg class="animate-spin h-8 w-8 text-blue-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none"
+        viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor"
+          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+        </path>
       </svg>
       <p class="mt-2 text-gray-600">Loading complaints...</p>
     </div>
@@ -32,56 +19,32 @@
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-100">
           <tr>
-            <th
-              scope="col"
-              class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Complaint ID
             </th>
-            <th
-              scope="col"
-              class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Subject
             </th>
-            <th
-              scope="col"
-              class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Submitted By
             </th>
-            <th
-              scope="col"
-              class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Professional Name (Respondent)
             </th>
-            <th
-              scope="col"
-              class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Status
             </th>
-            <th
-              scope="col"
-              class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Date Filed
             </th>
-            <th
-              scope="col"
-              class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Actions
             </th>
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
-          <tr
-            v-for="complaint in complaints"
-            :key="complaint.id"
-            class="hover:bg-gray-50 transition-colors duration-150"
-          >
+          <tr v-for="complaint in complaints" :key="complaint.id"
+            class="hover:bg-gray-50 transition-colors duration-150">
             <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-700 font-semibold">
               {{ complaint.complaint_id }}
             </td>
@@ -100,10 +63,8 @@
               }}
             </td>
             <td class="px-4 py-4 whitespace-nowrap">
-              <span
-                :class="getStatusClass(complaint.status)"
-                class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
-              >
+              <span :class="getStatusClass(complaint.status)"
+                class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full">
                 {{ complaint.status }}
               </span>
             </td>
@@ -111,11 +72,9 @@
               {{ formatDate(complaint.created_at) }}
             </td>
             <td class="px-4 py-4 whitespace-nowrap text-sm font-medium">
-              <button
-                @click="openCombinedModal(complaint)"
+              <button @click="openCombinedModal(complaint)"
                 class="text-indigo-600 hover:text-indigo-900 transition-colors duration-150"
-                title="View Details & Manage Complaint"
-              >
+                title="View Details & Manage Complaint">
                 View Details & Manage
               </button>
             </td>
@@ -123,23 +82,17 @@
         </tbody>
       </table>
       <!-- Pagination -->
-      <div
-        v-if="pagination.totalPages > 1"
-        class="px-4 py-3 bg-gray-50 border-t border-gray-200 flex items-center justify-between"
-      >
+      <div v-if="pagination.totalPages > 1"
+        class="px-4 py-3 bg-gray-50 border-t border-gray-200 flex items-center justify-between">
         <div class="flex-1 flex justify-between sm:hidden">
-          <button
-            @click="fetchPaginatedComplaints(pagination.currentPage - 1)"
+          <button @click="fetchPaginatedComplaints(pagination.currentPage - 1)"
             :disabled="!pagination.previous || isLoading"
-            class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
+            class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
             Previous
           </button>
-          <button
-            @click="fetchPaginatedComplaints(pagination.currentPage + 1)"
+          <button @click="fetchPaginatedComplaints(pagination.currentPage + 1)"
             :disabled="!pagination.next || isLoading"
-            class=" brackets.ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
+            class=" brackets.ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
             Next
           </button>
         </div>
@@ -162,37 +115,25 @@
             </p>
           </div>
           <div>
-            <nav
-              class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
-              aria-label="Pagination"
-            >
-              <button
-                @click="fetchPaginatedComplaints(pagination.currentPage - 1)"
+            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+              <button @click="fetchPaginatedComplaints(pagination.currentPage - 1)"
                 :disabled="!pagination.previous || isLoading"
-                class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
+                class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
                 <span class="sr-only">Previous</span>
               </button>
-              <button
-                v-for="page in pagination.visiblePages"
-                :key="page"
-                @click="fetchPaginatedComplaints(page)"
+              <button v-for="page in pagination.visiblePages" :key="page" @click="fetchPaginatedComplaints(page)"
                 :class="[
                   'relative inline-flex items-center px-4 py-2 border text-sm font-medium',
                   page === pagination.currentPage
                     ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600'
                     : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50',
                   isLoading ? 'disabled:opacity-50 disabled:cursor-not-allowed' : '',
-                ]"
-                :disabled="isLoading || page === '...'"
-              >
+                ]" :disabled="isLoading || page === '...'">
                 {{ page }}
               </button>
-              <button
-                @click="fetchPaginatedComplaints(pagination.currentPage + 1)"
+              <button @click="fetchPaginatedComplaints(pagination.currentPage + 1)"
                 :disabled="!pagination.next || isLoading"
-                class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
+                class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
                 <span class="sr-only">Next</span>
               </button>
             </nav>
@@ -201,50 +142,24 @@
       </div>
     </div>
     <div v-else-if="!isLoading && complaints.length === 0" class="text-center py-10">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="mx-auto h-12 w-12 text-gray-400"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-        />
+      <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24"
+        stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
       </svg>
       <p ecta class="mt-2 text-gray-600">No complaints found.</p>
     </div>
 
     <!-- Combined Details, Link Respondent, and Status Modal -->
-    <div
-      v-if="showCombinedModal && selectedComplaint"
+    <div v-if="showCombinedModal && selectedComplaint"
       class="fixed inset-0 bg-gray-800 bg-opacity-75 overflow-y-auto h-full w-full flex items-center justify-center z-20 px-4"
-      @click.self="closeCombinedModal"
-    >
-      <div
-        class="relative mx-auto p-5 sm:p-6 border w-full max-w-3xl shadow-xl rounded-lg bg-white"
-      >
+      @click.self="closeCombinedModal">
+      <div class="relative mx-auto p-5 sm:p-6 border w-full max-w-3xl shadow-xl rounded-lg bg-white">
         <!-- Close button and Title -->
-        <button
-          @click="closeCombinedModal"
-          class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-7 w-7"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M6 18L18 6M6 6l12 12"
-            />
+        <button @click="closeCombinedModal"
+          class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
         <h3 class="text-xl lg:text-2xl leading-6 font-semibold text-gray-900 mb-6">
@@ -264,11 +179,9 @@
                 </p>
                 <p>
                   <strong class="text-gray-600">Status:</strong>
-                  <span
-                    :class="getStatusClass(selectedComplaint.status)"
-                    class="px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full"
-                    >{{ selectedComplaint.status }}</span
-                  >
+                  <span :class="getStatusClass(selectedComplaint.status)"
+                    class="px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full">{{
+                      selectedComplaint.status }}</span>
                 </p>
                 <p>
                   <strong class="text-gray-600">Professional Name (Respondent):</strong>
@@ -278,11 +191,8 @@
                       ? selectedComplaint.respondent_application.full_name
                       : 'N/A')
                   }}
-                  <span
-                    v-if="selectedComplaint.respondent_application"
-                    class="text-xs text-gray-500"
-                    >(System Linked)</span
-                  >
+                  <span v-if="selectedComplaint.respondent_application" class="text-xs text-gray-500">(System
+                    Linked)</span>
                 </p>
                 <p>
                   <strong class="text-gray-600">Designation:</strong>
@@ -320,9 +230,8 @@
                     {{ selectedComplaint.assigned_to_details.first_name }}
                     {{ selectedComplaint.assigned_to_details.last_name }}
                   </span>
-                  <span v-else-if="selectedComplaint.assigned_to"
-                    >User ID: {{ selectedComplaint.assigned_to }} ( Details Pending)</span
-                  >
+                  <span v-else-if="selectedComplaint.assigned_to">User ID: {{ selectedComplaint.assigned_to }} ( Details
+                    Pending)</span>
                   <span v-else>Unassigned</span>
                 </p>
               </div>
@@ -335,11 +244,8 @@
               </div>
               <div v-if="selectedComplaint.attachment" class="mt-2">
                 <strong class="text-gray-600">Attachment:</strong>
-                <a
-                  :href="selectedComplaint.attachment"
-                  target="_blank"
-                  class="ml-2 text-blue-600 hover:text-blue-800 hover:underline break-all"
-                >
+                <a :href="selectedComplaint.attachment" target="_blank"
+                  class="ml-2 text-blue-600 hover:text-blue-800 hover:underline break-all">
                   {{ getFileName(selectedComplaint.attachment) }}
                   <span class="text-xs">(Click to view/download)</span>
                 </a>
@@ -364,12 +270,10 @@
                   {{ selectedComplaint.submitted_by_address || 'N/A' }}
                 </p>
               </div>
-              <div
-                v-if="
-                  selectedComplaint.aggrieved_party_name ||
-                  selectedComplaint.aggrieved_party_address
-                "
-              >
+              <div v-if="
+                selectedComplaint.aggrieved_party_name ||
+                selectedComplaint.aggrieved_party_address
+              ">
                 <hr class="my-3" />
                 <p class="font-semibold text-gray-800">
                   Aggrieved Party Information (if different):
@@ -406,11 +310,9 @@
                   }}
                   ({{ selectedComplaint.respondent_application.email_address || 'No email' }})
                 </span>
-                <span
-                  v-else-if="
-                    selectedComplaint.professional_name && !selectedComplaint.respondent_application
-                  "
-                >
+                <span v-else-if="
+                  selectedComplaint.professional_name && !selectedComplaint.respondent_application
+                ">
                   {{ selectedComplaint.professional_name }} (Manual entry, not linked to system
                   record)
                 </span>
@@ -418,119 +320,67 @@
               </strong>
             </p>
             <div class="space-y-3">
-              <label
-                for="respondentSearchableDropdown"
-                class="block text-sm font-medium text-gray-700"
-                >Search and Select Respondent Professional from System</label
-              >
+              <label for="respondentSearchableDropdown" class="block text-sm font-medium text-gray-700">Search and
+                Select Respondent Professional from System</label>
               <div class="relative">
                 <div class="relative">
-                  <input
-                    type="text"
-                    id="respondentSearchableDropdown"
-                    v-model="respondentSearchQuery"
-                    @input="debouncedFilterRespondents"
-                    @focus="isRespondentDropdownOpen = true"
-                    @click="toggleRespondentDropdown"
-                    :placeholder="
-                      selectedRespondentToLink
-                        ? `${selectedRespondentToLink.name} (${selectedRespondentToLink.email})`
-                        : 'Search by name or email...'
-                    "
+                  <input type="text" id="respondentSearchableDropdown" v-model="respondentSearchQuery"
+                    @input="debouncedFilterRespondents" @focus="isRespondentDropdownOpen = true"
+                    @click="toggleRespondentDropdown" :placeholder="selectedRespondentToLink
+                      ? `${selectedRespondentToLink.name} (${selectedRespondentToLink.email})`
+                      : 'Search by name or email...'
+                      "
                     class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                    autocomplete="off"
-                    :disabled="isResolved"
-                  />
-                  <button
-                    v-if="selectedRespondentToLink"
-                    @click="clearRespondentSelection"
+                    autocomplete="off" :disabled="isResolved" />
+                  <button v-if="selectedRespondentToLink" @click="clearRespondentSelection"
                     class="absolute inset-y-0 right-8 pr-3 flex items-center text-gray-400 hover:text-gray-600"
-                    title="Clear selection"
-                    :disabled="isResolved"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="h-5 w-5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M6 18L18 6M6 6l12 12"
-                      />
+                    title="Clear selection" :disabled="isResolved">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                      stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>
-                  <button
-                    @click="toggleRespondentDropdown"
-                    class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-600"
-                    :disabled="isResolved"
-                  >
-                    <svg
-                      class="h-5 w-5"
-                      :class="{ 'rotate-180': isRespondentDropdownOpen }"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fill-rule="evenodd"
+                  <button @click="toggleRespondentDropdown"
+                    class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-600" :disabled="isResolved">
+                    <svg class="h-5 w-5" :class="{ 'rotate-180': isRespondentDropdownOpen }"
+                      xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd"
                         d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 01-1.414-1.414z"
-                        clip-rule="evenodd"
-                      />
+                        clip-rule="evenodd" />
                     </svg>
                   </button>
                 </div>
-                <div
-                  v-if="isRespondentDropdownOpen"
+                <div v-if="isRespondentDropdownOpen"
                   class="absolute z-10 mt-1 w-full max-h-48 overflow-y-auto bg-white border border-gray-300 rounded-md shadow-lg custom-scrollbar"
-                  @click.stop
-                >
+                  @click.stop>
                   <ul v-if="isLoadingLinkableRespondents" class="text-sm text-gray-500 py-2 px-3">
                     Loading professionals...
                   </ul>
-                  <ul
-                    v-else-if="filteredLinkableRespondents.length > 0"
-                    class="divide-y divide-gray-100"
-                  >
-                    <li
-                      v-for="prof in filteredLinkableRespondents"
-                      :key="prof.id"
-                      @click="selectRespondentToLink(prof)"
-                      class="px-3 py-2 text-sm hover:bg-indigo-50 cursor-pointer"
-                      :class="{
+                  <ul v-else-if="filteredLinkableRespondents.length > 0" class="divide-y divide-gray-100">
+                    <li v-for="prof in filteredLinkableRespondents" :key="prof.id" @click="selectRespondentToLink(prof)"
+                      class="px-3 py-2 text-sm hover:bg-indigo-50 cursor-pointer" :class="{
                         'bg-indigo-100 font-semibold': selectedRespondentToLink?.id === prof.id,
-                      }"
-                    >
+                      }">
                       {{ prof.name }} ({{ prof.email }}) -
                       <span class="text-xs text-gray-500">{{ prof.role || 'Professional' }}</span>
                     </li>
                   </ul>
-                  <ul
-                    v-else-if="respondentSearchQuery && !isLoadingLinkableRespondents"
-                    class="text-sm text-gray-500 py-2 px-3"
-                  >
+                  <ul v-else-if="respondentSearchQuery && !isLoadingLinkableRespondents"
+                    class="text-sm text-gray-500 py-2 px-3">
                     No professionals found matching "{{ respondentSearchQuery }}".
                   </ul>
-                  <ul
-                    v-else-if="
-                      !respondentSearchQuery &&
-                      allLinkableRespondents.length === 0 &&
-                      !isLoadingLinkableRespondents
-                    "
-                    class="text-sm text-gray-500 py-2 px-3"
-                  >
+                  <ul v-else-if="
+                    !respondentSearchQuery &&
+                    allLinkableRespondents.length === 0 &&
+                    !isLoadingLinkableRespondents
+                  " class="text-sm text-gray-500 py-2 px-3">
                     No approved professionals found in the system.
                   </ul>
                 </div>
               </div>
-              <button
-                @click="confirmLinkRespondent"
+              <button @click="confirmLinkRespondent"
                 :disabled="!selectedRespondentToLink || isSubmittingRespondentLink || isResolved"
-                class="mt-2 w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
-              >
+                class="mt-2 w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium">
                 {{ isSubmittingRespondentLink ? 'Linking...' : 'Confirm Link Respondent' }}
               </button>
             </div>
@@ -546,49 +396,30 @@
             </p>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label for="complaintStatus" class="block text-sm font-medium text-gray-700"
-                  >New Status</label
-                >
-                <select
-                  v-model="selectedStatusNameForUpdate"
-                  id="complaintStatus"
+                <label for="complaintStatus" class="block text-sm font-medium text-gray-700">New Status</label>
+                <select v-model="selectedStatusNameForUpdate" id="complaintStatus"
                   class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
-                  :disabled="isResolved"
-                >
+                  :disabled="isResolved">
                   <option disabled value="">Select a status</option>
-                  <option
-                    v-for="statusOpt in masterStatuses"
-                    :key="statusOpt.id"
-                    :value="statusOpt.name"
-                  >
+                  <option v-for="statusOpt in masterStatuses" :key="statusOpt.id" :value="statusOpt.name">
                     {{ statusOpt.name }}
                   </option>
                 </select>
               </div>
               <div>
-                <label for="remarks" class="block text-sm font-medium text-gray-700"
-                  >Internal Remarks</label
-                >
-                <textarea
-                  v-model="complaintRemarks"
-                  id="remarks"
-                  rows="3"
+                <label for="remarks" class="block text-sm font-medium text-gray-700">Internal Remarks</label>
+                <textarea v-model="complaintRemarks" id="remarks" rows="3"
                   class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                   :placeholder="selectedComplaint.remarks ? 'Update remarks...' : 'Add remarks...'"
-                  :disabled="isResolved"
-                ></textarea>
+                  :disabled="isResolved"></textarea>
               </div>
             </div>
-            <button
-              @click="confirmUpdateStatus"
-              :disabled="
-                (!selectedStatusNameForUpdate ||
-                (selectedStatusNameForUpdate === selectedComplaint.status &&
-                  complaintRemarks.trim() === (selectedComplaint.remarks || '').trim()) ||
-                isSubmittingStatusUpdate || isResolved)
+            <button @click="confirmUpdateStatus" :disabled="(!selectedStatusNameForUpdate ||
+              (selectedStatusNameForUpdate === selectedComplaint.status &&
+                complaintRemarks.trim() === (selectedComplaint.remarks || '').trim()) ||
+              isSubmittingStatusUpdate || isResolved)
               "
-              class="mt-4 w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
-            >
+              class="mt-4 w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium">
               {{ isSubmittingStatusUpdate ? 'Updating...' : 'Update Status & Remarks' }}
             </button>
           </section>
@@ -596,11 +427,8 @@
 
         <!-- Modal Footer -->
         <div class="mt-8 pt-5 border-t border-gray-200 flex justify-end">
-          <button
-            @click="closeCombinedModal"
-            type="button"
-            class="px-6 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 text-sm font-medium"
-          >
+          <button @click="closeCombinedModal" type="button"
+            class="px-6 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 text-sm font-medium">
             Close
           </button>
         </div>
@@ -608,14 +436,10 @@
     </div>
 
     <!-- Global Toast Message -->
-    <div
-      v-if="toast.message"
-      :class="[
-        'fixed bottom-5 right-5 p-4 rounded-md shadow-lg text-white text-sm z-50',
-        toast.type === 'success' ? 'bg-green-600' : 'bg-red-600',
-      ]"
-      role="alert"
-    >
+    <div v-if="toast.message" :class="[
+      'fixed bottom-5 right-5 p-4 rounded-md shadow-lg text-white text-sm z-50',
+      toast.type === 'success' ? 'bg-green-600' : 'bg-red-600',
+    ]" role="alert">
       {{ toast.message }}
     </div>
   </div>
@@ -630,7 +454,16 @@ const isLoading = ref(true)
 const selectedComplaint = ref(null)
 const showCombinedModal = ref(false)
 
-const masterStatuses = ref([])
+const masterStatuses = ref([
+  { id: 1, name: 'Registered' },
+  { id: 2, name: 'Submitted' },
+  { id: 3, name: 'Under Review' },
+  { id: 4, name: 'Investigation' },
+  { id: 5, name: 'Action Pending' },
+  { id: 6, name: 'Resolved' },
+  { id: 7, name: 'Closed' },
+  { id: 8, name: 'Rejected' },
+])
 const selectedStatusNameForUpdate = ref('')
 const complaintRemarks = ref('')
 
@@ -646,7 +479,7 @@ const isSubmittingRespondentLink = ref(false)
 const isSubmittingStatusUpdate = ref(false)
 
 // Computed property to check if complaint status is Resolved
-const isResolved = computed(() => 
+const isResolved = computed(() =>
   selectedComplaint.value?.status?.toLowerCase() === 'resolved'
 )
 
@@ -1041,7 +874,7 @@ const getStatusClass = (statusName) => {
 
 onMounted(() => {
   fetchComplaints()
-  fetchMasterStatuses()
+  // fetchMasterStatuses()
 })
 </script>
 
