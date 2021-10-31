@@ -121,9 +121,7 @@ const fetchApplications = async () => {
   error.value = null
   try {
     const response = await apiService.getMhpcInstitutes() // Use apiService
-    if (response.data.results.length) {
-      applications.value = response.data.results.filter(app => app.do_eoi_review_decision == 'Approved')
-    }
+    applications.value = response.data.results
   } catch (err) {
     error.value = err
     console.error('Error fetching applications:', err)

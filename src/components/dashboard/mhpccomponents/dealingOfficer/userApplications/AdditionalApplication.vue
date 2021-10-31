@@ -284,8 +284,6 @@ watch([filterStatus, searchQuery], () => {
 
 // Determines the overall status of the application based on its *additional* qualifications
 const getStatus = (app) => {
-  console.log(app.user_qualifications[1]);
-  
   const additionalQualifications =
     app.user_qualifications?.filter((q) => !q.is_primary_qualification) || []
 
