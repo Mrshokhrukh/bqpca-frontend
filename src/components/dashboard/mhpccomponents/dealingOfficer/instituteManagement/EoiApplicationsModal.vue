@@ -2,24 +2,40 @@
   <TransitionRoot appear :show="isOpen" as="template">
     <Dialog as="div" @close="closeModalHandler" class="relative z-50">
       <!-- Main Modal Overlay -->
-      <TransitionChild enter="duration-300 ease-out" enter-from="opacity-0" enter-to="opacity-100"
-        leave="duration-200 ease-in" leave-from="opacity-100" leave-to="opacity-0">
+      <TransitionChild
+        enter="duration-300 ease-out"
+        enter-from="opacity-0"
+        enter-to="opacity-100"
+        leave="duration-200 ease-in"
+        leave-from="opacity-100"
+        leave-to="opacity-0"
+      >
         <div class="fixed inset-0 bg-black/80 backdrop-blur-sm" />
       </TransitionChild>
 
       <div class="fixed inset-0 overflow-y-auto">
         <div class="flex min-h-full items-center justify-center p-4">
           <!-- Main Modal Panel -->
-          <TransitionChild enter="duration-300 ease-out" enter-from="opacity-0 scale-95"
-            enter-to="opacity-100 scale-100" leave="duration-200 ease-in" leave-from="opacity-100 scale-100"
-            leave-to="opacity-0 scale-95">
-            <DialogPanel class="w-full transform overflow-hidden rounded-2xl bg-gray-50 shadow-2xl transition-all"
-              v-if="application" style="max-width: 60rem">
+          <TransitionChild
+            enter="duration-300 ease-out"
+            enter-from="opacity-0 scale-95"
+            enter-to="opacity-100 scale-100"
+            leave="duration-200 ease-in"
+            leave-from="opacity-100 scale-100"
+            leave-to="opacity-0 scale-95"
+          >
+            <DialogPanel
+              class="w-full transform overflow-hidden rounded-2xl bg-gray-50 shadow-2xl transition-all"
+              v-if="application"
+              style="max-width: 60rem"
+            >
               <!-- Enhanced Status Banner -->
-              <div :class="[
-                'px-8 py-6 border-b relative overflow-hidden',
-                modalStatusInfo.bannerClass, // Use computed banner class
-              ]">
+              <div
+                :class="[
+                  'px-8 py-6 border-b relative overflow-hidden',
+                  modalStatusInfo.bannerClass, // Use computed banner class
+                ]"
+              >
                 <div class="flex items-center justify-between relative z-10">
                   <div class="flex items-center space-x-4">
                     <div class="p-3 bg-white rounded-lg shadow-sm">
@@ -36,16 +52,20 @@
                     </div>
                   </div>
                   <div class="flex items-center space-x-4">
-                    <span :class="[
-                      'px-5 py-2.5 rounded-full text-sm font-medium inline-flex items-center space-x-2 shadow-sm',
-                      modalStatusInfo.pillClass, // Use computed pill class
-                    ]">
+                    <span
+                      :class="[
+                        'px-5 py-2.5 rounded-full text-sm font-medium inline-flex items-center space-x-2 shadow-sm',
+                        modalStatusInfo.pillClass, // Use computed pill class
+                      ]"
+                    >
                       <Circle class="h-4 w-4" :class="modalStatusInfo.iconClass" />
                       <span>{{ modalStatusInfo.displayText }}</span>
                     </span>
-                    <button type="button"
+                    <button
+                      type="button"
                       class="p-2 text-gray-400 hover:text-gray-500 transition-colors rounded-full hover:bg-white"
-                      @click="closeModal">
+                      @click="closeModal"
+                    >
                       <span class="sr-only">Close</span>
                       <X class="h-6 w-6" />
                     </button>
@@ -64,9 +84,13 @@
                   <!-- Left Column -->
                   <div class="lg:col-span-1 space-y-6">
                     <!-- Institute Information Card -->
-                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div
+                      class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden"
+                    >
                       <div class="p-6">
-                        <h4 class="text-lg font-medium text-gray-900 mb-6 flex items-center space-x-2">
+                        <h4
+                          class="text-lg font-medium text-gray-900 mb-6 flex items-center space-x-2"
+                        >
                           <User class="h-5 w-5 text-gray-500" />
                           <span>Institute Information</span>
                         </h4>
@@ -75,9 +99,13 @@
                             <h5 v-if="!isEditing" class="text-xl font-semibold text-gray-900">
                               {{ application.name_of_institution }}
                             </h5>
-                            <input v-else type="text" v-model="editableApplication.name_of_institution"
+                            <input
+                              v-else
+                              type="text"
+                              v-model="editableApplication.name_of_institution"
                               class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-lg font-semibold"
-                              placeholder="Institute Name" />
+                              placeholder="Institute Name"
+                            />
                           </div>
                           <div class="w-full grid grid-cols-1 gap-4 mt-4">
                             <div class="flex items-center space-x-2 bg-gray-50 p-3 rounded-lg">
@@ -85,9 +113,13 @@
                               <span v-if="!isEditing" class="text-sm text-gray-600">{{
                                 application.address
                               }}</span>
-                              <input v-else type="text" v-model="editableApplication.address"
+                              <input
+                                v-else
+                                type="text"
+                                v-model="editableApplication.address"
                                 class="w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
-                                placeholder="Address" />
+                                placeholder="Address"
+                              />
                             </div>
                           </div>
                         </div>
@@ -95,9 +127,13 @@
                     </div>
 
                     <!-- Contact Information Card -->
-                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div
+                      class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden"
+                    >
                       <div class="p-6">
-                        <h4 class="text-lg font-medium text-gray-900 mb-6 flex items-center space-x-2">
+                        <h4
+                          class="text-lg font-medium text-gray-900 mb-6 flex items-center space-x-2"
+                        >
                           <Contact class="h-5 w-5 text-gray-500" />
                           <span>Contact Information</span>
                         </h4>
@@ -107,18 +143,26 @@
                             <span v-if="!isEditing" class="text-sm text-gray-600">{{
                               application.email_address
                             }}</span>
-                            <input v-else type="email" v-model="editableApplication.email_address"
+                            <input
+                              v-else
+                              type="email"
+                              v-model="editableApplication.email_address"
                               class="w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
-                              placeholder="Email Address" />
+                              placeholder="Email Address"
+                            />
                           </div>
                           <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
                             <Phone class="h-4 w-4 text-gray-400 flex-shrink-0" />
                             <span v-if="!isEditing" class="text-sm text-gray-600">{{
                               application.contact_no
                             }}</span>
-                            <input v-else type="tel" v-model="editableApplication.contact_no"
+                            <input
+                              v-else
+                              type="tel"
+                              v-model="editableApplication.contact_no"
                               class="w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
-                              placeholder="Contact Number" />
+                              placeholder="Contact Number"
+                            />
                           </div>
                           <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
                             <UserCircle class="h-4 w-4 text-gray-400 flex-shrink-0" />
@@ -129,27 +173,46 @@
                             </template>
                             <template v-else>
                               <div class="flex space-x-2 w-full">
-                                <input type="text" v-model="editableApplication.village"
+                                <input
+                                  type="text"
+                                  v-model="editableApplication.village"
                                   class="w-1/2 px-2 py-1 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
-                                  placeholder="Village" />
-                                <input type="text" v-model="editableApplication.dzongkhag"
+                                  placeholder="Village"
+                                />
+                                <input
+                                  type="text"
+                                  v-model="editableApplication.dzongkhag"
                                   class="w-1/2 px-2 py-1 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
-                                  placeholder="Dzongkhag" />
+                                  placeholder="Dzongkhag"
+                                />
                               </div>
                             </template>
                           </div>
                           <div class="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 flex-shrink-0"
-                              fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                              <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              class="h-4 w-4 text-gray-400 flex-shrink-0"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                              stroke-width="2"
+                            >
+                              <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
+                              />
                             </svg>
                             <span v-if="!isEditing" class="text-sm text-gray-600">{{
                               application.website || 'N/A'
                             }}</span>
-                            <input v-else type="url" v-model="editableApplication.website"
+                            <input
+                              v-else
+                              type="url"
+                              v-model="editableApplication.website"
                               class="w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
-                              placeholder="Website URL" />
+                              placeholder="Website URL"
+                            />
                           </div>
                         </div>
                       </div>
@@ -158,9 +221,13 @@
 
                   <!-- Right Column -->
                   <div class="lg:col-span-2 space-y-6">
-                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div
+                      class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden"
+                    >
                       <div class="p-6">
-                        <h4 class="text-lg font-medium text-gray-900 mb-6 flex items-center space-x-2">
+                        <h4
+                          class="text-lg font-medium text-gray-900 mb-6 flex items-center space-x-2"
+                        >
                           <FileText class="h-5 w-5 text-gray-500" />
                           <span>Application Details</span>
                         </h4>
@@ -189,9 +256,12 @@
                           <div class="p-4 bg-gray-50 rounded-lg md:col-span-2">
                             <p class="text-sm font-medium text-gray-500">Supporting Documents</p>
                             <p class="text-sm text-gray-900 mt-2">
-                              <a v-if="application.institute_eoi_supporting_documents"
-                                :href="application.institute_eoi_supporting_documents" target="_blank"
-                                class="text-blue-600 hover:underline flex items-center space-x-2">
+                              <a
+                                v-if="application.institute_eoi_supporting_documents"
+                                :href="application.institute_eoi_supporting_documents"
+                                target="_blank"
+                                class="text-blue-600 hover:underline flex items-center space-x-2"
+                              >
                                 <FileText class="h-4 w-4" />
                                 <span>View Document</span>
                               </a>
@@ -202,21 +272,27 @@
                       </div>
                     </div>
 
-                    <div v-if="application && application.physical_verification_remarks"
-                      class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div
+                      v-if="application"
+                      class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden"
+                    >
                       <div class="p-6">
                         <div class="flex items-center justify-between mb-6">
                           <h4 class="text-lg font-medium text-gray-900 flex items-center space-x-2">
                             <ClipboardCheck class="h-5 w-5 text-gray-500" />
                             <span>Physical Verification</span>
                           </h4>
-                          <button v-if="
-                            modalStatusInfo.displayText === 'Pending Physical Verification' &&
-                            !isEditingPhysicalVerification &&
-                            !isEditing
-                          " type="button"
+                          <button
+                            v-if="
+                              modalStatusInfo.displayText === 'Pending Physical Verification' &&
+                              !isEditingPhysicalVerification &&
+                              !isEditing
+                            "
+                            type="button"
                             class="px-3 py-1.5 text-xs font-medium text-white bg-blue-600 rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 inline-flex items-center space-x-1"
-                            @click="startEditingPhysicalVerification" :disabled="isSaving">
+                            @click="startEditingPhysicalVerification"
+                            :disabled="isSaving"
+                          >
                             <Pencil class="h-3 w-3" />
                             <span>Update Details</span>
                           </button>
@@ -236,12 +312,14 @@
                           <div>
                             <p class="text-sm font-medium text-gray-500">Verification Status</p>
                             <p class="text-sm text-gray-900 mt-1">
-                              <span :class="[
-                                'px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full',
-                                application.is_physical_verification
-                                  ? 'bg-green-100 text-green-800'
-                                  : 'bg-yellow-100 text-yellow-800',
-                              ]">
+                              <span
+                                :class="[
+                                  'px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full',
+                                  application.is_physical_verification
+                                    ? 'bg-green-100 text-green-800'
+                                    : 'bg-yellow-100 text-yellow-800',
+                                ]"
+                              >
                                 {{ application.is_physical_verification ? 'Completed' : 'Pending' }}
                               </span>
                             </p>
@@ -256,22 +334,41 @@
                           </div>
                         </div>
 
-                        <form v-else @submit.prevent="savePhysicalVerificationDetails" class="space-y-4">
+                        <form
+                          v-else
+                          @submit.prevent="savePhysicalVerificationDetails"
+                          class="space-y-4"
+                        >
                           <div>
-                            <label for="pv_date" class="block text-sm font-medium text-gray-700">Verification
-                              Date</label>
-                            <input type="date" id="pv_date" v-model="editablePhysicalVerificationDetails.date"
-                              class="mt-1 block w-full" />
+                            <label for="pv_date" class="block text-sm font-medium text-gray-700"
+                              >Verification Date</label
+                            >
+                            <input
+                              type="date"
+                              id="pv_date"
+                              v-model="editablePhysicalVerificationDetails.date"
+                              class="mt-1 block w-full"
+                            />
                           </div>
                           <div>
-                            <label for="pv_remarks" class="block text-sm font-medium text-gray-700">Remarks</label>
-                            <textarea id="pv_remarks" rows="3" v-model="editablePhysicalVerificationDetails.remarks"
-                              class="mt-1 block w-full" placeholder="Enter verification remarks..."></textarea>
+                            <label for="pv_remarks" class="block text-sm font-medium text-gray-700"
+                              >Remarks</label
+                            >
+                            <textarea
+                              id="pv_remarks"
+                              rows="3"
+                              v-model="editablePhysicalVerificationDetails.remarks"
+                              class="mt-1 block w-full"
+                              placeholder="Enter verification remarks..."
+                            ></textarea>
                           </div>
                           <div class="flex items-center">
-                            <input id="pv_is_verified" type="checkbox"
+                            <input
+                              id="pv_is_verified"
+                              type="checkbox"
                               v-model="editablePhysicalVerificationDetails.is_verified"
-                              class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" />
+                              class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                            />
                             <label for="pv_is_verified" class="ml-2 block text-sm text-gray-900">
                               Mark as Verified
                             </label>
@@ -280,14 +377,19 @@
                             {{ physicalVerificationSaveError }}
                           </p>
                           <div class="flex justify-end space-x-3 mt-4">
-                            <button type="button"
+                            <button
+                              type="button"
                               class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50"
-                              @click="cancelEditingPhysicalVerification" :disabled="isSaving">
+                              @click="cancelEditingPhysicalVerification"
+                              :disabled="isSaving"
+                            >
                               Cancel
                             </button>
-                            <button type="submit"
+                            <button
+                              type="submit"
                               class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg shadow-sm hover:bg-indigo-700"
-                              :disabled="isSaving">
+                              :disabled="isSaving"
+                            >
                               {{ isSaving ? 'Saving...' : 'Save Verification Details' }}
                             </button>
                           </div>
@@ -301,64 +403,91 @@
               <!-- Main Modal Footer -->
               <div class="px-8 py-4 bg-gray-50 border-t border-gray-200">
                 <div class="flex justify-between items-center">
-                  <div v-if="errorMessage || saveError" class="text-sm text-red-600 flex items-center space-x-2">
+                  <div
+                    v-if="errorMessage || saveError"
+                    class="text-sm text-red-600 flex items-center space-x-2"
+                  >
                     <CircleAlert class="h-4 w-4" />
                     <span>{{ errorMessage || saveError }}</span>
                   </div>
                   <div v-else></div>
 
                   <div class="flex items-center space-x-4">
-                    <button type="button"
+                    <button
+                      type="button"
                       class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50"
-                      @click="closeModal">
+                      @click="closeModal"
+                    >
                       <X class="h-4 w-4 mr-1.5" /> Close
                     </button>
 
-                    <template v-if="!isEditing && !isEditingPhysicalVerification && !isEoiWorkflowFinalized">
+                    <template
+                      v-if="!isEditing && !isEditingPhysicalVerification && !isEoiWorkflowFinalized"
+                    >
                       <!-- Edit Application button -->
-                      <button type="button"
+                      <button
+                        type="button"
                         class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg shadow-sm hover:bg-blue-700"
-                        @click="startEditing" :disabled="isSaving">
+                        @click="startEditing"
+                        :disabled="isSaving"
+                      >
                         <Pencil class="h-4 w-4 mr-1.5" /> Edit Application
                       </button>
 
                       <!-- Regret EOI button -->
-                      <button type="button"
+                      <button
+                        type="button"
                         class="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg shadow-sm hover:bg-red-700"
-                        @click="openPromptDialog('rejectEOI')" :disabled="isSaving">
+                        @click="openPromptDialog('rejectEOI')"
+                        :disabled="isSaving"
+                      >
                         <Ban class="h-4 w-4 mr-1.5" /> Regret EOI
                       </button>
 
                       <!-- Approve for Verification button -->
-                      <button v-if="
-                        application.application_status === 'EOI Submitted' ||
-                        application.application_status === 'EOI Pending Review'
-                      " type="button"
+                      <button
+                        v-if="
+                          application.application_status === 'EOI Submitted' ||
+                          application.application_status === 'EOI Pending Review'
+                        "
+                        type="button"
                         class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg shadow-sm hover:bg-green-700"
-                        @click="openPromptDialog('approveToVerify')" :disabled="isSaving">
+                        @click="openPromptDialog('approveToVerify')"
+                        :disabled="isSaving"
+                      >
                         <ClipboardCheck class="h-4 w-4 mr-1.5" /> Approve for Verification
                       </button>
 
                       <!-- Finalize EOI Approval button -->
-                      <button v-if="
-                        application.application_status === 'EOI Pending Physical Verification' &&
-                        application.is_physical_verification
-                      " type="button"
+                      <button
+                        v-if="
+                          application.application_status === 'EOI Pending Physical Verification' &&
+                          application.is_physical_verification
+                        "
+                        type="button"
                         class="px-4 py-2 text-sm font-medium text-white bg-teal-600 rounded-lg shadow-sm hover:bg-teal-700"
-                        @click="openPromptDialog('finalEOIApprove')" :disabled="isSaving">
+                        @click="openPromptDialog('finalEOIApprove')"
+                        :disabled="isSaving"
+                      >
                         <CheckCircle class="h-4 w-4 mr-1.5" /> Finalize EOI Approval
                       </button>
                     </template>
 
                     <template v-if="isEditing && !isEditingPhysicalVerification">
-                      <button type="button"
+                      <button
+                        type="button"
                         class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-100"
-                        @click="cancelEditing" :disabled="isSaving">
+                        @click="cancelEditing"
+                        :disabled="isSaving"
+                      >
                         <X class="h-4 w-4 mr-1.5" /> Cancel Edit
                       </button>
-                      <button type="button"
+                      <button
+                        type="button"
                         class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg shadow-sm hover:bg-indigo-700"
-                        @click="saveChanges" :disabled="isSaving">
+                        @click="saveChanges"
+                        :disabled="isSaving"
+                      >
                         <Save class="h-4 w-4 mr-1.5" />
                         {{ isSaving ? 'Saving...' : 'Save Changes' }}
                       </button>
@@ -369,39 +498,65 @@
 
               <TransitionRoot appear :show="isPromptDialogOpen" as="template">
                 <Dialog as="div" @close="cancelPromptAction" class="relative z-[100]">
-                  <TransitionChild enter="duration-300 ease-out" enter-from="opacity-0" enter-to="opacity-100"
-                    leave="duration-200 ease-in" leave-from="opacity-100" leave-to="opacity-0">
+                  <TransitionChild
+                    enter="duration-300 ease-out"
+                    enter-from="opacity-0"
+                    enter-to="opacity-100"
+                    leave="duration-200 ease-in"
+                    leave-from="opacity-100"
+                    leave-to="opacity-0"
+                  >
                     <div class="fixed inset-0 bg-black/60 backdrop-blur-xs" />
                   </TransitionChild>
                   <div class="fixed inset-0 overflow-y-auto">
                     <div class="flex min-h-full items-center justify-center p-4 text-center">
-                      <TransitionChild enter="duration-300 ease-out" enter-from="opacity-0 scale-95"
-                        enter-to="opacity-100 scale-100" leave="duration-200 ease-in" leave-from="opacity-100 scale-100"
-                        leave-to="opacity-0 scale-95">
+                      <TransitionChild
+                        enter="duration-300 ease-out"
+                        enter-from="opacity-0 scale-95"
+                        enter-to="opacity-100 scale-100"
+                        leave="duration-200 ease-in"
+                        leave-from="opacity-100 scale-100"
+                        leave-to="opacity-0 scale-95"
+                      >
                         <DialogPanel
-                          class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                          class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all"
+                        >
                           <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900">
                             {{ promptTitle }}
                           </DialogTitle>
                           <div class="mt-4">
-                            <label for="promptInput" class="block text-sm font-medium text-gray-700 mb-1">
+                            <label
+                              for="promptInput"
+                              class="block text-sm font-medium text-gray-700 mb-1"
+                            >
                               {{ promptLabel }}
                             </label>
-                            <textarea id="promptInput" v-model="promptInputText" rows="4"
+                            <textarea
+                              id="promptInput"
+                              v-model="promptInputText"
+                              rows="4"
                               class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                              :placeholder="promptPlaceholder"></textarea>
+                              :placeholder="promptPlaceholder"
+                            ></textarea>
                             <p v-if="promptErrorMessage" class="mt-2 text-sm text-red-600">
                               {{ promptErrorMessage }}
                             </p>
                           </div>
                           <div class="mt-6 flex justify-end space-x-3">
-                            <button type="button"
+                            <button
+                              type="button"
                               class="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
-                              @click="cancelPromptAction" :disabled="isSaving">
+                              @click="cancelPromptAction"
+                              :disabled="isSaving"
+                            >
                               Cancel
                             </button>
-                            <button type="button" :class="promptConfirmButtonClass" @click="confirmPromptAction"
-                              :disabled="isSaving">
+                            <button
+                              type="button"
+                              :class="promptConfirmButtonClass"
+                              @click="confirmPromptAction"
+                              :disabled="isSaving"
+                            >
                               {{ isSaving ? 'Processing...' : promptConfirmButtonText }}
                             </button>
                           </div>
@@ -495,8 +650,6 @@ const promptTitle = computed(() => {
 })
 
 const promptLabel = computed(() => {
-
-
   switch (promptActionType.value) {
     case 'approveToVerify':
       return 'Approval Notes (Optional):'
@@ -1069,18 +1222,17 @@ input[type='tel'],
 input[type='url'],
 input[type='date'],
 textarea {
-  @apply block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white disabled:bg-gray-100 disabled:cursor-not-allowed;
+  @apply block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm
+         focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm
+         bg-white disabled:bg-gray-100 disabled:cursor-not-allowed;
 }
-
 .bg-gray-50 input,
 .bg-gray-50 textarea {
   @apply px-2 py-1;
 }
-
 .flex-shrink-0 {
   flex-shrink: 0;
 }
-
 .whitespace-pre-wrap {
   white-space: pre-wrap;
 }

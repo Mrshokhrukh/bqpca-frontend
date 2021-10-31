@@ -1,29 +1,44 @@
 <template>
   <div class="p-4 sm:p-6 md:p-8 min-h-screen bg-gray-50">
-    <DOPageHeader title="Renewal Applications" :description="headerDescription" :search-query="searchQuery"
-      @update:searchQuery="searchQuery = $event" search-placeholder="Search by name, CID or registration number..."
-      :filter-value="filterStatus" @update:filterValue="filterStatus = $event" :filter-options="statusFilterOptions" />
+    <DOPageHeader
+      title="Renewal Applications"
+      :description="headerDescription"
+      :search-query="searchQuery"
+      @update:searchQuery="searchQuery = $event"
+      search-placeholder="Search by name, CID or registration number..."
+      :filter-value="filterStatus"
+      @update:filterValue="filterStatus = $event"
+      :filter-options="statusFilterOptions"
+    />
 
     <div class="mt-6 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-100">
             <tr>
-              <th v-for="header in tableHeaders" :key="header"
-                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <th
+                v-for="header in tableHeaders"
+                :key="header"
+                class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
+              >
                 {{ header }}
               </th>
             </tr>
           </thead>
           <tbody v-if="!isLoading" class="divide-y divide-gray-200 bg-white">
-            <tr v-for="item in paginatedCombinedData" :key="item.renewal_id" class="hover:bg-gray-50 transition-colors">
+            <tr
+              v-for="item in paginatedCombinedData"
+              :key="item.renewal_id"
+              class="hover:bg-gray-50 transition-colors"
+            >
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800">
                 #{{ item.renewal_id }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center">
                   <div
-                    class="h-9 w-9 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center mr-3 flex-shrink-0 font-semibold text-xs">
+                    class="h-9 w-9 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center mr-3 flex-shrink-0 font-semibold text-xs"
+                  >
                     {{ getInitials(item) }}
                   </div>
                   <div>
@@ -38,29 +53,38 @@
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 {{ formatDate(item.application_date) }}
               </td>
-
               <td class="px-6 py-4 whitespace-nowrap">
                 <span :class="getStatusClasses(item.renewal_status)">
                   {{ item.renewal_status }}
-                </span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span :class="getPaymentClasses(item)">
-                  {{ item.payment_status.toUpperCase() }}
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 {{ formatDate(item.original_expiry_date) }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                <button @click="viewDetails(item)"
-                  class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-3 rounded-lg shadow-sm transition-colors duration-200 text-xs inline-flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                <button
+                  @click="viewDetails(item)"
+                  class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-3 rounded-lg shadow-sm transition-colors duration-200 text-xs inline-flex items-center"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4 mr-1.5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                    />
                   </svg>
                   View Details
                 </button>
@@ -76,12 +100,25 @@
             <tr>
               <td :colspan="tableHeaders.length" class="px-6 py-16 text-center text-gray-500">
                 <div class="flex flex-col items-center justify-center">
-                  <svg class="animate-spin h-6 w-6 text-blue-600 mb-2" xmlns="http://www.w3.org/2000/svg" fill="none"
-                    viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                    </path>
+                  <svg
+                    class="animate-spin h-6 w-6 text-blue-600 mb-2"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      class="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      stroke-width="4"
+                    ></circle>
+                    <path
+                      class="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
                   </svg>
                   <p class="font-medium">Loading renewal application data...</p>
                 </div>
@@ -101,20 +138,30 @@
         </p>
       </div>
       <div class="flex items-center space-x-2">
-        <button @click="prevPage" :disabled="currentPage === 1"
-          class="px-3 py-1 border rounded-md text-sm disabled:opacity-50 bg-white">
+        <button
+          @click="prevPage"
+          :disabled="currentPage === 1"
+          class="px-3 py-1 border rounded-md text-sm disabled:opacity-50 bg-white"
+        >
           &laquo; Prev
         </button>
         <span class="text-sm">Page {{ currentPage }} of {{ totalPages }}</span>
-        <button @click="nextPage" :disabled="currentPage === totalPages"
-          class="px-3 py-1 border rounded-md text-sm disabled:opacity-50 bg-white">
+        <button
+          @click="nextPage"
+          :disabled="currentPage === totalPages"
+          class="px-3 py-1 border rounded-md text-sm disabled:opacity-50 bg-white"
+        >
           Next &raquo;
         </button>
       </div>
     </div>
 
-    <RenewalDetailsModal :is-open="isModalOpen" :renewal-data="selectedItem" @close="closeModal"
-      @update="handleUpdate" />
+    <RenewalDetailsModal
+      :is-open="isModalOpen"
+      :renewal-data="selectedItem"
+      @close="closeModal"
+      @update="handleUpdate"
+    />
   </div>
 </template>
 
@@ -144,7 +191,6 @@ const tableHeaders = [
   'Reg. No.',
   'Applied On',
   'Status',
-  'Payment Status',
   'Original Expiry',
   'Actions',
 ]
@@ -273,21 +319,6 @@ const getInitials = (item) => {
     .toUpperCase()
     .substring(0, 2)
 }
-
-
-
-const getPaymentClasses = (app) => {
-  const status = app.payment_status;
-  return [
-    'px-3 py-1 inline-flex items-center justify-center text-xs leading-5 font-[500] rounded-full shadow-sm', // Base classes for consistency
-    {
-      'bg-yellow-100 text-yellow-800': status === 'pending',
-      'bg-green-100 text-green-800': status === 'completed',
-    },
-  ]
-}
-
-
 
 const getStatusClasses = (status) => ({
   'px-2 py-1 rounded-full text-xs font-medium inline-block': true,
