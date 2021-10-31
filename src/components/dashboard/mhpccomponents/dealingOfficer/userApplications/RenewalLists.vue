@@ -45,8 +45,8 @@
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <span :class="getPaymentStatus(item)">
-                  testing
+                <span :class="getStatusClasses(item)">
+                  {{ getPaymentStatus(item) }}
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -275,10 +275,7 @@ const getInitials = (item) => {
 }
 
 const getPaymentStatus = (app) => {
-  if (!Array.isArray(app.user_qualifications) || app.user_qualifications.length === 0) {
-    return 'Pending' // Default if no qualifications yet
-  }
-  let status = app.user_qualifications[0].payment_status
+  let status = app.payment_status;
 
   if (status === 'pending') {
     return 'Pending'
