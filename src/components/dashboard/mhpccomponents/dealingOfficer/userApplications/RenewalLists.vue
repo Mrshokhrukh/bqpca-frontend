@@ -58,6 +58,11 @@
                   {{ item.renewal_status }}
                 </span>
               </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span :class="getPaymentClasses(item)">
+                  {{ item.payment_status.toUpperCase() }}
+                </span>
+              </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 {{ formatDate(item.original_expiry_date) }}
               </td>
@@ -319,6 +324,21 @@ const getInitials = (item) => {
     .toUpperCase()
     .substring(0, 2)
 }
+
+
+
+const getPaymentClasses = (app) => {
+  const status = app.payment_status;
+  return [
+    'px-3 py-1 inline-flex items-center justify-center text-xs leading-5 font-[500] rounded-full shadow-sm', // Base classes for consistency
+    {
+      'bg-yellow-100 text-yellow-800': status === 'pending',
+      'bg-green-100 text-green-800': status === 'completed',
+    },
+  ]
+}
+
+
 
 const getStatusClasses = (status) => ({
   'px-2 py-1 rounded-full text-xs font-medium inline-block': true,
