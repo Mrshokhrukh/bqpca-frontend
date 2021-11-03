@@ -239,8 +239,8 @@ const getStatus = (app) => {
   if (!Array.isArray(app.user_qualifications) || app.user_qualifications.length === 0) {
     return 'Pending' // Default if no qualifications yet
   }
-
-  let status = app.user_qualifications[0].endorsement_decision
+  const isPrimary = app.user_qualifications.find(item => item.is_primary_qualification == true);
+  const status = isPrimary.endorsement_decision;
 
   if (status === 'Regretted') {
     return 'Regretted'
