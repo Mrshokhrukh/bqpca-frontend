@@ -32,6 +32,9 @@
                 Status
               </th>
               <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                Payment status
+              </th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Date
               </th>
               <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
@@ -98,6 +101,11 @@
               <td class="px-6 py-4 whitespace-nowrap">
                 <span :class="getStatusClasses(app)">
                   {{ getStatus(app) }}
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap capitalize">
+                <span :class="getPaymentClasses(app)">
+                  {{ getPaymentStatus(app) }}
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -282,10 +290,25 @@ watch([filterStatus, searchQuery], () => {
 
 // --- Methods ---
 
+const getPaymentClasses = (app) => {
+  const status = app.payment_status;
+  return [
+    'px-3 py-1 inline-flex items-center justify-center text-xs leading-5 font-[500] rounded-full shadow-sm', // Base classes for consistency
+    {
+      'bg-yellow-100 text-yellow-800': status === 'pending',
+      'bg-green-100 text-green-800': status === 'completed',
+    },
+  ]
+}
+
+const getPaymentStatus = (app) => {
+  return app.payment_status
+}
+
+
 // Determines the overall status of the application based on its *additional* qualifications
 const getStatus = (app) => {
-  console.log(app.user_qualifications[1]);
-  
+
   const additionalQualifications =
     app.user_qualifications?.filter((q) => !q.is_primary_qualification) || []
 
