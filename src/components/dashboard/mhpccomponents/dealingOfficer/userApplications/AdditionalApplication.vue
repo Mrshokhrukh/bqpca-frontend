@@ -317,7 +317,7 @@ const getPaymentStatus = (app) => {
 
 
   return 'Pending'
-}
+} 
 
 
 // Determines the overall status of the application based on its *additional* qualifications

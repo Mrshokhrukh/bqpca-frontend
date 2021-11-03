@@ -112,7 +112,6 @@
         </button>
       </div>
     </div>
-
     <RenewalDetailsModal :is-open="isModalOpen" :renewal-data="selectedItem" @close="closeModal"
       @update="handleUpdate" />
   </div>
@@ -164,7 +163,7 @@ const fetchAllData = async () => {
     const [renewalResponse, qualResponse] = await Promise.all([
       apiServices.getMhpcRenewals(),
       apiServices.getMhpcNewQualifications(), // This endpoint gives us details for each professional
-    ])
+    ]);
 
     // Process renewals
     renewals.value = renewalResponse?.data?.results ?? []
@@ -191,11 +190,14 @@ const combinedData = computed(() => {
 
   return renewals.value
     .map((renewal) => {
-      const qualification = qualificationsMap.value[renewal.user_qualification] || {}
+      const qualification = qualificationsMap.value[renewal.user_qualification] || {};
 
       // ADDED: Check if the applicant is a counselor.
       // Adjust 'Counselor' if the category name is different in your system.
+
       const isCounselor = qualification.personnel_category_name?.includes('Counselor') || false
+      const decisionStatus = renewal.user_qualification_details.hasOwnProperty('endorsement_decision') ? renewal.user_qualification_details?.endorsement_decision : '';
+
 
       return {
         // Data from the renewal object
@@ -206,6 +208,7 @@ const combinedData = computed(() => {
         application_date: renewal.created_at,
         payment_status: renewal.payment_status,
         payment_id: renewal.payment_id,
+        decision_status: decisionStatus || 'N/A',
         qualification_id: qualification.id,
         full_name: qualification.applicant_name || 'N/A',
         cid_no: qualification.application?.cid_no || 'N/A',
