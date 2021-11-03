@@ -188,6 +188,7 @@ onMounted(fetchAllData)
 
 // --- Computed Properties for Filtering and Display ---
 const combinedData = computed(() => {
+
   return renewals.value
     .map((renewal) => {
       const qualification = qualificationsMap.value[renewal.user_qualification] || {}

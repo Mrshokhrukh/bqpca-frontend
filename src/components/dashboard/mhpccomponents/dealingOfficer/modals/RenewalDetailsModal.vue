@@ -150,10 +150,10 @@
                         <p class="text-xs text-gray-500">Full Name</p>
                         <p class="font-medium text-gray-800">{{ renewalData.full_name }}</p>
                       </div>
-                      <div>
+                      <!-- <div>
                         <p class="text-xs text-gray-500">CID No.</p>
                         <p class="font-medium text-gray-800">{{ renewalData.cid_no }}</p>
-                      </div>
+                      </div> -->
                       <div>
                         <p class="text-xs text-gray-500">Reg. No.</p>
                         <p class="font-medium text-gray-800">{{ renewalData.registration_no }}</p>
@@ -208,8 +208,7 @@
                   class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                   Cancel
                 </button>
-                <button type="button" @click="submitRenewalUpdate"
-                  :disabled="isSubmitting || form.renewal_status === 'APPROVED'"
+                <button type="button" @click="submitRenewalUpdate" :disabled="isSubmitting"
                   title="cannot submit when Decision Status is approved"
                   class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center shadow-sm">
                   <svg v-if="isSubmitting" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"

@@ -291,18 +291,32 @@ watch([filterStatus, searchQuery], () => {
 // --- Methods ---
 
 const getPaymentClasses = (app) => {
-  const status = app.payment_status;
+
+  const statusPayment =
+    app.user_qualifications?.filter((q) => !q.is_primary_qualification) || [];
+  const status = statusPayment.find(item => item.payment_status);
+
   return [
     'px-3 py-1 inline-flex items-center justify-center text-xs leading-5 font-[500] rounded-full shadow-sm', // Base classes for consistency
     {
-      'bg-yellow-100 text-yellow-800': status === 'pending',
-      'bg-green-100 text-green-800': status === 'completed',
+      'bg-yellow-100 text-yellow-800': status.payment_status === 'pending',
+      'bg-green-100 text-green-800': status.payment_status === 'completed',
     },
   ]
 }
 
 const getPaymentStatus = (app) => {
-  return app.payment_status
+  const statusPayment =
+    app.user_qualifications?.filter((q) => !q.is_primary_qualification) || [];
+
+
+  const status = statusPayment.find(item => item.payment_status);
+
+  if (status.payment_status == 'pending') return 'Pending'
+  if (status.payment_status == 'completed') return 'Completed'
+
+
+  return 'Pending'
 }
 
 
