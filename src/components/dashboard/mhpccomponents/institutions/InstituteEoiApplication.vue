@@ -64,7 +64,7 @@
                       <label for="CID" class="form-label required-label flex items-center">
                         License Number/CID
                         <InformationCircleIcon
-                          class="w-4 h-4 ml-1 text-gray-400 cursor-help"
+                          class="w-4 h-4 text-gray-400 cursor-help"
                           title="Your Institute License Number"
                         />
                       </label>
@@ -94,7 +94,7 @@
                         {{ validationErrors.full_name }}
                       </p>
                     </div>
-                    <div>
+                    <!-- <div>
                       <label for="gender" class="form-label">Gender</label>
                       <input
                         id="gender"
@@ -106,8 +106,8 @@
                       <p v-if="validationErrors.gender" class="form-error" id="gender-error">
                         {{ validationErrors.gender }}
                       </p>
-                    </div>
-                    <div>
+                    </div> -->
+                    <!-- <div>
                       <label for="contact_no" class="form-label">Contact Number</label>
                       <input
                         type="tel"
@@ -124,7 +124,7 @@
                       >
                         {{ validationErrors.contact_no }}
                       </p>
-                    </div>
+                    </div> -->
                     <div>
                       <label for="email_address" class="form-label">Email Address</label>
                       <input
@@ -1505,7 +1505,7 @@ onBeforeUnmount(() => {
   @apply text-red-600 text-xs mt-1;
 }
 .form-label {
-  @apply block text-sm font-medium text-gray-700 mb-1.5;
+  @apply flex block text-sm font-medium text-gray-700 mb-1.5 gap-1;
 }
 .btn {
   @apply inline-flex items-center justify-center rounded-lg border py-2.5 px-5 text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed;
