@@ -847,8 +847,8 @@ const confirmPromptAction = async () => {
       }
       payload = {
         application_status: 'EOI Rejected',
-        do_eoi_review_decision: 'Rejected',
-        review_decision: 'Rejected',
+        do_eoi_review_decision: 'Regretted',
+        review_decision: 'Regretted',
         reason_if_rejected: notes,
       }
       successMessage = `EOI for application ${props.application.CID} has been rejected.`
