@@ -468,6 +468,14 @@ const initializeEditableData = () => {
   editableApplication.endorsement_remark = props.application.endorsement_remark || ''
 }
 
+
+
+const checkIsAllApproved = (app) => {
+  if (app.endorsement_decision == 'Approved' && app.is_payment_complete && app.review_status == 'Approved') return true
+  return false
+}
+
+
 // Enter edit mode
 const enterEditMode = () => {
 
