@@ -1,16 +1,9 @@
 <template>
   <div class="applications-container p-6 bg-gray-50 min-h-screen">
     <!-- Use the DOPageHeader Component -->
-    <DOPageHeader
-      title="Application Management"
-      :description="headerDescription"
-      :search-query="searchQuery"
-      @update:searchQuery="searchQuery = $event"
-      search-placeholder="Search by name, CID or registration..."
-      :filter-value="statusFilter"
-      @update:filterValue="statusFilter = $event"
-      :filter-options="statusFilterOptions"
-    />
+    <DOPageHeader title="Application Management" :description="headerDescription" :search-query="searchQuery"
+      @update:searchQuery="searchQuery = $event" search-placeholder="Search by name, CID or registration..."
+      :filter-value="statusFilter" @update:filterValue="statusFilter = $event" :filter-options="statusFilterOptions" />
 
     <!-- Applicant Filter (Remains separate as it's specific) -->
 
@@ -32,40 +25,22 @@
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
             <tr>
-              <th
-                scope="col"
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 ID
               </th>
-              <th
-                scope="col"
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Applicant
               </th>
-              <th
-                scope="col"
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Registration No.
               </th>
-              <th
-                scope="col"
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Status
               </th>
-              <th
-                scope="col"
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Date
               </th>
-              <th
-                scope="col"
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Actions
               </th>
             </tr>
@@ -105,19 +80,10 @@
             <tr v-else-if="filteredCounsellors.length === 0">
               <td colspan="6" class="px-6 py-4 text-center text-gray-500">
                 <div class="flex flex-col items-center py-6">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-12 w-12 text-gray-300 mb-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                    />
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-300 mb-4" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
                   <p class="text-lg font-medium">No applications found</p>
                   <p class="text-sm text-gray-500">Try adjusting your search or filter criteria</p>
@@ -126,23 +92,15 @@
             </tr>
 
             <!-- Results -->
-            <tr
-              v-else
-              v-for="(counsellor, index) in filteredCounsellors"
-              :key="counsellor.cid"
-              class="hover:bg-gray-50 transition-colors"
-            >
+            <tr v-else v-for="(counsellor, index) in filteredCounsellors" :key="counsellor.cid"
+              class="hover:bg-gray-50 transition-colors">
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">#{{ index + 1 }}</td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center">
                   <div class="h-10 w-10 flex-shrink-0">
-                    <img
-                      class="h-10 w-10 rounded-full object-cover border border-gray-200"
-                      :src="`https://ui-avatars.com/api/?name=${encodeURIComponent(
-                        counsellor.full_name,
-                      )}&background=random&size=100`"
-                      :alt="`${counsellor.full_name} avatar`"
-                    />
+                    <img class="h-10 w-10 rounded-full object-cover border border-gray-200" :src="`https://ui-avatars.com/api/?name=${encodeURIComponent(
+                      counsellor.full_name,
+                    )}&background=random&size=100`" :alt="`${counsellor.full_name} avatar`" />
                   </div>
                   <div class="ml-4">
                     <div class="text-sm font-medium text-gray-900">
@@ -158,12 +116,10 @@
                 {{ counsellor.application }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <span
-                  :class="[
-                    'px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full',
-                    getStatusClass(counsellor.review_decision),
-                  ]"
-                >
+                <span :class="[
+                  'px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full',
+                  getStatusClass(counsellor.review_decision),
+                ]">
                   {{ counsellor.review_decision }}
                 </span>
               </td>
@@ -172,10 +128,8 @@
                 <!-- Consider using counsellor.created_at or similar -->
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <button
-                  @click="viewDetails(counsellor)"
-                  class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                >
+                <button @click="viewDetails(counsellor)"
+                  class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                   View
                 </button>
               </td>
@@ -186,34 +140,17 @@
     </div>
 
     <!-- Details Modal -->
-    <div
-      v-if="showDetailsModal"
+    <div v-if="showDetailsModal"
       class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 transition-opacity duration-200"
-      @click.self="showDetailsModal = false"
-    >
+      @click.self="showDetailsModal = false">
       <div class="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
-        <div
-          class="sticky top-0 bg-white px-6 py-4 border-b flex justify-between items-center z-10"
-        >
+        <div class="sticky top-0 bg-white px-6 py-4 border-b flex justify-between items-center z-10">
           <h2 class="text-lg font-bold text-gray-900">Application Details</h2>
-          <button
-            @click="showDetailsModal = false"
-            class="text-gray-500 hover:text-gray-700 focus:outline-none p-1"
-            aria-label="Close modal"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M6 18L18 6M6 6l12 12"
-              />
+          <button @click="showDetailsModal = false" class="text-gray-500 hover:text-gray-700 focus:outline-none p-1"
+            aria-label="Close modal">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
@@ -222,19 +159,10 @@
           <!-- Personal Information -->
           <div class="bg-gray-50 rounded-lg p-4">
             <h3 class="font-medium text-gray-900 mb-4 flex items-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5 mr-2 text-gray-500"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                />
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-500" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
               Personal Information
             </h3>
@@ -269,19 +197,10 @@
           <!-- Contact Information -->
           <div class="bg-gray-50 rounded-lg p-4">
             <h3 class="font-medium text-gray-900 mb-4 flex items-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5 mr-2 text-gray-500"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                />
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-500" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
               Contact Information
             </h3>
@@ -304,19 +223,10 @@
           <!-- Counselling Information -->
           <div class="bg-gray-50 rounded-lg p-4">
             <h3 class="font-medium text-gray-900 mb-4 flex items-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5 mr-2 text-gray-500"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                />
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-500" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
               </svg>
               Counselling Information
             </h3>
@@ -345,75 +255,33 @@
           <!-- Attachments -->
           <div class="bg-gray-50 rounded-lg p-4">
             <h3 class="font-medium text-gray-900 mb-4 flex items-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5 mr-2 text-gray-500"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
-                />
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-500" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
               </svg>
               Attachments
             </h3>
-            <div
-              v-if="
-                selectedCounsellor.Counselling_attachments &&
-                selectedCounsellor.Counselling_attachments.length > 0
-              "
-              class="space-y-2"
-            >
-              <div
-                v-for="attachment in selectedCounsellor.Counselling_attachments"
-                :key="attachment.id"
-                class="flex items-center p-2 bg-white rounded-md border border-gray-200 hover:bg-blue-50 transition-colors"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-5 w-5 text-blue-500 mr-2"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-                  />
+            <div v-if="
+              selectedCounsellor.Counselling_attachments &&
+              selectedCounsellor.Counselling_attachments.length > 0
+            " class="space-y-2">
+              <div v-for="attachment in selectedCounsellor.Counselling_attachments" :key="attachment.id"
+                class="flex items-center p-2 bg-white rounded-md border border-gray-200 hover:bg-blue-50 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500 mr-2" fill="none"
+                  viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                 </svg>
-                <a
-                  :href="attachment.file"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="text-blue-600 hover:underline text-sm flex-1 truncate"
-                  :title="getFileName(attachment.file)"
-                >
+                <a :href="attachment.file" target="_blank" rel="noopener noreferrer"
+                  class="text-blue-600 hover:underline text-sm flex-1 truncate" :title="getFileName(attachment.file)">
                   {{ getFileName(attachment.file) }}
                 </a>
-                <a
-                  :href="attachment.file"
-                  download
-                  :title="`Download ${getFileName(attachment.file)}`"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-5 w-5 text-gray-400 hover:text-gray-600 ml-2"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                    />
+                <a :href="attachment.file" download :title="`Download ${getFileName(attachment.file)}`">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 hover:text-gray-600 ml-2"
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                   </svg>
                 </a>
               </div>
@@ -424,19 +292,10 @@
           <!-- Additional Information -->
           <div class="bg-gray-50 rounded-lg p-4">
             <h3 class="font-medium text-gray-900 mb-4 flex items-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5 mr-2 text-gray-500"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-500" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               Additional Information
             </h3>
@@ -444,14 +303,12 @@
               <div>
                 <p class="text-sm text-gray-500">Declaration</p>
                 <p class="text-sm font-medium">
-                  <span
-                    :class="[
-                      'px-2 inline-flex text-xs leading-5 font-semibold rounded-full',
-                      selectedCounsellor.declaration
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-red-100 text-red-800',
-                    ]"
-                  >
+                  <span :class="[
+                    'px-2 inline-flex text-xs leading-5 font-semibold rounded-full',
+                    selectedCounsellor.declaration
+                      ? 'bg-green-100 text-green-800'
+                      : 'bg-red-100 text-red-800',
+                  ]">
                     {{ selectedCounsellor.declaration ? 'Accepted' : 'Not Accepted' }}
                   </span>
                 </p>
@@ -459,12 +316,10 @@
               <div>
                 <p class="text-sm text-gray-500">Review Status</p>
                 <p class="text-sm font-medium">
-                  <span
-                    :class="[
-                      'px-2 inline-flex text-xs leading-5 font-semibold rounded-full',
-                      getStatusClass(selectedCounsellor.review_decision),
-                    ]"
-                  >
+                  <span :class="[
+                    'px-2 inline-flex text-xs leading-5 font-semibold rounded-full',
+                    getStatusClass(selectedCounsellor.review_decision),
+                  ]">
                     {{ selectedCounsellor.review_decision }}
                   </span>
                 </p>
@@ -483,19 +338,10 @@
           <!-- Remarks -->
           <div class="bg-gray-50 rounded-lg p-4">
             <h3 class="font-medium text-gray-900 mb-4 flex items-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5 mr-2 text-gray-500"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"
-                />
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-500" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
               </svg>
               Remarks
             </h3>
@@ -509,23 +355,15 @@
           <!-- Decision Section -->
           <div class="mt-6">
             <!-- Confirmation Prompts -->
-            <div
-              v-if="showConfirmation"
-              class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4 animate-fadeIn"
-            >
+            <div v-if="showConfirmation"
+              class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4 animate-fadeIn">
               <div class="flex">
                 <div class="flex-shrink-0">
-                  <svg
-                    class="h-5 w-5 text-yellow-400"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fill-rule="evenodd"
+                  <svg class="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                    fill="currentColor">
+                    <path fill-rule="evenodd"
                       d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                      clip-rule="evenodd"
-                    />
+                      clip-rule="evenodd" />
                   </svg>
                 </div>
                 <div class="ml-3">
@@ -538,16 +376,12 @@
                     </p>
                   </div>
                   <div class="mt-4 flex space-x-3">
-                    <button
-                      @click="confirmUpdateStatus"
-                      class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-colors"
-                    >
+                    <button @click="confirmUpdateStatus"
+                      class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-colors">
                       Confirm
                     </button>
-                    <button
-                      @click="cancelConfirmation"
-                      class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
-                    >
+                    <button @click="cancelConfirmation"
+                      class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors">
                       Cancel
                     </button>
                   </div>
@@ -558,39 +392,22 @@
             <!-- Add Review Remarks Input -->
             <div v-else-if="confirmAction" class="bg-gray-50 rounded-lg p-4 animate-fadeIn">
               <h3 class="font-medium text-gray-900 mb-4 flex items-center">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-5 w-5 mr-2 text-gray-500"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                  />
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-500" fill="none"
+                  viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                 </svg>
                 Add Review Remarks
               </h3>
-              <textarea
-                v-model="reviewRemarks"
-                rows="4"
-                placeholder="Enter remarks for this decision (optional)"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-              ></textarea>
+              <textarea v-model="reviewRemarks" rows="4" placeholder="Enter remarks for this decision (optional)"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"></textarea>
               <div class="flex justify-end space-x-3 mt-4">
-                <button
-                  @click="cancelConfirmation"
-                  class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
-                >
+                <button @click="cancelConfirmation"
+                  class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors">
                   Cancel
                 </button>
-                <button
-                  @click="showConfirmation = true"
-                  class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
-                >
+                <button @click="showConfirmation = true"
+                  class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
                   Proceed
                 </button>
               </div>
@@ -598,71 +415,35 @@
 
             <!-- Action Buttons or Status Message (Only show if not confirming/adding remarks) -->
             <div v-else>
-              <div
-                v-if="
-                  selectedCounsellor.review_decision !== 'Approved' &&
-                  selectedCounsellor.review_decision !== 'Regretted'
-                "
-                class="flex justify-end space-x-3"
-              >
-                <button
-                  @click="promptConfirmation('reject')"
-                  class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-5 w-5 mr-2"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M6 18L18 6M6 6l12 12"
-                    />
+              <div v-if="
+                selectedCounsellor.review_decision !== 'Approved' &&
+                selectedCounsellor.review_decision !== 'Regretted'
+              " class="flex justify-end space-x-3">
+                <button @click="promptConfirmation('reject')"
+                  class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                   </svg>
                   Regret
                 </button>
-                <button
-                  @click="promptConfirmation('approve')"
-                  class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-5 w-5 mr-2"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M5 13l4 4L19 7"
-                    />
+                <button @click="promptConfirmation('approve')"
+                  class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                   </svg>
                   Approve
                 </button>
               </div>
-              <div
-                v-else
-                class="bg-gray-50 border border-gray-200 rounded-md p-4 text-sm text-gray-600"
-              >
+              <div v-else class="bg-gray-50 border border-gray-200 rounded-md p-4 text-sm text-gray-600">
                 <div class="flex">
                   <div class="flex-shrink-0">
-                    <svg
-                      class="h-5 w-5 text-gray-400"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fill-rule="evenodd"
+                    <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                      fill="currentColor">
+                      <path fill-rule="evenodd"
                         d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z"
-                        clip-rule="evenodd"
-                      />
+                        clip-rule="evenodd" />
                     </svg>
                   </div>
                   <div class="ml-3">
@@ -782,24 +563,60 @@ const fetchCounsellors = async () => {
   loading.value = true
   try {
     const response = await apiService.getMhpcCounsellors()
-    // Ensure data is an array and has expected fields
+    // Normalize attachments key to match template (Counselling_attachments)
     counsellors.value =
-      response?.data?.results?.map((c) => ({
-        ...c,
-        // Ensure review_decision exists, default to 'Pending' if null/undefined
-        review_decision: getCanonicalStatus(c.review_decision),
-      })) || []
+      (response?.data?.results || []).map((c) => {
+        // ensure attachments array exists and map backend shape to template shape
+        const attachmentsRaw = Array.isArray(c.attachments) ? c.attachments : []
+        const counsellingAttachments = attachmentsRaw.map((a) => {
+          return {
+            id: a.id,
+            // template expects `file` and uses it as href; keep both keys
+            file: a.url || a.file || a.file_url || a.file,
+            url: a.url || a.file || a.file_url || a.file,
+            name:
+              (a.url || a.file || '').substring(
+                (a.url || a.file || '').lastIndexOf('/') + 1,
+              ) || `attachment-${a.id}`,
+          }
+        })
+
+        return {
+          ...c,
+          // keep original API key too (optional)
+          attachments: attachmentsRaw,
+          // set the property used in template
+          Counselling_attachments: counsellingAttachments,
+          // ensure review_decision is canonical
+          review_decision: getCanonicalStatus(c.review_decision),
+        }
+      })
   } catch (error) {
     console.error('Error fetching counsellors:', error)
-    counsellors.value = [] // Reset on error
-    // Optionally show toast notification
+    counsellors.value = []
   } finally {
     loading.value = false
   }
 }
 
 const viewDetails = (counsellor) => {
-  selectedCounsellor.value = { ...counsellor } // Create a copy
+  // ensure selectedCounsellor contains normalized attachments for modal/template
+  selectedCounsellor.value = {
+    ...counsellor,
+    Counselling_attachments:
+      counsellor.Counselling_attachments ||
+      (Array.isArray(counsellor.attachments)
+        ? counsellor.attachments.map((a) => ({
+          id: a.id,
+          file: a.url || a.file,
+          url: a.url || a.file,
+          name:
+            (a.url || a.file || '').substring(
+              (a.url || a.file || '').lastIndexOf('/') + 1,
+            ) || `attachment-${a.id}`,
+        }))
+        : []),
+  }
   showDetailsModal.value = true
   showConfirmation.value = false
   confirmAction.value = ''
