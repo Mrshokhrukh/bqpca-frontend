@@ -384,9 +384,9 @@
                 <button type="button" @click="resetForm" class="btn btn-outline">
                   <ArrowPathIcon class="w-5 h-5 mr-2" /> Reset
                 </button>
-                <button type="button" @click="previewForm" class="btn btn-outline">
+                <!-- <button type="button" @click="previewForm" class="btn btn-outline">
                   <EyeIcon class="w-5 h-5 mr-2" /> Preview
-                </button>
+                </button> -->
               </div>
               <div class="flex gap-3 flex-wrap">
                 <button type="button" @click="saveDraft" class="btn btn-secondary">
