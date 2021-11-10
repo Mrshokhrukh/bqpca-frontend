@@ -374,6 +374,7 @@ const ApplicationStatus = {
   FULLY_APPROVED: 'Fully Approved',
   EOI_SUBMITTED: 'EOI Submitted',
   EOI_PENDING_REVIEW: 'EOI Pending Review',
+  Aplication_payment_pending: '(ApplicationStatusChoices.PAYMENT_PENDING,)'
 }
 
 const statusOptions = [
@@ -406,6 +407,8 @@ const dprEligibility = computed(() => {
     ApplicationStatus.PAYMENT_PENDING,
     ApplicationStatus.PAYMENT_PROCESSING,
     ApplicationStatus.FULLY_APPROVED,
+    ApplicationStatus.Aplication_payment_pending,
+    
   ]
 
   if (allowedStatuses.includes(status)) {
@@ -642,7 +645,7 @@ const formatDate = (dateString) =>
     : 'N/A'
 
 const isPaymentPending = (app) =>
-  app.application_status === ApplicationStatus.PAYMENT_PENDING && !app.is_payment_complete
+  app.application_status === ApplicationStatus.Aplication_payment_pending||ApplicationStatus.PAYMENT_PENDING && !app.is_payment_complete
 const isPaymentCompleted = (app) => app.application_status === ApplicationStatus.FULLY_APPROVED
 
 // --- WATCHERS ---

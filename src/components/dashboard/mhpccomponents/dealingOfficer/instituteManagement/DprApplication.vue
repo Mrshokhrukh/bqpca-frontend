@@ -123,7 +123,7 @@ const fetchApplications = async () => {
     const response = await apiService.getMhpcInstitutes() // Use apiService
     // console.log(response.data.results);
 
-    const application_Status_array = ['DPR Submitted', 'DPR Pending Review', 'DPR Approved', 'DPR Rejected', 'Payment Pending', 'Fully Approved', 'Final Reiected']
+    const application_Status_array = ['DPR Submitted', 'DPR Pending Review', 'DPR Approved', 'DPR Rejected', 'Payment Pending', 'Fully Approved', 'Final Reiected', '(ApplicationStatusChoices.PAYMENT_PENDING,)']
 
     const filteredREsponse  =  response.data.results.filter((application) => {
       return  application_Status_array.includes(application.application_status)
