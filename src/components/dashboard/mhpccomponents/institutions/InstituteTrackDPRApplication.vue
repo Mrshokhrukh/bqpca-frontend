@@ -644,9 +644,15 @@ const formatDate = (dateString) =>
       })
     : 'N/A'
 
-const isPaymentPending = (app) =>
-  app.application_status === ApplicationStatus.Aplication_payment_pending||ApplicationStatus.PAYMENT_PENDING && !app.is_payment_complete
+const isPaymentPending = (app) =>{
+  console.log(app.application_status);
+  
+    return app.application_status === ApplicationStatus.PAYMENT_PENDING && !app.is_payment_complete
+
+}
 const isPaymentCompleted = (app) => app.application_status === ApplicationStatus.FULLY_APPROVED
+
+// console.log(isPaymentPending());
 
 // --- WATCHERS ---
 watch(
