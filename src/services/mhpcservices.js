@@ -1154,7 +1154,7 @@ export default {
   },
   createMhpcClinicalPreceptor(data) {
     // Data should be an object like:
-    // { teaching_center: ID, faculty: ID, designation: "String" }
+    // { teaching_center: ID, faculty: ID, designation: "String" }    
     return apiClient.post('/mhpc/mhpc-clinical-preceptors/', data)
   },
   getMhpcClinicalPreceptor(id) {
