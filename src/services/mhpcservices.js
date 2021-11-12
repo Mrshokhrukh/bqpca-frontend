@@ -845,15 +845,15 @@ export default {
    * @returns {Promise}
    */
   getAdminAllRenewals(params = {}) {
-    return apiClient.get('/mhpc/admin/institute-renewals/', { params })
+    return apiClient.get('/mhpc/admin-renewals/', { params })
   },
 
   approveTeachingCenterRenewal(renewalId, data) {
-    return apiClient.post(`/mhpc/admin/institute-renewals/${renewalId}/approve/`, data)
+    return apiClient.post(`/mhpc/admin-renewals/${renewalId}/approve/`, data)
   },
 
   rejectTeachingCenterRenewal(renewalId, data) {
-    return apiClient.post(`/mhpc/admin/institute-renewals/${renewalId}/reject/`, data)
+    return apiClient.post(`/mhpc/admin-renewals/${renewalId}/reject/`, data)
   },
 
   getMhpcCpdRecords() {
