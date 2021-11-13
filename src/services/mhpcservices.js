@@ -845,6 +845,10 @@ export default {
    * @returns {Promise}
    */
   getAdminAllRenewals(params = {}) {
+    return apiClient.get('mhpc/admin/institute-renewals/', { params })
+  },
+
+  getTeachingCenterRenewals(params = {}) {
     return apiClient.get('/mhpc/admin-renewals/', { params })
   },
 

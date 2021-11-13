@@ -352,7 +352,7 @@ const fetchRenewals = async () => {
   apiError.value = false
 
   try {
-    const response = await apiServices.getAdminAllRenewals()
+    const response = await apiServices.getTeachingCenterRenewals()
     renewalApplications.value = (response.data?.results || response.data || [])
       .filter(renewal => renewal.teaching_center)
   } catch (error) {

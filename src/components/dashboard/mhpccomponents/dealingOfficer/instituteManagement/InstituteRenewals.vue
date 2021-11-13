@@ -41,7 +41,7 @@
                   {{ renewal.institute.name_of_institution }}</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{
-                renewal.applicant_name ?? "N/A" }}</td>
+                renewal.institute	?.full_name ?? "N/A" }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatDate(renewal.created_at) }}</td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span :class="getStatusClass(renewal.renewal_status)">
@@ -49,7 +49,7 @@
                   {{ renewal.renewal_status }}
                 </span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatDate(renewal.valid_till) }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatDate(renewal.institute?.valid_till) }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                 <div class="flex space-x-3">
                   <button @click="openModal(renewal)" :disabled="renewal.renewal_status !== 'PENDING'"
