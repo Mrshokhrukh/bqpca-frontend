@@ -674,17 +674,10 @@
 
         <!-- Internal Modals (Confirmation and Preview) -->
         <Transition name="internal-modal-confirm">
-<<<<<<< HEAD
           <!-- Unique name for transition -->
           <div v-if="showConfirmModal"
             class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-[150] p-4">
             <!-- Higher z-index -->
-=======
-          <div
-            v-if="showConfirmModal"
-            class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-[150] p-4"
-          >
->>>>>>> main-merger
             <div class="bg-white rounded-lg p-6 md:p-8 shadow-xl max-w-md w-full">
               <div class="flex items-start justify-between">
                 <h3 class="text-xl font-semibold text-gray-900 mb-1">Confirm Submission</h3>
