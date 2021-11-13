@@ -1,13 +1,6 @@
 <template>
-  <div
-    v-if="isOpen"
-    class="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
-    @click.self="closeModal"
-  >
-    <div
-      class="bg-gray-50 p-6 md:p-8 rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col"
-      @click.stop
-    >
+  <div v-if="isOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60" @click.self="closeModal">
+    <div class="bg-gray-50 p-6 md:p-8 rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col" @click.stop>
       <!-- Header -->
       <div class="flex justify-between items-start mb-4">
         <div>
@@ -17,10 +10,7 @@
             <span class="font-semibold text-indigo-600">{{ currentInstituteName }}</span>
           </p>
         </div>
-        <button
-          @click="closeModal"
-          class="p-1 rounded-full text-gray-500 hover:bg-gray-200 hover:text-gray-800"
-        >
+        <button @click="closeModal" class="p-1 rounded-full text-gray-500 hover:bg-gray-200 hover:text-gray-800">
           <X class="w-6 h-6" />
         </button>
       </div>
@@ -29,30 +19,17 @@
       <div class="w-full mb-6">
         <div class="flex items-center">
           <template v-for="(step, index) in steps" :key="step.id">
-            <div
-              class="flex items-center"
-              :class="{ 'cursor-pointer': index < currentStep }"
-              @click="setStep(index)"
-            >
-              <div
-                class="flex items-center justify-center rounded-full h-8 w-8"
-                :class="getStepClass(index)"
-              >
+            <div class="flex items-center" :class="{ 'cursor-pointer': index < currentStep }" @click="setStep(index)">
+              <div class="flex items-center justify-center rounded-full h-8 w-8" :class="getStepClass(index)">
                 <Check v-if="index < currentStep" class="w-5 h-5 text-white" />
                 <span v-else>{{ index + 1 }}</span>
               </div>
-              <div
-                class="ml-3 text-sm font-medium"
-                :class="currentStep >= index ? 'text-gray-700' : 'text-gray-400'"
-              >
+              <div class="ml-3 text-sm font-medium" :class="currentStep >= index ? 'text-gray-700' : 'text-gray-400'">
                 {{ step.name }}
               </div>
             </div>
-            <div
-              v-if="index < steps.length - 1"
-              class="flex-auto border-t-2 transition-all duration-500 mx-4"
-              :class="currentStep > index ? 'border-indigo-600' : 'border-gray-300'"
-            ></div>
+            <div v-if="index < steps.length - 1" class="flex-auto border-t-2 transition-all duration-500 mx-4"
+              :class="currentStep > index ? 'border-indigo-600' : 'border-gray-300'"></div>
           </template>
         </div>
       </div>
@@ -72,16 +49,11 @@
             semesters and modules you add.
           </p>
           <div class="p-4 bg-white border rounded-lg">
-            <label for="approvedProgramOffered" class="block text-sm font-medium text-gray-700 mb-1"
-              >Active Program Offering</label
-            >
-            <select
-              id="approvedProgramOffered"
-              v-model="formData.selectedProgramOfferedId"
-              required
+            <label for="approvedProgramOffered" class="block text-sm font-medium text-gray-700 mb-1">Active Program
+              Offering</label>
+            <select id="approvedProgramOffered" v-model="formData.selectedProgramOfferedId" required
               class="mt-1 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm disabled:bg-gray-100"
-              :disabled="!props.currentUserInstituteId || approvedProgramsOffered.length === 0"
-            >
+              :disabled="!props.currentUserInstituteId || approvedProgramsOffered.length === 0">
               <option disabled value="">
                 {{
                   approvedProgramsOffered.length === 0
@@ -89,21 +61,13 @@
                     : 'Select an Active Program'
                 }}
               </option>
-              <option
-                v-for="program in approvedProgramsOffered"
-                :key="program.id"
-                :value="program.id"
-              >
+              <option v-for="program in approvedProgramsOffered" :key="program.id" :value="program.id">
                 {{ program.program_master?.program_name || 'Unnamed Program' }}
                 <span v-if="program.specific_program_title">
-                  ({{ program.specific_program_title }})</span
-                >
+                  ({{ program.specific_program_title }})</span>
               </option>
             </select>
-            <p
-              v-if="!isLoadingMasters && approvedProgramsOffered.length === 0"
-              class="text-xs text-red-500 mt-2"
-            >
+            <p v-if="!isLoadingMasters && approvedProgramsOffered.length === 0" class="text-xs text-red-500 mt-2">
               No 'ACTIVE' programs found for this institute. New configurations cannot be added.
             </p>
           </div>
@@ -117,57 +81,29 @@
             these semesters in the next step.
           </p>
           <div class="p-4 bg-white border rounded-lg space-y-4">
-            <div
-              v-for="(semester, semIndex) in formData.semesters"
-              :key="semIndex"
-              class="flex items-center space-x-3 p-3 bg-gray-50 rounded-md border"
-            >
+            <div v-for="(semester, semIndex) in formData.semesters" :key="semIndex"
+              class="flex items-center space-x-3 p-3 bg-gray-50 rounded-md border">
               <span class="text-gray-500 font-semibold">{{ semIndex + 1 }}</span>
               <!-- ======================================================= -->
               <!-- === START: MODIFICATION 1 - Add Semester Number Input === -->
               <!-- ======================================================= -->
-              <input
-                type="number"
-                v-model.number="semester.semesterNumber"
-                placeholder="No."
-                title="Semester Number (e.g., 1, 2, 3)"
-                required
-                min="1"
-                class="w-20 p-2 border border-gray-300 rounded-md shadow-sm sm:text-sm"
-              />
+              <input type="number" v-model.number="semester.semesterNumber" placeholder="No."
+                title="Semester Number (e.g., 1, 2, 3)" required min="1"
+                class="w-20 p-2 border border-gray-300 rounded-md shadow-sm sm:text-sm" />
               <!-- ======================================================= -->
               <!-- === END: MODIFICATION 1 =============================== -->
               <!-- ======================================================= -->
-              <input
-                type="text"
-                v-model="semester.name"
-                placeholder="e.g., Year 1, Term 1"
-                required
-                class="flex-grow p-2 border border-gray-300 rounded-md shadow-sm sm:text-sm"
-              />
-              <input
-                type="number"
-                v-model.number="semester.academicYear"
-                placeholder="e.g., 2025"
-                required
-                min="2000"
-                max="2100"
-                class="w-32 p-2 border border-gray-300 rounded-md shadow-sm sm:text-sm"
-              />
-              <button
-                type="button"
-                @click="removeSemester(semIndex)"
-                v-if="formData.semesters.length > 1"
-                class="p-2 text-red-500 hover:bg-red-100 rounded-full"
-              >
+              <input type="text" v-model="semester.name" placeholder="e.g., Year 1, Term 1" required
+                class="flex-grow p-2 border border-gray-300 rounded-md shadow-sm sm:text-sm" />
+              <input type="number" v-model.number="semester.academicYear" placeholder="e.g., 2025" required min="2000"
+                max="2100" class="w-32 p-2 border border-gray-300 rounded-md shadow-sm sm:text-sm" />
+              <button type="button" @click="removeSemester(semIndex)" v-if="formData.semesters.length > 1"
+                class="p-2 text-red-500 hover:bg-red-100 rounded-full">
                 <Trash2 class="h-4 w-4" />
               </button>
             </div>
-            <button
-              type="button"
-              @click="addSemester"
-              class="flex items-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700"
-            >
+            <button type="button" @click="addSemester"
+              class="flex items-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700">
               <Plus class="w-4 h-4 mr-2" /> Add Semester
             </button>
           </div>
@@ -180,11 +116,8 @@
             For each semester, add modules, assign faculty members, and specify student counts.
           </p>
           <div class="space-y-3">
-            <div
-              v-for="(semester, semIndex) in formData.semesters"
-              :key="semIndex"
-              class="bg-white border rounded-lg overflow-hidden"
-            >
+            <div v-for="(semester, semIndex) in formData.semesters" :key="semIndex"
+              class="bg-white border rounded-lg overflow-hidden">
               <div class="p-4 bg-gray-50 border-b">
                 <h4 class="font-semibold text-gray-800">
                   Semester {{ semester.semesterNumber }}: {{ semester.name || `Semester ${semIndex + 1}` }} ({{
@@ -193,93 +126,60 @@
                 </h4>
               </div>
               <div class="p-4 space-y-4">
-                <div
-                  v-for="(moduleItem, modIndex) in semester.modules"
-                  :key="moduleItem.uuid"
-                  class="grid grid-cols-1 md:grid-cols-3 gap-4 p-3 border border-dashed rounded-md relative"
-                >
-                  <button
-                    type="button"
-                    @click="removeModule(semIndex, modIndex)"
-                    v-if="semester.modules.length > 1"
-                    class="absolute -top-2 -right-2 p-1 bg-red-100 text-red-600 rounded-full hover:bg-red-200"
-                  >
+                <div v-for="(moduleItem, modIndex) in semester.modules" :key="moduleItem.uuid"
+                  class="grid grid-cols-1 md:grid-cols-3 gap-4 p-3 border border-dashed rounded-md relative">
+                  <button type="button" @click="removeModule(semIndex, modIndex)" v-if="semester.modules.length > 1"
+                    class="absolute -top-2 -right-2 p-1 bg-red-100 text-red-600 rounded-full hover:bg-red-200">
                     <X class="h-4 w-4" />
                   </button>
                   <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1"
-                      >Module <span class="text-red-500">*</span></label
-                    >
-                    <select
-                      v-model="moduleItem.moduleMasterId"
-                      required
-                      class="w-full p-2 border border-gray-300 rounded-md shadow-sm sm:text-xs"
-                    >
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Module <span
+                        class="text-red-500">*</span></label>
+                    <select v-model="moduleItem.moduleMasterId" required
+                      class="w-full p-2 border border-gray-300 rounded-md shadow-sm sm:text-xs">
                       <option disabled value="">Select Module</option>
-                      <option
-                        v-for="modMaster in moduleMastersForDropdown"
-                        :key="modMaster.id"
-                        :value="modMaster.id"
-                      >
+                      <option v-for="modMaster in moduleMastersForDropdown" :key="modMaster.id" :value="modMaster.id">
                         {{ modMaster.module_name }}
                         {{ modMaster.module_code ? `(${modMaster.module_code})` : '' }}
                       </option>
                     </select>
                   </div>
                   <div class="flex flex-col">
-                    <label class="block text-xs font-medium text-gray-600 mb-1"
-                      >Faculty <span class="text-red-500">*</span></label
-                    >
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Faculty <span
+                        class="text-red-500">*</span></label>
                     <div class="flex-grow bg-white border border-gray-300 rounded-md shadow-sm flex flex-col">
                       <div class="p-2 border-b">
-                        <input
-                          type="text"
-                          v-model="moduleItem.facultySearch"
-                          placeholder="Search faculty..."
-                          class="w-full p-1.5 border border-gray-200 rounded-md sm:text-xs"
-                        />
+                        <input type="text" v-model="moduleItem.facultySearch" placeholder="Search faculty..."
+                          class="w-full p-1.5 border border-gray-200 rounded-md sm:text-xs" />
                       </div>
                       <div class="overflow-y-auto h-24 p-2 space-y-1">
-                        <p v-if="getFilteredFaculty(moduleItem).length === 0" class="text-xs text-gray-500 text-center py-2">No match found.</p>
-                        <label
-                          v-for="faculty in getFilteredFaculty(moduleItem)"
-                          :key="faculty.id"
-                          class="flex items-center space-x-2 p-1.5 rounded hover:bg-indigo-50 cursor-pointer"
-                        >
-                          <input
-                            type="checkbox"
-                            :value="faculty.id"
-                            v-model="moduleItem.facultyIds"
-                            class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                          />
+                        <p v-if="getFilteredFaculty(moduleItem).length === 0"
+                          class="text-xs text-gray-500 text-center py-2">
+                          No match found.</p>
+                        <label v-for="faculty in getFilteredFaculty(moduleItem)" :key="faculty.id"
+                          class="flex items-center space-x-2 p-1.5 rounded hover:bg-indigo-50 cursor-pointer">
+                          <input type="checkbox" :value="faculty.id" v-model="moduleItem.facultyIds"
+                            class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500" />
                           <span class="text-xs text-gray-700">{{ faculty.faculty_name }}</span>
                         </label>
                       </div>
                       <div class="p-1 border-t text-center">
-                         <button type="button" @click="toggleSelectAllFaculty(moduleItem)" class="text-xs text-indigo-600 hover:underline">
-                            {{ areAllFilteredSelected(moduleItem) ? 'Deselect All' : 'Select All' }}
+                        <button type="button" @click="toggleSelectAllFaculty(moduleItem)"
+                          class="text-xs text-indigo-600 hover:underline">
+                          {{ areAllFilteredSelected(moduleItem) ? 'Deselect All' : 'Select All' }}
                         </button>
                       </div>
                     </div>
                   </div>
                   <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1"
-                      >Students <span class="text-red-500">*</span></label
-                    >
-                    <input
-                      type="number"
-                      v-model.number="moduleItem.numberOfStudents"
-                      min="1"
-                      required
-                      class="w-full p-2 border border-gray-300 rounded-md shadow-sm sm:text-xs"
-                    />
+                    <label class="block text-xs font-medium text-gray-600 mb-1">Students <span
+                        class="text-red-500">*</span></label>
+                    <input type="number" v-model.number="moduleItem.numberOfStudents" min="1" required
+                      class="w-full p-2 border border-gray-300 rounded-md shadow-sm sm:text-xs" />
                   </div>
                 </div>
-                <button
-                  type="button"
-                  @click="addModule(semIndex)"
-                  class="flex items-center mt-2 px-3 py-1.5 text-xs font-medium text-white bg-green-600 rounded-md hover:bg-green-700"
-                >
+                <button type="button" @click="addModule(semIndex)"
+                  class="flex items-center mt-2 px-3 py-1.5 text-xs font-medium text-white bg-green-600 rounded-md hover:bg-green-700">
                   <Plus class="w-4 h-4 mr-1" /> Add Module to Semester
                 </button>
               </div>
@@ -290,30 +190,17 @@
 
       <!-- Footer / Actions -->
       <div class="flex justify-between items-center pt-6 mt-4 border-t border-gray-200">
-        <button
-          type="button"
-          @click="prevStep"
-          :disabled="currentStep === 0"
-          class="px-5 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-100 disabled:opacity-50"
-        >
+        <button type="button" @click="prevStep" :disabled="currentStep === 0"
+          class="px-5 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-100 disabled:opacity-50">
           Back
         </button>
-        <button
-          v-if="currentStep < steps.length - 1"
-          type="button"
-          @click="nextStep"
+        <button v-if="currentStep < steps.length - 1" type="button" @click="nextStep"
           :disabled="!isStepValid(currentStep)"
-          class="px-5 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 disabled:opacity-50"
-        >
+          class="px-5 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 disabled:opacity-50">
           Next
         </button>
-        <button
-          v-else
-          type="button"
-          @click="handleSubmit"
-          :disabled="isSubmitting || !isStepValid(currentStep)"
-          class="flex items-center justify-center w-40 px-5 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 disabled:opacity-50"
-        >
+        <button v-else type="button" @click="handleSubmit" :disabled="isSubmitting || !isStepValid(currentStep)"
+          class="flex items-center justify-center w-40 px-5 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 disabled:opacity-50">
           <LoaderCircle v-if="isSubmitting" class="animate-spin h-5 w-5 mr-2" />
           {{ isSubmitting ? 'Saving...' : 'Save Configuration' }}
         </button>
@@ -356,7 +243,7 @@ const steps = [
 
 // --- DATA STRUCTURES & HELPERS ---
 const createNewModule = () => ({
-  uuid: `module-${Date.now()}-${Math.random()}`, 
+  uuid: `module-${Date.now()}-${Math.random()}`,
   moduleMasterId: '',
   facultyIds: [],
   numberOfStudents: 10,
@@ -421,9 +308,9 @@ const isStepValid = stepIndex => {
         formData.value.semesters.length > 0 &&
         formData.value.semesters.every(s => s.name && s.academicYear >= 2000 && s.semesterNumber > 0)
       );
-      // ==========================================================
-      // === END: MODIFICATION 4 ================================
-      // ==========================================================
+    // ==========================================================
+    // === END: MODIFICATION 4 ================================
+    // ==========================================================
     case 2:
       if (formData.value.semesters.length === 0) return false;
       return formData.value.semesters.every(
@@ -480,9 +367,29 @@ watch(
 );
 
 // --- FORM MANIPULATION ---
+// const addSemester = () => {
+//   formData.value.semesters.push(createNewSemester());
+// };
+
+
+//incrimrnt of the number input 
 const addSemester = () => {
-  formData.value.semesters.push(createNewSemester());
-};
+  // Find the highest semesterNumber in the current list
+  const semesters = formData.value.semesters
+  let nextNumber = 1
+  if (semesters.length > 0) {
+    // Get the max semesterNumber from existing semesters
+    nextNumber = Math.max(...semesters.map(s => s.semesterNumber || 1)) + 1
+  }
+  // Push a new semester with the incremented number
+  formData.value.semesters.push({
+    name: '',
+    academicYear: new Date().getFullYear(),
+    semesterNumber: nextNumber,
+    modules: [createNewModule()],
+  })
+}
+
 const removeSemester = semIndex => {
   if (formData.value.semesters.length > 1) {
     formData.value.semesters.splice(semIndex, 1);
@@ -514,21 +421,21 @@ const getFilteredFaculty = (moduleItem) => {
 };
 
 const areAllFilteredSelected = (moduleItem) => {
-    const filtered = getFilteredFaculty(moduleItem);
-    if (filtered.length === 0) return false;
-    return filtered.every(f => moduleItem.facultyIds.includes(f.id));
+  const filtered = getFilteredFaculty(moduleItem);
+  if (filtered.length === 0) return false;
+  return filtered.every(f => moduleItem.facultyIds.includes(f.id));
 }
 
 const toggleSelectAllFaculty = (moduleItem) => {
-    const filteredFaculty = getFilteredFaculty(moduleItem);
-    const filteredIds = filteredFaculty.map(f => f.id);
+  const filteredFaculty = getFilteredFaculty(moduleItem);
+  const filteredIds = filteredFaculty.map(f => f.id);
 
-    if (areAllFilteredSelected(moduleItem)) {
-        moduleItem.facultyIds = moduleItem.facultyIds.filter(id => !filteredIds.includes(id));
-    } else {
-        const idsToAdd = filteredIds.filter(id => !moduleItem.facultyIds.includes(id));
-        moduleItem.facultyIds.push(...idsToAdd);
-    }
+  if (areAllFilteredSelected(moduleItem)) {
+    moduleItem.facultyIds = moduleItem.facultyIds.filter(id => !filteredIds.includes(id));
+  } else {
+    const idsToAdd = filteredIds.filter(id => !moduleItem.facultyIds.includes(id));
+    moduleItem.facultyIds.push(...idsToAdd);
+  }
 }
 
 // --- MODAL & SUBMISSION LOGIC ---
@@ -589,14 +496,17 @@ const handleSubmit = async () => {
 .overflow-y-auto::-webkit-scrollbar {
   width: 6px;
 }
+
 .overflow-y-auto::-webkit-scrollbar-track {
   background: #f1f1f1;
   border-radius: 10px;
 }
+
 .overflow-y-auto::-webkit-scrollbar-thumb {
   background: #c5c5c5;
   border-radius: 10px;
 }
+
 .overflow-y-auto::-webkit-scrollbar-thumb:hover {
   background: #a8a8a8;
 }
