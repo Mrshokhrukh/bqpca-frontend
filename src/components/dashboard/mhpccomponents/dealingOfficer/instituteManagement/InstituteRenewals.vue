@@ -129,10 +129,7 @@ const closeModal = () => {
   selectedRenewal.value = null
 }
 
-const formatDate = (dateString) => {
-  if (!dateString) return 'N/A'
-  return new Date(dateString).toLocaleDateString()
-}
+
 
 const getStatusClass = (status) => {
   switch (status) {
@@ -151,5 +148,14 @@ const getStatusClass = (status) => {
 const getPendingCount = () => {
   if (!Array.isArray(renewals.value)) return 0
   return renewals.value.filter((renewal) => renewal.renewal_status === 'PENDING').length
+}
+
+const formatDate = (date) => {
+  if (!date) return 'N/A'
+  return new Date(date).toLocaleDateString('en-GB', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  })
 }
 </script>
