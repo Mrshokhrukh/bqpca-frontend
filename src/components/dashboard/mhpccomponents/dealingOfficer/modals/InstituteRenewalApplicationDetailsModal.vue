@@ -36,7 +36,7 @@
             </div>
             <div class="flex justify-between py-2">
               <span class="text-sm text-gray-600">Current Expiry</span>
-              <span class="text-sm font-medium text-gray-900">{{ formatDate(applicationDetails.expiryDate) }}</span>
+              <span class="text-sm font-medium text-gray-900">{{ formatDate(applicationDetails.institute?.valid_till) }}</span>
             </div>
           </div>
         </div>
