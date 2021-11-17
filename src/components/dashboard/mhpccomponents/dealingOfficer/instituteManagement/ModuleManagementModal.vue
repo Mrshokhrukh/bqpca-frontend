@@ -382,7 +382,7 @@ const submitDefinitionForm = async () => {
   if (formState.description) formData.append('description', formState.description);
   formData.append('is_active_for_mm', formState.is_active ? 'true' : 'false');
   if (formState.attachmentFile) {
-    formData.append('attachments', formState.attachmentFile, formState.attachmentFile.name);
+    formData.append('attachments_for_mm', formState.attachmentFile, formState.attachmentFile.name);
   }
 
   try {
