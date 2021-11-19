@@ -165,7 +165,7 @@ const iconMap = {
 }
 
 // Base path for admin MHPC routes
-const basePath = '/admin/admin/MHPC_certification'
+const basePath = '/admin/admin/health_certification'
 
 // --- Configuration Cards Data ---
 const configurationCards = [
