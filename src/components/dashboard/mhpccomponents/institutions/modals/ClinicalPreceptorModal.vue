@@ -158,26 +158,79 @@ const selectedProfessionalsDetails = computed(() => {
   )
 })
 
+// const fetchEligibleProfessionals = async () => {
+//   isLoadingProfessionals.value = true
+//   initialLoadDone.value = false
+//   try {
+//     const response = await apiServices.getEligiblePreceptors()
+//     const rawProfessionals = response.data || []
+//     console.log(rawProfessionals);
+    
+
+//     if (!Array.isArray(rawProfessionals)) {
+//       eligibleProfessionalsList.value = []
+//     } else {
+//       eligibleProfessionalsList.value = rawProfessionals
+//         .filter(prof => !props.existingPreceptorIds.includes(prof.id))
+//         .map((prof) => ({
+//           system_id: prof.id,
+//           registration_no: prof.registration_no || 'N/A',
+//           cid_no: prof.cid_no || 'N/A',
+//           full_name: prof.full_name || 'Unknown Professional',
+//           qualification: prof.qualification || 'N/A',
+//         }))
+//     }
+//   } catch (error) {
+//     console.error('Error fetching professionals list:', error.response?.data || error.message)
+//     toast.error('Could not load professionals list. Please try again.')
+//     eligibleProfessionalsList.value = []
+//   } finally {
+//     isLoadingProfessionals.value = false
+//     initialLoadDone.value = true
+//     if (eligibleProfessionalsList.value.length === 0) {
+//       toast.info('No new eligible professionals were found to add.')
+//     }
+//   }
+// }
+
+
+
+
+//filtering after getting the application 
 const fetchEligibleProfessionals = async () => {
   isLoadingProfessionals.value = true
   initialLoadDone.value = false
   try {
-    const response = await apiServices.getEligiblePreceptors()
-    const rawProfessionals = response.data || []
+    // Fetch all applicants (use your actual API call)
+    const response = await apiServices.getMhpcNewApplications()
+    const rawApplicants = response.data?.results || []
 
-    if (!Array.isArray(rawProfessionals)) {
-      eligibleProfessionalsList.value = []
-    } else {
-      eligibleProfessionalsList.value = rawProfessionals
-        .filter(prof => !props.existingPreceptorIds.includes(prof.id))
-        .map((prof) => ({
-          system_id: prof.id,
-          registration_no: prof.registration_no || 'N/A',
-          cid_no: prof.cid_no || 'N/A',
-          full_name: prof.full_name || 'Unknown Professional',
-          qualification: prof.qualification || 'N/A',
-        }))
-    }
+        // const response1 = await apiServices.getEligiblePreceptors()
+        // console.log("============");
+        
+        // console.log(response1);
+        
+
+
+    // Filter: Only applicants with a primary qualification that is Approved
+    const approvedApplicants = rawApplicants.filter(app => {
+      const primary = app.user_qualifications?.find(q => q.is_primary_qualification)
+      return primary && primary.endorsement_decision === 'Approved'
+    })
+
+    // Map to the format needed for your UI
+    eligibleProfessionalsList.value = approvedApplicants.map(app => {
+      const primary = app.user_qualifications.find(q => q.is_primary_qualification)
+      return {
+        system_id: app.id,
+        registration_no: app.registration_no || 'N/A',
+        cid_no: app.cid_no || 'N/A',
+        full_name: app.full_name || 'Unknown Professional',
+        qualification: primary
+          ? `${primary.qualification_type_display || ''} ${primary.qualification_name_display || ''}`.trim()
+          : 'N/A',
+      }
+    })
   } catch (error) {
     console.error('Error fetching professionals list:', error.response?.data || error.message)
     toast.error('Could not load professionals list. Please try again.')
@@ -218,6 +271,8 @@ const submitPreceptors = async () => {
       teaching_center: props.applicationId,
       application: profId,
     }
+    console.log(preceptorData);
+    
     return apiServices.createMhpcClinicalPreceptor(preceptorData)
   })
 

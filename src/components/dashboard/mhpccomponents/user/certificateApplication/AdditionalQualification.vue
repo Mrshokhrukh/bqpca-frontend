@@ -422,10 +422,10 @@ const handleSubmitActual = async () => {
 
     supportingDocuments.value.forEach((doc, index) => {
       if (doc.files && doc.files.length > 0) {
-        doc.files.forEach((file) => {
-          formData.append(`attachments-${index}-file`, file)
+       doc.files.forEach((file) => {
+          formData.append('user_qualification_attachment_files', file, file.name)
+          formData.append('user_qualification_attachment_file_types', doc.type)
         })
-        formData.append(`attachments-${index}-file_type`, doc.type)
       }
     })
 

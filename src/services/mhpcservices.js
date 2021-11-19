@@ -845,15 +845,19 @@ export default {
    * @returns {Promise}
    */
   getAdminAllRenewals(params = {}) {
-    return apiClient.get('/mhpc/admin/institute-renewals/', { params })
+    return apiClient.get('mhpc/admin/institute-renewals/', { params })
+  },
+
+  getTeachingCenterRenewals(params = {}) {
+    return apiClient.get('/mhpc/admin-renewals/', { params })
   },
 
   approveTeachingCenterRenewal(renewalId, data) {
-    return apiClient.post(`/mhpc/admin/institute-renewals/${renewalId}/approve/`, data)
+    return apiClient.post(`/mhpc/admin-renewals/${renewalId}/approve/`, data)
   },
 
   rejectTeachingCenterRenewal(renewalId, data) {
-    return apiClient.post(`/mhpc/admin/institute-renewals/${renewalId}/reject/`, data)
+    return apiClient.post(`/mhpc/admin-renewals/${renewalId}/reject/`, data)
   },
 
   getMhpcCpdRecords() {
@@ -1154,7 +1158,7 @@ export default {
   },
   createMhpcClinicalPreceptor(data) {
     // Data should be an object like:
-    // { teaching_center: ID, faculty: ID, designation: "String" }
+    // { teaching_center: ID, faculty: ID, designation: "String" }    
     return apiClient.post('/mhpc/mhpc-clinical-preceptors/', data)
   },
   getMhpcClinicalPreceptor(id) {

@@ -142,7 +142,8 @@ const tableHeaders = [
   'Reg. No.',
   'Applied On',
   'Status',
-  'Original Expiry',
+  // 'Original Expiry',
+  'Payment Status',
   'Actions',
 ]
 

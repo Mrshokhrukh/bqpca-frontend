@@ -121,7 +121,20 @@ const fetchApplications = async () => {
   error.value = null
   try {
     const response = await apiService.getMhpcInstitutes() // Use apiService
-    applications.value = response.data.results
+    // console.log(response.data.results);
+
+    const application_Status_array = ['DPR Submitted', 'DPR Pending Review', 'DPR Approved', 'DPR Rejected', 'Payment Pending', 'Fully Approved', 'Final Reiected', '(ApplicationStatusChoices.PAYMENT_PENDING,)']
+
+    const filteredREsponse  =  response.data.results.filter((application) => {
+      return  application_Status_array.includes(application.application_status)
+      // application.application_status
+    })
+
+    console.log(filteredREsponse);
+    
+    
+    applications.value = filteredREsponse
+    // response.data.results
   } catch (err) {
     error.value = err
     console.error('Error fetching applications:', err)
