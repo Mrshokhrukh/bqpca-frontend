@@ -80,9 +80,16 @@
             Add the semesters or terms for this program configuration. You'll assign modules to
             these semesters in the next step.
           </p>
-          <div class="p-4 bg-white border rounded-lg space-y-4">
+          <div class="p-4 border rounded-lg space-y-3 bg-white">
+
+            <div class="w-full flex gap-2 text-gray-600 ">
+              <h1 class="text-center px-2 flex-[2] text-md font-md  bg-gray-50 rounded-md border text-sm">Semester No.</h1>
+              <h1 class="text-center px-2 flex-[10] text-md font-md  bg-gray-50 rounded-md border text-sm">Semester Description</h1>
+              <h1 class="text-center px-2 flex-[2.5] text-md font-md  bg-gray-50 rounded-md border text-sm">Academic Year</h1>
+            </div>
+
             <div v-for="(semester, semIndex) in formData.semesters" :key="semIndex"
-              class="flex items-center space-x-3 p-3 bg-gray-50 rounded-md border">
+              class="flex items-center space-x-3 p-3 bg-gray-50 border rounded-md">
               <span class="text-gray-500 font-semibold">{{ semIndex + 1 }}</span>
               <!-- ======================================================= -->
               <!-- === START: MODIFICATION 1 - Add Semester Number Input === -->
@@ -102,6 +109,8 @@
                 <Trash2 class="h-4 w-4" />
               </button>
             </div>
+
+
             <button type="button" @click="addSemester"
               class="flex items-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700">
               <Plus class="w-4 h-4 mr-2" /> Add Semester
@@ -143,6 +152,7 @@
                         {{ modMaster.module_code ? `(${modMaster.module_code})` : '' }}
                       </option>
                     </select>
+
                   </div>
                   <div class="flex flex-col">
                     <label class="block text-xs font-medium text-gray-600 mb-1">Faculty <span
@@ -267,6 +277,8 @@ const initialFormData = () => ({
   selectedProgramOfferedId: '',
   semesters: [],
 });
+
+
 
 const formData = ref(initialFormData());
 
