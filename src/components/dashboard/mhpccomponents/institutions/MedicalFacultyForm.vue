@@ -22,7 +22,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div>
         <label for="medical-registration_type" class="form-label">Registration Type </label>
-        <input type="text" id="medical-registration_type" :value="form.registration_type.name" disabled
+        <input type="text" id="medical-registration_type" :value="form.registration_type_name" disabled
           class="form-input bg-gray-100" />
         <p v-if="errors.registration_type_name" class="mt-1 text-sm text-red-500">
           {{ errors.registration_type_name }}
@@ -133,7 +133,8 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Qualification Type</label>
-              <input type="text" :value="edu.qualification_type_name || 'N/A'" disabled class="form-input bg-gray-100" />
+              <input type="text" :value="edu.qualification_type_name || 'N/A'" disabled
+                class="form-input bg-gray-100" />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Qualification</label>
@@ -291,10 +292,15 @@ const updateForm = (key, value) => {
  */
 const mapApiDataToForm = (apiData, baseForm) => {
   const safeApiData = apiData || {}
+  console.log(apiData);
+
+  console.log(safeApiData.registration_type_name);
+
+
 
   const mappedEducationDetails = (safeApiData.user_qualifications || []).map((edu) => ({
-    type: edu.qualification_type_display || 'N/A',
-    qualification: edu.qualification_name_display || 'N/A',
+    qualification_type_name: edu.qualification_type.qualification_type_name || 'N/A',
+    qualification_name: edu.qualification_name.qualification || 'N/A',
     institute: edu.institute_university_display || 'N/A',
     year_of_completion: edu.completion_year || 'N/A',
     additional_info: {
@@ -305,6 +311,9 @@ const mapApiDataToForm = (apiData, baseForm) => {
       expiry_date: edu.expiry_date,
     },
   }))
+
+  console.log(safeApiData.registration_type);
+
 
   return {
     ...baseForm,

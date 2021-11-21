@@ -1677,11 +1677,14 @@ const loadDropdownOptions = async () => {
       await Promise.all([
         apiService.getProvidingAgency(),
         apiService.getReasonForCoducting(),
-        apiService.getMhpcMastersCpdActivities(),
+        apiService.getMhpcMastersSingleCpdActivity(),
         apiService.getMhpcMastersCpdMethodologies(),
         apiService.getMhpcMasterData('personnel-categories'),
         apiService.getMhpcMastersSubCategories(),
       ])
+
+      console.log(cpdTypeRes);
+      
 
     agencyOptions.value =
       agencyRes?.data?.results?.map((item) => ({ text: item.name, value: item.id })) || []
@@ -1689,7 +1692,7 @@ const loadDropdownOptions = async () => {
       reasonRes?.data?.results?.map((item) => ({ text: item.name, value: item.id })) || []
     cpdTypeOptions.value =
       cpdTypeRes?.data?.results?.map((item) => ({
-        text: item.cme_activity_name,
+        text: item.cpd_activity_name,
         value: item.id,
       })) || []
     methodologyOptions.value =

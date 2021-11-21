@@ -732,7 +732,7 @@ const fetchFaculty = async (page = 1) => {
         ...f,
         staff_name: f.faculty_name || f.staff_name || 'N/A',
         identifier: f.faculty_id || f.registration_no || f.cid || '',
-        application_profile_identifier: f.application_profile || null,
+        application_profile_identifier: f.application_profile_detail || null,
         faculty_type:
           f.faculty_type || (f.registration_no ? 'medical' : f.cid ? 'academic' : 'unknown'),
         designation: f.designation || null,
@@ -896,7 +896,7 @@ const openAddFacultyModal = () => {
 
 const parseEducationDetails = (details) => {
   console.log(details);
-  
+
   if (!details) return []
   if (typeof details === 'string') {
     try {
@@ -936,7 +936,9 @@ const parseEducationDetails = (details) => {
 }
 
 const populateFormForModal = (faculty) => {
-  const educationDetails = (faculty.type === "academic") ? parseEducationDetails(faculty.education_details) : parseEducationDetails(faculty.application_profile?.user_qualifications)
+  const educationDetails = (faculty.type === "academic") ? parseEducationDetails(faculty.education_details) : parseEducationDetails(faculty.application_profile_detail?.user_qualifications)
+  console.log(educationDetails);
+
   // parseEducationDetails(faculty.education_details)
   form.value = {
     id: faculty.id,
@@ -944,11 +946,11 @@ const populateFormForModal = (faculty) => {
       faculty.faculty_type || (faculty.registration_no ? 'medical' : faculty.cid ? 'academic' : ''),
     identifier: faculty.faculty_id || faculty.registration_no || faculty.cid || '',
     application_profile_identifier:
-      faculty.application_profile_identifier || faculty.application_profile || null,
+      faculty.application_profile_identifier || faculty.application_profile_detail || null,
     staff_name: faculty.faculty_name || faculty.staff_name || '',
-    registration_type: faculty.registration_type || '',
-    registration_date: faculty.application_profile?.registration_date || '',
-    expiry_date: faculty.application_profile?.expiry_date || '',
+    registration_type_name: faculty.registration_type_detail?.name || '',
+    registration_date: faculty.application_profile_detail?.registration_date || '',
+    expiry_date: faculty.application_profile_detail?.expiry_date || '',
     nationality: faculty.nationality || '',
     date_of_birth: faculty.date_of_birth || '',
     village: faculty.village || '',
@@ -973,6 +975,9 @@ const populateFormForModal = (faculty) => {
         : ''),
     officer_remarks: faculty.officer_remarks || '',
   }
+
+  console.log(form.value.registration_type);
+
   validation.errors = {}
 }
 
@@ -1054,6 +1059,24 @@ const saveFaculty = async () => {
   Object.keys(form.value).forEach((key) => {
     const value = form.value[key]
 
+    if (key === 'registration_type' && value) {
+
+      console.log("=================");
+
+      console.log(key);
+
+      console.log(value);
+
+      // formDataPayload.append("registration_type", value)
+      const regTypeId = typeof value === 'object' && value !== null ? value.id : value
+
+      if (regTypeId) {
+        formDataPayload.append("registration_type", regTypeId)
+      }
+    }
+
+
+
     if (key === 'cv' || key === 'passport_photo') {
       if (value instanceof File) {
         console.log("cvv && pasport ");
@@ -1067,6 +1090,8 @@ const saveFaculty = async () => {
         institute: edu.institute,
         year_of_completion: edu.year_of_completion,
       }))
+      console.log(eduDetailsToSend);
+
       formDataPayload.append(key, JSON.stringify(eduDetailsToSend))
     } else if (key === 'identifier') {
       if (value) formDataPayload.append('faculty_id', value)
@@ -1102,7 +1127,7 @@ const saveFaculty = async () => {
   try {
     if (modalMode.value === 'add') {
 
-      // console.log(formDataPayload);
+      console.log(formDataPayload);
 
       await apiServices.createMhpcTeachingFaculty(formDataPayload)
       showNotification(

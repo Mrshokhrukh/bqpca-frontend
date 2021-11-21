@@ -777,34 +777,34 @@ const serviceSpecificMenuItems = {
           },
         ],
       },
-      {
-        name: 'Fee Management',
-        icon: getIconComponent('DollarSign'),
-        children: [
-          {
-            name: 'Fee Structures',
-            route: (serviceType) => `/admin/admin/${serviceType}/fee_structures`,
-          },
-          {
-            name: 'Fees Associated For',
-            route: (serviceType) => `/admin/admin/${serviceType}/fees_associated_for`,
-          },
-        ],
-      },
-      {
-        name: 'Participation',
-        icon: getIconComponent('Users2'),
-        children: [
-          {
-            name: 'Categories',
-            route: (serviceType) => `/admin/admin/${serviceType}/participation_category`,
-          },
-          {
-            name: 'Sub Categories',
-            route: (serviceType) => `/admin/admin/${serviceType}/participation_sub_category`,
-          },
-        ],
-      },
+      // {
+      //   name: 'Fee Management',
+      //   icon: getIconComponent('DollarSign'),
+      //   children: [
+      //     {
+      //       name: 'Fee Structures',
+      //       route: (serviceType) => `/admin/admin/${serviceType}/fee_structures`,
+      //     },
+      //     {
+      //       name: 'Fees Associated For',
+      //       route: (serviceType) => `/admin/admin/${serviceType}/fees_associated_for`,
+      //     },
+      //   ],
+      // },
+      // {
+      //   name: 'Participation',
+      //   icon: getIconComponent('Users2'),
+      //   children: [
+      //     {
+      //       name: 'Categories',
+      //       route: (serviceType) => `/admin/admin/${serviceType}/participation_category`,
+      //     },
+      //     {
+      //       name: 'Sub Categories',
+      //       route: (serviceType) => `/admin/admin/${serviceType}/participation_sub_category`,
+      //     },
+      //   ],
+      // },
       {
         name: 'Personnel',
         icon: getIconComponent('UserCircle'),
