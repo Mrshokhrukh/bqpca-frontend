@@ -1,6 +1,6 @@
 // src/services/apiClient.js
 import axios from 'axios'
-import { useAuthStore } from '@/stores/authStore' // <-- IMPORT YOUR AUTH STORE
+import { useAuthStore } from '@/stores/authStore'
 
 const apiClient = axios.create({
   baseURL:
@@ -12,12 +12,10 @@ const apiClient = axios.create({
   },
 })
 
-// Store refresh promise to prevent multiple refresh calls
 let refreshTokenPromise = null
 
 apiClient.interceptors.request.use(
   async (config) => {
-    // ✅ CHANGED: Get the token from the Pinia store directly
     const authStore = useAuthStore()
     const token = authStore.accessToken // Or authStore.token, depending on your store's state property
 
@@ -53,7 +51,6 @@ apiClient.interceptors.response.use(
 
       try {
         if (!refreshTokenPromise) {
-          // Use the refresh token from the store
           refreshTokenPromise = axios.post(`${apiClient.defaults.baseURL}/users/token/refresh/`, {
             refresh: authStore.refreshToken,
           })
@@ -63,8 +60,6 @@ apiClient.interceptors.response.use(
         refreshTokenPromise = null
 
         const newAccessToken = response.data.access
-        // ✅ CHANGED: Update the token via a store action/mutation
-        // This ensures localStorage and the state are updated together.
         authStore.setNewAccessToken(newAccessToken) // Assuming you have a method like this
 
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`
@@ -72,8 +67,6 @@ apiClient.interceptors.response.use(
         return apiClient(originalRequest)
       } catch (refreshError) {
         refreshTokenPromise = null
-        // ✅ CHANGED: Use a store action to handle logout
-        // This clears state and localStorage consistently.
         authStore.logout()
         window.location.href = '/login' // Redirect after logout
         return Promise.reject(refreshError)
