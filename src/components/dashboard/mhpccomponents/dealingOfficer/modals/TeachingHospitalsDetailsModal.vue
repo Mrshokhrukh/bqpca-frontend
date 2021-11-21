@@ -418,7 +418,7 @@
                           </div>
                         </div>
 
-                        <div class="lg:col-span-2 bg-white p-4 rounded-lg border border-blue-200">
+                        <div class="lg:col-span-2 bg-white p-4 rounded-lg border border-blue-200" v-if="localVerificationData.status === 'PENDING_PV'">
                           <div class="flex items-start">
                             <div class="flex items-center h-5">
                               <input
@@ -428,7 +428,7 @@
                                 class="focus:ring-blue-500 h-5 w-5 text-blue-600 border-2 border-blue-300 rounded"
                               />
                             </div>
-                            <div class="ml-3">
+                            <div class="ml-3" >
                               <label
                                 for="sendToUserModal"
                                 class="font-semibold text-blue-700 text-sm"
