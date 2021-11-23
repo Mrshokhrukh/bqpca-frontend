@@ -438,6 +438,9 @@ const props = defineProps({
   currentYear: { type: Number, required: true },
 })
 
+
+
+
 const emit = defineEmits(['update:form', 'show-notification', 'update:isDataFetched']) // Added 'update:isDataFetched'
 
 const toast = useToast()
@@ -622,6 +625,8 @@ const fetchEducationMasters = async () => {
 }
 
 onMounted(() => {
+  console.log(props.form);
+  
   fetchEducationMasters()
 })
 
