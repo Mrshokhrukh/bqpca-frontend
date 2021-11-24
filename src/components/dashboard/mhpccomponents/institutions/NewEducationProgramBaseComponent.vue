@@ -2,26 +2,20 @@
   <div class="mx-auto p-4 md:p-8 bg-gray-50 min-h-screen">
     <!-- Notifications -->
     <div v-if="notifications.length > 0" class="fixed top-6 right-6 z-50 w-full max-w-sm space-y-3">
-      <div
-        v-for="notification in notifications"
-        :key="notification.id"
+      <div v-for="notification in notifications" :key="notification.id"
         class="flex items-center p-4 rounded-lg shadow-xl text-white font-semibold transition-all duration-300 transform"
         :class="{
           'bg-green-600': notification.type === 'success',
           'bg-red-600': notification.type === 'error',
           'bg-yellow-600': notification.type === 'warning',
           'bg-blue-600': notification.type === 'info',
-        }"
-      >
+        }">
         <CheckCircle2 v-if="notification.type === 'success'" class="h-6 w-6 mr-3" />
         <AlertOctagon v-else-if="notification.type === 'error'" class="h-6 w-6 mr-3" />
         <AlertTriangle v-else-if="notification.type === 'warning'" class="h-6 w-6 mr-3" />
         <Info v-else class="h-6 w-6 mr-3" />
         <span class="flex-1">{{ notification.message }}</span>
-        <button
-          @click="removeNotification(notification.id)"
-          class="ml-4 p-1 rounded-full hover:bg-white/20"
-        >
+        <button @click="removeNotification(notification.id)" class="ml-4 p-1 rounded-full hover:bg-white/20">
           <X class="h-5 w-5" />
         </button>
       </div>
@@ -34,18 +28,13 @@
         <p v-if="instituteName" class="text-lg text-gray-600 mt-1">For {{ instituteName }}</p>
       </div>
       <div class="flex items-center space-x-4">
-        <p
-          v-if="!currentUserInstitute?.id && !isLoadingInstitute"
-          class="text-sm text-red-600 flex items-center"
-        >
+        <p v-if="!currentUserInstitute?.id && !isLoadingInstitute" class="text-sm text-red-600 flex items-center">
           <AlertCircle class="w-5 h-5 mr-2" />
           Cannot manage assignments: Institute (ID: {{ instituteId }}) could not be loaded.
         </p>
-        <button
-          @click="openAddProgramModal"
+        <button @click="openAddProgramModal"
           class="flex items-center justify-center px-5 py-2.5 text-sm font-semibold text-white bg-indigo-600 rounded-lg shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          :disabled="isLoadingInstitute || !currentUserInstitute?.id || isPerformingAction"
-        >
+          :disabled="isLoadingInstitute || !currentUserInstitute?.id || isPerformingAction">
           <LoaderCircle v-if="isPerformingAction" class="animate-spin h-5 w-5 mr-2" />
           <Plus v-else class="h-5 w-5 mr-2" />
           {{ isPerformingAction ? 'Processing...' : 'Configure & Assign' }}
@@ -54,25 +43,20 @@
     </header>
 
     <!-- Loading/Empty/Error States -->
-    <div
-      v-if="
-        isLoadingInstitute ||
-        !currentUserInstitute?.id ||
-        isLoadingAssignments ||
-        fetchError ||
-        groupedDataByProgram.length === 0
-      "
-      class="text-center py-16 px-6 bg-white rounded-lg shadow-md"
-    >
+    <div v-if="
+      isLoadingInstitute ||
+      !currentUserInstitute?.id ||
+      isLoadingAssignments ||
+      fetchError ||
+      groupedDataByProgram.length === 0
+    " class="text-center py-16 px-6 bg-white rounded-lg shadow-md">
       <!-- ... (all state displays remain unchanged) ... -->
     </div>
 
     <!-- Main Table -->
     <div v-else class="overflow-hidden bg-white shadow-lg rounded-xl">
-      <div
-        v-if="isPerformingAction"
-        class="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-20 rounded-xl"
-      >
+      <div v-if="isPerformingAction"
+        class="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-20 rounded-xl">
         <div class="text-center">
           <LoaderCircle class="animate-spin inline-block w-10 h-10 text-indigo-600 mb-3" />
           <p class="text-gray-700 font-semibold">{{ actionMessage }}</p>
@@ -82,12 +66,8 @@
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-100">
             <tr>
-              <th
-                v-for="header in tableHeaders"
-                :key="header"
-                scope="col"
-                class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider"
-              >
+              <th v-for="header in tableHeaders" :key="header" scope="col"
+                class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
                 {{ header }}
               </th>
             </tr>
@@ -104,14 +84,12 @@
               </tr>
 
               <!-- Module Rows for this Program -->
-              <tr
-                v-for="group in program.modules"
-                :key="group.moduleId"
-                class="hover:bg-gray-50 transition-colors duration-150"
-              >
+              <tr v-for="group in program.modules" :key="group.moduleId"
+                class="hover:bg-gray-50 transition-colors duration-150">
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 border-b border-gray-200">
-                   <span v-if="group.specificProgramTitle" class="text-xs text-gray-500">{{ group.specificProgramTitle }}</span>
-                   <span v-else class="text-xs text-gray-400 italic">Main Program</span>
+                  <span v-if="group.specificProgramTitle" class="text-xs text-gray-500">{{ group.specificProgramTitle
+                    }}</span>
+                  <span v-else class="text-xs text-gray-400 italic">Main Program</span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 border-b border-gray-200">
                   <div class="font-medium text-gray-800">
@@ -127,10 +105,8 @@
                     <div class="font-medium text-gray-800">
                       {{ faculty.faculty_name || 'N/A' }}
                     </div>
-                    <span
-                      v-if="faculty.is_primary_instructor"
-                      class="ml-2 px-2 py-0.5 text-xs font-semibold text-green-800 bg-green-100 rounded-full"
-                    >
+                    <span v-if="faculty.is_primary_instructor"
+                      class="ml-2 px-2 py-0.5 text-xs font-semibold text-green-800 bg-green-100 rounded-full">
                       Primary
                     </span>
                   </div>
@@ -157,28 +133,19 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium border-b border-gray-200">
                   <div class="flex items-center space-x-2">
-                    <button
-                      @click="openViewApplicationModal(group.originalAssignments[0])"
+                    <button @click="openViewApplicationModal(group.originalAssignments[0])"
                       class="p-2 text-sky-600 hover:bg-sky-100 rounded-md disabled:opacity-50"
-                      :disabled="isPerformingAction"
-                      title="View Program Details"
-                    >
+                      :disabled="isPerformingAction" title="View Program Details">
                       <Eye class="h-4 w-4" />
                     </button>
-                    <button
-                      @click="openEditModal(group.originalAssignments)"
+                    <button @click="openEditModal(group.originalAssignments)"
                       class="p-2 text-indigo-600 hover:bg-indigo-100 rounded-md disabled:opacity-50"
-                      :disabled="isPerformingAction"
-                      title="Edit Assignment"
-                    >
+                      :disabled="isPerformingAction" title="Edit Assignment">
                       <Pencil class="h-4 w-4" />
                     </button>
-                    <button
-                      @click="confirmDeleteAssignment(group.originalAssignments)"
+                    <button @click="confirmDeleteAssignment(group.originalAssignments)"
                       class="p-2 text-red-600 hover:bg-red-100 rounded-md disabled:opacity-50"
-                      :disabled="isPerformingAction"
-                      title="Delete Assignment"
-                    >
+                      :disabled="isPerformingAction" title="Delete Assignment">
                       <Trash2 class="h-4 w-4" />
                     </button>
                   </div>
@@ -190,28 +157,32 @@
       </div>
     </div>
 
-    <NewEducationProgramModal
-      :is-open="isModalOpen"
-      :current-user-institute-id="currentUserInstitute?.id"
-      :current-institute-name="instituteName"
-      @close="closeAddProgramModal"
-      @program-configured="handleProgramConfigured"
-    />
-    <EditFacultyAssignmentModal
-      :is-open="isEditModalOpen"
-      :assignment="selectedAssignment"
-      :faculty-list="facultyList"
-      @close="closeEditModal"
-      @save="saveAssignment"
-    />
+    <NewEducationProgramModal :is-open="isModalOpen" :current-user-institute-id="currentUserInstitute?.id"
+      :current-institute-name="instituteName" @close="closeAddProgramModal"
+      @program-configured="handleProgramConfigured" />
+    <EditFacultyAssignmentModal :is-open="isEditModalOpen" :assignment="selectedAssignment" :faculty-list="facultyList"
+      @close="closeEditModal" @save="saveAssignment" />
 
-    <NewEducationProgramViewApplicationModal
-      v-if="isViewModalOpen && applicationForViewing"
-      :isVisible="isViewModalOpen"
-      :application="applicationForViewing"
+    <NewEducationProgramViewApplicationModal v-if="isViewModalOpen && applicationForViewing"
+      :isVisible="isViewModalOpen" :application="applicationForViewing"
       :teachingCenterNameProp="applicationForViewing.teaching_center_details?.name_of_teaching_center"
-      @close="closeViewApplicationModal"
-    />
+      @close="closeViewApplicationModal" />
+    <div v-if="showConfirmModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+      <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+        <h2 class="text-lg font-bold mb-2 text-gray-800">Confirm Delete</h2>
+        <p class="mb-4 text-gray-600">
+          Are you sure you want to delete this assignment? This action cannot be undone.
+        </p>
+        <div class="flex justify-end space-x-3">
+          <button @click="cancelDelete" class="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300">
+            Cancel
+          </button>
+          <button @click="executeDelete" class="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700">
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -456,6 +427,8 @@ const saveAssignment = async (updatedData) => {
 };
 
 const confirmDeleteAssignment = (assignmentsGroup) => {
+  console.log("delete");
+
   confirmData.value = assignmentsGroup;
   showConfirmModal.value = true;
 };
@@ -499,9 +472,11 @@ onMounted(async () => {
 .container {
   max-width: 1400px;
 }
+
 .disabled\:opacity-50:disabled {
   opacity: 0.5;
 }
+
 .disabled\:cursor-not-allowed:disabled {
   cursor: not-allowed;
 }
