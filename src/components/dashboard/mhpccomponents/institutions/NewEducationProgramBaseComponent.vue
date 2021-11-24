@@ -88,16 +88,23 @@
                 class="hover:bg-gray-50 transition-colors duration-150">
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 border-b border-gray-200">
                   <span v-if="group.specificProgramTitle" class="text-xs text-gray-500">{{ group.specificProgramTitle
-                    }}</span>
+                  }}</span>
                   <span v-else class="text-xs text-gray-400 italic">Main Program</span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 border-b border-gray-200">
                   <div class="font-medium text-gray-800">
                     {{ group.moduleName || 'N/A' }}
                   </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 border-b border-gray-200">
                   <div class="text-xs text-gray-500">
-                    {{ group.semesterName || 'N/A' }} (AY:
-                    {{ group.academicYear }})
+                    {{ group.semesterName || 'N/A' }} <br />
+                    {{ group.moduleDescription || 'N/A' }}
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 border-b border-gray-200">
+                  <div class="text-xs text-gray-500">
+                    {{ group.academicYear }}
                   </div>
                 </td>
                 <td class="px-6 py-4 text-sm text-gray-600 border-b border-gray-200">
@@ -218,7 +225,9 @@ const user = useAuthStore().user;
 
 const tableHeaders = [
   'Specific Program Title',
-  'Module & Semester',
+  "Module",
+  "Semester & Description",
+  "Year",
   'Instructors',
   'Details & Remarks', // Header updated for clarity
   'Actions',
@@ -253,6 +262,7 @@ const groupedDataByProgram = computed(() => {
         specificProgramTitle: programOffered.specific_program_title,
         moduleName: assignment.module.module_master?.module_name,
         semesterName: assignment.module.semester?.name,
+        moduleDescription: assignment.module.module_master?.description || '',
         academicYear: assignment.module.semester?.academic_year,
         studentCount: assignment.module.student_count,
         teachingHours: assignment.teaching_hours,
