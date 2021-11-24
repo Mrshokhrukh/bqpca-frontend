@@ -113,10 +113,6 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 border-b border-gray-200">
                   <div>{{ group.studentCount ?? 'N/A' }} students</div>
-                  <div class="text-xs text-gray-500">
-                    {{ group.teachingHours ?? 'N/A' }} teaching hours
-                  </div>
-
                   <!-- ============================================= -->
                   <!-- === REMARKS DISPLAY BLOCK (IMPLEMENTED) === -->
                   <!-- ============================================= -->
