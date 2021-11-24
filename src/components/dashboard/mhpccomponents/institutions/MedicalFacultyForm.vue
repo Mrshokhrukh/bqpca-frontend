@@ -226,27 +226,91 @@
 
     <div>
       <label for="medical-cv" class="form-label">Upload CV</label>
-      <UploadFile :modelValue="form.cv" @update:modelValue="handleFileUpload('cv', $event)" accept=".pdf,.doc,.docx"
-        :max-size="5" :disabled="mode === 'view'" :initial-file-name="form.cv_name" />
-      <p class="mt-1 text-sm">
-        PDF, DOC, DOCX only, max 5MB.
-        <span v-if="form.cv_name && mode !== 'add' && !form.cv">Current: {{ form.cv_name }}</span>
-      </p>
+      <div v-if="mode === 'view'">
+        <div v-if="form.cv || form.cv_name" class="border rounded-md p-4 bg-gray-50">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+              <svg class="w-10 h-10 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd"
+                  d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"
+                  clip-rule="evenodd" />
+              </svg>
+              <div>
+                <p class="text-sm font-medium text-gray-900">{{ form.cv_name || 'CV.pdf' }}</p>
+                <p class="text-xs text-gray-500">PDF Document</p>
+              </div>
+            </div>
+            <a v-if="form.cv" :href="form.cv" target="_blank" rel="noopener noreferrer"
+              class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+              View PDF
+            </a>
+          </div>
+        </div>
+        <p v-else class="text-sm text-gray-500">No CV uploaded</p>
+      </div>
+      <div v-else>
+        <UploadFile :modelValue="form.cv" @update:modelValue="handleFileUpload('cv', $event)" accept=".pdf,.doc,.docx"
+          :max-size="5" :disabled="mode === 'view'" :initial-file-name="form.cv_name" />
+        <p class="mt-1 text-sm">
+          PDF, DOC, DOCX only, max 5MB.
+          <span v-if="form.cv_name && mode !== 'add' && !form.cv">Current: {{ form.cv_name }}</span>
+          <a v-if="form.cv && typeof form.cv === 'string'" :href="form.cv" target="_blank" rel="noopener noreferrer"
+            class="text-blue-600 underline ml-1">
+            {{ form.cv_name }}
+          </a>
+          <span v-else>{{ form.cv_name }}</span>
+        </p>
+      </div>
       <p v-if="errors.cv" class="mt-1 text-sm text-red-500">{{ errors.cv }}</p>
     </div>
 
     <div>
       <label for="medical-passport_photo" class="form-label">Upload Passport Photo</label>
-      <UploadFile :modelValue="form.passport_photo" @update:modelValue="handleFileUpload('passport_photo', $event)"
-        accept="image/*" :max-size="2" :disabled="mode === 'view'" :initial-file-name="form.passport_photo_name" />
-      <p class="mt-1 text-sm">
-        Image only, max 2MB.
-        <span v-if="form.passport_photo_name && mode !== 'add' && !form.passport_photo">Current: {{
-          form.passport_photo_name }}</span>
-      </p>
-      <p v-if="errors.passport_photo" class="mt-1 text-sm text-red-500">
-        {{ errors.passport_photo }}
-      </p>
+      <div v-if="mode === 'view'">
+        <div v-if="form.passport_photo || form.passport_photo_name" class="border rounded-md p-4 bg-gray-50">
+          <div class="flex items-start space-x-4">
+            <img v-if="form.passport_photo" :src="form.passport_photo" alt="Passport Photo"
+              class="w-32 h-32 rounded-lg border-2 border-gray-200 object-cover shadow-sm" />
+            <div class="flex-1">
+              <p class="text-sm font-medium text-gray-900 mb-1">{{ form.passport_photo_name || 'Passport Photo' }}</p>
+              <p class="text-xs text-gray-500 mb-3">Image File</p>
+              <a v-if="form.passport_photo" :href="form.passport_photo" target="_blank" rel="noopener noreferrer"
+                class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+                Open Full Size
+              </a>
+            </div>
+          </div>
+        </div>
+        <p v-else class="text-sm text-gray-500">No passport photo uploaded</p>
+      </div>
+      <div v-else>
+        <UploadFile :modelValue="form.passport_photo" @update:modelValue="handleFileUpload('passport_photo', $event)"
+          accept="image/*" :max-size="2" :disabled="mode === 'view'" :initial-file-name="form.passport_photo_name" />
+        <p class="mt-1 text-sm">
+          Image only, max 2MB.
+          <span v-if="form.passport_photo_name && mode !== 'add' && !form.passport_photo">{{ form.passport_photo_name
+            }}</span>
+          <a v-if="form.passport_photo && typeof form.passport_photo === 'string'" :href="form.passport_photo"
+            target="_blank" rel="noopener noreferrer" class="text-blue-600 underline ml-1">
+            {{ form.passport_photo_name }}
+          </a>
+          <span v-else>{{ form.passport_photo_name }}</span>
+        </p>
+        <span v-if="form.passport_photo && typeof form.passport_photo === 'string'">
+          <img :src="form.passport_photo" alt="Passport Photo" class="mt-2 max-h-32 rounded border" />
+        </span>
+      </div>
+      <p v-if="errors.passport_photo" class="mt-1 text-sm text-red-500">{{ errors.passport_photo }}</p>
     </div>
   </div>
 </template>
