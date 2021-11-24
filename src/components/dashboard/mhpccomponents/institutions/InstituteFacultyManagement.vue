@@ -987,11 +987,11 @@ const populateFormForModal = async (faculty) => {
       faculty.date_of_joining ||
       (modalMode.value === 'add' ? new Date().toISOString().split('T')[0] : ''),
     education_details: educationDetails,
-    cv: null,
+    cv: faculty.cv,
     cv_name:
       faculty.cv_name ||
       (faculty.cv && typeof faculty.cv === 'string' ? faculty.cv.split('/').pop() : ''),
-    passport_photo: null,
+    passport_photo: faculty.passport_photo,
     passport_photo_name:
       faculty.passport_photo_name ||
       (faculty.passport_photo && typeof faculty.passport_photo === 'string'
