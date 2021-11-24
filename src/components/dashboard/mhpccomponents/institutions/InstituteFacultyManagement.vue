@@ -728,23 +728,25 @@ const fetchFaculty = async (page = 1) => {
 
 
       // We assign the CORRECT, FILTERED list to our reactive variable.
-      facultyList.value = instituteFaculty.map((f) => ({
-        ...f,
-        staff_name: f.faculty_name || f.staff_name || 'N/A',
-        identifier: f.faculty_id || f.registration_no || f.cid || '',
-        application_profile_identifier: f.application_profile_detail || null,
-        faculty_type:
-          f.faculty_type || (f.registration_no ? 'medical' : f.cid ? 'academic' : 'unknown'),
-        designation: f.designation || null,
-        date_of_joining: f.date_of_joining || null,
-        education_details: (f.type === "academic") ? parseEducationDetails(f.education_details) : parseEducationDetails(f.application_profile?.user_qualifications),
-        cv_name: f.cv && typeof f.cv === 'string' ? f.cv.split('/').pop() : '',
-        passport_photo_name:
-          f.passport_photo && typeof f.passport_photo === 'string'
+      facultyList.value = await Promise.all(
+        instituteFaculty.map(async (f) => ({
+          ...f,
+          staff_name: f.faculty_name || f.staff_name || 'N/A',
+          identifier: f.faculty_id || f.registration_no || f.cid || '',
+          application_profile_identifier: f.application_profile_identifier || f.application_profile_detail || null,
+          faculty_type: f.faculty_type || (f.registration_no ? 'medical' : f.cid ? 'academic' : 'unknown'),
+          designation: f.designation || null,
+          date_of_joining: f.date_of_joining || null,
+          education_details: f.faculty_type === "academic"
+            ? await parseEducationDetails(f.education_details)
+            : await parseEducationDetails(f.application_profile?.user_qualifications),
+          cv_name: f.cv && typeof f.cv === 'string' ? f.cv.split('/').pop() : '',
+          passport_photo_name: f.passport_photo && typeof f.passport_photo === 'string'
             ? f.passport_photo.split('/').pop()
             : '',
-        officer_remarks: f.officer_remarks || '',
-      }))
+          officer_remarks: f.officer_remarks || '',
+        }))
+      )
 
       // NOTE: The pagination count from the API (`response.data.count`) is for ALL institutes.
       // Displaying this might be confusing. For now, we will use it, but the best long-term
@@ -894,23 +896,43 @@ const openAddFacultyModal = () => {
   isModalVisible.value = true
 }
 
-const parseEducationDetails = (details) => {
-  console.log(details);
+async function getQualificationTypeName(id) {
+  const res = await apiServices.getMhpcMastersQualificationType(id)
+  // console.log(res);
+
+  return res.data.qualification_type_name
+}
+
+async function getQualificationName(id) {
+  const res = await apiServices.getMhpcMastersQualification(id)
+  //  console.log(res);
+  return res.data.qualification
+
+}
+
+const parseEducationDetails = async (details) => {
+  // console.log(details);
 
   if (!details) return []
   if (typeof details === 'string') {
     try {
       const parsed = JSON.parse(details)
-      return Array.isArray(parsed)
-        ? parsed.map((edu) => ({
-          qualification_type_id: edu.qualification_type_id || edu.type || '',
-          qualification_type_name: edu.qualification_type_name || '', // for academic
-          qualification_id: edu.qualification_id || edu.qualification || '',
-          qualification_name: edu.qualification_name || '', // for academic
-          institute: edu.institute || '',
-          year_of_completion: edu.year_of_completion || '',
-        }))
-        : []
+      if (!Array.isArray(parsed)) return []
+      // Map each education entry to a promise that resolves with the correct names
+      const mappedPromises = parsed.map(async (edu) => ({
+        qualification_type_id: edu.qualification_type_id || edu.type || '',
+        qualification_type_name: edu.qualification_type_id
+          ? await getQualificationTypeName(edu.qualification_type_id)
+          : '',
+        qualification_id: edu.qualification_id || edu.qualification || '',
+        qualification_name: edu.qualification_id
+          ? await getQualificationName(edu.qualification_id)
+          : '',
+        institute: edu.institute || '',
+        year_of_completion: edu.year_of_completion || '',
+      }))
+      // Wait for all promises to resolve
+      return await Promise.all(mappedPromises)
     } catch (e) {
       return []
     }
@@ -935,8 +957,10 @@ const parseEducationDetails = (details) => {
     : []
 }
 
-const populateFormForModal = (faculty) => {
-  const educationDetails = (faculty.type === "academic") ? parseEducationDetails(faculty.education_details) : parseEducationDetails(faculty.application_profile_detail?.user_qualifications)
+const populateFormForModal = async (faculty) => {
+  console.log(faculty);
+
+  const educationDetails = (faculty.faculty_type === "academic") ? faculty.education_details : await parseEducationDetails(faculty.application_profile_detail?.user_qualifications)
   console.log(educationDetails);
 
   // parseEducationDetails(faculty.education_details)
@@ -981,17 +1005,19 @@ const populateFormForModal = (faculty) => {
   validation.errors = {}
 }
 
-const openEditFacultyModal = (faculty) => {
+const openEditFacultyModal = async (faculty) => {
+  console.log(faculty);
+
   modalMode.value = 'edit'
-  populateFormForModal(faculty)
+  await populateFormForModal(faculty)
   isModalVisible.value = true
 }
 
-const openViewFacultyModal = (faculty) => {
+const openViewFacultyModal = async (faculty) => {
   // console.log(faculty);
 
   modalMode.value = 'view'
-  populateFormForModal(faculty)
+  await populateFormForModal(faculty)
   isModalVisible.value = true
 }
 
