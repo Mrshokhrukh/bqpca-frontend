@@ -88,7 +88,7 @@
                 class="hover:bg-gray-50 transition-colors duration-150">
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 border-b border-gray-200">
                   <span v-if="group.specificProgramTitle" class="text-xs text-gray-500">{{ group.specificProgramTitle
-                  }}</span>
+                    }}</span>
                   <span v-else class="text-xs text-gray-400 italic">Main Program</span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 border-b border-gray-200">
@@ -163,6 +163,22 @@
       :isVisible="isViewModalOpen" :application="applicationForViewing"
       :teachingCenterNameProp="applicationForViewing.teaching_center_details?.name_of_teaching_center"
       @close="closeViewApplicationModal" />
+    <div v-if="showConfirmModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+      <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+        <h2 class="text-lg font-bold mb-2 text-gray-800">Confirm Delete</h2>
+        <p class="mb-4 text-gray-600">
+          Are you sure you want to delete this assignment? This action cannot be undone.
+        </p>
+        <div class="flex justify-end space-x-3">
+          <button @click="cancelDelete" class="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300">
+            Cancel
+          </button>
+          <button @click="executeDelete" class="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700">
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -407,6 +423,8 @@ const saveAssignment = async (updatedData) => {
 };
 
 const confirmDeleteAssignment = (assignmentsGroup) => {
+  console.log("delete");
+
   confirmData.value = assignmentsGroup;
   showConfirmModal.value = true;
 };
