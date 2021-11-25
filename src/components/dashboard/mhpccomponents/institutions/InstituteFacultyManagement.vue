@@ -587,7 +587,7 @@ const validateForm = () => {
   }
 
   if (facultyType === 'academic' && modalMode.value !== 'view') {
-    ; (form.value.education_details || []).forEach((edu, index) => {
+    (form.value.education_details || []).forEach((edu, index) => {
       if (!edu.qualification_type_id) {
         validation.errors[`edu_qualification_type_${index}`] = 'Qualification Type is required'
         isValid = false
