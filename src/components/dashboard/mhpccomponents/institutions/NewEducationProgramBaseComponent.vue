@@ -242,6 +242,7 @@ const groupedDataByProgram = computed(() => {
   const programs = {};
 
   moduleFacultyAssignments.value.forEach(assignment => {
+    
     const programOffered = assignment.module?.semester?.program_offered;
     if (!programOffered || !assignment.module?.id) return;
 
@@ -254,10 +255,13 @@ const groupedDataByProgram = computed(() => {
         programName: programOffered.program_master.program_name,
         modules: {},
       };
+
+      
     }
 
     const moduleId = assignment.module.id;
     if (!programs[programId].modules[moduleId]) {
+      
       programs[programId].modules[moduleId] = {
         moduleId: moduleId,
         specificProgramTitle: programOffered.specific_program_title,
@@ -265,7 +269,7 @@ const groupedDataByProgram = computed(() => {
         semesterName: assignment.module.semester?.semester_number
           ? `Semester ${assignment.module.semester.semester_number}`
           : 'N/A',
-        moduleDescription: assignment.module.module_master?.description || '',
+        moduleDescription: assignment.module.semester?.name || '',
         academicYear: assignment.module.semester?.academic_year,
         studentCount: assignment.module.student_count,
         teachingHours: assignment.teaching_hours,
