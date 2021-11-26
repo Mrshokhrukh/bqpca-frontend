@@ -3,36 +3,19 @@
     <div>
       <label for="academic-identifier" class="form-label">CID Number</label>
       <div class="mt-1 relative rounded-md shadow-sm">
-        <input
-          type="text"
-          id="academic-identifier"
-          :value="form.identifier"
-          @input="updateForm('identifier', $event.target.value)"
-          :disabled="
-            mode === 'view' ||
+        <input type="text" id="academic-identifier" :value="form.identifier"
+          @input="updateForm('identifier', $event.target.value)" :disabled="mode === 'view' ||
             isFetchingDetails ||
             (mode === 'edit' && apiProvidedFields.identifier)
-          "
-          required
-          class="form-input pr-24"
+            " required class="form-input pr-24"
           :class="{ 'border-red-300 focus:border-red-500 focus:ring-red-500': errors.identifier }"
-          placeholder="Enter CID Number"
-        />
-        <button
-          v-if="mode !== 'view'"
-          type="button"
-          @click="triggerFetchAcademicDetails"
-          :disabled="
-            isFetchingDetails ||
-            !form.identifier ||
-            (mode === 'edit' && apiProvidedFields.identifier)
+          placeholder="Enter CID Number" />
+        <button v-if="mode !== 'view'" type="button" @click="triggerFetchAcademicDetails" :disabled="isFetchingDetails ||
+          !form.identifier ||
+          (mode === 'edit' && apiProvidedFields.identifier)
           "
-          class="absolute inset-y-0 right-0 flex items-center px-3 rounded-r-md border-l bg-gray-50 hover:bg-gray-100 focus:outline-none"
-        >
-          <span
-            class="text-sm text-gray-600"
-            :class="{ 'opacity-50': isFetchingDetails || !form.identifier }"
-          >
+          class="absolute inset-y-0 right-0 flex items-center px-3 rounded-r-md border-l bg-gray-50 hover:bg-gray-100 focus:outline-none">
+          <span class="text-sm text-gray-600" :class="{ 'opacity-50': isFetchingDetails || !form.identifier }">
             {{ isFetchingDetails ? 'Fetching...' : 'Fetch Data' }}
           </span>
         </button>
@@ -43,36 +26,24 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div>
         <label for="academic-nationality" class="form-label">Nationality</label>
-        <input
-          type="text"
-          id="academic-nationality"
-          :value="form.nationality"
+        <input type="text" id="academic-nationality" :value="form.nationality"
           @input="updateForm('nationality', $event.target.value)"
-          :disabled="mode === 'view' || (isDataFetchedFromDCRC && apiProvidedFields.nationality)"
-          required
-          class="form-input"
-          :class="{
+          :disabled="mode === 'view' || (isDataFetchedFromDCRC && apiProvidedFields.nationality)" required
+          class="form-input" :class="{
             'bg-gray-100 text-gray-500': isDataFetchedFromDCRC && apiProvidedFields.nationality,
             'border-red-300 focus:border-red-500 focus:ring-red-500': errors.nationality,
-          }"
-        />
+          }" />
         <p v-if="errors.nationality" class="mt-1 text-sm text-red-500">{{ errors.nationality }}</p>
       </div>
       <div>
         <label for="academic-full_name" class="form-label">Full Name</label>
-        <input
-          type="text"
-          id="academic-full_name"
-          :value="form.staff_name"
+        <input type="text" id="academic-full_name" :value="form.staff_name"
           @input="updateForm('staff_name', $event.target.value)"
-          :disabled="mode === 'view' || (isDataFetchedFromDCRC && apiProvidedFields.staff_name)"
-          required
-          class="form-input"
-          :class="{
+          :disabled="mode === 'view' || (isDataFetchedFromDCRC && apiProvidedFields.staff_name)" required
+          class="form-input" :class="{
             'bg-gray-100 text-gray-500': isDataFetchedFromDCRC && apiProvidedFields.staff_name,
             'border-red-300 focus:border-red-500 focus:ring-red-500': errors.staff_name,
-          }"
-        />
+          }" />
         <p v-if="errors.staff_name" class="mt-1 text-sm text-red-500">{{ errors.staff_name }}</p>
       </div>
     </div>
@@ -80,57 +51,39 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div>
         <label for="academic-date_of_birth" class="form-label">Date of Birth</label>
-        <input
-          type="date"
-          id="academic-date_of_birth"
-          :value="form.date_of_birth"
+        <input type="date" id="academic-date_of_birth" :value="form.date_of_birth"
           @input="updateForm('date_of_birth', $event.target.value)"
-          :disabled="mode === 'view' || (isDataFetchedFromDCRC && apiProvidedFields.date_of_birth)"
-          required
-          class="form-input"
-          :class="{
+          :disabled="mode === 'view' || (isDataFetchedFromDCRC && apiProvidedFields.date_of_birth)" required
+          class="form-input" :class="{
             'bg-gray-100 text-gray-500': isDataFetchedFromDCRC && apiProvidedFields.date_of_birth,
             'border-red-300 focus:border-red-500 focus:ring-red-500': errors.date_of_birth,
-          }"
-        />
+          }" />
         <p v-if="errors.date_of_birth" class="mt-1 text-sm text-red-500">
           {{ errors.date_of_birth }}
         </p>
       </div>
       <div>
         <label for="academic-contact_no" class="form-label">Contact Number</label>
-        <input
-          type="tel"
-          id="academic-contact_no"
-          :value="form.contact_no"
+        <input type="tel" id="academic-contact_no" :value="form.contact_no"
           @input="updateForm('contact_no', $event.target.value)"
-          :disabled="mode === 'view' || (isDataFetchedFromDCRC && apiProvidedFields.contact_no)"
-          required
-          class="form-input"
-          :class="{
+          :disabled="mode === 'view' || (isDataFetchedFromDCRC && apiProvidedFields.contact_no)" required
+          class="form-input" :class="{
             'bg-gray-100 text-gray-500': isDataFetchedFromDCRC && apiProvidedFields.contact_no,
             'border-red-300 focus:border-red-500 focus:ring-red-500': errors.contact_no,
-          }"
-        />
+          }" />
         <p v-if="errors.contact_no" class="mt-1 text-sm text-red-500">{{ errors.contact_no }}</p>
       </div>
     </div>
 
     <div>
       <label for="academic-email_address" class="form-label">Email Address</label>
-      <input
-        type="email"
-        id="academic-email_address"
-        :value="form.email_address"
+      <input type="email" id="academic-email_address" :value="form.email_address"
         @input="updateForm('email_address', $event.target.value)"
-        :disabled="mode === 'view' || (isDataFetchedFromDCRC && apiProvidedFields.email_address)"
-        required
-        class="form-input"
-        :class="{
+        :disabled="mode === 'view' || (isDataFetchedFromDCRC && apiProvidedFields.email_address)" required
+        class="form-input" :class="{
           'bg-gray-100 text-gray-500': isDataFetchedFromDCRC && apiProvidedFields.email_address,
           'border-red-300 focus:border-red-500 focus:ring-red-500': errors.email_address,
-        }"
-      />
+        }" />
       <p v-if="errors.email_address" class="mt-1 text-sm text-red-500">
         {{ errors.email_address }}
       </p>
@@ -139,86 +92,53 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <div>
         <label for="academic-village" class="form-label">Village</label>
-        <input
-          type="text"
-          id="academic-village"
-          :value="form.village"
+        <input type="text" id="academic-village" :value="form.village"
           @input="updateForm('village', $event.target.value)"
-          :disabled="mode === 'view' || (isDataFetchedFromDCRC && apiProvidedFields.village)"
-          required
-          class="form-input"
-          :class="{
+          :disabled="mode === 'view' || (isDataFetchedFromDCRC && apiProvidedFields.village)" required
+          class="form-input" :class="{
             'bg-gray-100 text-gray-500': isDataFetchedFromDCRC && apiProvidedFields.village,
             'border-red-300 focus:border-red-500 focus:ring-red-500': errors.village,
-          }"
-        />
+          }" />
         <p v-if="errors.village" class="mt-1 text-sm text-red-500">{{ errors.village }}</p>
       </div>
       <div>
         <label for="academic-gewog" class="form-label">Gewog</label>
-        <input
-          type="text"
-          id="academic-gewog"
-          :value="form.gewog"
-          @input="updateForm('gewog', $event.target.value)"
-          :disabled="mode === 'view' || (isDataFetchedFromDCRC && apiProvidedFields.gewog)"
-          required
-          class="form-input"
+        <input type="text" id="academic-gewog" :value="form.gewog" @input="updateForm('gewog', $event.target.value)"
+          :disabled="mode === 'view' || (isDataFetchedFromDCRC && apiProvidedFields.gewog)" required class="form-input"
           :class="{
             'bg-gray-100 text-gray-500': isDataFetchedFromDCRC && apiProvidedFields.gewog,
             'border-red-300 focus:border-red-500 focus:ring-red-500': errors.gewog,
-          }"
-        />
+          }" />
         <p v-if="errors.gewog" class="mt-1 text-sm text-red-500">{{ errors.gewog }}</p>
       </div>
       <div>
         <label for="academic-dzongkhag" class="form-label">Dzongkhag</label>
-        <input
-          type="text"
-          id="academic-dzongkhag"
-          :value="form.dzongkhag"
+        <input type="text" id="academic-dzongkhag" :value="form.dzongkhag"
           @input="updateForm('dzongkhag', $event.target.value)"
-          :disabled="mode === 'view' || (isDataFetchedFromDCRC && apiProvidedFields.dzongkhag)"
-          required
-          class="form-input"
-          :class="{
+          :disabled="mode === 'view' || (isDataFetchedFromDCRC && apiProvidedFields.dzongkhag)" required
+          class="form-input" :class="{
             'bg-gray-100 text-gray-500': isDataFetchedFromDCRC && apiProvidedFields.dzongkhag,
             'border-red-300 focus:border-red-500 focus:ring-red-500': errors.dzongkhag,
-          }"
-        />
+          }" />
         <p v-if="errors.dzongkhag" class="mt-1 text-sm text-red-500">{{ errors.dzongkhag }}</p>
       </div>
     </div>
 
     <div>
       <label for="academic-designation" class="form-label">Designation</label>
-      <input
-        type="text"
-        id="academic-designation"
-        :value="form.designation"
-        @input="updateForm('designation', $event.target.value)"
-        :disabled="mode === 'view'"
-        required
-        class="form-input"
-        :class="{ 'border-red-300 focus:border-red-500 focus:ring-red-500': errors.designation }"
-      />
+      <input type="text" id="academic-designation" :value="form.designation"
+        @input="updateForm('designation', $event.target.value)" :disabled="mode === 'view'" required class="form-input"
+        :class="{ 'border-red-300 focus:border-red-500 focus:ring-red-500': errors.designation }" />
       <p v-if="errors.designation" class="mt-1 text-sm text-red-500">{{ errors.designation }}</p>
     </div>
 
     <div>
       <label for="academic-date_of_joining" class="form-label">Date of Joining</label>
-      <input
-        type="date"
-        id="academic-date_of_joining"
-        :value="form.date_of_joining"
-        @input="updateForm('date_of_joining', $event.target.value)"
-        :disabled="mode === 'view'"
-        required
-        class="form-input"
-        :class="{
+      <input type="date" id="academic-date_of_joining" :value="form.date_of_joining"
+        @input="updateForm('date_of_joining', $event.target.value)" :disabled="mode === 'view'" required
+        class="form-input" :class="{
           'border-red-300 focus:border-red-500 focus:ring-red-500': errors.date_of_joining,
-        }"
-      />
+        }" />
       <p v-if="errors.date_of_joining" class="mt-1 text-sm text-red-500">
         {{ errors.date_of_joining }}
       </p>
@@ -230,33 +150,18 @@
         <p class="text-gray-500">Loading education options...</p>
       </div>
       <div v-else-if="mode !== 'view'" class="space-y-4">
-        <div
-          v-for="(edu, index) in form.education_details"
-          :key="index"
-          class="border p-4 rounded-lg"
-        >
+        <div v-for="(edu, index) in form.education_details" :key="index" class="border p-4 rounded-lg">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label :for="`edu-qualification-type-${index}`" class="form-label"
-                >Qualification Type</label
-              >
-              <select
-                :id="`edu-qualification-type-${index}`"
-                :value="edu.qualification_type_id"
-                @input="updateEducationDetail(index, 'qualification_type_id', $event.target.value)"
-                required
-                class="form-select"
-                :class="{
+              <label :for="`edu-qualification-type-${index}`" class="form-label">Qualification Type</label>
+              <select :id="`edu-qualification-type-${index}`" :value="edu.qualification_type_id"
+                @input="updateEducationDetail(index, 'qualification_type_id', $event.target.value)" required
+                class="form-select" :class="{
                   'border-red-300 focus:border-red-500 focus:ring-red-500':
                     errors[`edu_qualification_type_${index}`],
-                }"
-              >
+                }">
                 <option value="" disabled>Select Qualification Type</option>
-                <option
-                  v-for="typeOpt in qualificationTypeOptions"
-                  :key="typeOpt.value"
-                  :value="typeOpt.value"
-                >
+                <option v-for="typeOpt in qualificationTypeOptions" :key="typeOpt.value" :value="typeOpt.value">
                   {{ typeOpt.label }}
                 </option>
               </select>
@@ -265,26 +170,19 @@
               </p>
             </div>
             <div>
-              <label :for="`edu-qualification-name-${index}`" class="form-label"
-                >Qualification Name</label
-              >
-              <select
-                :id="`edu-qualification-name-${index}`"
-                :value="edu.qualification_id"
-                @input="updateEducationDetail(index, 'qualification_id', $event.target.value)"
-                required
-                class="form-select"
-                :class="{
+              <label :for="`edu-qualification-name-${index}`" class="form-label">Qualification Name</label>
+              <select :id="`edu-qualification-name-${index}`" :value="edu.qualification_id"
+                @input="updateEducationDetail(index, 'qualification_id', $event.target.value)" required
+                class="form-select" :class="{
                   'border-red-300 focus:border-red-500 focus:ring-red-500':
                     errors[`edu_qualification_name_${index}`],
-                }"
-              >
-                <option value="" disabled>Select Qualification Name</option>
-                <option
-                  v-for="qualOpt in qualificationNameOptions"
-                  :key="qualOpt.value"
-                  :value="qualOpt.value"
-                >
+                }">
+                <option value="" disabled>
+                  {{ !edu.qualification_type_id ? 'Please select qualification type first' : 'Select Qualification Name'
+                  }}
+                </option>
+                <option v-for="qualOpt in getFilteredQualificationOptions(edu.qualification_type_id)"
+                  :key="qualOpt.value" :value="qualOpt.value" v-if="edu.qualification_type_id">
                   {{ qualOpt.label }}
                 </option>
               </select>
@@ -294,58 +192,35 @@
             </div>
             <div>
               <label :for="`edu-institute-${index}`" class="form-label">Institute/University</label>
-              <input
-                :id="`edu-institute-${index}`"
-                type="text"
-                :value="edu.institute"
-                @input="updateEducationDetail(index, 'institute', $event.target.value)"
-                required
-                class="form-input"
+              <input :id="`edu-institute-${index}`" type="text" :value="edu.institute"
+                @input="updateEducationDetail(index, 'institute', $event.target.value)" required class="form-input"
                 :class="{
                   'border-red-300 focus:border-red-500 focus:ring-red-500':
                     errors[`edu_institute_${index}`],
-                }"
-              />
+                }" />
               <p v-if="errors[`edu_institute_${index}`]" class="mt-1 text-sm text-red-500">
                 {{ errors[`edu_institute_${index}`] }}
               </p>
             </div>
             <div>
               <label :for="`edu-year-${index}`" class="form-label">Year of Completion</label>
-              <input
-                :id="`edu-year-${index}`"
-                :value="edu.year_of_completion"
-                @input="updateEducationDetail(index, 'year_of_completion', $event.target.value)"
-                type="number"
-                :min="minYear"
-                :max="currentYear"
-                required
-                class="form-input"
-                :class="{
+              <input :id="`edu-year-${index}`" :value="edu.year_of_completion"
+                @input="updateEducationDetail(index, 'year_of_completion', $event.target.value)" type="number"
+                :min="minYear" :max="currentYear" required class="form-input" :class="{
                   'border-red-300 focus:border-red-500 focus:ring-red-500':
                     errors[`edu_year_${index}`],
-                }"
-              />
+                }" />
               <p v-if="errors[`edu_year_${index}`]" class="mt-1 text-sm text-red-500">
                 {{ errors[`edu_year_${index}`] }}
               </p>
             </div>
           </div>
-          <button
-            v-if="form.education_details.length > 1 && mode !== 'view'"
-            type="button"
-            @click="removeEducation(index)"
-            class="mt-2 text-sm text-red-600 hover:text-red-800"
-          >
+          <button v-if="form.education_details.length > 1 && mode !== 'view'" type="button"
+            @click="removeEducation(index)" class="mt-2 text-sm text-red-600 hover:text-red-800">
             Remove
           </button>
         </div>
-        <button
-          v-if="mode !== 'view'"
-          type="button"
-          @click="addEducation"
-          class="btn btn-secondary mt-2"
-        >
+        <button v-if="mode !== 'view'" type="button" @click="addEducation" class="btn btn-secondary mt-2">
           Add Education
         </button>
       </div>
@@ -355,11 +230,7 @@
           <p class="text-gray-500">Loading education options...</p>
         </div>
         <div v-else>
-          <div
-            class="border p-4 rounded-lg mb-4"
-            v-for="(edu, index) in form.education_details"
-            :key="`view-${index}`"
-          >
+          <div class="border p-4 rounded-lg mb-4" v-for="(edu, index) in form.education_details" :key="`view-${index}`">
             <p>
               <strong>Qualification Type:</strong>
               {{ getQualificationTypeName(edu.qualification_type_id) }}
@@ -371,12 +242,9 @@
             <p><strong>Institute:</strong> {{ edu.institute }}</p>
             <p><strong>Year:</strong> {{ edu.year_of_completion }}</p>
           </div>
-          <p
-            class="text-sm text-gray-500"
-            v-if="
-              (!form.education_details || form.education_details.length === 0) && !isLoadingMasters
-            "
-          >
+          <p class="text-sm text-gray-500" v-if="
+            (!form.education_details || form.education_details.length === 0) && !isLoadingMasters
+          ">
             No education details available.
           </p>
         </div>
@@ -384,38 +252,91 @@
     </div>
 
     <div>
-      <label for="academic-cv" class="form-label">Upload CV</label>
-      <UploadFile
-        :modelValue="form.cv"
-        @update:modelValue="updateForm('cv', $event)"
-        accept=".pdf"
-        :max-size="5"
-        :disabled="mode === 'view'"
-        :initial-file-name="form.cv_name"
-      />
-      <p class="mt-1 text-sm">
-        PDF only, max 5MB.
-        <span v-if="form.cv_name && mode !== 'add'">Current: {{ form.cv_name }}</span>
-      </p>
+      <label for="academic-cv" class="form-label">CV</label>
+      <div v-if="mode === 'view'">
+        <div v-if="form.cv || form.cv_name" class="border rounded-md p-4 bg-gray-50">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+              <svg class="w-10 h-10 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd"
+                  d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"
+                  clip-rule="evenodd" />
+              </svg>
+              <div>
+                <p class="text-sm font-medium text-gray-900">{{ form.cv_name || 'CV.pdf' }}</p>
+                <p class="text-xs text-gray-500">PDF Document</p>
+              </div>
+            </div>
+            <a v-if="form.cv" :href="form.cv" target="_blank" rel="noopener noreferrer"
+              class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+              View PDF
+            </a>
+          </div>
+        </div>
+        <p v-else class="text-sm text-gray-500">No CV uploaded</p>
+      </div>
+      <div v-else>
+        <UploadFile :modelValue="form.cv" @update:modelValue="updateForm('cv', $event)" accept=".pdf" :max-size="5"
+          :disabled="mode === 'view'" :initial-file-name="form.cv_name" />
+        <p class="mt-1 text-sm text-gray-500">
+          PDF only, max 5MB.
+          <span v-if="form.cv_name && mode !== 'add'">
+            Current:
+            <a v-if="form.cv && typeof form.cv === 'string'" :href="form.cv" target="_blank" rel="noopener noreferrer"
+              class="text-blue-600 underline ml-1">
+              {{ form.cv_name }}
+            </a>
+            <span v-else>{{ form.cv_name }}</span>
+          </span>
+        </p>
+      </div>
       <p v-if="errors.cv" class="mt-1 text-sm text-red-500">{{ errors.cv }}</p>
     </div>
 
     <div>
-      <label for="academic-passport_photo" class="form-label">Upload Passport Photo</label>
-      <UploadFile
-        :modelValue="form.passport_photo"
-        @update:modelValue="updateForm('passport_photo', $event)"
-        accept="image/*"
-        :max-size="2"
-        :disabled="mode === 'view'"
-        :initial-file-name="form.passport_photo_name"
-      />
-      <p class="mt-1 text-sm">
-        Image only, max 2MB.
-        <span v-if="form.passport_photo_name && mode !== 'add'"
-          >Current: {{ form.passport_photo_name }}</span
-        >
-      </p>
+      <label for="academic-passport_photo" class="form-label">Passport Photo</label>
+      <div v-if="mode === 'view'">
+        <div v-if="form.passport_photo || form.passport_photo_name" class="border rounded-md p-4 bg-gray-50">
+          <div class="flex items-start space-x-4">
+            <img v-if="form.passport_photo" :src="form.passport_photo" alt="Passport Photo"
+              class="w-32 h-32 rounded-lg border-2 border-gray-200 object-cover shadow-sm" />
+            <div class="flex-1">
+              <p class="text-sm font-medium text-gray-900 mb-1">{{ form.passport_photo_name || 'Passport Photo' }}</p>
+              <p class="text-xs text-gray-500 mb-3">Image File</p>
+              <a v-if="form.passport_photo" :href="form.passport_photo" target="_blank" rel="noopener noreferrer"
+                class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+                Open Full Size
+              </a>
+            </div>
+          </div>
+        </div>
+        <p v-else class="text-sm text-gray-500">No passport photo uploaded</p>
+      </div>
+      <div v-else>
+        <UploadFile :modelValue="form.passport_photo" @update:modelValue="updateForm('passport_photo', $event)"
+          accept="image/*" :max-size="2" :disabled="mode === 'view'" :initial-file-name="form.passport_photo_name" />
+        <p class="mt-1 text-sm text-gray-500">
+          Image only, max 2MB.
+          <span v-if="form.passport_photo_name && mode !== 'add'">
+            Current:
+            <a v-if="form.passport_photo && typeof form.passport_photo === 'string'" :href="form.passport_photo"
+              target="_blank" rel="noopener noreferrer" class="text-blue-600 underline ml-1">
+              {{ form.passport_photo_name }}
+            </a>
+            <span v-else>{{ form.passport_photo_name }}</span>
+          </span>
+        </p>
+      </div>
       <p v-if="errors.passport_photo" class="mt-1 text-sm text-red-500">
         {{ errors.passport_photo }}
       </p>
@@ -438,6 +359,9 @@ const props = defineProps({
   currentYear: { type: Number, required: true },
 })
 
+
+
+
 const emit = defineEmits(['update:form', 'show-notification', 'update:isDataFetched']) // Added 'update:isDataFetched'
 
 const toast = useToast()
@@ -449,6 +373,7 @@ const apiProvidedFields = ref({})
 const qualificationTypeOptions = ref([])
 const qualificationNameOptions = ref([])
 const isLoadingMasters = ref(false)
+const allQualificationNames = ref([])
 
 watch(
   () => props.form.identifier,
@@ -579,6 +504,15 @@ const fetchEducationMasters = async () => {
       apiServices.getMhpcMastersQualifications(),
     ])
 
+
+    if (nameRes.data && Array.isArray(nameRes.data.results)) {
+      allQualificationNames.value = nameRes.data.results
+      qualificationNameOptions.value = allQualificationNames.value.map((item) => ({
+        value: item.id,
+        label: item.qualification,
+      }))
+    }
+
     if (typeRes.data && Array.isArray(typeRes.data.results)) {
       qualificationTypeOptions.value = typeRes.data.results.map((item) => ({
         value: item.id,
@@ -621,7 +555,20 @@ const fetchEducationMasters = async () => {
   }
 }
 
+
+const getFilteredQualificationOptions = (typeId) => {
+  if (!typeId) return qualificationNameOptions.value
+  return allQualificationNames.value
+    .filter((item) => String(item.qualification_type) === String(typeId))
+    .map((item) => ({
+      value: item.id,
+      label: item.qualification,
+    }))
+}
+
 onMounted(() => {
+  console.log(props.form);
+
   fetchEducationMasters()
 })
 
@@ -786,13 +733,16 @@ const triggerFetchAcademicDetails = async () => {
 .form-label {
   @apply block text-sm font-medium text-gray-700 mb-1.5;
 }
+
 .form-input,
 .form-select {
   @apply block w-full rounded-md border-gray-300 shadow-sm p-3 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none disabled:bg-gray-100 disabled:cursor-not-allowed transition-colors duration-150;
 }
+
 .btn {
   @apply inline-flex items-center justify-center rounded-md border py-2 px-4 text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
 }
+
 .btn-secondary {
   @apply border-transparent bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500;
 }

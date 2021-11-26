@@ -165,7 +165,7 @@ const iconMap = {
 }
 
 // Base path for admin MHPC routes
-const basePath = '/admin/admin/MHPC_certification'
+const basePath = '/admin/admin/health_certification'
 
 // --- Configuration Cards Data ---
 const configurationCards = [
@@ -252,58 +252,58 @@ const configurationCards = [
     button: buttonClasses('emerald'),
     icon: 'FileText',
   },
-  {
-    id: 'feeManagement',
-    title: 'Fee Management',
-    description: 'Configure MHPC fee structures and settings',
-    countLabel: 'Fee Structures',
-    countRef: 'feeStructures',
-    countSuffix: 'structures',
-    usedIn: ['Registration', 'Payments'],
-    children: [
-      {
-        text: 'Fee Structures',
-        route: `${basePath}/fee_structures`,
-        icon: null,
-      },
-      {
-        text: 'Fees Associated For',
-        route: `${basePath}/fees_associated_for`,
-        icon: null,
-      },
-    ],
-    gradient: gradientClasses('amber', 'amber'),
-    iconBg: iconBgClass('amber'),
-    iconColor: iconColorClass('amber'),
-    button: buttonClasses('amber'),
-    icon: 'DollarSign',
-  },
-  {
-    id: 'participation',
-    title: 'Participation',
-    description: 'Manage MHPC participation categories',
-    countLabel: 'Categories',
-    countRef: 'participationCategories',
-    countSuffix: 'categories',
-    usedIn: ['Registration', 'Activities'],
-    children: [
-      {
-        text: 'Categories',
-        route: `${basePath}/participation_category`,
-        icon: null,
-      },
-      {
-        text: 'Sub Categories',
-        route: `${basePath}/participation_sub_category`,
-        icon: null,
-      },
-    ],
-    gradient: gradientClasses('purple', 'purple'),
-    iconBg: iconBgClass('purple'),
-    iconColor: iconColorClass('purple'),
-    button: buttonClasses('purple'),
-    icon: 'Users',
-  },
+  // {
+  //   id: 'feeManagement',
+  //   title: 'Fee Management',
+  //   description: 'Configure MHPC fee structures and settings',
+  //   countLabel: 'Fee Structures',
+  //   countRef: 'feeStructures',
+  //   countSuffix: 'structures',
+  //   usedIn: ['Registration', 'Payments'],
+  //   children: [
+  //     {
+  //       text: 'Fee Structures',
+  //       route: `${basePath}/fee_structures`,
+  //       icon: null,
+  //     },
+  //     {
+  //       text: 'Fees Associated For',
+  //       route: `${basePath}/fees_associated_for`,
+  //       icon: null,
+  //     },
+  //   ],
+  //   gradient: gradientClasses('amber', 'amber'),
+  //   iconBg: iconBgClass('amber'),
+  //   iconColor: iconColorClass('amber'),
+  //   button: buttonClasses('amber'),
+  //   icon: 'DollarSign',
+  // },
+  // {
+  //   id: 'participation',
+  //   title: 'Participation',
+  //   description: 'Manage MHPC participation categories',
+  //   countLabel: 'Categories',
+  //   countRef: 'participationCategories',
+  //   countSuffix: 'categories',
+  //   usedIn: ['Registration', 'Activities'],
+  //   children: [
+  //     {
+  //       text: 'Categories',
+  //       route: `${basePath}/participation_category`,
+  //       icon: null,
+  //     },
+  //     {
+  //       text: 'Sub Categories',
+  //       route: `${basePath}/participation_sub_category`,
+  //       icon: null,
+  //     },
+  //   ],
+  //   gradient: gradientClasses('purple', 'purple'),
+  //   iconBg: iconBgClass('purple'),
+  //   iconColor: iconColorClass('purple'),
+  //   button: buttonClasses('purple'),
+  //   icon: 'Users',
+  // },
   {
     id: 'personnel',
     title: 'Personnel',

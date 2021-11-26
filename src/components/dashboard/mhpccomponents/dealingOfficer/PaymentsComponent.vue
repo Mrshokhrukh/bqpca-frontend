@@ -184,7 +184,7 @@ const fetchPayments = async () => {
       : []
 
     allPaymentRecords.value = data
-    buildDynamicCategories(data)
+    buildDescriptionOptions(data)
   } catch (error) {
     console.error('Error fetching payments:', error)
   } finally {
@@ -194,28 +194,19 @@ const fetchPayments = async () => {
 }
 
 // Build dynamic dropdown from payment descriptions
-const buildDynamicCategories = (data) => {
-  const categories = new Set()
-  data.forEach((p) => {
-    const desc = (p.description || '').trim()
-    if (!desc) return
-    const lower = desc.toLowerCase()
-
-    if (lower.includes('certification')) categories.add('Certification')
-    else if (lower.includes('renewal')) categories.add('Renewal')
-    else if (lower.includes('cpd')) categories.add('CPD Activity')
-    else if (lower.includes('cogs')) categories.add('COGS Issuance')
-    else if (lower.includes('good standing')) categories.add('Good Standing')
-    else if (lower.includes('institute')) categories.add('Institute Registration')
-    else if (lower.includes('provider')) categories.add('CPD Provider Registration')
-    else categories.add(desc)
-  })
-
+const buildDescriptionOptions = (data) => {
+  const descriptions = Array.from(
+    new Set(
+      data
+        .map((p) => (p.description || '').trim())
+        .filter((desc) => desc)
+    )
+  )
   paymentTypeFilterOptions.value = [
     { value: 'all', text: 'All Payment Types' },
-    ...Array.from(categories).map((cat) => ({
-      value: cat.toLowerCase(),
-      text: cat,
+    ...descriptions.map((desc) => ({
+      value: desc,
+      text: desc,
     })),
   ]
 }
@@ -228,8 +219,7 @@ const filteredPayments = computed(() => {
     payments = payments.filter((p) => p.paymentAdviceNo?.toLowerCase().includes(q))
   }
   if (paymentTypeFilter.value !== 'all') {
-    const f = paymentTypeFilter.value.toLowerCase()
-    payments = payments.filter((p) => (p.description || '').toLowerCase().includes(f))
+    payments = payments.filter((p) => (p.description || '') === paymentTypeFilter.value)
   }
   if (dateRange.start && dateRange.end) {
     const start = new Date(dateRange.start)

@@ -1,73 +1,46 @@
 <template>
   <div class="w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 bg-gray-50 min-h-screen">
-    <InstituteHeader
-      title="Faculty Management"
-      subtitle="Manage medical and academic faculty details and records for your institute."
-      :show-actions="false"
-    />
+    <InstituteHeader title="Faculty Management"
+      subtitle="Manage medical and academic faculty details and records for your institute." :show-actions="false" />
 
     <Transition name="notification-slide">
-      <div
-        v-if="notification.show"
+      <div v-if="notification.show"
         class="fixed top-20 right-4 sm:right-6 lg:right-8 p-4 rounded-xl shadow-lg flex items-start z-[100] max-w-sm w-full"
         :class="{
           'bg-green-50 border-green-300': notification.type === 'success',
           'bg-red-50 border-red-300': notification.type === 'error',
           'bg-sky-50 border-sky-300': notification.type === 'info',
           'bg-yellow-50 border-yellow-300': notification.type === 'warning',
-        }"
-      >
+        }">
         <div class="flex-shrink-0">
-          <CheckCircleIcon
-            v-if="notification.type === 'success'"
-            class="h-6 w-6 text-green-500"
-            aria-hidden="true"
-          />
-          <XCircleIcon
-            v-else-if="notification.type === 'error'"
-            class="h-6 w-6 text-red-500"
-            aria-hidden="true"
-          />
-          <InformationCircleIcon
-            v-else-if="notification.type === 'info'"
-            class="h-6 w-6 text-sky-500"
-            aria-hidden="true"
-          />
-          <ExclamationTriangleIcon
-            v-else-if="notification.type === 'warning'"
-            class="h-6 w-6 text-yellow-500"
-            aria-hidden="true"
-          />
+          <CheckCircleIcon v-if="notification.type === 'success'" class="h-6 w-6 text-green-500" aria-hidden="true" />
+          <XCircleIcon v-else-if="notification.type === 'error'" class="h-6 w-6 text-red-500" aria-hidden="true" />
+          <InformationCircleIcon v-else-if="notification.type === 'info'" class="h-6 w-6 text-sky-500"
+            aria-hidden="true" />
+          <ExclamationTriangleIcon v-else-if="notification.type === 'warning'" class="h-6 w-6 text-yellow-500"
+            aria-hidden="true" />
         </div>
         <div class="ml-3 w-0 flex-1 pt-0.5">
-          <p
-            class="text-sm font-semibold"
-            :class="{
-              'text-green-800': notification.type === 'success',
-              'text-red-800': notification.type === 'error',
-              'text-sky-800': notification.type === 'info',
-              'text-yellow-800': notification.type === 'warning',
-            }"
-          >
+          <p class="text-sm font-semibold" :class="{
+            'text-green-800': notification.type === 'success',
+            'text-red-800': notification.type === 'error',
+            'text-sky-800': notification.type === 'info',
+            'text-yellow-800': notification.type === 'warning',
+          }">
             {{ notification.title }}
           </p>
-          <p
-            class="mt-1 text-sm"
-            :class="{
-              'text-green-700': notification.type === 'success',
-              'text-red-700': notification.type === 'error',
-              'text-sky-700': notification.type === 'info',
-              'text-yellow-700': notification.type === 'warning',
-            }"
-          >
+          <p class="mt-1 text-sm" :class="{
+            'text-green-700': notification.type === 'success',
+            'text-red-700': notification.type === 'error',
+            'text-sky-700': notification.type === 'info',
+            'text-yellow-700': notification.type === 'warning',
+          }">
             {{ notification.message }}
           </p>
         </div>
         <div class="ml-4 flex-shrink-0 flex">
-          <button
-            @click="closeNotification"
-            class="inline-flex rounded-md p-1 focus:outline-none focus:ring-2 focus:ring-offset-1"
-            :class="{
+          <button @click="closeNotification"
+            class="inline-flex rounded-md p-1 focus:outline-none focus:ring-2 focus:ring-offset-1" :class="{
               'text-green-600 hover:bg-green-100 focus:ring-green-500 focus:ring-offset-green-50':
                 notification.type === 'success',
               'text-red-600 hover:bg-red-100 focus:ring-red-500 focus:ring-offset-red-50':
@@ -76,8 +49,7 @@
                 notification.type === 'info',
               'text-yellow-600 hover:bg-yellow-100 focus:ring-yellow-500 focus:ring-offset-yellow-50':
                 notification.type === 'warning',
-            }"
-          >
+            }">
             <span class="sr-only">Close</span>
             <XMarkIcon class="h-5 w-5" aria-hidden="true" />
           </button>
@@ -92,12 +64,8 @@
             <MagnifyingGlassIcon class="h-5 w-5 text-gray-400" aria-hidden="true" />
           </div>
           <!-- MODIFIED: Updated placeholder text for search -->
-          <input
-            v-model="searchQuery"
-            type="text"
-            placeholder="Search faculty by name, ID, remarks..."
-            class="form-input pl-10"
-          />
+          <input v-model="searchQuery" type="text" placeholder="Search faculty by name, ID, remarks..."
+            class="form-input pl-10" />
         </div>
         <button @click="openAddFacultyModal" type="button" class="btn btn-primary">
           <PlusIcon class="w-5 h-5 mr-2 -ml-1" aria-hidden="true" />
@@ -105,18 +73,14 @@
         </button>
       </div>
 
-      <div
-        v-if="isLoading"
-        class="flex flex-col items-center justify-center min-h-[400px] bg-white rounded-2xl shadow-lg border border-gray-200 py-16"
-      >
+      <div v-if="isLoading"
+        class="flex flex-col items-center justify-center min-h-[400px] bg-white rounded-2xl shadow-lg border border-gray-200 py-16">
         <Loader class="animate-spin text-indigo-600 w-12 h-12" />
         <p class="mt-4 text-lg font-medium text-gray-700">Loading faculty data...</p>
       </div>
 
-      <div
-        v-else-if="!isLoading && filteredFaculty.length === 0 && !searchQuery"
-        class="text-center py-16 bg-white rounded-2xl shadow-lg border border-gray-200"
-      >
+      <div v-else-if="!isLoading && filteredFaculty.length === 0 && !searchQuery"
+        class="text-center py-16 bg-white rounded-2xl shadow-lg border border-gray-200">
         <UsersIcon class="mx-auto h-16 w-16 text-gray-400" aria-hidden="true" />
         <h3 class="mt-4 text-xl font-semibold text-gray-800">No Faculty Members Found</h3>
         <p class="mt-2 text-sm text-gray-500">
@@ -130,15 +94,13 @@
         </div>
       </div>
 
-      <div
-        v-else-if="!isLoading && filteredFaculty.length === 0 && searchQuery"
-        class="text-center py-16 bg-white rounded-2xl shadow-lg border border-gray-200"
-      >
+      <div v-else-if="!isLoading && filteredFaculty.length === 0 && searchQuery"
+        class="text-center py-16 bg-white rounded-2xl shadow-lg border border-gray-200">
         <DocumentMagnifyingGlassIcon class="mx-auto h-16 w-16 text-gray-400" aria-hidden="true" />
         <h3 class="mt-4 text-xl font-semibold text-gray-800">No Matching Results</h3>
         <p class="mt-2 text-sm text-gray-500">
-          No faculty members found for "<span class="font-medium">{{ searchQuery }}</span
-          >". Try a different search term.
+          No faculty members found for "<span class="font-medium">{{ searchQuery }}</span>". Try a different search
+          term.
         </p>
         <div class="mt-6">
           <button @click="searchQuery = ''" type="button" class="btn btn-outline">
@@ -154,63 +116,39 @@
               <tr>
                 <th @click="sortBy('staff_name')" scope="col" class="table-header-cell">
                   Name
-                  <SortIndicator
-                    :column="'staff_name'"
-                    :current-column="sortColumn"
-                    :direction="sortDirection"
-                  />
+                  <SortIndicator :column="'staff_name'" :current-column="sortColumn" :direction="sortDirection" />
                 </th>
                 <th @click="sortBy('designation')" scope="col" class="table-header-cell">
                   Designation
-                  <SortIndicator
-                    :column="'designation'"
-                    :current-column="sortColumn"
-                    :direction="sortDirection"
-                  />
+                  <SortIndicator :column="'designation'" :current-column="sortColumn" :direction="sortDirection" />
                 </th>
                 <th @click="sortBy('date_of_joining')" scope="col" class="table-header-cell">
                   Date of Joining
-                  <SortIndicator
-                    :column="'date_of_joining'"
-                    :current-column="sortColumn"
-                    :direction="sortDirection"
-                  />
+                  <SortIndicator :column="'date_of_joining'" :current-column="sortColumn" :direction="sortDirection" />
                 </th>
                 <th @click="sortBy('faculty_type')" scope="col" class="table-header-cell">
                   Faculty Type
-                  <SortIndicator
-                    :column="'faculty_type'"
-                    :current-column="sortColumn"
-                    :direction="sortDirection"
-                  />
+                  <SortIndicator :column="'faculty_type'" :current-column="sortColumn" :direction="sortDirection" />
                 </th>
                 <!-- MODIFIED: Renamed Remarks column header -->
                 <th scope="col" class="table-header-cell">Officer Remarks</th>
-                <th
-                  scope="col"
-                  class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
+                <th scope="col"
+                  class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-              <tr
-                v-for="faculty in filteredFaculty"
-                :key="faculty.id"
-                class="hover:bg-gray-50 transition-colors duration-150"
-              >
+              <tr v-for="faculty in filteredFaculty" :key="faculty.id"
+                class="hover:bg-gray-50 transition-colors duration-150">
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                   {{ faculty.staff_name || 'N/A' }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                  <span
-                    v-if="faculty.designation"
-                    :class="[
-                      getDesignationPillClass(faculty.designation),
-                      'px-2.5 py-1 text-xs font-semibold rounded-full leading-tight',
-                    ]"
-                  >
+                  <span v-if="faculty.designation" :class="[
+                    getDesignationPillClass(faculty.designation),
+                    'px-2.5 py-1 text-xs font-semibold rounded-full leading-tight',
+                  ]">
                     {{ faculty.designation }}
                   </span>
                   <span v-else class="text-gray-400 italic">N/A</span>
@@ -223,14 +161,10 @@
                 </td>
                 <!-- MODIFIED: Replaced icon with truncated text and a tooltip -->
                 <td class="px-6 py-4 text-sm text-gray-600 max-w-xs">
-                  <div
-                    v-if="faculty.officer_remarks && faculty.officer_remarks.trim()"
-                    class="group relative"
-                  >
+                  <div v-if="faculty.officer_remarks && faculty.officer_remarks.trim()" class="group relative">
                     <p class="truncate">{{ faculty.officer_remarks }}</p>
                     <span
-                      class="absolute bottom-full z-10 mb-2 hidden w-auto max-w-sm p-2 text-xs text-white bg-gray-900 rounded-md group-hover:block"
-                    >
+                      class="absolute bottom-full z-10 mb-2 hidden w-auto max-w-sm p-2 text-xs text-white bg-gray-900 rounded-md group-hover:block">
                       {{ faculty.officer_remarks }}
                     </span>
                   </div>
@@ -238,25 +172,16 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                   <div class="flex justify-center items-center space-x-3">
-                    <button
-                      @click="openViewFacultyModal(faculty)"
-                      class="text-gray-400 hover:text-indigo-600 transition-colors"
-                      title="View Details"
-                    >
+                    <button @click="openViewFacultyModal(faculty)"
+                      class="text-gray-400 hover:text-indigo-600 transition-colors" title="View Details">
                       <EyeIcon class="w-5 h-5" />
                     </button>
-                    <button
-                      @click="openEditFacultyModal(faculty)"
-                      class="text-gray-400 hover:text-sky-600 transition-colors"
-                      title="Edit Faculty"
-                    >
+                    <button @click="openEditFacultyModal(faculty)"
+                      class="text-gray-400 hover:text-sky-600 transition-colors" title="Edit Faculty">
                       <PencilSquareIcon class="w-5 h-5" />
                     </button>
-                    <button
-                      @click="confirmDelete(faculty)"
-                      class="text-gray-400 hover:text-red-600 transition-colors"
-                      title="Delete Faculty"
-                    >
+                    <button @click="confirmDelete(faculty)" class="text-gray-400 hover:text-red-600 transition-colors"
+                      title="Delete Faculty">
                       <TrashIcon class="w-5 h-5" />
                     </button>
                   </div>
@@ -266,16 +191,10 @@
           </table>
         </div>
 
-        <div
-          v-if="totalFaculty > 0"
-          class="bg-white px-4 py-4 flex items-center justify-between border-t border-gray-200 sm:px-6"
-        >
+        <div v-if="totalFaculty > 0"
+          class="bg-white px-4 py-4 flex items-center justify-between border-t border-gray-200 sm:px-6">
           <div class="flex-1 flex justify-between sm:hidden">
-            <button
-              @click="fetchPreviousPage"
-              :disabled="!hasPreviousPage"
-              class="btn btn-outline text-sm"
-            >
+            <button @click="fetchPreviousPage" :disabled="!hasPreviousPage" class="btn btn-outline text-sm">
               Previous
             </button>
             <button @click="fetchNextPage" :disabled="!hasNextPage" class="btn btn-outline text-sm">
@@ -291,23 +210,14 @@
               </p>
             </div>
             <div>
-              <nav
-                class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
-                aria-label="Pagination"
-              >
-                <button
-                  @click="fetchPreviousPage"
-                  :disabled="!hasPreviousPage"
-                  class="relative inline-flex items-center px-3 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
+              <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                <button @click="fetchPreviousPage" :disabled="!hasPreviousPage"
+                  class="relative inline-flex items-center px-3 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
                   <span class="sr-only">Previous</span>
                   <ChevronLeftIcon class="h-5 w-5" aria-hidden="true" />
                 </button>
-                <button
-                  @click="fetchNextPage"
-                  :disabled="!hasNextPage"
-                  class="relative inline-flex items-center px-3 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
+                <button @click="fetchNextPage" :disabled="!hasNextPage"
+                  class="relative inline-flex items-center px-3 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
                   <span class="sr-only">Next</span>
                   <ChevronRightIcon class="h-5 w-5" aria-hidden="true" />
                 </button>
@@ -320,33 +230,17 @@
 
     <Transition name="modal-fade">
       <div v-if="isModalVisible" class="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div
-          class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
-          @click="closeModal"
-          aria-hidden="true"
-        ></div>
+        <div class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity" @click="closeModal"
+          aria-hidden="true"></div>
         <div
           class="relative w-full max-w-3xl bg-white rounded-xl shadow-2xl transform transition-all overflow-y-auto max-h-[90vh]"
-          role="dialog"
-          aria-modal="true"
-          :aria-labelledby="`modal-title-${modalMode}`"
-          @click.stop
-        >
+          role="dialog" aria-modal="true" :aria-labelledby="`modal-title-${modalMode}`" @click.stop>
           <div
-            class="py-5 px-6 md:px-8 bg-gray-50 rounded-t-xl border-b border-gray-200 flex items-center justify-between sticky top-0 z-10"
-          >
+            class="py-5 px-6 md:px-8 bg-gray-50 rounded-t-xl border-b border-gray-200 flex items-center justify-between sticky top-0 z-10">
             <div class="flex items-center">
               <div class="p-2 bg-indigo-100 rounded-lg mr-3">
-                <UserPlusIcon
-                  v-if="modalMode === 'add'"
-                  class="w-6 h-6 text-indigo-600"
-                  aria-hidden="true"
-                />
-                <PencilSquareIcon
-                  v-else-if="modalMode === 'edit'"
-                  class="w-6 h-6 text-indigo-600"
-                  aria-hidden="true"
-                />
+                <UserPlusIcon v-if="modalMode === 'add'" class="w-6 h-6 text-indigo-600" aria-hidden="true" />
+                <PencilSquareIcon v-else-if="modalMode === 'edit'" class="w-6 h-6 text-indigo-600" aria-hidden="true" />
                 <EyeIcon v-else class="w-6 h-6 text-indigo-600" aria-hidden="true" />
               </div>
               <div>
@@ -355,8 +249,8 @@
                     modalMode === 'add'
                       ? 'Add New Faculty'
                       : modalMode === 'edit'
-                      ? 'Edit Faculty Details'
-                      : 'View Faculty Details'
+                        ? 'Edit Faculty Details'
+                        : 'View Faculty Details'
                   }}
                 </h2>
                 <p class="text-xs text-gray-500">
@@ -364,16 +258,14 @@
                     modalMode === 'add'
                       ? 'Fill in the details to add a new faculty member.'
                       : modalMode === 'edit'
-                      ? 'Update the information for this faculty member.'
-                      : 'Viewing faculty member information.'
+                        ? 'Update the information for this faculty member.'
+                        : 'Viewing faculty member information.'
                   }}
                 </p>
               </div>
             </div>
-            <button
-              @click="closeModal"
-              class="p-1 text-gray-400 rounded-md hover:text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            >
+            <button @click="closeModal"
+              class="p-1 text-gray-400 rounded-md hover:text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500">
               <span class="sr-only">Close</span>
               <XMarkIcon class="w-6 h-6" aria-hidden="true" />
             </button>
@@ -383,14 +275,9 @@
             <div class="space-y-6">
               <div>
                 <label for="faculty_type" class="form-label">Faculty Type</label>
-                <select
-                  id="faculty_type"
-                  v-model="form.faculty_type"
-                  :disabled="modalMode === 'view' || (modalMode === 'edit' && form.id !== null)"
-                  required
-                  class="form-select"
-                  @change="handleFacultyTypeChange"
-                >
+                <select id="faculty_type" v-model="form.faculty_type"
+                  :disabled="modalMode === 'view' || (modalMode === 'edit' && form.id !== null)" required
+                  class="form-select" @change="handleFacultyTypeChange">
                   <option value="" disabled>Select Faculty Type</option>
                   <option value="medical">Medical</option>
                   <option value="academic">Academic</option>
@@ -401,39 +288,23 @@
               </div>
 
               <div v-if="form.faculty_type === 'academic'">
-                <AcademicFacultyForm
-                  :form="form"
-                  @update:form="updateSharedForm"
-                  :mode="modalMode"
-                  :errors="validation.errors"
-                  :minYear="minYear"
-                  :currentYear="currentYear"
-                  @show-notification="showNotification"
-                />
+                <AcademicFacultyForm :form="form" @update:form="updateSharedForm" :mode="modalMode"
+                  :errors="validation.errors" :minYear="minYear" :currentYear="currentYear"
+                  @show-notification="showNotification" />
               </div>
               <div v-else-if="form.faculty_type === 'medical'">
-                <MedicalFacultyForm
-                  :form="form"
-                  @update:form="updateSharedForm"
-                  :mode="modalMode"
-                  :errors="validation.errors"
-                  @show-notification="showNotification"
-                />
+                <MedicalFacultyForm :form="form" @update:form="updateSharedForm" :mode="modalMode"
+                  :errors="validation.errors" @show-notification="showNotification" />
               </div>
-              <div
-                v-else
-                class="text-center text-gray-500 py-8 border border-dashed border-gray-300 rounded-lg"
-              >
+              <div v-else class="text-center text-gray-500 py-8 border border-dashed border-gray-300 rounded-lg">
                 <InformationCircleIcon class="mx-auto h-12 w-12 text-gray-400" />
                 <p class="mt-2 text-sm">
                   Please select a faculty type above to view or enter details.
                 </p>
               </div>
 
-              <div
-                v-if="form.officer_remarks && form.officer_remarks.trim() !== ''"
-                class="mt-6 pt-6 border-t border-gray-200"
-              >
+              <div v-if="form.officer_remarks && form.officer_remarks.trim() !== ''"
+                class="mt-6 pt-6 border-t border-gray-200">
                 <div class="flex items-start">
                   <div class="flex-shrink-0">
                     <InformationCircleIcon class="h-6 w-6 text-yellow-500" />
@@ -449,33 +320,20 @@
                 </div>
               </div>
 
-              <div
-                v-if="form.faculty_type"
-                class="mt-8 pt-6 border-t border-gray-200 flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-3"
-              >
-                <button
-                  type="button"
-                  @click="closeModal"
-                  class="btn btn-outline w-full sm:w-auto mt-3 sm:mt-0"
-                >
+              <div v-if="form.faculty_type"
+                class="mt-8 pt-6 border-t border-gray-200 flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-3">
+                <button type="button" @click="closeModal" class="btn btn-outline w-full sm:w-auto mt-3 sm:mt-0">
                   {{ modalMode === 'view' ? 'Close' : 'Cancel' }}
                 </button>
-                <button
-                  v-if="modalMode !== 'view'"
-                  type="submit"
-                  :disabled="isSavingFaculty"
-                  class="btn btn-primary w-full sm:w-auto"
-                >
-                  <span
-                    class="loader animate-spin h-5 w-5 mr-2 text-white"
-                    v-if="isSavingFaculty"
-                  ></span>
+                <button v-if="modalMode !== 'view'" type="submit" :disabled="isSavingFaculty"
+                  class="btn btn-primary w-full sm:w-auto">
+                  <span class="loader animate-spin h-5 w-5 mr-2 text-white" v-if="isSavingFaculty"></span>
                   <span>{{
                     isSavingFaculty
                       ? 'Saving...'
                       : modalMode === 'add'
-                      ? 'Add Faculty'
-                      : 'Update Faculty'
+                        ? 'Add Faculty'
+                        : 'Update Faculty'
                   }}</span>
                 </button>
               </div>
@@ -486,22 +344,13 @@
     </Transition>
 
     <Transition name="modal">
-      <div
-        v-if="showDeleteModal"
-        class="fixed inset-0 z-[60] flex items-center justify-center sm:p-4"
-      >
-        <div
-          class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
-          @click="showDeleteModal = false"
-          aria-hidden="true"
-        ></div>
-        <div
-          class="relative w-full max-w-md bg-white rounded-xl shadow-2xl p-6 transform transition-all"
-        >
+      <div v-if="showDeleteModal" class="fixed inset-0 z-[60] flex items-center justify-center sm:p-4">
+        <div class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity" @click="showDeleteModal = false"
+          aria-hidden="true"></div>
+        <div class="relative w-full max-w-md bg-white rounded-xl shadow-2xl p-6 transform transition-all">
           <div class="sm:flex sm:items-start">
             <div
-              class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10"
-            >
+              class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
               <ExclamationTriangleIcon class="h-6 w-6 text-red-600" aria-hidden="true" />
             </div>
             <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
@@ -513,31 +362,19 @@
                   Are you sure you want to delete faculty member
                   <span class="font-semibold text-gray-700">{{
                     facultyToDelete?.staff_name || 'Unknown'
-                  }}</span
-                  >? This action cannot be undone.
+                  }}</span>? This action cannot be undone.
                 </p>
               </div>
             </div>
           </div>
           <div class="mt-5 sm:mt-6 sm:flex sm:flex-row-reverse sm:space-x-3 sm:space-x-reverse">
-            <button
-              type="button"
-              @click="deleteFaculty"
-              :disabled="isDeletingFaculty"
-              class="btn btn-danger w-full sm:w-auto"
-            >
-              <span
-                class="loader animate-spin h-5 w-5 mr-2 text-white"
-                v-if="isDeletingFaculty"
-              ></span>
+            <button type="button" @click="deleteFaculty" :disabled="isDeletingFaculty"
+              class="btn btn-danger w-full sm:w-auto">
+              <span class="loader animate-spin h-5 w-5 mr-2 text-white" v-if="isDeletingFaculty"></span>
               <span>{{ isDeletingFaculty ? 'Deleting...' : 'Delete' }}</span>
             </button>
-            <button
-              type="button"
-              @click="showDeleteModal = false"
-              :disabled="isDeletingFaculty"
-              class="btn btn-outline w-full sm:w-auto mt-3 sm:mt-0"
-            >
+            <button type="button" @click="showDeleteModal = false" :disabled="isDeletingFaculty"
+              class="btn btn-outline w-full sm:w-auto mt-3 sm:mt-0">
               Cancel
             </button>
           </div>
@@ -625,7 +462,7 @@ const initialFormState = () => ({
   education_details: [],
   cv: null,
   cv_name: '',
-  registration_type_name: '',
+  registration_type: '',
   registration_date: '',
   expiry_date: '',
   officer_remarks: '',
@@ -750,7 +587,7 @@ const validateForm = () => {
   }
 
   if (facultyType === 'academic' && modalMode.value !== 'view') {
-    ;(form.value.education_details || []).forEach((edu, index) => {
+    (form.value.education_details || []).forEach((edu, index) => {
       if (!edu.qualification_type_id) {
         validation.errors[`edu_qualification_type_${index}`] = 'Qualification Type is required'
         isValid = false
@@ -887,25 +724,29 @@ const fetchFaculty = async (page = 1) => {
       const instituteFaculty = allResultsOnPage.filter(
         (faculty) => faculty.institute === institutePk.value
       )
+      console.log(response.data.results);
+
 
       // We assign the CORRECT, FILTERED list to our reactive variable.
-      facultyList.value = instituteFaculty.map((f) => ({
-        ...f,
-        staff_name: f.faculty_name || f.staff_name || 'N/A',
-        identifier: f.faculty_id || f.registration_no || f.cid || '',
-        application_profile_identifier: f.application_profile || null,
-        faculty_type:
-          f.faculty_type || (f.registration_no ? 'medical' : f.cid ? 'academic' : 'unknown'),
-        designation: f.designation || null,
-        date_of_joining: f.date_of_joining || null,
-        education_details: parseEducationDetails(f.education_details),
-        cv_name: f.cv && typeof f.cv === 'string' ? f.cv.split('/').pop() : '',
-        passport_photo_name:
-          f.passport_photo && typeof f.passport_photo === 'string'
+      facultyList.value = await Promise.all(
+        instituteFaculty.map(async (f) => ({
+          ...f,
+          staff_name: f.faculty_name || f.staff_name || 'N/A',
+          identifier: f.faculty_id || f.registration_no || f.cid || '',
+          application_profile_identifier: f.application_profile_identifier || f.application_profile_detail || null,
+          faculty_type: f.faculty_type || (f.registration_no ? 'medical' : f.cid ? 'academic' : 'unknown'),
+          designation: f.designation || null,
+          date_of_joining: f.date_of_joining || null,
+          education_details: f.faculty_type === "academic"
+            ? await parseEducationDetails(f.education_details)
+            : await parseEducationDetails(f.application_profile?.user_qualifications),
+          cv_name: f.cv && typeof f.cv === 'string' ? f.cv.split('/').pop() : '',
+          passport_photo_name: f.passport_photo && typeof f.passport_photo === 'string'
             ? f.passport_photo.split('/').pop()
             : '',
-        officer_remarks: f.officer_remarks || '',
-      }))
+          officer_remarks: f.officer_remarks || '',
+        }))
+      )
 
       // NOTE: The pagination count from the API (`response.data.count`) is for ALL institutes.
       // Displaying this might be confusing. For now, we will use it, but the best long-term
@@ -992,13 +833,13 @@ const sortBy = (column) => {
       ? valA < valB
         ? -1
         : valA > valB
-        ? 1
-        : 0
+          ? 1
+          : 0
       : valA > valB
-      ? -1
-      : valA < valB
-      ? 1
-      : 0
+        ? -1
+        : valA < valB
+          ? 1
+          : 0
   })
 }
 
@@ -1055,46 +896,85 @@ const openAddFacultyModal = () => {
   isModalVisible.value = true
 }
 
-const parseEducationDetails = (details) => {
+async function getQualificationTypeName(id) {
+  const res = await apiServices.getMhpcMastersQualificationType(id)
+  // console.log(res);
+
+  return res.data.qualification_type_name
+}
+
+async function getQualificationName(id) {
+  const res = await apiServices.getMhpcMastersQualification(id)
+  //  console.log(res);
+  return res.data.qualification
+
+}
+
+const parseEducationDetails = async (details) => {
+  // console.log(details);
+
   if (!details) return []
   if (typeof details === 'string') {
     try {
       const parsed = JSON.parse(details)
-      return Array.isArray(parsed)
-        ? parsed.map((edu) => ({
-            qualification_type_id: edu.qualification_type_id || edu.type || '',
-            qualification_id: edu.qualification_id || edu.qualification || '',
-            institute: edu.institute || '',
-            year_of_completion: edu.year_of_completion || '',
-          }))
-        : []
+      if (!Array.isArray(parsed)) return []
+      // Map each education entry to a promise that resolves with the correct names
+      const mappedPromises = parsed.map(async (edu) => ({
+        qualification_type_id: edu.qualification_type_id || edu.type || '',
+        qualification_type_name: edu.qualification_type_id
+          ? await getQualificationTypeName(edu.qualification_type_id)
+          : '',
+        qualification_id: edu.qualification_id || edu.qualification || '',
+        qualification_name: edu.qualification_id
+          ? await getQualificationName(edu.qualification_id)
+          : '',
+        institute: edu.institute || '',
+        year_of_completion: edu.year_of_completion || '',
+      }))
+      // Wait for all promises to resolve
+      return await Promise.all(mappedPromises)
     } catch (e) {
       return []
     }
   }
+  // For medical faculty, details is an array of objects from application_profile.user_qualifications
   return Array.isArray(details)
     ? details.map((edu) => ({
-        qualification_type_id: edu.qualification_type_id || edu.type || '',
-        qualification_id: edu.qualification_id || edu.qualification || '',
-        institute: edu.institute || '',
-        year_of_completion: edu.year_of_completion || '',
-      }))
+      qualification_type_id: edu.qualification_type?.id || '',
+      qualification_type_name: edu.qualification_type_name || edu.qualification_type_display || '',
+      qualification_id: edu.qualification_name?.id || '',
+      qualification_name: edu.qualification_name.qualification || edu.qualification_name_display || '',
+      institute: edu.institute_university_display || '',
+      year_of_completion: edu.completion_year || '',
+      additional_info: {
+        personnel_category: edu.personnel_category_name,
+        personnel_sub_category: edu.personnel_sub_category_name,
+        registration_no: edu.registration_no,
+        registration_date: edu.registration_date,
+        expiry_date: edu.expiry_date,
+      },
+    }))
     : []
 }
 
-const populateFormForModal = (faculty) => {
-  const educationDetails = parseEducationDetails(faculty.education_details)
+const populateFormForModal = async (faculty) => {
+  console.log(faculty);
+
+  const educationDetails = (faculty.faculty_type === "academic") ? faculty.education_details : await parseEducationDetails(faculty.application_profile_detail?.user_qualifications)
+  console.log(educationDetails);
+
+  // parseEducationDetails(faculty.education_details)
   form.value = {
     id: faculty.id,
     faculty_type:
       faculty.faculty_type || (faculty.registration_no ? 'medical' : faculty.cid ? 'academic' : ''),
     identifier: faculty.faculty_id || faculty.registration_no || faculty.cid || '',
     application_profile_identifier:
-      faculty.application_profile_identifier || faculty.application_profile || null,
+      faculty.application_profile_identifier || faculty.application_profile_detail || null,
     staff_name: faculty.faculty_name || faculty.staff_name || '',
-    registration_type_name: faculty.registration_type_name || '',
-    registration_date: faculty.registration_date || '',
-    expiry_date: faculty.expiry_date || '',
+    registration_type_name: faculty.registration_type_detail?.name || '',
+    registration_date: faculty.application_profile_detail?.registration_date || '',
+    expiry_date: faculty.application_profile_detail?.expiry_date || '',
     nationality: faculty.nationality || '',
     date_of_birth: faculty.date_of_birth || '',
     village: faculty.village || '',
@@ -1107,11 +987,11 @@ const populateFormForModal = (faculty) => {
       faculty.date_of_joining ||
       (modalMode.value === 'add' ? new Date().toISOString().split('T')[0] : ''),
     education_details: educationDetails,
-    cv: null,
+    cv: faculty.cv,
     cv_name:
       faculty.cv_name ||
       (faculty.cv && typeof faculty.cv === 'string' ? faculty.cv.split('/').pop() : ''),
-    passport_photo: null,
+    passport_photo: faculty.passport_photo,
     passport_photo_name:
       faculty.passport_photo_name ||
       (faculty.passport_photo && typeof faculty.passport_photo === 'string'
@@ -1119,18 +999,25 @@ const populateFormForModal = (faculty) => {
         : ''),
     officer_remarks: faculty.officer_remarks || '',
   }
+
+  console.log(form.value.registration_type);
+
   validation.errors = {}
 }
 
-const openEditFacultyModal = (faculty) => {
+const openEditFacultyModal = async (faculty) => {
+  console.log(faculty);
+
   modalMode.value = 'edit'
-  populateFormForModal(faculty)
+  await populateFormForModal(faculty)
   isModalVisible.value = true
 }
 
-const openViewFacultyModal = (faculty) => {
+const openViewFacultyModal = async (faculty) => {
+  // console.log(faculty);
+
   modalMode.value = 'view'
-  populateFormForModal(faculty)
+  await populateFormForModal(faculty)
   isModalVisible.value = true
 }
 
@@ -1162,13 +1049,13 @@ const handleFacultyTypeChange = () => {
     education_details:
       newFacultyType === 'academic'
         ? [
-            {
-              qualification_type_id: '',
-              qualification_id: '',
-              institute: '',
-              year_of_completion: '',
-            },
-          ]
+          {
+            qualification_type_id: '',
+            qualification_id: '',
+            institute: '',
+            year_of_completion: '',
+          },
+        ]
         : [],
   }
   validation.errors = {}
@@ -1198,8 +1085,28 @@ const saveFaculty = async () => {
   Object.keys(form.value).forEach((key) => {
     const value = form.value[key]
 
+    if (key === 'registration_type' && value) {
+
+      console.log("=================");
+
+      console.log(key);
+
+      console.log(value);
+
+      // formDataPayload.append("registration_type", value)
+      const regTypeId = typeof value === 'object' && value !== null ? value.id : value
+
+      if (regTypeId) {
+        formDataPayload.append("registration_type", regTypeId)
+      }
+    }
+
+
+
     if (key === 'cv' || key === 'passport_photo') {
       if (value instanceof File) {
+        console.log("cvv && pasport ");
+
         formDataPayload.append(key, value, value.name)
       }
     } else if (key === 'education_details') {
@@ -1209,6 +1116,8 @@ const saveFaculty = async () => {
         institute: edu.institute,
         year_of_completion: edu.year_of_completion,
       }))
+      console.log(eduDetailsToSend);
+
       formDataPayload.append(key, JSON.stringify(eduDetailsToSend))
     } else if (key === 'identifier') {
       if (value) formDataPayload.append('faculty_id', value)
@@ -1243,6 +1152,9 @@ const saveFaculty = async () => {
 
   try {
     if (modalMode.value === 'add') {
+
+      console.log(formDataPayload);
+
       await apiServices.createMhpcTeachingFaculty(formDataPayload)
       showNotification(
         'success',
@@ -1392,63 +1304,80 @@ onMounted(async () => {
 .form-label {
   @apply block text-sm font-medium text-gray-700 mb-1.5;
 }
+
 .form-input,
 .form-select {
   @apply block w-full rounded-md border-gray-300 shadow-sm p-3 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed transition-colors duration-150;
 }
+
 .btn {
   @apply inline-flex items-center justify-center rounded-md border py-2 px-4 text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
 }
+
 .btn-primary {
   @apply border-transparent bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500;
 }
+
 .btn-outline {
   @apply border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-indigo-500;
 }
+
 .btn-danger {
   @apply border-transparent bg-red-600 text-white hover:bg-red-700 focus:ring-red-500;
 }
+
 .table-header-cell {
   @apply px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors duration-150 select-none;
 }
+
 .notification-slide-enter-active,
 .notification-slide-leave-active {
   @apply transition-all duration-500 ease-out;
 }
+
 .notification-slide-enter-from {
   @apply opacity-0 translate-x-full -translate-y-2 scale-95;
 }
+
 .notification-slide-leave-to {
   @apply opacity-0 translate-x-full translate-y-2 scale-95;
 }
+
 .modal-fade-enter-active,
 .modal-fade-leave-active {
   @apply transition-all duration-300 ease-in-out;
 }
+
 .modal-fade-enter-from,
 .modal-fade-leave-to {
   @apply opacity-0;
 }
+
 .modal-fade-enter-from .relative[role='dialog'],
 .modal-fade-leave-to .relative[role='dialog'] {
   @apply scale-95 translate-y-5;
 }
+
 .modal-enter-active,
 .modal-leave-active {
   @apply transition-opacity duration-300 ease-out;
 }
+
 .modal-enter-from,
 .modal-leave-to {
   @apply opacity-0;
 }
+
 .modal-enter-active .relative[role='dialog'],
 .modal-leave-active .relative[role='dialog'] {
   @apply transition-all duration-300 ease-out;
 }
+
 .modal-enter-from .relative[role='dialog'],
 .modal-leave-to .relative[role='dialog'] {
   @apply opacity-0 scale-95 translate-y-4;
 }
+
 .loader {
   border: 2px solid currentColor;
   border-right-color: transparent;
@@ -1456,6 +1385,7 @@ onMounted(async () => {
   display: inline-block;
   animation: spin 1s linear infinite;
 }
+
 @keyframes spin {
   to {
     transform: rotate(360deg);

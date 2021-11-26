@@ -647,40 +647,23 @@
                 <button type="button" @click="resetForm" class="btn btn-outline">
                   <ArrowPathIcon class="w-5 h-5 mr-2" /> Reset
                 </button>
-                <button type="button" @click="previewForm" class="btn btn-outline">
+                <!-- <button type="button" @click="previewForm" class="btn btn-outline">
                   <EyeIcon class="w-5 h-5 mr-2" /> Preview
-                </button>
+                </button> -->
               </div>
               <div class="flex gap-3 flex-wrap">
                 <button type="button" @click="saveDraft" class="btn btn-secondary">
                   <InboxArrowDownIcon class="w-5 h-5 mr-2" /> Save Draft
                 </button>
-                <button
-                  type="button"
-                  @click="confirmSubmission"
-                  :disabled="isSubmitting || Object.keys(validationErrors).length > 0"
-                  class="btn btn-primary"
-                >
+                <button type="button" @click="confirmSubmission"
+                  :disabled="isSubmitting || Object.keys(validationErrors).length > 0" class="btn btn-primary">
                   <PaperAirplaneIcon v-if="!isSubmitting" class="w-5 h-5 mr-2" />
-                  <svg
-                    v-if="isSubmitting"
-                    class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      class="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      stroke-width="4"
-                    ></circle>
-                    <path
-                      class="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
+                  <svg v-if="isSubmitting" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none"
+                    viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                    </path>
                   </svg>
                   {{ isSubmitting ? 'Submitting...' : 'Submit Application' }}
                 </button>
@@ -691,10 +674,10 @@
 
         <!-- Internal Modals (Confirmation and Preview) -->
         <Transition name="internal-modal-confirm">
-          <div
-            v-if="showConfirmModal"
-            class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-[150] p-4"
-          >
+          <!-- Unique name for transition -->
+          <div v-if="showConfirmModal"
+            class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-[150] p-4">
+            <!-- Higher z-index -->
             <div class="bg-white rounded-lg p-6 md:p-8 shadow-xl max-w-md w-full">
               <div class="flex items-start justify-between">
                 <h3 class="text-xl font-semibold text-gray-900 mb-1">Confirm Submission</h3>
@@ -719,10 +702,10 @@
         </Transition>
 
         <Transition name="internal-modal-preview">
-          <div
-            v-if="showPreviewModal"
-            class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-[150] p-4"
-          >
+          <!-- Unique name for transition -->
+          <div v-if="showPreviewModal"
+            class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-[150] p-4">
+            <!-- Higher z-index -->
             <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] flex flex-col">
               <div class="flex items-center justify-between p-6 border-b border-gray-200">
                 <h3 class="text-xl font-semibold text-gray-900">Form Preview</h3>
@@ -731,27 +714,20 @@
                 </button>
               </div>
               <div class="p-6 space-y-6 overflow-y-auto flex-grow">
-                <div
-                  v-for="section_preview in sections.filter((s) => s.fields)"
-                  :key="section_preview.refKey"
-                  class="pb-4 mb-4 border-b border-gray-100 last:border-b-0 last:pb-0 last:mb-0"
-                >
+                <div v-for="section_preview in sections.filter((s) => s.fields)" :key="section_preview.refKey"
+                  class="pb-4 mb-4 border-b border-gray-100 last:border-b-0 last:pb-0 last:mb-0">
                   <h4 class="text-lg font-semibold text-indigo-700 mb-3 flex items-center">
                     <component :is="section_preview.icon" class="w-5 h-5 mr-2" />
                     {{ section_preview.title }}
                   </h4>
                   <dl class="grid grid-cols-1 gap-x-4 gap-y-3 sm:grid-cols-2">
                     <template v-for="(field, key) in section_preview.fields">
-                      <div
-                        v-if="
-                          (formData[key] !== undefined &&
-                            formData[key] !== '' &&
-                            formData[key] !== null) ||
-                          (key === 'supporting_documents' && formData.supporting_documents)
-                        "
-                        :key="key"
-                        class="sm:col-span-1 break-words"
-                      >
+                      <div v-if="
+                        (formData[key] !== undefined &&
+                          formData[key] !== '' &&
+                          formData[key] !== null) ||
+                        (key === 'supporting_documents' && formData.supporting_documents)
+                      " :key="key" class="sm:col-span-1 break-words">
                         <dt class="text-sm font-medium text-gray-500">
                           {{ field.label }}
                         </dt>
@@ -759,19 +735,15 @@
                           <template v-if="formData.supporting_documents instanceof File">
                             {{ formData.supporting_documents.name }}
                           </template>
-                          <template
-                            v-else-if="
-                              typeof formData.supporting_documents === 'string' &&
-                              formData.supporting_documents.length > 0
-                            "
-                          >
+                          <template v-else-if="
+                            typeof formData.supporting_documents === 'string' &&
+                            formData.supporting_documents.length > 0
+                          ">
                             {{ formData.supporting_documents }}
                           </template>
-                          <template
-                            v-else-if="
-                              formData.supporting_documents && formData.supporting_documents.name
-                            "
-                          >
+                          <template v-else-if="
+                            formData.supporting_documents && formData.supporting_documents.name
+                          ">
                             {{ formData.supporting_documents.name }}
                           </template>
                           <template v-else> Not provided </template>
@@ -1453,15 +1425,19 @@ onBeforeUnmount(() => {
 .modal-eoi-form-leave-active {
   transition: opacity 0.3s ease;
 }
+
 .modal-eoi-form-enter-from,
 .modal-eoi-form-leave-to {
   opacity: 0;
 }
+
 .modal-eoi-form-enter-active .bg-white,
+/* Targets the modal content box */
 .modal-eoi-form-leave-active .bg-white {
   transition: all 0.3s ease;
   transform-origin: center;
 }
+
 .modal-eoi-form-enter-from .bg-white,
 .modal-eoi-form-leave-to .bg-white {
   transform: scale(0.95) translateY(-20px);
@@ -1475,12 +1451,14 @@ onBeforeUnmount(() => {
 .internal-modal-preview-leave-active {
   transition: opacity 0.3s ease;
 }
+
 .internal-modal-confirm-enter-from,
 .internal-modal-confirm-leave-to,
 .internal-modal-preview-enter-from,
 .internal-modal-preview-leave-to {
   opacity: 0;
 }
+
 .internal-modal-confirm-enter-active .bg-white,
 .internal-modal-confirm-leave-active .bg-white,
 .internal-modal-preview-enter-active .bg-white,
@@ -1488,6 +1466,7 @@ onBeforeUnmount(() => {
   transition: all 0.3s ease;
   transform-origin: center;
 }
+
 .internal-modal-confirm-enter-from .bg-white,
 .internal-modal-confirm-leave-to .bg-white,
 .internal-modal-preview-enter-from .bg-white,
@@ -1517,38 +1496,49 @@ onBeforeUnmount(() => {
   color: #dc2626;
   margin-left: 2px;
 }
+
 .form-input,
 .form-select,
 .form-textarea {
   @apply block w-full rounded-lg border-gray-300 shadow-sm px-4 py-2.5 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 disabled:bg-gray-100 disabled:cursor-not-allowed transition-all duration-150;
 }
+
 .form-textarea {
   @apply resize-none;
 }
+
 .form-select {
   @apply pr-10;
 }
+
 .form-checkbox {
   @apply h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded;
 }
+
 .form-file-input {
   @apply block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500;
 }
+
 .form-error {
   @apply text-red-600 text-xs mt-1;
 }
+
 .form-label {
   @apply block text-sm font-medium text-gray-700 mb-1.5;
 }
+
 .btn {
   @apply inline-flex items-center justify-center rounded-lg border py-2.5 px-5 text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed;
 }
+
 .btn-primary {
   @apply border-transparent bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500;
 }
+
 .btn-secondary {
   @apply border-transparent bg-purple-600 text-white hover:bg-purple-700 focus:ring-purple-500;
 }
+
 .btn-outline {
   @apply border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-indigo-500;
 }
