@@ -223,7 +223,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import {
   ChevronUp,
   ChevronDown,
@@ -371,6 +371,10 @@ const resetFilters = () => {
   selectedStatus.value = ''
   handleSearch()
 }
+onMounted(() => {
+  console.log(props.applications);
+  
+})
 
 // Calculate pagination numbers
 const totalPages = computed(() => Math.ceil(props.totalResults / props.perPage))
