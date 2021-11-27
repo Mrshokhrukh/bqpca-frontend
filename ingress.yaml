@@ -11,10 +11,10 @@ spec:
   ingressClassName: nginx
   tls:
   - hosts:
-    - bqpcastaging.systems.gov.bt
+    - bqpca.systems.gov.bt
     secretName: bqpca-tls-secret
   rules:
-  - host: bqpcastaging.systems.gov.bt
+  - host: bqpca.systems.gov.bt
     http:
       paths:
       - path: /
