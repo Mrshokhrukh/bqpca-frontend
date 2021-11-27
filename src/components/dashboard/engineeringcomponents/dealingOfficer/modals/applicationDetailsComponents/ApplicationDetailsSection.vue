@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden max-w-4xl mx-auto"
-  >
+  <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden max-w-4xl mx-auto">
     <div class="p-6 space-y-6">
       <div class="flex items-center justify-between border-b pb-4">
         <div class="flex items-center space-x-3">
@@ -10,29 +8,18 @@
         </div>
         <div class="flex items-center space-x-2">
           <template v-if="!isEditing">
-            <button
-              @click="startEditing"
-              class="btn-icon-subtle hover:bg-blue-50 transition-colors"
-              title="Edit Details"
-            >
+            <button @click="startEditing" class="btn-icon-subtle hover:bg-blue-50 transition-colors"
+              title="Edit Details">
               <Pencil class="h-5 w-5 text-blue-600 hover:text-blue-800" />
             </button>
           </template>
           <template v-else>
-            <button
-              @click="saveChanges"
-              class="btn-icon-success hover:bg-green-50 transition-colors"
-              title="Save Changes"
-              :disabled="!validationState.isValid || isSaving"
-            >
+            <button @click="saveChanges" class="btn-icon-success hover:bg-green-50 transition-colors"
+              title="Save Changes" :disabled="!validationState.isValid || isSaving">
               <Check class="h-5 w-5 text-green-600 hover:text-green-800" />
             </button>
-            <button
-              @click="cancelEditing"
-              class="btn-icon-subtle hover:bg-red-50 transition-colors"
-              title="Cancel Editing"
-              :disabled="isSaving"
-            >
+            <button @click="cancelEditing" class="btn-icon-subtle hover:bg-red-50 transition-colors"
+              title="Cancel Editing" :disabled="isSaving">
               <X class="h-5 w-5 text-gray-600 hover:text-red-800" />
             </button>
           </template>
@@ -41,26 +28,10 @@
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="grid grid-cols-2 gap-4">
-          <detail-card
-            icon="FileCheck"
-            label="Registration Type"
-            :value="application.registration_type_name"
-          />
-          <detail-card
-            icon="Hash"
-            label="Registration Number"
-            :value="application.registration_no"
-          />
-          <detail-card
-            icon="Calendar"
-            label="Registration Date"
-            :value="formatDate(application.registration_date)"
-          />
-          <detail-card
-            icon="Clock"
-            label="Expiry Date"
-            :value="formatDate(application.expiry_date)"
-          />
+          <detail-card icon="FileCheck" label="Registration Type" :value="application.registration_type_name" />
+          <detail-card icon="Hash" label="Registration Number" :value="application.registration_no" />
+          <detail-card icon="Calendar" label="Registration Date" :value="formatDate(application.registration_date)" />
+          <detail-card icon="Clock" label="Expiry Date" :value="formatDate(application.expiry_date)" />
         </div>
 
         <div class="space-y-4">
@@ -69,17 +40,12 @@
               Select Qualification to Edit
             </label>
             <template v-if="isEditing">
-              <select
-                v-model="selectedQualificationId"
+              <select v-model="selectedQualificationId"
                 class="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 ease-in-out"
-                :disabled="isSaving"
-              >
+                :disabled="isSaving">
                 <option value="" disabled>Select a Qualification</option>
-                <option
-                  v-for="qualification in application.user_qualifications"
-                  :key="qualification.id"
-                  :value="qualification.id"
-                >
+                <option v-for="qualification in application.user_qualifications" :key="qualification.id"
+                  :value="qualification.id">
                   {{ qualification.qualification_name_display }}
                 </option>
               </select>
@@ -96,9 +62,7 @@
           </div>
 
           <div class="bg-gray-50 rounded-lg p-4">
-            <button
-              @click="togglePrimaryQualification"
-              :disabled="!selectedQualification || !isEditing || isSaving"
+            <button @click="togglePrimaryQualification" :disabled="!selectedQualification || !isEditing || isSaving"
               :class="{
                 'bg-blue-500 text-white':
                   selectedQualification && selectedQualification.is_primary_qualification,
@@ -108,8 +72,7 @@
                   !selectedQualification.is_primary_qualification,
                 'opacity-50 cursor-not-allowed': !selectedQualification || !isEditing || isSaving,
               }"
-              class="w-full px-4 py-2 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 hover:shadow-md"
-            >
+              class="w-full px-4 py-2 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 hover:shadow-md">
               {{
                 selectedQualification && selectedQualification.is_primary_qualification
                   ? 'Unmark as Primary'
@@ -125,16 +88,13 @@
           <div class="flex flex-col space-y-1">
             <label class="block text-sm font-medium text-gray-600">
               Personnel Category
-              <span v-if="validationState.missingFields.includes('Personnel Category')" class="text-red-500 font-bold ml-1">*</span>
+              <span v-if="validationState.missingFields.includes('Personnel Category')"
+                class="text-red-500 font-bold ml-1">*</span>
             </label>
             <div class="text-sm">
               <template v-if="isEditing">
-                <select
-                  v-model="editableData.personnel_category"
-                  class="form-select"
-                  :class="{'form-invalid': isEditing && !editableData.personnel_category}"
-                  :disabled="isSaving"
-                >
+                <select v-model="editableData.personnel_category" class="form-select"
+                  :class="{ 'form-invalid': isEditing && !editableData.personnel_category }" :disabled="isSaving">
                   <option value="" disabled>Select Category</option>
                   <option v-for="category in personnelCategories" :key="category.id" :value="category.id">
                     {{ category.category_name }}
@@ -152,48 +112,45 @@
           <div class="flex flex-col space-y-1">
             <label class="block text-sm font-medium text-gray-600">
               Personnel Subcategory
-              <span v-if="validationState.missingFields.includes('Personnel Subcategory')" class="text-red-500 font-bold ml-1">*</span>
+              <span v-if="validationState.missingFields.includes('Personnel Subcategory')"
+                class="text-red-500 font-bold ml-1">*</span>
             </label>
             <div class="text-sm">
               <template v-if="isEditing">
-                 <select
-                   v-model="editableData.personnel_sub_category"
-                   class="form-select"
-                   :class="{'form-invalid': isEditing && !editableData.personnel_sub_category}"
-                   :disabled="isSaving"
-                 >
-                  <option value="" disabled>Select Subcategory</option>
-                  <option v-for="subcategory in personnelSubcategories" :key="subcategory.id" :value="subcategory.id">
+                <select v-model="editableData.personnel_sub_category" class="form-select"
+                  :class="{ 'form-invalid': isEditing && !editableData.personnel_sub_category }"
+                  :disabled="isSaving || !editableData.personnel_category">
+                  <option value="" disabled>
+                    {{ !editableData.personnel_category ? 'Please select category first' : 'Select Subcategory' }}
+                  </option>
+                  <option v-for="subcategory in filteredSubcategories" :key="subcategory.id" :value="subcategory.id"
+                    v-if="editableData.personnel_category">
                     {{ subcategory.sub_category_name }}
                   </option>
                 </select>
               </template>
               <template v-else>
-                 <p class="px-3 py-2 rounded-lg bg-gray-50">
+                <p class="px-3 py-2 rounded-lg bg-gray-50">
                   {{ selectedSubcategoryName || 'N/A' }}
                 </p>
               </template>
             </div>
           </div>
 
-           <div class="flex flex-col space-y-1">
+          <div class="flex flex-col space-y-1">
             <label class="block text-sm font-medium text-gray-600">
               Practice Address
-              <span v-if="validationState.missingFields.includes('Practice Address')" class="text-red-500 font-bold ml-1">*</span>
+              <span v-if="validationState.missingFields.includes('Practice Address')"
+                class="text-red-500 font-bold ml-1">*</span>
             </label>
             <div class="text-sm">
               <template v-if="isEditing">
-                 <input
-                  type="text"
-                  v-model="editableData.practice_address"
-                  class="form-input"
-                  :class="{'form-invalid': isEditing && validationState.missingFields.includes('Practice Address')}"
-                  placeholder="Enter Practice Address"
-                  :disabled="isSaving"
-                />
+                <input type="text" v-model="editableData.practice_address" class="form-input"
+                  :class="{ 'form-invalid': isEditing && validationState.missingFields.includes('Practice Address') }"
+                  placeholder="Enter Practice Address" :disabled="isSaving" />
               </template>
               <template v-else>
-                 <p class="px-3 py-2 rounded-lg bg-gray-50">
+                <p class="px-3 py-2 rounded-lg bg-gray-50">
                   {{ selectedQualification.practice_address || 'N/A' }}
                 </p>
               </template>
@@ -207,12 +164,8 @@
             </label>
             <div class="text-sm">
               <template v-if="isEditing">
-                 <select
-                   v-model="editableData.select_sector"
-                   class="form-select"
-                   :class="{'form-invalid': isEditing && !editableData.select_sector}"
-                   :disabled="isSaving"
-                 >
+                <select v-model="editableData.select_sector" class="form-select"
+                  :class="{ 'form-invalid': isEditing && !editableData.select_sector }" :disabled="isSaving">
                   <option value="" disabled>Select Sector</option>
                   <option v-for="sector in sectors" :key="sector.id" :value="sector.id">
                     {{ sector.name }}
@@ -220,7 +173,7 @@
                 </select>
               </template>
               <template v-else>
-                 <p class="px-3 py-2 rounded-lg bg-gray-50">
+                <p class="px-3 py-2 rounded-lg bg-gray-50">
                   {{ selectedSectorName || 'N/A' }}
                 </p>
               </template>
@@ -229,18 +182,18 @@
         </div>
       </template>
 
-      <div
-        v-if="errorMessage || (isEditing && !validationState.isValid)"
-        class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-center space-x-2"
-      >
+      <div v-if="errorMessage || (isEditing && !validationState.isValid)"
+        class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-center space-x-2">
         <AlertTriangle class="h-5 w-5 text-red-500" />
         <span>
-          {{ errorMessage || (isEditing && !validationState.isValid ? `Cannot save: Please fill all required fields (${validationState.missingFields.join(', ')})` : '') }}
+          {{ errorMessage || (isEditing && !validationState.isValid ? `Cannot save: Please fill all required fields
+          (${validationState.missingFields.join(', ')})` : '') }}
         </span>
       </div>
 
       <!-- Loading indicator during save -->
-      <div v-if="isSaving" class="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-lg flex items-center space-x-2">
+      <div v-if="isSaving"
+        class="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-lg flex items-center space-x-2">
         <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
         <span>Saving changes...</span>
       </div>
@@ -249,7 +202,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, nextTick } from 'vue'
+import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import { FileText, Pencil, Check, X, AlertTriangle } from 'lucide-vue-next'
 import apiServices from '@/services/services'
 import isEqual from 'lodash/isEqual'
@@ -276,6 +229,21 @@ const toast = useToast()
 const selectedQualification = computed(() => {
   if (!selectedQualificationId.value) return null
   return props.application.user_qualifications.find((q) => q.id === selectedQualificationId.value)
+})
+
+//For debug 
+// onMounted(() => {
+//   console.log(props.personnelCategories);
+//   console.log(props.personnelSubcategories);
+
+// })
+
+const filteredSubcategories = computed(() => {
+  const selectedCatId = editableData.value.personnel_category
+  if (!selectedCatId) return []
+  return props.personnelSubcategories.filter(
+    sub => String(sub.category_name) === String(selectedCatId)
+  )
 })
 
 const validationState = computed(() => {
@@ -527,17 +495,21 @@ const formatDate = (date) => {
 .btn-icon-subtle {
   @apply p-2 rounded-full hover:bg-gray-100 transition-colors;
 }
+
 .btn-icon-success {
   @apply p-2 rounded-full hover:bg-green-100 transition-colors;
   @apply disabled:opacity-50 disabled:cursor-not-allowed;
 }
+
 .form-select,
 .form-input {
   @apply w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 ease-in-out;
 }
+
 .form-invalid {
   @apply border-red-500 ring-1 ring-red-500 focus:border-red-500 focus:ring-red-500;
 }
+
 .form-select:disabled,
 .form-input:disabled {
   @apply bg-gray-100 cursor-not-allowed opacity-50;
