@@ -90,7 +90,7 @@
                         Semester {{ module.semester }}
                       </div>
                       <div class="sub-text">
-                        {{ module.semisterDescription || 'No description' }}
+                        {{ module.description || 'No description' }}
                       </div>
                     </div>
                   </td>
@@ -226,7 +226,6 @@ const groupedData = computed(() => {
         name: moduleInfo.module_master?.module_name || 'N/A',
         code: moduleInfo.module_master?.module_code || 'N/A',
         semester: moduleInfo.semester?.semester_number || 'N/A',
-        semisterDescription: moduleInfo.semester?.name || 'N/A',
         description: moduleInfo.module_master?.description || '',
         academicYear: moduleInfo.semester?.academic_year || 'N/A',
         studentCount: moduleInfo.student_count ?? 0,
