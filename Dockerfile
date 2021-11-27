@@ -1,39 +1,31 @@
-# Dockerfile
-
-# --- Stage 1: Build Stage ---
-# Use the official Bun image to install dependencies and build the Vue app
-FROM oven/bun:1.2.19 AS builder
-
-# Set the working directory inside the container
+# Stage 1: Build
+FROM oven/bun:latest AS build
 WORKDIR /app
 
-# Copy package.json, bun.lockb, and tsconfig.json first to leverage Docker's layer caching.
-# This way, dependencies are only re-installed if these files change.
-COPY package.json bun.lock ./
-COPY tsconfig.json* ./
+# Install system dependencies
+RUN apt-get update && \
+    apt-get install -y unzip && \
+    rm -rf /var/lib/apt/lists/*
 
-# Install dependencies
-RUN bun install --frozen-lockfile
-
-# Copy the rest of the application source code
+COPY package*.json ./ 
+RUN bun install
 COPY . .
-
-# Build the application for production
 RUN bun run build
 
+# Stage 2: Serve
+FROM nginx:alpine
 
-# --- Stage 2: Production Stage ---
-# Use a lightweight and secure Nginx image to serve the built files
-FROM nginx:1.27-alpine-slim
+# 1. Copy the build output
+COPY --from=build /app/dist /usr/share/nginx/html
 
-# Copy the custom Nginx configuration file
+# 2. Copy the optimized Nginx config
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Copy the built application from the 'builder' stage to Nginx's web root
-COPY --from=builder /app/dist /usr/share/nginx/html
+# 3. CRITICAL FIX: Change ownership and permissions
+#    This ensures the 'nginx' user can actually read the files
+USER root
+RUN chown -R nginx:nginx /usr/share/nginx/html && \
+    chmod -R 755 /usr/share/nginx/html
 
-# Expose port 80 to the outside world
 EXPOSE 80
-
-# The command to start the Nginx server when the container launches
 CMD ["nginx", "-g", "daemon off;"]
