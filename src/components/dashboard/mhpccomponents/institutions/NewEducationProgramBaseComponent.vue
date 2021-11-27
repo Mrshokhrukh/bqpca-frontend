@@ -98,8 +98,8 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 border-b border-gray-200">
                   <div class="text-xs text-gray-500">
-                    {{ group.semesterName || 'N/A' }} <br />
-                    {{ group.moduleDescription || 'N/A' }}
+                    Semister {{ group.semisterNumber || 'N/A' }} <br />
+                    {{ group.semesterName || 'N/A' }}
                   </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 border-b border-gray-200">
@@ -141,11 +141,11 @@
                       :disabled="isPerformingAction" title="View Program Details">
                       <Eye class="h-4 w-4" />
                     </button>
-                    <button @click="openEditModal(group.originalAssignments)"
+                    <!-- <button @click="openEditModal(group.originalAssignments)"
                       class="p-2 text-indigo-600 hover:bg-indigo-100 rounded-md disabled:opacity-50"
                       :disabled="isPerformingAction" title="Edit Assignment">
                       <Pencil class="h-4 w-4" />
-                    </button>
+                    </button> -->
                     <button @click="confirmDeleteAssignment(group.originalAssignments)"
                       class="p-2 text-red-600 hover:bg-red-100 rounded-md disabled:opacity-50"
                       :disabled="isPerformingAction" title="Delete Assignment">
@@ -168,7 +168,7 @@
 
     <NewEducationProgramViewApplicationModal v-if="isViewModalOpen && applicationForViewing"
       :isVisible="isViewModalOpen" :application="applicationForViewing"
-      :teachingCenterNameProp="applicationForViewing.teaching_center_details?.name_of_teaching_center"
+      :teachingCenterNameProp="applicationForViewing.teaching_center?.center_name"
       @close="closeViewApplicationModal" />
     <div v-if="showConfirmModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
       <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
@@ -261,6 +261,7 @@ const groupedDataByProgram = computed(() => {
         moduleId: moduleId,
         specificProgramTitle: programOffered.specific_program_title,
         moduleName: assignment.module.module_master?.module_name,
+        semisterNumber: assignment.module.semester?.semester_number,
         semesterName: assignment.module.semester?.name,
         moduleDescription: assignment.module.module_master?.description || '',
         academicYear: assignment.module.semester?.academic_year,
@@ -304,8 +305,8 @@ const removeNotification = (id) => {
   }
 };
 
-const openViewApplicationModal = (assignment) => {
-  if (assignment.module?.semester?.program_offered) {
+const openViewApplicationModal = (assignment) => {  
+  if (assignment.module?.semester?.program_offered) {    
     applicationForViewing.value = assignment.module.semester.program_offered;
     isViewModalOpen.value = true;
   } else {
@@ -467,6 +468,7 @@ const executeDelete = async () => {
 
 onMounted(async () => {
   await fetchInstitute();
+  
   if (instituteId.value) {
     await Promise.all([fetchAssignments(), fetchFacultyList()]);
   }
