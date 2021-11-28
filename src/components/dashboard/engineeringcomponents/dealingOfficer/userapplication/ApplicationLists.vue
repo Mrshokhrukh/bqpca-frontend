@@ -23,6 +23,9 @@
                 Status
               </th>
               <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                Payment Status
+              </th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Date
               </th>
               <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
@@ -51,6 +54,11 @@
               <td class="px-6 py-4 whitespace-nowrap">
                 <span :class="getStatusClasses(app)">
                   {{ getStatus(app) }}
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span :class="getStatusClasses(app)">
+                  {{ getPaymentStatus(app) }}
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -227,35 +235,49 @@ const paginationEnd = computed(() => {
 })
 
 const getStatus = (app) => {
-  if (!Array.isArray(app.user_qualifications) || app.user_qualifications.length === 0) {
-    return 'Pending'
-  }
+  // console.log(app);
+  const primary_qualification = app.user_qualifications.find((q) => q.is_primary_qualification === true);
+  // console.log(primary_qualification);
 
-  for (const qualification of app.user_qualifications) {
-    const { application_review_status, physical_review_status, endorsement_decision } =
-      qualification
 
-    if (
-      application_review_status === 'Regretted' ||
-      physical_review_status === 'Regretted' ||
-      endorsement_decision === 'Regretted'
-    ) {
-      return 'Regretted'
-    }
-  }
+  // if (!Array.isArray(app.user_qualifications) || app.user_qualifications.length === 0) {
+  //   return 'Pending'
+  // }
 
-  const allApproved = app.user_qualifications.every(
-    (qualification) =>
-      qualification.application_review_status === 'Approved' &&
-      qualification.physical_review_status === 'Approved' &&
-      qualification.endorsement_decision === 'Approved',
-  )
+  // for (const qualification of app.user_qualifications) {
+  //   const { application_review_status, physical_review_status, endorsement_decision } =
+  //     qualification
+
+  //   if (
+  //     application_review_status === 'Regretted' ||
+  //     physical_review_status === 'Regretted' ||
+  //     endorsement_decision === 'Regretted'
+  //   ) {
+  //     return 'Regretted'
+  //   }
+  // }
+
+  const allApproved =
+    primary_qualification.application_review_status === 'Approved' &&
+    primary_qualification.physical_review_status === 'Approved' &&
+    primary_qualification.endorsement_decision === 'Approved'
+
+  console.log(allApproved);
+
+
+
 
   if (allApproved) {
     return 'Approved'
   }
 
   return 'Pending'
+}
+
+const getPaymentStatus = (app) => {
+  const primary_qualification = app.user_qualifications.find((q) => q.is_primary_qualification === true);
+
+  return primary_qualification.payment_status
 }
 
 const getStatusClasses = (app) => {
