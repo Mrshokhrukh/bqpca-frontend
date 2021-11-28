@@ -724,15 +724,13 @@ const validation = reactive({
       if (!value) return 'Country is required'
       return null
     },
-    // CHANGE: Updated validation rule for degree_certificate
     degree_certificate: (value) => {
-      if (!value && props.mode === 'create' && !props.initialData?.degree_certificate)
+      if (form.from_in_country === false && !value && props.mode === 'create' && !props.initialData?.degree_certificate)
         return 'Degree certificate is required'
       return null
     },
-    // CHANGE: Updated validation rule for academic_transcript
     academic_transcript: (value) => {
-      if (!value && props.mode === 'create' && !props.initialData?.academic_transcript)
+      if (form.from_in_country === false && !value && props.mode === 'create' && !props.initialData?.academic_transcript)
         return 'Academic transcript is required'
       return null
     },

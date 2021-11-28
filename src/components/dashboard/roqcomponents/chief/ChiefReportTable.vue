@@ -422,7 +422,7 @@ const fetchApplications = async () => {
   loading.value = true
   try {
     // Assuming this endpoint returns *all* applications relevant to the chief
-    const response = await apiService.getMhpcNewApplications() // Verify endpoint returns necessary data
+    const response = await apiService.getRecognitionOfQualifications({ page_size: 1000 }) // Verify endpoint returns necessary data
 
     if (response?.data?.results && Array.isArray(response.data.results)) {
       applications.value = response.data.results
