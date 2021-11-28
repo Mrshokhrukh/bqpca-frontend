@@ -647,6 +647,9 @@ const handleSubmitActual = async () => {
     isSubmitting.value = false;
     return;
   }
+  
+  // Store the critical payment_id_gateway before loadExistingApplication potentially overwrites it.
+  const paymentGatewayId = application.value.payment_id_gateway;
 
   try {
     // Step 1: Save the application data to our backend first
@@ -675,7 +678,7 @@ const handleSubmitActual = async () => {
     const formattedFeeAmount = feeAmount.toFixed(2);
     const paymentInitiationFormData = new FormData();
     
-    paymentInitiationFormData.append('refNo', application.value.payment_id_gateway);
+    paymentInitiationFormData.append('refNo', paymentGatewayId);
     paymentInitiationFormData.append('serviceCode', '100194');
     paymentInitiationFormData.append('taxPayerName', application.value.institute_profile_name_display);
     paymentInitiationFormData.append('taxPayerNo', user.cid);
@@ -686,7 +689,7 @@ const handleSubmitActual = async () => {
     paymentInitiationFormData.append('mobileNo', user.contact_number);
     paymentInitiationFormData.append('payerEmail', user.email);
     paymentInitiationFormData.append('user', user.id);
-    paymentInitiationFormData.append('application_no', application.value.payment_id_gateway);
+    paymentInitiationFormData.append('application_no', paymentGatewayId);
     paymentInitiationFormData.append('app_type', 'accreditation_institutions_fee');
 
     try {

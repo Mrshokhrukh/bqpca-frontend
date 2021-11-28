@@ -1524,7 +1524,7 @@ onBeforeUnmount(() => {
 }
 
 .form-label {
-  @apply block text-sm font-medium text-gray-700 mb-1.5;
+  @apply flex block text-sm font-medium text-gray-700 mb-1.5 gap-1;
 }
 
 .btn {
