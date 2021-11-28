@@ -648,7 +648,7 @@ const handleSubmitActual = async () => {
   errors.value = {};
   let redirectUrl = null;
 
-  // 1. OPEN NEW WINDOW IMMEDIATELY (Before API call)
+  // 1. OPEN NEW WINDOW IMMEDIATELY
   const paymentWindow = window.open('', '_blank');
 
   if (paymentWindow) {
@@ -658,29 +658,20 @@ const handleSubmitActual = async () => {
           <body style="font-family: sans-serif; text-align: center; padding-top: 50px; background-color: #f9fafb;">
             <h2 style="color: #2563eb;">Connecting to BIRMS...</h2>
             <p>Please wait while we redirect you to the secure payment gateway.</p>
-            <p style="color: #6b7280; font-size: 0.9em;">Do not close this window.</p>
           </body>
         </html>
       `);
   } else {
-      toast.error("Popup blocker prevented opening the payment window. Please allow popups for this site.");
+      toast.error("Popup blocker prevented payment.");
       isSubmitting.value = false;
       return;
   }
 
   const user = authStore.user;
-
-  if (!user || !user.contact_number || !user.email || !user.cid || !user.id) {
-    if (paymentWindow) paymentWindow.close();
-    toast.error('Missing user information. Please log in again or update your profile.');
-    isSubmitting.value = false;
-    return;
-  }
-
   const paymentGatewayId = application.value.payment_id_gateway;
 
   try {
-    // Step 1: Save application state to backend
+    // Step 1: Save application state
     const applicationFormData = prepareApplicationFormData();
     applicationFormData.set('status', 'pending_payment');
 
@@ -691,13 +682,22 @@ const handleSubmitActual = async () => {
       appResponse = await apiService.createAccreditationApplication(applicationFormData);
     }
 
+    // RELOAD to ensure we have the latest ID
     await loadExistingApplication(appResponse.data.id);
+    const appId = application.value.id; // Get the ID (e.g., 62)
 
-    // Step 2: Prepare Payment Payload for Gateway
+    // Step 2: Prepare Payment Payload
     const feeAmount = 1000.0;
     const paymentInitiationFormData = new FormData();
 
+    // The Transaction Reference
     paymentInitiationFormData.append('refNo', paymentGatewayId);
+
+    // --- THE FIX IS HERE ---
+    // We send the Database ID (62) so the backend can find the record later
+    paymentInitiationFormData.append('application_no', appId);
+    // -----------------------
+
     paymentInitiationFormData.append('serviceCode', '100194');
     paymentInitiationFormData.append('taxPayerName', application.value.institute_profile_name_display);
     paymentInitiationFormData.append('taxPayerNo', user.cid);
@@ -707,35 +707,22 @@ const handleSubmitActual = async () => {
     paymentInitiationFormData.append('description', 'Accreditation Institutions Fee');
     paymentInitiationFormData.append('mobileNo', user.contact_number);
     paymentInitiationFormData.append('payerEmail', user.email);
-    paymentInitiationFormData.append('user', user.id);
-    paymentInitiationFormData.append('application_no', paymentGatewayId);
+    paymentInitiationFormData.append('user_id', user.id); // Note: Backend usually expects user_id, check serializer
     paymentInitiationFormData.append('app_type', 'accreditation_institutions_fee');
 
-    // *** CRITICAL FIX: Correct Backend URL for Callback ***
-    // Ensure this matches the route in payment_gateway/urls.py (r"payments")
+    // Ensure this points to the Payment Gateway ViewSet we fixed, NOT the one in accreditations
     const backendCallbackUrl = "http://localhost:8000/api/payment_gateway/payments/callback/";
     paymentInitiationFormData.append('returnUrl', backendCallbackUrl);
 
-    try {
-      const paymentResponse = await apiService.makePayment(paymentInitiationFormData);
-      if (paymentResponse.data?.content?.redirectUrl) {
-        redirectUrl = paymentResponse.data.content.redirectUrl;
-      } else {
-        throw new Error('Redirect URL not received.');
-      }
-    } catch (paymentError) {
-      if (paymentWindow) paymentWindow.close();
-      console.error('Payment API Error:', paymentError);
-      toast.error('Payment request failed. Please try again.');
-      return;
-    }
+    // Call API
+    const paymentResponse = await apiService.makePayment(paymentInitiationFormData);
 
-    // Step 3: Redirect the PRE-OPENED window to BIRMS
-    if (redirectUrl && paymentWindow) {
-        toast.success('Redirecting to BIRMS in new tab...');
-        paymentWindow.location.href = redirectUrl;
+    if (paymentResponse.data?.content?.redirectUrl) {
+      redirectUrl = paymentResponse.data.content.redirectUrl;
+      // Redirect
+      if (paymentWindow) paymentWindow.location.href = redirectUrl;
     } else {
-        if (paymentWindow) paymentWindow.close();
+      throw new Error('Redirect URL not received.');
     }
 
   } catch (error) {
@@ -747,7 +734,6 @@ const handleSubmitActual = async () => {
     submissionInitiated.value = false;
   }
 };
-
 
 const handleFinalSubmitApplication = async () => {
   errors.value = {};

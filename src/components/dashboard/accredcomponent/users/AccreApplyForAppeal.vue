@@ -279,7 +279,7 @@ const onFileChange = (event) => {
         appeal.supporting_documents = [];
         return;
     }
-    
+
     appeal.supporting_documents = files;
 };
 
@@ -339,9 +339,29 @@ const onPaymentModalClose = () => {
 const handleSubmitActual = async () => {
   let redirectUrl = null;
   const user = authStore.user;
+  isSubmitting.value = true;
+
+  // 1. OPEN NEW WINDOW IMMEDIATELY (Prevents Popup Blocker)
+  const paymentWindow = window.open('', '_blank');
+  if (paymentWindow) {
+      paymentWindow.document.write(`
+        <html>
+          <head><title>Processing Payment...</title></head>
+          <body style="font-family: sans-serif; text-align: center; padding-top: 50px; background-color: #f9fafb;">
+            <h2 style="color: #2563eb;">Connecting to Payment Gateway...</h2>
+            <p>Please wait while we redirect you.</p>
+          </body>
+        </html>
+      `);
+  } else {
+      toast.error("Popup blocker prevented payment window. Please allow popups.");
+      isSubmitting.value = false;
+      return;
+  }
 
   if (!user || !user.cid || !user.email || !user.contact_number || !user.id) {
-    toast.error("User details are missing. Cannot proceed with payment.");
+    if (paymentWindow) paymentWindow.close();
+    toast.error("User details are missing. Cannot proceed.");
     isSubmitting.value = false;
     return;
   }
@@ -364,13 +384,21 @@ const handleSubmitActual = async () => {
 
     appealFormData.set('status_appeal', 'pending_payment');
 
-    await apiService.createApplicationAppeal(appealFormData);
+    // --- KEY CHANGE 1: Capture the Response to get the ID ---
+    const response = await apiService.createApplicationAppeal(appealFormData);
+    const appealId = response.data.id; // This is the Database ID (e.g., 15)
 
-    // Step 2: Initiate payment with the gateway
+    // Step 2: Initiate payment
     const feeAmount = 1000.0;
     const paymentInitiationFormData = new FormData();
+
+    // Transaction Reference (String)
     paymentInitiationFormData.append('refNo', appeal.appeal_payment_id_gateway_ref);
-    paymentInitiationFormData.append('serviceCode', '100195'); // Correct service code for appeals
+
+    // --- KEY CHANGE 2: Send Database ID for Backend Lookup ---
+    paymentInitiationFormData.append('application_no', appealId);
+
+    paymentInitiationFormData.append('serviceCode', '100195');
     paymentInitiationFormData.append('taxPayerName', autoFilledDetails['Name of Institution']);
     paymentInitiationFormData.append('taxPayerNo', user.cid);
     paymentInitiationFormData.append('taxPayerDocumentNo', user.cid);
@@ -379,44 +407,48 @@ const handleSubmitActual = async () => {
     paymentInitiationFormData.append('description', 'Accreditation Institutions Appeal Fee');
     paymentInitiationFormData.append('mobileNo', user.contact_number);
     paymentInitiationFormData.append('payerEmail', user.email);
-    paymentInitiationFormData.append('user', user.id);
-    paymentInitiationFormData.append('application_no', appeal.appeal_payment_id_gateway_ref);
+    paymentInitiationFormData.append('user_id', user.id);
     paymentInitiationFormData.append('app_type', 'accreditation_institutions_appeal');
+
+    // --- KEY CHANGE 3: Correct Callback URL ---
+    const backendCallbackUrl = "http://localhost:8000/api/payments/callback/";
+    paymentInitiationFormData.append('returnUrl', backendCallbackUrl);
 
     try {
         const paymentResponse = await apiService.makePayment(paymentInitiationFormData);
         if (paymentResponse.data?.content?.redirectUrl) {
             redirectUrl = paymentResponse.data.content.redirectUrl;
         } else {
-            throw new Error('Redirect URL not received from payment gateway.');
+            throw new Error('Redirect URL not received.');
         }
     } catch (paymentError) {
-        console.error('Error making payment:', paymentError.response?.data || paymentError);
-        const errorDetail = paymentError.response?.data ? JSON.stringify(paymentError.response.data) : paymentError.message;
-        toast.error('Appeal saved, but payment request failed: ' + errorDetail + '. You can try paying again later.');
-        return;
+        if (paymentWindow) paymentWindow.close();
+        console.error('Payment API Error:', paymentError);
+        toast.error('Payment request failed. Please try again.');
+        return; // Stop here
     }
 
-    // Step 3: Success! Open payment page and clean up
-    toast.success(
-      'Appeal submitted successfully, redirecting for payment. A link has also been sent to your email.',
-      { timeout: 8000 }
-    );
-    if (redirectUrl) {
-        window.open(redirectUrl, '_blank');
+    // Step 3: Redirect the pre-opened window
+    if (redirectUrl && paymentWindow) {
+        toast.success('Redirecting to payment...');
+        paymentWindow.location.href = redirectUrl;
     }
 
+    // Clean up draft
     if (draftKey.value) {
         localStorage.removeItem(draftKey.value);
     }
+
+    // Close modal immediately (User finishes on Gateway)
     emit('appeal-submitted');
     closeModal();
 
   } catch (error) {
-    const errorMsg = error.response?.data?.detail || 'An unexpected error occurred while submitting the appeal.';
+    if (paymentWindow) paymentWindow.close();
+    const errorMsg = error.response?.data?.detail || 'An error occurred while submitting.';
     toast.error(errorMsg);
+    // Reset status on failure
     appeal.status_appeal = 'draft';
-    appeal.is_appeal_fee_paid = false;
   } finally {
     isSubmitting.value = false;
     submissionInitiated.value = false;
