@@ -41,7 +41,7 @@
                   {{ renewal.institute.name_of_institution }}</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{
-                renewal.applicant_name ?? "N/A" }}</td>
+                renewal.institute?.full_name ?? "N/A" }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatDate(renewal.created_at) }}</td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span :class="getStatusClass(renewal.renewal_status)">
@@ -49,7 +49,8 @@
                   {{ renewal.renewal_status }}
                 </span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatDate(renewal.valid_till) }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatDate(renewal.institute?.valid_till)
+                }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                 <div class="flex space-x-3">
                   <button @click="openModal(renewal)" :disabled="renewal.renewal_status !== 'PENDING'"
@@ -70,7 +71,7 @@
     </div>
 
     <InstituteRenewalApplicationDetailsModal :is-open="isModalOpen" :application-details="selectedRenewal"
-      @close-modal="closeModal" @application-updated="fetchRenewals" />
+      @close-modal="closeModal" @application-updated="onApplicationUpdated" />
   </div>
 </template>
 
@@ -85,6 +86,12 @@ const renewals = ref([])
 const isLoading = ref(true)
 const isModalOpen = ref(false)
 const selectedRenewal = ref(null)
+
+const onApplicationUpdated = async () => {
+  await fetchRenewals()
+  closeModal()
+}
+
 
 onMounted(async () => {
   await fetchRenewals()
@@ -129,10 +136,7 @@ const closeModal = () => {
   selectedRenewal.value = null
 }
 
-const formatDate = (dateString) => {
-  if (!dateString) return 'N/A'
-  return new Date(dateString).toLocaleDateString()
-}
+
 
 const getStatusClass = (status) => {
   switch (status) {
@@ -151,5 +155,14 @@ const getStatusClass = (status) => {
 const getPendingCount = () => {
   if (!Array.isArray(renewals.value)) return 0
   return renewals.value.filter((renewal) => renewal.renewal_status === 'PENDING').length
+}
+
+const formatDate = (date) => {
+  if (!date) return 'N/A'
+  return new Date(date).toLocaleDateString('en-GB', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  })
 }
 </script>

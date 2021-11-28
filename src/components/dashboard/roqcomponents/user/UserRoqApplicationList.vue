@@ -172,8 +172,8 @@ const handleApplicationSubmitted = async (newApplication) => {
 const loadData = async () => {
   loading.value = true;
   try {
-    const response = await apiService.getRecognitionOfQualification(user.cid);
-    applications.value = response.data;
+    const response = await apiService.getRecognitionOfQualifications({ cid: user.cid });
+    applications.value = response.data.results || [];
   } catch (error) {
     console.error('Error loading data:', error);
     applications.value = [];

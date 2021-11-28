@@ -312,6 +312,9 @@ const fetchTeachingCenters = async () => {
   teachingCenters.value = []
   try {
     const response = await apiServices.getMhpcTeachingCenters()
+
+    // console.log(response);
+    
     let applicationsData =
       response?.data?.results || response?.data || response?.results || response || []
 

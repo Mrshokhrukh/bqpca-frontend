@@ -154,13 +154,13 @@
                         class="text-sm text-blue-600 hover:underline block p-2">{{ application.email_address || 'N/A'
                         }}</a>
                     </div>
-                    <div>
+                    <!-- <div>
                       <label class="block text-sm font-medium text-gray-500 mb-1">Address</label>
                       <input v-if="isEditing" type="text" v-model="editableApplication.address" class="modal-input" />
                       <span v-else class="modal-display-text">{{
                         application.address || 'N/A'
                       }}</span>
-                    </div>
+                    </div> -->
                   </div>
                 </div>
 
@@ -467,6 +467,14 @@ const initializeEditableData = () => {
   editableApplication.endorsement_decision = props.application.endorsement_decision || 'Pending'
   editableApplication.endorsement_remark = props.application.endorsement_remark || ''
 }
+
+
+
+const checkIsAllApproved = (app) => {
+  if (app.endorsement_decision == 'Approved' && app.is_payment_complete && app.review_status == 'Approved') return true
+  return false
+}
+
 
 // Enter edit mode
 const enterEditMode = () => {

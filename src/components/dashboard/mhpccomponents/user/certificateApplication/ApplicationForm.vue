@@ -345,8 +345,8 @@
             </div>
 
             <div :class="localFormData.qualification_name === 'OTHERS'
-                ? 'col-span-2 sm:col-span-1'
-                : 'col-span-1'
+              ? 'col-span-2 sm:col-span-1'
+              : 'col-span-1'
               ">
               <label class="block text-sm font-medium text-gray-700 required">Institute/University</label>
               <select v-model="localFormData.institute"
@@ -363,8 +363,8 @@
             </div>
 
             <div :class="localFormData.qualification_name === 'OTHERS'
-                ? 'col-span-2 sm:col-span-1'
-                : 'col-span-1'
+              ? 'col-span-2 sm:col-span-1'
+              : 'col-span-1'
               ">
               <label class="block text-sm font-medium text-gray-700 required">Year of Completion (YYYY-MM)</label>
               <input type="month" v-model="localFormData.year_of_completion"
@@ -1230,9 +1230,9 @@ const handleSubmitActual = async () => {
     supportingDocuments.value.forEach((doc, index) => {
       if (doc.type && doc.files.length > 0) {
         doc.files.forEach((file) => {
-          qualificationFormData.append(`attachments-${index}-file`, file, file.name)
+          qualificationFormData.append('user_qualification_attachment_files', file, file.name)
+          qualificationFormData.append('user_qualification_attachment_file_types', doc.type)
         })
-        qualificationFormData.append(`attachments-${index}-file_type`, doc.type)
       }
     })
 

@@ -417,9 +417,10 @@ const handleNewProgramPaymentCompleted = async (paymentData) => {
     }
     toast.dismiss(loadingToast);
 
-    await apiServices.recordMhpcProgramPayment(appToPay.id, {
-      payment_id: paymentId,
-    });
+    // paymentsuccesfull api should be called from web hook handler not frontend 
+    // await apiServices.recordMhpcProgramPayment(appToPay.id, {
+    //   payment_id: paymentId,
+    // });
 
     toast.success(`Payment initiated successfully. Redirecting for payment completion. A link has also been sent to your email.`, { timeout: 8000 });
 

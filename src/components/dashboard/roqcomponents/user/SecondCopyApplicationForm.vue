@@ -178,41 +178,41 @@
             3. Updated Personal Information
           </h3>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <InputField label="CID No." v-model="form.cid_no" :readonly="isFieldLocked('cid_no')" />
+            <InputField label="CID No." v-model="form.cid_no" readonly />
             <InputField
               label="Full Name"
               v-model="form.applicants_name"
-              :readonly="isFieldLocked('applicants_name')"
+              readonly
             />
             <InputField
               label="Date of Birth"
               v-model="form.date_of_birth"
-              :readonly="isFieldLocked('date_of_birth')"
+              readonly
             />
             <InputField
               label="Contact Number"
               v-model="form.contact_no"
-              :readonly="isFieldLocked('contact_no')"
+              readonly
               required
             />
             <InputField
               label="Email Address"
               v-model="form.email_address"
               type="email"
-              :readonly="isFieldLocked('email_address')"
+              readonly
               required
             />
-            <InputField label="Gender" v-model="form.gender" :readonly="isFieldLocked('gender')" />
+            <InputField label="Gender" v-model="form.gender" readonly />
             <InputField
               label="Dzongkhag"
               v-model="form.dzongkhag"
-              :readonly="isFieldLocked('dzongkhag')"
+              readonly
             />
-            <InputField label="Gewog" v-model="form.gewog" :readonly="isFieldLocked('gewog')" />
+            <InputField label="Gewog" v-model="form.gewog" readonly />
             <InputField
               label="Village"
               v-model="form.village"
-              :readonly="isFieldLocked('village')"
+              readonly
             />
           </div>
         </div>
@@ -225,25 +225,25 @@
             <InputField
               label="Course Title"
               v-model="form.course_title"
-              :readonly="isFieldLocked('course_title')"
+              readonly
               required
             />
             <InputField
               label="Name of Institute"
               v-model="form.name_of_institute"
-              :readonly="isFieldLocked('name_of_institute')"
+              readonly
               required
             />
             <InputField
               label="Name of University"
               v-model="form.name_of_university"
-              :readonly="isFieldLocked('name_of_university')"
+              readonly
               required
             />
             <InputField
               label="Student ID No."
               v-model="form.student_id_no"
-              :readonly="isFieldLocked('student_id_no')"
+              readonly
               required
             />
           </div>
@@ -432,14 +432,14 @@ const changedFieldOptions = [
 onMounted(async () => {
   try {
     const [appsRes, reasonsRes, qualsRes, courseTypesRes, feeRes] = await Promise.all([
-      apiService.getRecognitionOfQualification(user.cid),
+      apiService.getRecognitionOfQualifications({ cid: user.cid, page_size: 1000 }),
       apiService.getReasonsForIssueOfSecondCopy(),
       apiService.getQualifications(),
       apiService.getTypesOfCourse(),
       apiService.getServiceFee(serviceCodeForSecondCopy),
     ])
 
-    originalApplications.value = appsRes.data.filter(
+    originalApplications.value = (appsRes.data.results || []).filter(
       (app) => app.status === 'approved' && !app.is_second_copy
     )
     reasonsForSecondCopy.value = reasonsRes.data.results

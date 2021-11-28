@@ -3,26 +3,15 @@
     <div>
       <label for="medical-identifier" class="form-label">Search by CID</label>
       <div class="mt-1 flex items-center space-x-2">
-        <input
-          type="text"
-          id="medical-identifier"
-          :value="form.identifier"
-          @input="updateForm('identifier', $event.target.value)"
-          :disabled="identifierInputDisabled"
-          required
-          class="form-input"
-          :class="{
+        <input type="text" id="medical-identifier" :value="form.identifier"
+          @input="updateForm('identifier', $event.target.value)" :disabled="identifierInputDisabled" required
+          class="form-input" :class="{
             'border-red-300 focus:border-red-500 focus:ring-red-500': errors.identifier,
             'bg-gray-100': identifierInputDisabled,
-          }"
-          placeholder="Enter 11-digit CID number..."
-        />
-        <button
-          type="button"
-          @click="fetchFacultyByCid"
+          }" placeholder="Enter 11-digit CID number..." />
+        <button type="button" @click="fetchFacultyByCid"
           :disabled="isFetchingDetails || !form.identifier || identifierInputDisabled"
-          class="btn btn-primary whitespace-nowrap"
-        >
+          class="btn btn-primary whitespace-nowrap">
           <span class="loader animate-spin h-5 w-5 mr-2 text-white" v-if="isFetchingDetails"></span>
           <span>{{ isFetchingDetails ? 'Fetching...' : 'Fetch Details' }}</span>
         </button>
@@ -33,78 +22,45 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div>
         <label for="medical-registration_type" class="form-label">Registration Type </label>
-        <input
-          type="text"
-          id="medical-registration_type"
-          :value="form.registration_type_name"
-          disabled
-          class="form-input bg-gray-100"
-        />
+        <input type="text" id="medical-registration_type" :value="form.registration_type_name" disabled
+          class="form-input bg-gray-100" />
         <p v-if="errors.registration_type_name" class="mt-1 text-sm text-red-500">
           {{ errors.registration_type_name }}
         </p>
       </div>
       <div>
         <label for="medical-nationality" class="form-label">Nationality </label>
-        <input
-          type="text"
-          id="medical-nationality"
-          :value="form.nationality"
-          disabled
-          class="form-input bg-gray-100"
-        />
+        <input type="text" id="medical-nationality" :value="form.nationality" disabled class="form-input bg-gray-100" />
         <p v-if="errors.nationality" class="mt-1 text-sm text-red-500">{{ errors.nationality }}</p>
       </div>
     </div>
 
     <div>
       <label for="medical-full_name" class="form-label">Full Name </label>
-      <input
-        type="text"
-        id="medical-full_name"
-        :value="form.staff_name"
-        disabled
-        class="form-input bg-gray-100"
-      />
+      <input type="text" id="medical-full_name" :value="form.staff_name" disabled class="form-input bg-gray-100" />
       <p v-if="errors.staff_name" class="mt-1 text-sm text-red-500">{{ errors.staff_name }}</p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div>
         <label for="medical-date_of_birth" class="form-label">Date of Birth </label>
-        <input
-          type="date"
-          id="medical-date_of_birth"
-          :value="form.date_of_birth"
-          disabled
-          class="form-input bg-gray-100"
-        />
+        <input type="date" id="medical-date_of_birth" :value="form.date_of_birth" disabled
+          class="form-input bg-gray-100" />
         <p v-if="errors.date_of_birth" class="mt-1 text-sm text-red-500">
           {{ errors.date_of_birth }}
         </p>
       </div>
       <div>
         <label for="medical-contact_no" class="form-label">Contact Number </label>
-        <input
-          type="tel"
-          id="medical-contact_no"
-          :value="form.contact_no"
-          disabled
-          class="form-input bg-gray-100"
-        />
+        <input type="tel" id="medical-contact_no" :value="form.contact_no" disabled class="form-input bg-gray-100" />
         <p v-if="errors.contact_no" class="mt-1 text-sm text-red-500">{{ errors.contact_no }}</p>
       </div>
     </div>
 
     <div>
       <label for="medical-email_address" class="form-label">Email Address </label>
-      <input
-        type="email"
-        id="medical-email_address"
-        :value="form.email_address"
-        disabled
-        class="form-input bg-gray-100"
-      />
+      <input type="email" id="medical-email_address" :value="form.email_address" disabled
+        class="form-input bg-gray-100" />
       <p v-if="errors.email_address" class="mt-1 text-sm text-red-500">
         {{ errors.email_address }}
       </p>
@@ -113,98 +69,51 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <div>
         <label for="medical-village" class="form-label">Village </label>
-        <input
-          type="text"
-          id="medical-village"
-          :value="form.village"
-          disabled
-          class="form-input bg-gray-100"
-        />
+        <input type="text" id="medical-village" :value="form.village" disabled class="form-input bg-gray-100" />
         <p v-if="errors.village" class="mt-1 text-sm text-red-500">{{ errors.village }}</p>
       </div>
       <div>
         <label for="medical-gewog" class="form-label">Gewog </label>
-        <input
-          type="text"
-          id="medical-gewog"
-          :value="form.gewog"
-          disabled
-          class="form-input bg-gray-100"
-        />
+        <input type="text" id="medical-gewog" :value="form.gewog" disabled class="form-input bg-gray-100" />
         <p v-if="errors.gewog" class="mt-1 text-sm text-red-500">{{ errors.gewog }}</p>
       </div>
       <div>
         <label for="medical-dzongkhag" class="form-label">Dzongkhag </label>
-        <input
-          type="text"
-          id="medical-dzongkhag"
-          :value="form.dzongkhag"
-          disabled
-          class="form-input bg-gray-100"
-        />
+        <input type="text" id="medical-dzongkhag" :value="form.dzongkhag" disabled class="form-input bg-gray-100" />
         <p v-if="errors.dzongkhag" class="mt-1 text-sm text-red-500">{{ errors.dzongkhag }}</p>
       </div>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div>
-        <label for="medical-registration_date" class="form-label"
-          >BMHC Main Registration Date</label
-        >
-        <input
-          type="date"
-          id="medical-registration_date"
-          :value="form.registration_date"
-          disabled
-          class="form-input bg-gray-100"
-        />
+        <label for="medical-registration_date" class="form-label">BMHC Main Registration Date</label>
+        <input type="date" id="medical-registration_date" :value="form.registration_date" disabled
+          class="form-input bg-gray-100" />
         <p v-if="errors.registration_date" class="mt-1 text-sm text-red-500">
           {{ errors.registration_date }}
         </p>
       </div>
       <div>
         <label for="medical-expiry_date" class="form-label">BMHC Main Expiry Date</label>
-        <input
-          type="date"
-          id="medical-expiry_date"
-          :value="form.expiry_date"
-          disabled
-          class="form-input bg-gray-100"
-        />
+        <input type="date" id="medical-expiry_date" :value="form.expiry_date" disabled class="form-input bg-gray-100" />
         <p v-if="errors.expiry_date" class="mt-1 text-sm text-red-500">{{ errors.expiry_date }}</p>
       </div>
     </div>
     <div>
       <label for="medical-designation" class="form-label">Designation (at this Institute)</label>
-      <input
-        type="text"
-        id="medical-designation"
-        :value="form.designation"
-        @input="updateForm('designation', $event.target.value)"
-        :disabled="mode === 'view'"
-        required
-        class="form-input"
-        :class="{ 'border-red-300 focus:border-red-500 focus:ring-red-500': errors.designation }"
-      />
+      <input type="text" id="medical-designation" :value="form.designation"
+        @input="updateForm('designation', $event.target.value)" :disabled="mode === 'view'" required class="form-input"
+        :class="{ 'border-red-300 focus:border-red-500 focus:ring-red-500': errors.designation }" />
       <p v-if="errors.designation" class="mt-1 text-sm text-red-500">{{ errors.designation }}</p>
     </div>
 
     <div>
-      <label for="medical-date_of_joining" class="form-label"
-        >Date of Joining (at this Institute)</label
-      >
-      <input
-        type="date"
-        id="medical-date_of_joining"
-        :value="form.date_of_joining"
-        @input="updateForm('date_of_joining', $event.target.value)"
-        :disabled="mode === 'view'"
-        required
-        class="form-input"
-        :class="{
+      <label for="medical-date_of_joining" class="form-label">Date of Joining (at this Institute)</label>
+      <input type="date" id="medical-date_of_joining" :value="form.date_of_joining"
+        @input="updateForm('date_of_joining', $event.target.value)" :disabled="mode === 'view'" required
+        class="form-input" :class="{
           'border-red-300 focus:border-red-500 focus:ring-red-500': errors.date_of_joining,
-        }"
-      />
+        }" />
       <p v-if="errors.date_of_joining" class="mt-1 text-sm text-red-500">
         {{ errors.date_of_joining }}
       </p>
@@ -216,52 +125,28 @@
       </div>
 
       <div v-if="form.education_details && form.education_details.length > 0" class="space-y-4">
-        <div
-          v-for="(edu, index) in form.education_details"
-          :key="edu.additional_info?.registration_no || index"
-          class="border border-gray-200 rounded-lg p-4 bg-gray-50"
-        >
+        <div v-for="(edu, index) in form.education_details" :key="edu.additional_info?.registration_no || index"
+          class="border border-gray-200 rounded-lg p-4 bg-gray-50">
           <div class="flex items-center justify-between mb-3">
             <h4 class="text-sm font-medium text-gray-900">Education {{ index + 1 }}</h4>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Qualification Type</label>
-              <input
-                type="text"
-                :value="edu.type || 'N/A'"
-                disabled
-                class="form-input bg-gray-100"
-              />
+              <input type="text" :value="edu.qualification_type_name || 'N/A'" disabled
+                class="form-input bg-gray-100" />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Qualification</label>
-              <input
-                type="text"
-                :value="edu.qualification || 'N/A'"
-                disabled
-                class="form-input bg-gray-100"
-              />
+              <input type="text" :value="edu.qualification_name || 'N/A'" disabled class="form-input bg-gray-100" />
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1"
-                >Institute/University</label
-              >
-              <input
-                type="text"
-                :value="edu.institute || 'N/A'"
-                disabled
-                class="form-input bg-gray-100"
-              />
+              <label class="block text-sm font-medium text-gray-700 mb-1">Institute/University</label>
+              <input type="text" :value="edu.institute || 'N/A'" disabled class="form-input bg-gray-100" />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Year of Completion</label>
-              <input
-                type="text"
-                :value="edu.year_of_completion || 'N/A'"
-                disabled
-                class="form-input bg-gray-100"
-              />
+              <input type="text" :value="edu.year_of_completion || 'N/A'" disabled class="form-input bg-gray-100" />
             </div>
           </div>
           <div v-if="edu.additional_info" class="mt-4 pt-4 border-t border-gray-200">
@@ -270,24 +155,24 @@
             </h5>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
               <div v-if="edu.additional_info.personnel_category">
-                <span class="font-medium text-gray-600">Category:</span
-                ><span class="ml-2">{{ edu.additional_info.personnel_category }}</span>
+                <span class="font-medium text-gray-600">Category:</span><span class="ml-2">{{
+                  edu.additional_info.personnel_category }}</span>
               </div>
               <div v-if="edu.additional_info.personnel_sub_category">
-                <span class="font-medium text-gray-600">Sub-Category:</span
-                ><span class="ml-2">{{ edu.additional_info.personnel_sub_category }}</span>
+                <span class="font-medium text-gray-600">Sub-Category:</span><span class="ml-2">{{
+                  edu.additional_info.personnel_sub_category }}</span>
               </div>
               <div v-if="edu.additional_info.registration_no">
-                <span class="font-medium text-gray-600">Qual. Reg. No:</span
-                ><span class="ml-2">{{ edu.additional_info.registration_no }}</span>
+                <span class="font-medium text-gray-600">Qual. Reg. No:</span><span class="ml-2">{{
+                  edu.additional_info.registration_no }}</span>
               </div>
               <div v-if="edu.additional_info.registration_date">
-                <span class="font-medium text-gray-600">Qual. Reg. Date:</span
-                ><span class="ml-2">{{ edu.additional_info.registration_date }}</span>
+                <span class="font-medium text-gray-600">Qual. Reg. Date:</span><span class="ml-2">{{
+                  edu.additional_info.registration_date }}</span>
               </div>
               <div v-if="edu.additional_info.expiry_date">
-                <span class="font-medium text-gray-600">Qual. Expiry Date:</span
-                ><span class="ml-2">{{ edu.additional_info.expiry_date }}</span>
+                <span class="font-medium text-gray-600">Qual. Expiry Date:</span><span class="ml-2">{{
+                  edu.additional_info.expiry_date }}</span>
               </div>
             </div>
           </div>
@@ -303,56 +188,26 @@
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 opacity-70">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Qualification Type</label
-              ><input
-                type="text"
-                disabled
-                class="form-input bg-gray-100 cursor-not-allowed"
-                placeholder="(Auto-populated)"
-              />
+              <label class="block text-sm font-medium text-gray-700 mb-1">Qualification Type</label><input type="text"
+                disabled class="form-input bg-gray-100 cursor-not-allowed" placeholder="(Auto-populated)" />
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Qualification</label
-              ><input
-                type="text"
-                disabled
-                class="form-input bg-gray-100 cursor-not-allowed"
-                placeholder="(Auto-populated)"
-              />
+              <label class="block text-sm font-medium text-gray-700 mb-1">Qualification</label><input type="text"
+                disabled class="form-input bg-gray-100 cursor-not-allowed" placeholder="(Auto-populated)" />
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1"
-                >Institute/University</label
-              ><input
-                type="text"
-                disabled
-                class="form-input bg-gray-100 cursor-not-allowed"
-                placeholder="(Auto-populated)"
-              />
+              <label class="block text-sm font-medium text-gray-700 mb-1">Institute/University</label><input type="text"
+                disabled class="form-input bg-gray-100 cursor-not-allowed" placeholder="(Auto-populated)" />
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Year of Completion</label
-              ><input
-                type="text"
-                disabled
-                class="form-input bg-gray-100 cursor-not-allowed"
-                placeholder="(Auto-populated)"
-              />
+              <label class="block text-sm font-medium text-gray-700 mb-1">Year of Completion</label><input type="text"
+                disabled class="form-input bg-gray-100 cursor-not-allowed" placeholder="(Auto-populated)" />
             </div>
           </div>
           <div class="mt-6 text-center">
-            <svg
-              class="mx-auto h-10 w-10 text-gray-400 mb-2"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
+            <svg class="mx-auto h-10 w-10 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <p class="text-sm font-medium text-gray-700">
               {{
@@ -371,42 +226,91 @@
 
     <div>
       <label for="medical-cv" class="form-label">Upload CV</label>
-      <UploadFile
-        :modelValue="form.cv"
-        @update:modelValue="handleFileUpload('cv', $event)"
-        accept=".pdf,.doc,.docx"
-        :max-size="5"
-        :disabled="mode === 'view'"
-        :initial-file-name="form.cv_name"
-        @file-removed="handleFileRemoval('cv')"
-      />
-      <p class="mt-1 text-sm">
-        PDF, DOC, DOCX only, max 5MB.
-        <span v-if="form.cv_name && mode !== 'add' && !form.cv">Current: {{ form.cv_name }}</span>
-      </p>
+      <div v-if="mode === 'view'">
+        <div v-if="form.cv || form.cv_name" class="border rounded-md p-4 bg-gray-50">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+              <svg class="w-10 h-10 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd"
+                  d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"
+                  clip-rule="evenodd" />
+              </svg>
+              <div>
+                <p class="text-sm font-medium text-gray-900">{{ form.cv_name || 'CV.pdf' }}</p>
+                <p class="text-xs text-gray-500">PDF Document</p>
+              </div>
+            </div>
+            <a v-if="form.cv" :href="form.cv" target="_blank" rel="noopener noreferrer"
+              class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+              View PDF
+            </a>
+          </div>
+        </div>
+        <p v-else class="text-sm text-gray-500">No CV uploaded</p>
+      </div>
+      <div v-else>
+        <UploadFile :modelValue="form.cv" @update:modelValue="handleFileUpload('cv', $event)" accept=".pdf,.doc,.docx"
+          :max-size="5" :disabled="mode === 'view'" :initial-file-name="form.cv_name" />
+        <p class="mt-1 text-sm">
+          PDF, DOC, DOCX only, max 5MB.
+          <span v-if="form.cv_name && mode !== 'add' && !form.cv">Current: {{ form.cv_name }}</span>
+          <a v-if="form.cv && typeof form.cv === 'string'" :href="form.cv" target="_blank" rel="noopener noreferrer"
+            class="text-blue-600 underline ml-1">
+            {{ form.cv_name }}
+          </a>
+          <span v-else>{{ form.cv_name }}</span>
+        </p>
+      </div>
       <p v-if="errors.cv" class="mt-1 text-sm text-red-500">{{ errors.cv }}</p>
     </div>
 
     <div>
       <label for="medical-passport_photo" class="form-label">Upload Passport Photo</label>
-      <UploadFile
-        :modelValue="form.passport_photo"
-        @update:modelValue="handleFileUpload('passport_photo', $event)"
-        accept="image/*"
-        :max-size="2"
-        :disabled="mode === 'view'"
-        :initial-file-name="form.passport_photo_name"
-        @file-removed="handleFileRemoval('passport_photo')"
-      />
-      <p class="mt-1 text-sm">
-        Image only, max 2MB.
-        <span v-if="form.passport_photo_name && mode !== 'add' && !form.passport_photo"
-          >Current: {{ form.passport_photo_name }}</span
-        >
-      </p>
-      <p v-if="errors.passport_photo" class="mt-1 text-sm text-red-500">
-        {{ errors.passport_photo }}
-      </p>
+      <div v-if="mode === 'view'">
+        <div v-if="form.passport_photo || form.passport_photo_name" class="border rounded-md p-4 bg-gray-50">
+          <div class="flex items-start space-x-4">
+            <img v-if="form.passport_photo" :src="form.passport_photo" alt="Passport Photo"
+              class="w-32 h-32 rounded-lg border-2 border-gray-200 object-cover shadow-sm" />
+            <div class="flex-1">
+              <p class="text-sm font-medium text-gray-900 mb-1">{{ form.passport_photo_name || 'Passport Photo' }}</p>
+              <p class="text-xs text-gray-500 mb-3">Image File</p>
+              <a v-if="form.passport_photo" :href="form.passport_photo" target="_blank" rel="noopener noreferrer"
+                class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+                Open Full Size
+              </a>
+            </div>
+          </div>
+        </div>
+        <p v-else class="text-sm text-gray-500">No passport photo uploaded</p>
+      </div>
+      <div v-else>
+        <UploadFile :modelValue="form.passport_photo" @update:modelValue="handleFileUpload('passport_photo', $event)"
+          accept="image/*" :max-size="2" :disabled="mode === 'view'" :initial-file-name="form.passport_photo_name" />
+        <p class="mt-1 text-sm">
+          Image only, max 2MB.
+          <span v-if="form.passport_photo_name && mode !== 'add' && !form.passport_photo">{{ form.passport_photo_name
+            }}</span>
+          <a v-if="form.passport_photo && typeof form.passport_photo === 'string'" :href="form.passport_photo"
+            target="_blank" rel="noopener noreferrer" class="text-blue-600 underline ml-1">
+            {{ form.passport_photo_name }}
+          </a>
+          <span v-else>{{ form.passport_photo_name }}</span>
+        </p>
+        <span v-if="form.passport_photo && typeof form.passport_photo === 'string'">
+          <img :src="form.passport_photo" alt="Passport Photo" class="mt-2 max-h-32 rounded border" />
+        </span>
+      </div>
+      <p v-if="errors.passport_photo" class="mt-1 text-sm text-red-500">{{ errors.passport_photo }}</p>
     </div>
   </div>
 </template>
@@ -452,10 +356,15 @@ const updateForm = (key, value) => {
  */
 const mapApiDataToForm = (apiData, baseForm) => {
   const safeApiData = apiData || {}
+  console.log(apiData);
+
+  console.log(safeApiData.registration_type_name);
+
+
 
   const mappedEducationDetails = (safeApiData.user_qualifications || []).map((edu) => ({
-    type: edu.qualification_type_display || 'N/A',
-    qualification: edu.qualification_name_display || 'N/A',
+    qualification_type_name: edu.qualification_type.qualification_type_name || 'N/A',
+    qualification_name: edu.qualification_name.qualification || 'N/A',
     institute: edu.institute_university_display || 'N/A',
     year_of_completion: edu.completion_year || 'N/A',
     additional_info: {
@@ -467,11 +376,15 @@ const mapApiDataToForm = (apiData, baseForm) => {
     },
   }))
 
+  console.log(safeApiData.registration_type);
+
+
   return {
     ...baseForm,
     identifier: safeApiData.CID || baseForm.identifier,
     application_profile_identifier: safeApiData.id || null,
     staff_name: safeApiData.full_name || '',
+    registration_type: safeApiData.registration_type || '',
     registration_type_name: safeApiData.registration_type_name || '',
     nationality: safeApiData.nationality || '',
     date_of_birth: safeApiData.date_of_birth || '',
@@ -483,11 +396,15 @@ const mapApiDataToForm = (apiData, baseForm) => {
     registration_date: safeApiData.registration_date || '',
     expiry_date: safeApiData.expiry_date || '',
     education_details: mappedEducationDetails,
-    // Keep existing values for designation/date_of_joining if API doesn't provide them
     designation: baseForm.designation || safeApiData.designation,
     date_of_joining: baseForm.date_of_joining || safeApiData.date_of_joining,
+    cv: baseForm.cv,
+    cv_name: baseForm.cv_name,
+    passport_photo: baseForm.passport_photo,
+    passport_photo_name: baseForm.passport_photo_name,
   }
 }
+
 
 const fetchFacultyByCid = async () => {
   if (!props.form.identifier) {
@@ -526,14 +443,18 @@ const fetchFacultyByCid = async () => {
 }
 
 const handleFileUpload = (field, file) => {
-  updateForm(field, file)
-  updateForm(`${field}_name`, file ? file.name : '')
+  // Create a single object with ALL updates
+  const updates = {
+    ...props.form,
+    [field]: file,
+    [`${field}_name`]: file ? file.name : ''
+  }
+
+  // Emit once
+  emit('update:form', updates)
 }
 
-const handleFileRemoval = (field) => {
-  updateForm(field, null)
-  updateForm(`${field}_name`, '')
-}
+
 
 // The onMounted hook has been removed as it is not needed and was causing a bug.
 </script>
@@ -542,20 +463,25 @@ const handleFileRemoval = (field) => {
 .form-label {
   @apply block text-sm font-medium text-gray-700 mb-1.5;
 }
+
 .form-input,
 .form-select {
   @apply block w-full rounded-md border-gray-300 shadow-sm p-3 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none disabled:cursor-not-allowed transition-colors duration-150;
 }
+
 .form-input:disabled,
 .form-select:disabled {
   @apply bg-gray-100 text-gray-500;
 }
+
 .btn {
   @apply inline-flex items-center justify-center rounded-md border py-2 px-4 text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
 }
+
 .btn-primary {
   @apply border-transparent bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500;
 }
+
 .loader {
   border: 2px solid currentColor;
   border-right-color: transparent;
@@ -563,6 +489,7 @@ const handleFileRemoval = (field) => {
   display: inline-block;
   animation: spin 1s linear infinite;
 }
+
 @keyframes spin {
   to {
     transform: rotate(360deg);
