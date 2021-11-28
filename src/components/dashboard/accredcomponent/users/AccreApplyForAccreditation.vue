@@ -3,10 +3,11 @@
     <h2 class="text-3xl font-extrabold text-center text-blue-700 mb-6">Initial Accreditation Application</h2>
     <p class="text-center text-gray-600 mb-8">Please complete all required sections as per Annexure IV.</p>
 
-    <!-- PAYMENT INTEGRATION: Add the PaymentModal and hardcode the amount to 1000 -->
+    <!-- PAYMENT INTEGRATION: PaymentModal -->
     <PaymentModal
       ref="paymentModal"
       :amount="1000"
+      :closeOnSuccess="true"
       @payment-completed="onPaymentCompleted"
       @close="onPaymentModalClose"
     />
@@ -296,7 +297,6 @@ import { useToast } from 'vue-toastification';
 import { useAuthStore } from '@/stores/authStore';
 import apiService from '@/services/services';
 import PaymentModal from '@/components/common/PaymentModal.vue';
-import ConfirmationModal from '@/components/common/ConfirmationModal.vue';
 import {
   Info,
   X,
@@ -511,6 +511,11 @@ const getExistingDocumentUrl = (docTypeId) => {
 const handleChecklistFileUpload = (event, docTypeId) => {
   const file = event.target.files[0];
   if (file) {
+    if (file.size > 5 * 1024 * 1024) { // 5MB limit
+      errors.value[`document_file_type_${docTypeId}`] = ['File is too large. Maximum size is 5MB.'];
+      event.target.value = ''; // Reset file input
+      return;
+    }
     application.value.checklistDocumentUploads = {
       ...application.value.checklistDocumentUploads,
       [docTypeId]: file
@@ -618,9 +623,9 @@ const saveDraft = async () => {
 };
 
 const onPaymentCompleted = (paymentData) => {
-  if (paymentModal.value) {
-    paymentModal.value.closeModal();
-  }
+  // We do NOT explicitly call paymentModal.value.closeModal() here
+  // because the modal itself will close due to the closeOnSuccess prop.
+
   submissionInitiated.value = true;
   application.value.is_payment_complete = false;
   application.value.payment_id_gateway = paymentData.paymentHash;
@@ -635,56 +640,70 @@ const onPaymentModalClose = () => {
   }
 };
 
+// ==========================================
+// UPDATED SUBMISSION HANDLER
+// ==========================================
 const handleSubmitActual = async () => {
   isSubmitting.value = true;
   errors.value = {};
-  let appResponse;
   let redirectUrl = null;
 
+  // 1. OPEN NEW WINDOW IMMEDIATELY (Before API call)
+  const paymentWindow = window.open('', '_blank');
+
+  if (paymentWindow) {
+      paymentWindow.document.write(`
+        <html>
+          <head><title>Processing Payment...</title></head>
+          <body style="font-family: sans-serif; text-align: center; padding-top: 50px; background-color: #f9fafb;">
+            <h2 style="color: #2563eb;">Connecting to BIRMS...</h2>
+            <p>Please wait while we redirect you to the secure payment gateway.</p>
+            <p style="color: #6b7280; font-size: 0.9em;">Do not close this window.</p>
+          </body>
+        </html>
+      `);
+  } else {
+      toast.error("Popup blocker prevented opening the payment window. Please allow popups for this site.");
+      isSubmitting.value = false;
+      return;
+  }
+
   const user = authStore.user;
+
   if (!user || !user.contact_number || !user.email || !user.cid || !user.id) {
+    if (paymentWindow) paymentWindow.close();
     toast.error('Missing user information. Please log in again or update your profile.');
     isSubmitting.value = false;
     return;
   }
-  
-  // Store the critical payment_id_gateway before loadExistingApplication potentially overwrites it.
+
   const paymentGatewayId = application.value.payment_id_gateway;
 
   try {
-    // Step 1: Save the application data to our backend first
+    // Step 1: Save application state to backend
     const applicationFormData = prepareApplicationFormData();
-    
-    // Ensure status is set correctly for submission
     applicationFormData.set('status', 'pending_payment');
 
+    let appResponse;
     if (application.value.id) {
       appResponse = await apiService.patchAccreditationApplication(application.value.id, applicationFormData);
     } else {
       appResponse = await apiService.createAccreditationApplication(applicationFormData);
     }
 
-    if (!appResponse.data?.id) {
-        throw new Error("Backend did not return a valid application object.");
-    }
-    
-    // Update local state with potentially new application ID
-    const createdOrUpdatedAppId = appResponse.data.id;
-    await loadExistingApplication(createdOrUpdatedAppId);
+    await loadExistingApplication(appResponse.data.id);
 
-
-    // Step 2: Initiate payment with the gateway
+    // Step 2: Prepare Payment Payload for Gateway
     const feeAmount = 1000.0;
-    const formattedFeeAmount = feeAmount.toFixed(2);
     const paymentInitiationFormData = new FormData();
-    
+
     paymentInitiationFormData.append('refNo', paymentGatewayId);
     paymentInitiationFormData.append('serviceCode', '100194');
     paymentInitiationFormData.append('taxPayerName', application.value.institute_profile_name_display);
     paymentInitiationFormData.append('taxPayerNo', user.cid);
     paymentInitiationFormData.append('taxPayerDocumentNo', user.cid);
-    paymentInitiationFormData.append('totalPayableAmount', formattedFeeAmount);
-    paymentInitiationFormData.append('payableAmount', formattedFeeAmount);
+    paymentInitiationFormData.append('totalPayableAmount', feeAmount.toFixed(2));
+    paymentInitiationFormData.append('payableAmount', feeAmount.toFixed(2));
     paymentInitiationFormData.append('description', 'Accreditation Institutions Fee');
     paymentInitiationFormData.append('mobileNo', user.contact_number);
     paymentInitiationFormData.append('payerEmail', user.email);
@@ -692,35 +711,37 @@ const handleSubmitActual = async () => {
     paymentInitiationFormData.append('application_no', paymentGatewayId);
     paymentInitiationFormData.append('app_type', 'accreditation_institutions_fee');
 
+    // *** CRITICAL FIX: Correct Backend URL for Callback ***
+    // Ensure this matches the route in payment_gateway/urls.py (r"payments")
+    const backendCallbackUrl = "http://localhost:8000/api/payment_gateway/payments/callback/";
+    paymentInitiationFormData.append('returnUrl', backendCallbackUrl);
+
     try {
       const paymentResponse = await apiService.makePayment(paymentInitiationFormData);
       if (paymentResponse.data?.content?.redirectUrl) {
         redirectUrl = paymentResponse.data.content.redirectUrl;
       } else {
-        throw new Error('Redirect URL not received from payment gateway.');
+        throw new Error('Redirect URL not received.');
       }
     } catch (paymentError) {
-      console.error('Error making payment:', paymentError.response?.data || paymentError);
-      const errorDetail = paymentError.response?.data ? JSON.stringify(paymentError.response.data) : paymentError.message;
-      // Since application is already created, we should inform the user about the payment failure.
-      toast.error('Application saved, but payment request failed: ' + errorDetail + '. You can try paying again from the application page.');
+      if (paymentWindow) paymentWindow.close();
+      console.error('Payment API Error:', paymentError);
+      toast.error('Payment request failed. Please try again.');
       return;
     }
 
-    // Step 3: Success, redirect user to payment page
-    toast.success(
-        'Application submitted successfully, redirecting for payment. A link has also been sent to your email.',
-        { timeout: 8000 }
-    );
-    if (redirectUrl) {
-        window.open(redirectUrl, '_blank');
+    // Step 3: Redirect the PRE-OPENED window to BIRMS
+    if (redirectUrl && paymentWindow) {
+        toast.success('Redirecting to BIRMS in new tab...');
+        paymentWindow.location.href = redirectUrl;
+    } else {
+        if (paymentWindow) paymentWindow.close();
     }
-    // The application is already reloaded by loadExistingApplication.
 
   } catch (error) {
-    console.error("Error during final submission:", error.response?.data || error);
-    displayServerErrors(error.response?.data || { general: 'An error occurred during final submission.' });
-    toast.error(errors.value.general || 'Failed to complete submission process. Please check any error messages.');
+    if (paymentWindow) paymentWindow.close();
+    console.error("Submission error:", error);
+    toast.error('Failed to process submission.');
   } finally {
     isSubmitting.value = false;
     submissionInitiated.value = false;

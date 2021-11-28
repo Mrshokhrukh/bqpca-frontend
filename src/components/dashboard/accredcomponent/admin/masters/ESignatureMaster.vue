@@ -302,6 +302,17 @@ const confirmDelete = async () => {
 const handleFileUpload = (event) => {
   const file = event.target.files[0]
   if (file) {
+    if (file.size > 5 * 1024 * 1024) { // 5MB limit for images
+      error.value = 'Image file is too large. Maximum size is 5MB.';
+      formData.value.signature = null;
+      if (imagePreview.value) {
+        URL.revokeObjectURL(imagePreview.value)
+      }
+      imagePreview.value = null;
+      event.target.value = ''; // Reset the file input
+      return;
+    }
+    error.value = null; // Clear error on successful selection
     formData.value.signature = file
     // Clean up old preview before creating a new one
     if (imagePreview.value) {

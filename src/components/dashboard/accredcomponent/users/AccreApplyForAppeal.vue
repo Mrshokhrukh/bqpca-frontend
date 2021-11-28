@@ -266,7 +266,21 @@ const initializeForm = async () => {
 };
 
 const onFileChange = (event) => {
-    appeal.supporting_documents = Array.from(event.target.files);
+    const files = Array.from(event.target.files);
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    const oversizedFiles = files.filter(file => file.size > maxSize);
+
+    if (oversizedFiles.length > 0) {
+        oversizedFiles.forEach(file => {
+            toast.error(`File "${file.name}" is too large. Maximum size is 5MB.`);
+        });
+        // Reset file input and clear selection
+        event.target.value = '';
+        appeal.supporting_documents = [];
+        return;
+    }
+    
+    appeal.supporting_documents = files;
 };
 
 const saveDraft = () => {
