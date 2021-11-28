@@ -38,6 +38,7 @@
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 {{ formatDate(item.application_date) }}
               </td>
+
               <td class="px-6 py-4 whitespace-nowrap">
                 <span :class="getStatusClasses(item.renewal_status)">
                   {{ item.renewal_status }}
