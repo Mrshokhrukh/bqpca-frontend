@@ -30,6 +30,9 @@
                 Status
               </th>
               <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                Payment Status
+              </th>
+              <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                 Date
               </th>
               <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
@@ -86,6 +89,20 @@
                   )" :key="'additional-' + qualification.id" class="mb-1 last:mb-0">
                     <span :class="getQualificationStatusClasses(qualification)" class="px-2 py-1 rounded text-xs">
                       {{ getIndividualQualificationStatus(qualification) }}
+                    </span>
+                    <span class="text-xs text-gray-600 ml-1">({{ qualification.qualification_name_display || 'N/A'
+                      }})</span>
+                  </div>
+                </template>
+                <template v-else> N/A </template>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <template v-if="app.user_qualifications?.some((q) => !q.is_primary_qualification)">
+                  <div v-for="qualification in app.user_qualifications.filter(
+                    (q) => !q.is_primary_qualification,
+                  )" :key="'additional-' + qualification.id" class="mb-1 last:mb-0">
+                    <span :class="getQualificationStatusClasses(qualification)" class="px-2 py-1 rounded text-xs">
+                      {{ qualification.payment_status}}
                     </span>
                     <span class="text-xs text-gray-600 ml-1">({{ qualification.qualification_name_display || 'N/A'
                       }})</span>
@@ -293,6 +310,11 @@ const getStatus = (app) => {
 
 const getIndividualQualificationStatus = (qualification) => {
   if (!qualification) return 'Pending'
+
+  console.log(qualification);
+  
+
+
 
   const { application_review_status, physical_review_status, endorsement_decision } = qualification
 
