@@ -86,6 +86,7 @@
               <!-- Module Rows for this Program -->
               <tr v-for="group in program.modules" :key="group.moduleId"
                 class="hover:bg-gray-50 transition-colors duration-150">
+
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 border-b border-gray-200">
                   <span v-if="group.specificProgramTitle" class="text-xs text-gray-500">{{ group.specificProgramTitle
                   }}</span>
@@ -241,6 +242,7 @@ const groupedDataByProgram = computed(() => {
   const programs = {};
 
   moduleFacultyAssignments.value.forEach(assignment => {
+    
     const programOffered = assignment.module?.semester?.program_offered;
     if (!programOffered || !assignment.module?.id) return;
 
@@ -253,16 +255,21 @@ const groupedDataByProgram = computed(() => {
         programName: programOffered.program_master.program_name,
         modules: {},
       };
+
+      
     }
 
     const moduleId = assignment.module.id;
     if (!programs[programId].modules[moduleId]) {
+      
       programs[programId].modules[moduleId] = {
         moduleId: moduleId,
         specificProgramTitle: programOffered.specific_program_title,
         moduleName: assignment.module.module_master?.module_name,
-        semesterName: assignment.module.semester?.name,
-        moduleDescription: assignment.module.module_master?.description || '',
+        semesterName: assignment.module.semester?.semester_number
+          ? `Semester ${assignment.module.semester.semester_number}`
+          : 'N/A',
+        moduleDescription: assignment.module.semester?.name || '',
         academicYear: assignment.module.semester?.academic_year,
         studentCount: assignment.module.student_count,
         teachingHours: assignment.teaching_hours,
