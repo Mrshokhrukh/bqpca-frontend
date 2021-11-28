@@ -1,6 +1,6 @@
 <template>
   <div>
-    <CIDSelection v-model="isCIDHolder" />
+    <CIDSelection v-model="isCIDHolder"  />
 
     <PaymentModal ref="paymentModal" :amount="1000" @payment-completed="onPaymentCompleted"
       @close="onPaymentModalClose" />
@@ -832,7 +832,7 @@ watch(
 
 watch(
   () => isCIDHolder.value,
-  (newValue, oldValue) => {
+  async (newValue, oldValue) => {
     if (newValue !== oldValue) {
       isDCRCDataFetched.value = false
       if (props.mode !== 'edit') {
@@ -855,6 +855,7 @@ watch(
         }
       } else if (newValue === true) {
         form.cid_no = authStore.user.cid || ''
+        await fetchDCRCData()
       }
       nextTick(() => {
         validateForm()
@@ -881,7 +882,7 @@ onMounted(async () => {
       form.cid_no = authStore.user.cid
     }
 
-    await fetchDCRCData()
+    // await fetchDCRCData()
 
 
     courseTypeOptions.value = courseTypesResponse.data.results.map((type) => ({
