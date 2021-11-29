@@ -343,7 +343,17 @@ watch(
 
 const handleSupportingDocumentUpload = (event) => {
   const file = event.target.files[0]
-  formData.supportingDocumentName = file.name
+  if (file) {
+    if (file.size > 5 * 1024 * 1024) { // 5MB limit
+      toast.error('File is too large. Maximum size is 5MB.');
+      formData.supportingDocumentName = null;
+      event.target.value = ''; // Reset the file input
+      return;
+    }
+    formData.supportingDocumentName = file.name;
+    // You might want to store the file object itself if you plan to upload it
+    // e.g., formData.supportingDocumentFile = file;
+  }
 }
 
 const closeModal = () => {
