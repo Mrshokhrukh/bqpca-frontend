@@ -660,6 +660,7 @@ const localFormData = reactive({
   ...props.modelValue,
   cid_holder: props.selectedType === 'cid',
   nationality: props.selectedType === 'cid' ? 'Bhutanese' : '',
+  cid_no: props.selectedType === 'cid' ? authStore.user?.cid || '' : '',
   email_address: user?.email || '',
   workPermitNo: user?.cid || '',
   mobileNumber: '',
