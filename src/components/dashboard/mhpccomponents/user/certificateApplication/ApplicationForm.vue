@@ -161,7 +161,7 @@
             </div>
 
             <div class="col-span-1">
-              <label class="block text-sm font-medium text-gray-700">City / Town</label>
+              <label class="block text-sm font-medium text-gray-700 required">City / Town</label>
               <input v-model="localFormData.city" type="text"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
                 placeholder="City / Town" />
@@ -169,7 +169,7 @@
             </div>
 
             <div class="col-span-1">
-              <label class="block text-sm font-medium text-gray-700">State / Province</label>
+              <label class="block text-sm font-medium text-gray-700 required">State / Province</label>
               <input v-model="localFormData.state" type="text"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
                 placeholder="State / Province" />
@@ -868,6 +868,14 @@ const validateFormStageOne = () => {
     }
     if (!localFormData.country) {
       errors.country = 'Country of residence is required.'
+      isValid = false
+    }
+    if (!localFormData.city) {
+      errors.city = 'City / Town is required.'
+      isValid = false
+    }
+    if (!localFormData.state) {
+      errors.state = 'State / Province is required.'
       isValid = false
     }
     if (!localFormData.mobileNumber) {
