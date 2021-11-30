@@ -885,13 +885,7 @@ export default {
     if (status) {
       url += `&status=${status}`
     }
-    return apiClient.get(url, {
-      headers: {
-        'Cache-Control': 'no-cache',
-        Pragma: 'no-cache',
-        Expires: '0',
-      },
-    })
+    return apiClient.get(url)
   },
 
   // MHPC CPD Records
