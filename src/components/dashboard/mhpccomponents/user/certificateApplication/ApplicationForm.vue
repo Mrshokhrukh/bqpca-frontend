@@ -207,7 +207,7 @@
               <option value="">Select Gender</option>
               <option value="male">Male</option>
               <option value="female">Female</option>
-              <option value="O">Other</option>
+              <option value="others">Other</option>
             </select>
             <span v-if="errors.gender" class="text-xs text-red-500 mt-1">{{ errors.gender }}</span>
           </div>

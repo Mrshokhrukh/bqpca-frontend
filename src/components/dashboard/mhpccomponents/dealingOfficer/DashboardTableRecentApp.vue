@@ -30,11 +30,11 @@
             >
               Submitted/Updated
             </th>
-            <th
+            <!-- <th
               class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
             >
               Action
-            </th>
+            </th> -->
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
@@ -63,9 +63,9 @@
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
               {{ formatDate(application.date) }}
             </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm">
+            <!-- <td class="px-6 py-4 whitespace-nowrap text-sm">
               <button class="text-blue-600 hover:text-blue-900">Review</button>
-            </td>
+            </td> -->
           </tr>
         </tbody>
       </table>
