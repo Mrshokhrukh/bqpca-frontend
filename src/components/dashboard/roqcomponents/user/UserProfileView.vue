@@ -401,9 +401,8 @@ const loadProfile = async () => {
   if (authStore.user && authStore.user.cid) {
     try {
       const certsResponse = await apiService.getRecognitionOfQualification(authStore.user.cid)
-      // console.log(certsResponse);
 
-      allCertificates.value = certsResponse.data || []
+      allCertificates.value = certsResponse.data.results || []
 
       if (allCertificates.value.length > 0) {
         profileData.value.dzongkhag = allCertificates.value[0].dzongkhag || ''
