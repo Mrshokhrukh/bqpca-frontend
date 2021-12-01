@@ -161,18 +161,6 @@
             />
           </div>
           <div>
-            <label for="teachingInstitute" class="block text-sm font-medium text-gray-700"
-              >Training Institute:</label
-            >
-            <input
-              type="text"
-              id="teachingInstitute"
-              v-model="formData.teaching_institute"
-              class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2.5"
-              disabled
-            />
-          </div>
-          <div>
             <label for="courseTitle" class="block text-sm font-medium text-gray-700"
               >Title of the Course:</label
             >
@@ -401,7 +389,7 @@
           </div>
           <div>
             <label for="teachingHospital" class="block text-sm font-medium text-gray-700"
-              >Teaching Hospital:</label
+              >Teaching Institute/Center:</label
             >
             <textarea
               id="teachingHospital"

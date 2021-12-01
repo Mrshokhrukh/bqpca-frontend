@@ -168,13 +168,16 @@
             <div v-for="(doc, index) in supportingDocuments" :key="index"
               class="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 bg-white p-3 rounded-lg border border-gray-100">
               <div class="w-full sm:w-1/3">
-                <select v-model="doc.type"
+                <select v-model="doc.type" @change="updateFormDocuments"
                   class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 text-sm">
                   <option value="">Select Document Type</option>
                   <option v-for="type in fetchedDocumentTypes" :key="type.id" :value="type.id">
                     {{ type.document_name }}
                   </option>
                 </select>
+                <span v-if="errors[`document_type_${index}`]" class="text-xs text-red-500 mt-1 block">
+                  {{ errors[`document_type_${index}`] }}
+                </span>
               </div>
               <div class="flex-1 flex items-center space-x-2">
                 <input type="file" @change="(e) => handleFileSelect(e, index)"
@@ -186,6 +189,9 @@
                   ✕
                 </button>
               </div>
+              <span v-if="errors[`document_file_${index}`]" class="text-xs text-red-500 mt-1 block sm:inline">
+                {{ errors[`document_file_${index}`] }}
+              </span>
             </div>
 
             <button type="button" @click="addDocument"
@@ -194,8 +200,14 @@
               Add Another Document
             </button>
           </div>
+
+          <!-- Debugging section -->
+          <div v-if="fetchedDocumentTypes.length === 0" class="mt-2 p-2 bg-yellow-50 rounded text-xs">
+            <p>⚠️ No document types loaded. Please check the API call.</p>
+          </div>
+
           <p class="text-xs text-gray-500 mt-2">
-            Required documents are graduation certificate, cid copy, security clarance, roq
+            Required documents are graduation certificate, cid copy, security clearance, ROQ
             certificate, class 10, 12 and graduation marksheets.
           </p>
         </div>
@@ -221,6 +233,9 @@
               rejection of my registration.
             </label>
           </div>
+          <span v-if="errors.declaration" class="text-xs text-red-500 mt-1">{{
+            errors.declaration
+          }}</span>
         </div>
       </div>
 
@@ -230,15 +245,15 @@
           class="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white hover:bg-gray-50 transition-colors">
           Back to Dashboard
         </button>
-        <button type="button" @click="handleSubmit"
-          class="px-4 py-2 bg-blue-600 text-sm text-white rounded-lg hover:bg-blue-700 transition-colors">
-          Submit Registration
+        <button type="submit" :disabled="isSubmitting"
+          class="px-4 py-2 bg-blue-600 text-sm text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+          <span v-if="isSubmitting">Submitting...</span>
+          <span v-else>Submit Registration</span>
         </button>
       </div>
     </form>
   </div>
 </template>
-
 
 <script setup>
 import { ref, reactive, onMounted, computed } from 'vue'
@@ -288,13 +303,74 @@ const localFormData = reactive({
   payment_id: null,
 })
 
-// 🔥 Yangi computed: filterlangan qualifications ro‘yxati
+// 🔥 Filtered qualifications based on selected qualification type
 const filteredQualifications = computed(() => {
   if (!localFormData.qualification_type) return []
   return qualifications.value.filter(
     (q) => q.qualification_type === localFormData.qualification_type
   )
 })
+
+// Supporting documents array
+const supportingDocuments = ref([{ type: '', files: [] }])
+
+// Add a new document row
+const addDocument = () => {
+  supportingDocuments.value.push({ type: '', files: [] })
+  updateFormDocuments()
+}
+
+// Remove a document row
+const removeDocument = (index) => {
+  supportingDocuments.value.splice(index, 1)
+  updateFormDocuments()
+}
+
+// Handle file selection with validation
+const handleFileSelect = (event, index) => {
+  const files = Array.from(event.target.files)
+  const MAX_SIZE = 2 * 1024 * 1024 // 2MB
+  const ALLOWED_EXTENSIONS = ['.pdf', '.doc', '.docx', '.jpg', '.jpeg', '.png']
+
+  // Clear previous errors
+  delete errors[`document_file_${index}`]
+
+  // Validate files
+  for (const file of files) {
+    if (file.size > MAX_SIZE) {
+      errors[`document_file_${index}`] = `File '${file.name}' exceeds 2MB limit.`
+      toast.error(errors[`document_file_${index}`])
+      event.target.value = ''
+      supportingDocuments.value[index].files = []
+      updateFormDocuments()
+      return
+    }
+
+    const fileExtension = ('.' + file.name.split('.').pop()).toLowerCase()
+    if (!ALLOWED_EXTENSIONS.includes(fileExtension)) {
+      errors[`document_file_${index}`] = `File '${file.name}' has invalid type. Allowed: ${ALLOWED_EXTENSIONS.join(', ')}.`
+      toast.error(errors[`document_file_${index}`])
+      event.target.value = ''
+      supportingDocuments.value[index].files = []
+      updateFormDocuments()
+      return
+    }
+  }
+
+  // If validation passes, assign files
+  supportingDocuments.value[index].files = files
+  updateFormDocuments()
+}
+
+// Update the form documents data
+const updateFormDocuments = () => {
+  localFormData.documents = supportingDocuments.value
+    .filter((doc) => doc.type && doc.files.length > 0)
+    .map((doc) => ({
+      type: doc.type,
+      files: doc.files,
+    }))
+}
 
 // Fetch applications
 const fetchApplications = async () => {
@@ -325,21 +401,7 @@ const fetchApplications = async () => {
   }
 }
 
-const supportingDocuments = ref([{ type: '', files: [] }])
-
-const addDocument = () => supportingDocuments.value.push({ type: '', files: [] })
-const removeDocument = (index) => supportingDocuments.value.splice(index, 1)
-
-const handleFileSelect = (event, index) => {
-  const files = event.target.files
-  if (files.length > 0) {
-    supportingDocuments.value[index].files = []
-    for (let i = 0; i < files.length; i++) {
-      supportingDocuments.value[index].files.push(files[i])
-    }
-  }
-}
-
+// Format date for API
 const formatDateForAPI = (date) => {
   const year = date.getFullYear()
   const month = String(date.getMonth() + 1).padStart(2, '0')
@@ -373,32 +435,40 @@ const validateForm = () => {
     isValid = false
   }
   if (!localFormData.declaration) {
-    toast.error('Please agree to the declaration.')
+    errors.declaration = 'Please agree to the declaration.'
     isValid = false
   }
 
+  // Document validation
   supportingDocuments.value.forEach((doc, index) => {
     if (!doc.type) {
-      toast.error(`Please select a document type for document ${index + 1}.`)
+      errors[`document_type_${index}`] = `Please select a document type for document ${index + 1}.`
       isValid = false
     }
     if (doc.files.length === 0) {
-      toast.error(`Please select file(s) to upload for document ${index + 1}.`)
+      errors[`document_file_${index}`] = `Please select file(s) to upload for document ${index + 1}.`
       isValid = false
     }
   })
 
-  if (!isValid) toast.error('Please correct the errors in the form.')
+  // Check if at least one document is uploaded
+  const totalFiles = supportingDocuments.value.reduce((total, doc) => total + doc.files.length, 0)
+  if (totalFiles === 0) {
+    toast.error('Please upload at least one supporting document.')
+    isValid = false
+  }
 
   return isValid
 }
 
+// Handle form submission
 const handleSubmit = () => {
   if (validateForm()) {
     isConfirmationModalOpen.value = true
   }
 }
 
+// Actual submission
 const handleSubmitActual = async () => {
   isConfirmationModalOpen.value = false
   isSubmitting.value = true
@@ -419,10 +489,12 @@ const handleSubmitActual = async () => {
     formData.append('qualification_name', localFormData.qualification_name)
     formData.append('qualification_type', localFormData.qualification_type)
     formData.append('institute_university', localFormData.institute)
+    formData.append('is_primary_qualification', 'False') // This is additional qualification
 
+    // Add documents to form data
     supportingDocuments.value.forEach((doc, index) => {
       if (doc.files && doc.files.length > 0) {
-       doc.files.forEach((file) => {
+        doc.files.forEach((file) => {
           formData.append('user_qualification_attachment_files', file, file.name)
           formData.append('user_qualification_attachment_file_types', doc.type)
         })
@@ -432,7 +504,7 @@ const handleSubmitActual = async () => {
     const response = await apiService.createMhpcNewQualification(formData)
 
     if (response.status >= 200 && response.status < 300) {
-      toast.success('Application submitted successfully!')
+      toast.success('Additional qualification submitted successfully!')
       emit('submit', formData)
       router.push('/admin/user/health_certification/dashboard')
     } else {
@@ -443,7 +515,11 @@ const handleSubmitActual = async () => {
     if (error.response) {
       if (error.response.status === 400 && error.response.data) {
         Object.keys(error.response.data).forEach((field) => {
-          errors[field] = error.response.data[field].join(', ')
+          if (Array.isArray(error.response.data[field])) {
+            errors[field] = error.response.data[field].join(', ')
+          } else {
+            errors[field] = error.response.data[field]
+          }
         })
         toast.error('Please correct the errors in the form.')
       } else {
@@ -459,29 +535,36 @@ const handleSubmitActual = async () => {
   }
 }
 
+// Initialize component
 onMounted(async () => {
   fetchApplications()
   try {
-    const [qualificationTypesResponse, qualificationsResponse, universitiesResponse] =
+    const [qualificationTypesResponse, qualificationsResponse, universitiesResponse, documentTypesResponse] =
       await Promise.all([
         apiService.getMhpcMastersQualificationTypes(),
         apiService.getMhpcMastersQualifications(),
         apiService.getMhpcMastersUniversities(),
+        apiService.getMhpcMastersDocumentTypes()
       ])
 
-    qualificationTypes.value = qualificationTypesResponse.data.results
-    qualifications.value = qualificationsResponse.data.results
-    universities.value = universitiesResponse.data.results
+    qualificationTypes.value = qualificationTypesResponse.data.results || []
+    qualifications.value = qualificationsResponse.data.results || []
+    universities.value = universitiesResponse.data.results || []
+    fetchedDocumentTypes.value = documentTypesResponse.data.results || []
 
-    const documentTypesResponse = await apiService.getMhpcMastersDocumentTypes()
-    fetchedDocumentTypes.value = documentTypesResponse.data.results
+    console.log('Document types loaded:', fetchedDocumentTypes.value)
+
+    // If no document types, add a fallback
+    if (fetchedDocumentTypes.value.length === 0) {
+      console.warn('No document types found in API response')
+      toast.warning('Document types could not be loaded. Please refresh the page.')
+    }
   } catch (error) {
     console.error('Error fetching master data:', error)
     toast.error('Failed to fetch master data. Please try again.')
   }
 })
 </script>
-
 
 <style scoped>
 .required::after {
