@@ -322,7 +322,7 @@ const loadApplications = async () => {
 
   try {
     const response = await apiService.getRecognitionOfQualification(user.cid)
-    applications.value = response.data.sort(
+    applications.value = response.data.results.sort(
       (a, b) => new Date(b.created_at) - new Date(a.created_at),
     )
   } catch (err) {
