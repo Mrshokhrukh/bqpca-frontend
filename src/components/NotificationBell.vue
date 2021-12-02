@@ -219,9 +219,9 @@ const handleNotificationClick = (notification) => {
   if (notification.status !== 'READ') {
     markAsRead(notification.id)
   }
-  if (notification.link) {
-    router.push(notification.link)
-  }
+  // if (notification.link) {
+  //   router.push(notification.link)
+  // }
   showNotifications.value = false
 }
 

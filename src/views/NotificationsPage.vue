@@ -121,9 +121,9 @@ const handleNotificationClick = async (notification) => {
     }
   }
   
-  if (notification.link) {
-    router.push(notification.link)
-  }
+  // if (notification.link) {
+  //   router.push(notification.link)
+  // }
 }
 
 const handleMarkAllAsRead = async () => {
