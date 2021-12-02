@@ -867,7 +867,7 @@ const serviceSpecificMenuItems = {
         ],
       },
       {
-        name: 'Program',
+        name: 'Program Management',
         icon: getIconComponent('Library'),
         route: (serviceType) => `/admin/admin/${serviceType}/program`,
       },
