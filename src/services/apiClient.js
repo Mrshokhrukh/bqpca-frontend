@@ -7,7 +7,8 @@ const apiClient = axios.create({
   //   import.meta.env.MODE === 'production'
   //     ? import.meta.env.VITE_API_BASE_URL_PROD
   //     : import.meta.env.VITE_API_BASE_URL,
-  baseURL: 'https://bqpca.systems.gov.bt/api',
+  baseURL: 'http://127.0.0.1:8000/api',
+  // 'https://bqpca.systems.gov.bt/api',
   headers: {
     'Content-Type': 'application/json',
   },

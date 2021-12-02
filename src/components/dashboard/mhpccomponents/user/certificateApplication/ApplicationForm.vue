@@ -1207,7 +1207,8 @@ const handleSubmitActual = async () => {
     return
   }
 
-  try {
+  try {    
+    
     const qualificationFormData = new FormData()
     qualificationFormData.append('application', localFormData.application)
     if (localFormData.qualification_name === 'OTHERS') {
@@ -1216,9 +1217,9 @@ const handleSubmitActual = async () => {
         localFormData.other_qualification_name_specify
       )
     } else {
-      qualificationFormData.append('qualification_name', localFormData.qualification_name)
+      qualificationFormData.append('qualification_name_id', Number(localFormData.qualification_name))
     }
-    qualificationFormData.append('qualification_type', localFormData.qualification_type)
+    qualificationFormData.append('qualification_type_id', Number(localFormData.qualification_type))
     qualificationFormData.append('institute_university', localFormData.institute)
     if (localFormData.year_of_completion) {
       const year = localFormData.year_of_completion.split('-')[0]
