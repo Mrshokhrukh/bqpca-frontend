@@ -114,6 +114,7 @@ export default {
       cogs_dept: mhpcDashboard,
       cogs_workplace: mhpcDashboard,
       MastersPersonnelSubCategory: mhpcDashboard,
+      program: mhpcDashboard,
     },
   },
   user: {

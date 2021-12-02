@@ -114,11 +114,12 @@ import {
   Users, // Participation
   User, // Personnel
   CheckCircle, // Registration
-  Building, // University
+  GraduationCap, // University
   Briefcase, // Cogs
   Info,
   TrendingUp,
   ChevronRight,
+  Library
 } from 'lucide-vue-next'
 
 // --- State ---
@@ -141,6 +142,7 @@ const counts = ref({
   cogsAgencies: 0,
   cogsDepts: 0,
   cogsWorkplaces: 0,
+  programs: 0,
 })
 
 // --- Utility Functions ---
@@ -160,8 +162,9 @@ const iconMap = {
   participation: Users,
   personnel: User,
   registration: CheckCircle,
-  university: Building,
+  university: GraduationCap,
   cogsManagement: Briefcase,
+  programs: Library,
 }
 
 // Base path for admin MHPC routes
@@ -319,6 +322,11 @@ const configurationCards = [
         icon: null,
       },
       {
+        text: 'Sub Categories',
+        route: `${basePath}/MastersPersonnelSubCategory`,
+        icon: null,
+      },
+      {
         text: 'Qualifications',
         route: `${basePath}/qualifications`,
         icon: null,
@@ -354,11 +362,6 @@ const configurationCards = [
         route: `${basePath}/sector`,
         icon: null,
       },
-      {
-        text: 'Sub Categories',
-        route: `${basePath}/sub_categories`,
-        icon: null,
-      },
     ],
     gradient: gradientClasses('cyan', 'cyan'),
     iconBg: iconBgClass('cyan'),
@@ -378,7 +381,7 @@ const configurationCards = [
       {
         text: 'Manage Universities',
         route: `${basePath}/university`,
-        icon: null,
+        icon: GraduationCap,
       },
     ],
     gradient: gradientClasses('violet', 'violet'),
@@ -418,6 +421,27 @@ const configurationCards = [
     button: buttonClasses('teal'),
     icon: 'Briefcase',
   },
+  {
+    id: 'programs',
+    title: 'Programs',
+    description: 'Manage MHPC Programs',
+    countLabel: 'Programs',
+    countRef: 'programs',
+    countSuffix: 'programs',
+    usedIn: ['Institute'],
+    children: [
+      {
+        text: 'Manage Programs',
+        route: `${basePath}/program`,
+        icon: null,
+      },
+    ],
+    gradient: gradientClasses('yellow', 'yellow'),
+    iconBg: iconBgClass('yellow'),
+    iconColor: iconColorClass('yellow'),
+    button: buttonClasses('yellow'),
+    icon: 'Library',
+  },
 ]
 
 // --- Data Fetching ---
@@ -427,13 +451,13 @@ onMounted(async () => {
       apiServices.getMhpcMastersCpdActivities(),
       apiServices.getMhpcMastersCpdCredits(),
       apiServices.getMhpcMastersCpdMethodologies(),
-      apiServices.getMhpcMastersCpdActivity(),
+      // apiServices.getMhpcMastersCpdActivity(),
       apiServices.getMhpcMastersDocumentTypes(),
       apiServices.getMhpcMastersESignatures(),
-      apiServices.getMhpcMastersFileTypes(),
+      // apiServices.getMhpcMastersFileTypes(),
       apiServices.getMhpcMastersFeeStructures(),
-      apiServices.getMhpcMastersParticipationCategories(),
-      apiServices.getMhpcMastersParticipationSubCategories(),
+      apiServices.getMhpcMastersMHPCParticipationCategories(),
+      apiServices.getMhpcMastersMhpcParticipationSubCategories(),
       apiServices.getMhpcMastersPersonnelCategories(),
       apiServices.getMhpcMastersQualificationTypes(),
       apiServices.getMhpcMastersRegistrationTypes(),
@@ -443,30 +467,33 @@ onMounted(async () => {
       apiServices.getMhpcMastersCogsAgencies(),
       apiServices.getMhpcMastersCogsDepartments(),
       apiServices.getMhpcMastersCogsWorkplaces(),
+      apiServices.getMhpcProgramMasters(),
     ]
 
     const results = await Promise.all(countPromises)
+    console.log(results)
 
     // Update counts state
-    counts.value.cpdActivities = results[0].data?.length || 0
-    counts.value.cpdCredits = results[1].data?.length || 0
-    counts.value.cpdMethodologies = results[2].data?.length || 0
-    counts.value.cpdActivities = results[3].data?.length || 0
-    counts.value.documentTypes = results[4].data?.length || 0
-    counts.value.eSignatures = results[5].data?.length || 0
-    counts.value.fileTypes = results[6].data?.length || 0
-    counts.value.feeStructures = results[7].data?.length || 0
-    counts.value.participationCategories = results[8].data?.length || 0
-    counts.value.participationSubCategories = results[9].data?.length || 0
-    counts.value.personnelCategories = results[10].data?.length || 0
-    counts.value.qualificationTypes = results[11].data?.length || 0
-    counts.value.registrationTypes = results[12].data?.length || 0
-    counts.value.sectors = results[13].data?.length || 0
-    counts.value.subCategories = results[14].data?.length || 0
-    counts.value.universities = results[15].data?.length || 0
-    counts.value.cogsAgencies = results[16].data?.length || 0
-    counts.value.cogsDepts = results[17].data?.length || 0
-    counts.value.cogsWorkplaces = results[18].data?.length || 0
+    counts.value.cpdActivities = results[0].data?.results.length || 0
+    counts.value.cpdCredits = results[1].data?.results.length || 0
+    counts.value.cpdMethodologies = results[2].data?.results.length || 0
+    // counts.value.cpdActivities = results[3].data?.results.length || 0
+    counts.value.documentTypes = results[3].data?.results.length || 0
+    counts.value.eSignatures = results[4].data?.results.length || 0
+    // counts.value.fileTypes = results[6].data?.results.length || 0
+    counts.value.feeStructures = results[5].data?.results.length || 0
+    counts.value.participationCategories = results[6].data?.results.length || 0
+    counts.value.participationSubCategories = results[7].data?.results.length || 0
+    counts.value.personnelCategories = results[8].data?.results.length || 0
+    counts.value.qualificationTypes = results[9].data?.results.length || 0
+    counts.value.registrationTypes = results[10].data?.results.length || 0
+    counts.value.sectors = results[11].data?.results.length || 0
+    counts.value.subCategories = results[12].data?.results.length || 0
+    counts.value.universities = results[13].data?.results.length || 0
+    counts.value.cogsAgencies = results[14].data?.results.length || 0
+    counts.value.cogsDepts = results[15].data?.results.length || 0
+    counts.value.cogsWorkplaces = results[16].data?.results.length || 0
+    counts.value.programs = results[17].data?.results.length || 0
   } catch (error) {
     console.error('Error fetching dashboard data:', error)
     // Consider adding user-friendly error handling (e.g., a notification)
