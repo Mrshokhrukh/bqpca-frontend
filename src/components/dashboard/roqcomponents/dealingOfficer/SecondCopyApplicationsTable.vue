@@ -2,7 +2,7 @@
   <div class="p-4 w-full">
     <!-- Header Section -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-      <h2 class="text-3xl font-serif font-bold text-slate-900">All ROQ Applications</h2>
+      <h2 class="text-3xl font-serif font-bold text-slate-900">All ROQ Applications </h2>
       <button
         class="inline-flex items-center px-6 py-3 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 active:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transform transition-all duration-200 hover:scale-[1.02] shadow-sm hover:shadow"
         @click="handleApplicationSubmitted"
@@ -85,15 +85,19 @@ const searchQuery = ref('')
 const selectedStatus = ref('')
 const selectedType = ref('')
 const modalType = ref(null)
+const notSelectedStatus = ref(['draft', 'processing_payment'])
 const selectedApplication = ref({})
 const showRemarksModal = ref(false)
 const error = ref(null)
 
 // Computed Property for filtered Applications
 const filteredApplications = computed(() => {
+  console.log(applications.value);
+  
   return applications.value.filter((app) => {
     const matchesStatus = selectedStatus.value ? app.status === selectedStatus.value : true
     const matchesType = selectedType.value ? app.type_of_course === selectedType.value : true
+    const unmatchedStatus = !notSelectedStatus.value.includes(app.status)
     const matchesSearch = searchQuery.value
       ? Object.values(app).some((value) =>
           String(value).toLowerCase().includes(searchQuery.value.toLowerCase())
@@ -102,7 +106,7 @@ const filteredApplications = computed(() => {
     const isSecondCopy = app.is_second_copy // Exclude if is_second_copy is true
     const isNotDraft = app.status !== 'draft'
 
-    return matchesStatus && matchesType && matchesSearch && isSecondCopy && isNotDraft
+    return matchesStatus && matchesType && matchesSearch && isSecondCopy && isNotDraft && unmatchedStatus
   })
 })
 
