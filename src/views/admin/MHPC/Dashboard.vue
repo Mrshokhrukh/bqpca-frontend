@@ -121,6 +121,7 @@ import MastersUniversity from '@/components/dashboard/mhpccomponents/admin/Maste
 import CogsAgency from '@/components/dashboard/mhpccomponents/admin/CogsAgency.vue'
 import CogsDepartment from '@/components/dashboard/mhpccomponents/admin/CogsDepartment.vue'
 import CogsWorkplace from '@/components/dashboard/mhpccomponents/admin/CogsWorkplace.vue'
+import MastersPrograms from '@/components/dashboard/mhpccomponents/admin/MastersPrograms.vue'
 
 // CPD Provider Components
 
@@ -211,6 +212,8 @@ const bmhAdminComponent = computed(() => {
       return CogsWorkplace
     case path.endsWith('/health_certification/MastersPersonnelSubCategory'):
       return MastersPersonnelSubCategory
+    case path.endsWith('/program'):
+      return MastersPrograms
     default:
       return null
   }

@@ -252,7 +252,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, nextTick } from 'vue' // *** ADDED nextTick ***
+import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
 import { useToast } from 'vue-toastification'
 
@@ -264,8 +264,7 @@ const props = defineProps({
     required: true,
     default: 0,
   },
-  // *** NEW PROP ***: Controls whether the modal closes on successful initiation.
-  // Defaults to true, so it will now close automatically as you requested.
+  // Controls if the modal should close automatically after a successful initiation
   closeOnSuccess: {
     type: Boolean,
     default: true,
@@ -286,7 +285,6 @@ const slider = ref(null)
 const sliderThumb = ref(null)
 const errorMessage = ref('')
 
-// --- All your other functions (checkMobile, startSlide, etc.) remain the same ---
 const checkMobile = () => {
   isMobile.value = window.innerWidth < 768
 }
@@ -324,29 +322,32 @@ const resetSlide = () => {
   slideProgress.value = 0
 }
 
-// --- MODIFIED FUNCTION ---
 const initiatePayment = async () => {
-  if (isProcessing.value) return // Prevent double submission
+  if (isProcessing.value) return
   isProcessing.value = true
   errorMessage.value = ''
-  try {
-    const paymentHash = uuidv4()
-    // In a real scenario, this would be an API call.
-    // We are simulating a successful response.
-    const paymentDone = true
 
+  try {
+    // Generate a unique reference ID for this payment transaction
+    const paymentHash = uuidv4()
+
+    // Notify parent component
     emit('payment-completed', {
       paymentHash,
-      paymentDone,
+      paymentDone: true,
       status: 'initiated',
       message: 'Payment link will be sent to your email via BIRMS',
     })
+
     toast.success('Payment initiated successfully!')
 
-    // *** THE FIX IS HERE ***
-    // Check the new prop and close the modal if it's true.
+    // *** FIX: AUTO CLOSE LOGIC ***
+    // If props.closeOnSuccess is true, we force close the modal.
     if (props.closeOnSuccess) {
-      closeModal()
+       isVisible.value = false;
+       document.body.style.overflow = '';
+       emit('close');
+       resetSlide();
     }
   } catch (error) {
     errorMessage.value = 'Failed to initiate payment. Please try again.'
@@ -354,6 +355,7 @@ const initiatePayment = async () => {
     console.error('Payment initiation error:', error)
     resetSlide()
   } finally {
+    // Allow button to be clickable again if the modal stays open (or re-opens)
     isProcessing.value = false
   }
 }
@@ -369,7 +371,9 @@ const openModal = () => {
 }
 
 const closeModal = () => {
+  // Manual close via 'X' or 'Cancel' should be blocked while processing
   if (isProcessing.value) return
+
   isVisible.value = false
   resetSlide()
   document.body.style.overflow = ''

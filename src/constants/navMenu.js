@@ -44,6 +44,7 @@ import {
   GraduationCap, // Used for Course Management
   Sliders,
   Activity,
+  Library,
 } from 'lucide-vue-next'
 
 // Icon mapping for dynamic icon selection
@@ -92,6 +93,7 @@ const iconMap = {
   GraduationCap,
   Sliders,
   Activity,
+  Library
 }
 import { useHealthCertificationStore } from '@/stores/mhpcNavigationStore' // Ensure this path is correct
 import { useEngineeringCertificationStore } from '@/stores/engineeringNavigationStore'
@@ -864,6 +866,12 @@ const serviceSpecificMenuItems = {
           },
         ],
       },
+      {
+        name: 'Program Management',
+        icon: getIconComponent('Library'),
+        route: (serviceType) => `/admin/admin/${serviceType}/program`,
+      },
+
     ],
     dealing_officer: [
       {
@@ -1433,12 +1441,12 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/admin/${serviceType}/sub_categories`,
           },
           {
-            name: 'Qualification Types',
-            route: (serviceType) => `/admin/admin/${serviceType}/qualification_types`,
-          },
-          {
             name: 'Qualifications',
             route: (serviceType) => `/admin/admin/${serviceType}/qualifications`,
+          },
+          {
+            name: 'Qualification Types',
+            route: (serviceType) => `/admin/admin/${serviceType}/qualification_types`,
           },
         ],
       },
@@ -1454,14 +1462,14 @@ const serviceSpecificMenuItems = {
             name: 'Registration Sectors',
             route: (serviceType) => `/admin/admin/${serviceType}/sector`,
           },
-          {
-            name: 'Participation Categories',
-            route: (serviceType) => `/admin/admin/${serviceType}/participation_category`,
-          },
-          {
-            name: 'Participation Sub Categories',
-            route: (serviceType) => `/admin/admin/${serviceType}/participation_sub_category`,
-          },
+          // {
+          //   name: 'Participation Categories',
+          //   route: (serviceType) => `/admin/admin/${serviceType}/participation_category`,
+          // },
+          // {
+          //   name: 'Participation Sub Categories',
+          //   route: (serviceType) => `/admin/admin/${serviceType}/participation_sub_category`,
+          // },
         ],
       },
       {
@@ -1697,7 +1705,7 @@ const serviceSpecificMenuItems = {
       {
         name: 'Manage Accreditation Schedule',
         icon: getIconComponent('LayoutDashboard'),
-        route: (serviceType) => `/admin/dealing_officer/${serviceType}/manage_accreditation_schedule`, 
+        route: (serviceType) => `/admin/dealing_officer/${serviceType}/manage_accreditation_schedule`,
       },
       {
         name: 'Accreditation Applications',

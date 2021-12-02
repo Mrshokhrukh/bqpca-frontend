@@ -246,32 +246,32 @@ const configurationCards = [
     button: buttonClasses('amber'),
     icon: 'DollarSign',
   },
-  {
-    id: 'participation',
-    title: 'Participation',
-    description: 'Manage engineering participation categories',
-    countLabel: 'Categories',
-    countRef: 'participationCategories',
-    countSuffix: 'categories',
-    usedIn: ['Registration', 'Activities'],
-    children: [
-      {
-        text: 'Categories',
-        route: `${basePath}/participation_category`,
-        icon: null,
-      },
-      {
-        text: 'Sub Categories',
-        route: `${basePath}/participation_sub_category`,
-        icon: null,
-      },
-    ],
-    gradient: gradientClasses('purple', 'purple'),
-    iconBg: iconBgClass('purple'),
-    iconColor: iconColorClass('purple'),
-    button: buttonClasses('purple'),
-    icon: 'Users',
-  },
+  // {
+  //   id: 'participation',
+  //   title: 'Participation',
+  //   description: 'Manage engineering participation categories',
+  //   countLabel: 'Categories',
+  //   countRef: 'participationCategories',
+  //   countSuffix: 'categories',
+  //   usedIn: ['Registration', 'Activities'],
+  //   children: [
+  //     {
+  //       text: 'Categories',
+  //       route: `${basePath}/participation_category`,
+  //       icon: null,
+  //     },
+  //     {
+  //       text: 'Sub Categories',
+  //       route: `${basePath}/participation_sub_category`,
+  //       icon: null,
+  //     },
+  //   ],
+  //   gradient: gradientClasses('purple', 'purple'),
+  //   iconBg: iconBgClass('purple'),
+  //   iconColor: iconColorClass('purple'),
+  //   button: buttonClasses('purple'),
+  //   icon: 'Users',
+  // },
   {
     id: 'personnel',
     title: 'Personnel',
@@ -284,6 +284,11 @@ const configurationCards = [
       {
         text: 'Categories',
         route: `${basePath}/personnel_categories`,
+        icon: null,
+      },
+      {
+        text: 'Sub Categories',
+        route: `${basePath}/sub_categories`,
         icon: null,
       },
       {
@@ -320,11 +325,6 @@ const configurationCards = [
       {
         text: 'Sectors',
         route: `${basePath}/sector`,
-        icon: null,
-      },
-      {
-        text: 'Sub Categories',
-        route: `${basePath}/sub_categories`,
         icon: null,
       },
     ],

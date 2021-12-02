@@ -79,7 +79,7 @@
       <div class="flex items-center justify-center min-h-screen p-4 text-center">
         <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="closeModal"></div>
         <div class="relative bg-white rounded-2xl shadow-xl transform transition-all my-8 max-w-5xl w-full max-h-[90vh] flex flex-col">
-          
+
           <!-- Modal Header -->
           <div class="flex items-start justify-between p-5 border-b rounded-t bg-gray-50">
             <div>
@@ -186,6 +186,37 @@
         </div>
       </div>
     </div>
+
+    <!-- Delete Confirmation Modal (Using Radix Vue AlertDialog) -->
+    <!-- MOVED THIS INSIDE THE MAIN TEMPLATE DIV -->
+    <AlertDialogRoot :open="showDeleteConfirmationModal" @update:open="showDeleteConfirmationModal = $event">
+      <AlertDialogOverlay class="fixed inset-0 bg-black/50 z-40" />
+      <AlertDialogContent
+        class="fixed top-[50%] left-[50%] max-h-[85vh] w-[90vw] max-w-[500px] translate-x-[-50%] translate-y-[-50%] rounded-lg bg-white p-6 shadow-lg focus:outline-none z-50"
+      >
+        <AlertDialogTitle class="text-xl font-semibold text-gray-900 mb-2">
+          Confirm Deletion
+        </AlertDialogTitle>
+        <AlertDialogDescription class="text-gray-600 mb-6">
+          Are you sure you want to permanently delete this appeal? This action cannot be undone.
+        </AlertDialogDescription>
+        <div class="flex justify-end gap-4">
+          <AlertDialogCancel
+            class="px-4 py-2 rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200"
+            @click="showDeleteConfirmationModal = false"
+          >
+            Cancel
+          </AlertDialogCancel>
+          <AlertDialogAction
+            class="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700"
+            @click="confirmDeleteAppeal"
+          >
+            Delete
+          </AlertDialogAction>
+        </div>
+      </AlertDialogContent>
+    </AlertDialogRoot>
+
   </div>
 </template>
 
@@ -194,6 +225,15 @@ import { ref, onMounted, computed } from 'vue';
 import { useToast } from 'vue-toastification';
 import apiService from '@/services/services';
 import { Loader2, Eye, Trash2, X, Save, FileText } from 'lucide-vue-next';
+import {
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogOverlay,
+  AlertDialogRoot,
+  AlertDialogTitle,
+} from 'radix-vue';
 
 const toast = useToast();
 const appeals = ref([]);
@@ -203,6 +243,10 @@ const loading = ref(false);
 const isModalOpen = ref(false);
 const selectedAppeal = ref(null);
 const postAppeal = ref({ newGradeId: null });
+
+// New refs for delete confirmation modal
+const showDeleteConfirmationModal = ref(false);
+const appealToDeleteId = ref(null);
 
 const isAppealApproved = computed(() => {
   if (!selectedAppeal.value || !decisionOptions.value.length) return false;
@@ -273,39 +317,26 @@ const saveDecision = async () => {
 };
 
 const removeAppeal = async (id) => {
-  toast('Are you sure you want to permanently delete this appeal? This action cannot be undone.', {
-    type: 'warning',
-    timeout: false,
-    closeOnClick: false,
-    draggable: false,
-    position: "top-center",
-    actions: [
-      {
-        text: 'Confirm',
-        class: '!font-bold',
-        onClick: async (e, toastObject) => {
-          toastObject.dismiss();
-          loading.value = true;
-          try {
-              await apiService.deleteApplicationAppeal(id);
-              await fetchInitialData();
-              toast.success('Appeal deleted successfully.');
-          } catch(error) {
-              console.error('Error deleting appeal:', error);
-              toast.error('Could not delete the appeal.');
-          } finally {
-              loading.value = false;
-          }
-        },
-      },
-      {
-        text: 'Cancel',
-        onClick: (e, toastObject) => {
-          toastObject.dismiss();
-        },
-      },
-    ],
-  });
+  appealToDeleteId.value = id;
+  showDeleteConfirmationModal.value = true;
+};
+
+const confirmDeleteAppeal = async () => {
+  if (!appealToDeleteId.value) return;
+
+  loading.value = true;
+  try {
+    await apiService.deleteApplicationAppeal(appealToDeleteId.value);
+    await fetchInitialData();
+    toast.success('Appeal deleted successfully.');
+  } catch (error) {
+    console.error('Error deleting appeal:', error);
+    toast.error('Could not delete the appeal.');
+  } finally {
+    loading.value = false;
+    showDeleteConfirmationModal.value = false; // Close modal
+    appealToDeleteId.value = null; // Clear ID
+  }
 };
 
 const viewAppeal = (appeal) => {

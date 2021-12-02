@@ -198,9 +198,26 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, watch } from 'vue'
 import apiServices from '@/services/services' // Adjust path as needed
 import { useToast } from 'vue-toastification'
+
+const props = defineProps({
+  instituteId: {
+    type: [String, Number],
+    required: true,
+  },
+  instituteData: {
+    // Contains existing data from the EOI stage
+    type: Object,
+    required: true,
+  },
+})
+
+const emit = defineEmits(['close', 'dpr-submitted'])
+
+const toast = useToast()
 
 const GENDER_OPTIONS = Object.freeze([
   { value: 'MALE', text: 'Male' },
@@ -247,179 +264,158 @@ const DPR_DETAIL_SECTIONS = Object.freeze([
   { key: 'other_details_dpr', label: 'Others *', rows: 4 },
 ])
 
-export default {
-  name: 'DprSubmissionModal',
-  props: {
-    instituteId: {
-      type: [String, Number],
-      required: true,
-    },
-    instituteData: {
-      // Contains existing data from the EOI stage
-      type: Object,
-      required: true,
-    },
+const isSubmitting = ref(false)
+const submissionError = ref(null)
+const errors = ref({})
+const loadingInstituteData = ref(false)
+const genderOptions = GENDER_OPTIONS
+const dprDetailSections = DPR_DETAIL_SECTIONS
+
+const initializeFormData = () => {
+  const initial = {
+    // Pre-filled from EOI (mostly disabled or for reference)
+    name_of_institution: props.instituteData.name_of_institution || '',
+    CID: props.instituteData.CID || '',
+    dzongkhag: props.instituteData.dzongkhag || '',
+    program_type_name: props.instituteData.program_type?.name || '', // Assuming program_type is an object with a name property
+
+    // DPR specific fields (editable/new, prefill if already exists on instituteData)
+    dpr_name: props.instituteData.dpr_name || '',
+
+    head_of_institution_name: props.instituteData.head_of_institution_name || '',
+    head_of_institution_gender: props.instituteData.head_of_institution_gender || '',
+    head_of_institution_email: props.instituteData.head_of_institution_email || '',
+    head_of_institution_phone_number: props.instituteData.head_of_institution_phone_number || '',
+
+    contact_no: props.instituteData.contact_no || '', // Institution contact, might be applicant's from EOI
+    email_address: props.instituteData.email_address || '', // Institution email, might be applicant's from EOI
+    gewog: props.instituteData.gewog || '',
+    village: props.instituteData.village || '',
+    address: props.instituteData.address || '',
+
+    commencement_date: props.instituteData.commencement_date || null,
+    course_duration: props.instituteData.course_duration || null,
+    executive_summary: props.instituteData.executive_summary || '',
+
+    remarks: props.instituteData.remarks || '',
+    declaration: props.instituteData.declaration || false,
+  }
+
+  // Initialize DPR detail sections
+  DPR_DETAIL_SECTIONS.forEach((section) => {
+    initial[section.key] = props.instituteData[section.key] || ''
+  })
+
+  return initial
+}
+
+const formData = ref(initializeFormData())
+
+watch(
+  () => props.instituteData,
+  () => {
+    formData.value = initializeFormData()
   },
-  data() {
-    return {
-      formData: this.initializeFormData(),
-      isSubmitting: false,
-      submissionError: null,
-      errors: {}, // For field-specific validation errors
-      loadingInstituteData: false, // Could be true if we fetch fresh data, but using prop for now
-      genderOptions: GENDER_OPTIONS,
-      dprDetailSections: DPR_DETAIL_SECTIONS,
+  {
+    deep: true,
+    immediate: true, // Initialize on component creation
+  },
+)
+
+const validateForm = () => {
+  errors.value = {}
+  let isValid = true
+
+  if (!formData.value.dpr_name) {
+    errors.value.dpr_name = 'DPR Name is required.'
+    isValid = false
+  }
+  // Add more specific validations as needed for other required fields
+  // For brevity, relying on `required` attribute on inputs for now.
+  // A more robust validation would check each required field here.
+  if (!formData.value.declaration) {
+    toast.error('You must agree to the declaration.')
+    isValid = false
+  }
+
+  // Check all required textareas
+  DPR_DETAIL_SECTIONS.forEach((section) => {
+    if (!formData.value[section.key]) {
+      errors.value[section.key] = `${section.label.replace(' *', '')} is required.`
+      isValid = false
     }
-  },
-  setup() {
-    const toast = useToast()
-    return { toast }
-  },
-  watch: {
-    instituteData: {
-      handler() {
-        this.formData = this.initializeFormData()
-      },
-      deep: true,
-      immediate: true, // Initialize on component creation
-    },
-  },
-  methods: {
-    initializeFormData() {
-      const initial = {
-        // Pre-filled from EOI (mostly disabled or for reference)
-        name_of_institution: this.instituteData.name_of_institution || '',
-        CID: this.instituteData.CID || '',
-        dzongkhag: this.instituteData.dzongkhag || '',
-        program_type_name: this.instituteData.program_type?.name || '', // Assuming program_type is an object with a name property
+  })
+  // Basic check for other required fields
+  const requiredFields = [
+    'head_of_institution_name',
+    'head_of_institution_gender',
+    'head_of_institution_email',
+    'head_of_institution_phone_number',
+    'contact_no',
+    'email_address',
+    'address',
+    'commencement_date',
+    'course_duration',
+    'executive_summary',
+  ]
+  requiredFields.forEach((field) => {
+    if (!formData.value[field]) {
+      errors.value[field] = `${field.replace(/_/g, ' ')} is required.` // Simple message
+      isValid = false
+    }
+  })
 
-        // DPR specific fields (editable/new, prefill if already exists on instituteData)
-        dpr_name: this.instituteData.dpr_name || '',
+  if (!isValid && !errors.value.dpr_name) {
+    // If other errors exist but not dpr_name, show generic for now
+    toast.error('Please fill all required (*) fields.')
+  }
+  return isValid
+}
 
-        head_of_institution_name: this.instituteData.head_of_institution_name || '',
-        head_of_institution_gender: this.instituteData.head_of_institution_gender || '',
-        head_of_institution_email: this.instituteData.head_of_institution_email || '',
-        head_of_institution_phone_number: this.instituteData.head_of_institution_phone_number || '',
+const handleSubmitDpr = async () => {
+  submissionError.value = null
+  if (!validateForm()) {
+    return
+  }
 
-        contact_no: this.instituteData.contact_no || '', // Institution contact, might be applicant's from EOI
-        email_address: this.instituteData.email_address || '', // Institution email, might be applicant's from EOI
-        gewog: this.instituteData.gewog || '',
-        village: this.instituteData.village || '',
-        address: this.instituteData.address || '',
+  isSubmitting.value = true
 
-        commencement_date: this.instituteData.commencement_date || null,
-        course_duration: this.instituteData.course_duration || null,
-        executive_summary: this.instituteData.executive_summary || '',
+  // Construct payload - only send fields relevant for DPR update
+  // Backend should ideally ignore fields it doesn't want updated (like CID, name_of_institution)
+  const payload = {
+    ...formData.value, // Send all form data
+    application_status: 'DPR_SUBMITTED', // CRITICAL: Update status
+  }
 
-        remarks: this.instituteData.remarks || '',
-        declaration: this.instituteData.declaration || false,
-      }
+  // Remove fields that should not be sent or are display-only
+  delete payload.program_type_name
 
-      // Initialize DPR detail sections
-      DPR_DETAIL_SECTIONS.forEach((section) => {
-        initial[section.key] = this.instituteData[section.key] || ''
-      })
-
-      return initial
-    },
-    validateForm() {
-      this.errors = {}
-      let isValid = true
-
-      if (!this.formData.dpr_name) {
-        this.errors.dpr_name = 'DPR Name is required.'
-        isValid = false
-      }
-      // Add more specific validations as needed for other required fields
-      // For brevity, relying on `required` attribute on inputs for now.
-      // A more robust validation would check each required field here.
-      if (!this.formData.declaration) {
-        this.toast.error('You must agree to the declaration.')
-        isValid = false
-      }
-
-      // Check all required textareas
-      DPR_DETAIL_SECTIONS.forEach((section) => {
-        if (!this.formData[section.key]) {
-          this.errors[section.key] = `${section.label.replace(' *', '')} is required.`
-          isValid = false
+  try {
+    await apiServices.patchMhpcInstitute(props.instituteId, payload)
+    emit('dpr-submitted')
+  } catch (err) {
+    console.error('Error submitting DPR:', err)
+    submissionError.value =
+      err.response?.data?.detail || err.message || 'Failed to submit DPR. Please try again.'
+    if (err.response?.data && typeof err.response.data === 'object') {
+      // Handle specific field errors from backend if provided
+      Object.keys(err.response.data).forEach((key) => {
+        if (Object.prototype.hasOwnProperty.call(formData.value, key)) {
+          errors.value[key] = err.response.data[key].join
+            ? err.response.data[key].join(', ')
+            : err.response.data[key]
         }
       })
-      // Basic check for other required fields
-      const requiredFields = [
-        'head_of_institution_name',
-        'head_of_institution_gender',
-        'head_of_institution_email',
-        'head_of_institution_phone_number',
-        'contact_no',
-        'email_address',
-        'address',
-        'commencement_date',
-        'course_duration',
-        'executive_summary',
-      ]
-      requiredFields.forEach((field) => {
-        if (!this.formData[field]) {
-          this.errors[field] = `${field.replace(/_/g, ' ')} is required.` // Simple message
-          isValid = false
-        }
-      })
+    }
+  } finally {
+    isSubmitting.value = false
+  }
+}
 
-      if (!isValid && !this.errors.dpr_name) {
-        // If other errors exist but not dpr_name, show generic for now
-        this.toast.error('Please fill all required (*) fields.')
-      }
-      return isValid
-    },
-    async handleSubmitDpr() {
-      this.submissionError = null
-      if (!this.validateForm()) {
-        return
-      }
-
-      this.isSubmitting = true
-
-      // Construct payload - only send fields relevant for DPR update
-      // Backend should ideally ignore fields it doesn't want updated (like CID, name_of_institution)
-      const payload = {
-        ...this.formData, // Send all form data
-        application_status: 'DPR_SUBMITTED', // CRITICAL: Update status
-      }
-
-      // Remove fields that should not be sent or are display-only
-      delete payload.program_type_name
-
-      try {
-        await apiServices.patchMhpcInstitute(this.instituteId, payload)
-        this.$emit('dpr-submitted')
-      } catch (err) {
-        console.error('Error submitting DPR:', err)
-        this.submissionError =
-          err.response?.data?.detail || err.message || 'Failed to submit DPR. Please try again.'
-        if (err.response?.data && typeof err.response.data === 'object') {
-          // Handle specific field errors from backend if provided
-          Object.keys(err.response.data).forEach((key) => {
-            if (Object.prototype.hasOwnProperty.call(this.formData, key)) {
-              this.$set(
-                this.errors,
-                key,
-                err.response.data[key].join
-                  ? err.response.data[key].join(', ')
-                  : err.response.data[key],
-              )
-            }
-          })
-        }
-      } finally {
-        this.isSubmitting = false
-      }
-    },
-    closeModal() {
-      if (!this.isSubmitting) {
-        this.$emit('close')
-      }
-    },
-  },
+const closeModal = () => {
+  if (!isSubmitting.value) {
+    emit('close')
+  }
 }
 </script>
 

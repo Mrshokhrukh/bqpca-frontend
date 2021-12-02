@@ -247,7 +247,16 @@ const formData = ref({
 })
 
 const handleFileUpload = (event) => {
-  formData.value.assessorReportFile = event.target.files[0]
+  const file = event.target.files[0]
+  if (file) {
+    if (file.size > 5 * 1024 * 1024) { // 5MB limit
+      toast.error('File is too large. Maximum size is 5MB.');
+      formData.value.assessorReportFile = null;
+      event.target.value = ''; // Reset the file input
+      return;
+    }
+    formData.value.assessorReportFile = file
+  }
 }
 
 const handleSubmit = async () => {

@@ -104,11 +104,11 @@ const props = defineProps({
 })
 
 watchEffect(() => {
-  console.log(
-    '%c[CounselorStatus.vue] Data Received:',
-    'color: #4CAF50; font-weight: bold;',
-    props.application,
-  )
+  // console.log(
+  //   '%c[CounselorStatus.vue] Data Received:',
+  //   'color: #4CAF50; font-weight: bold;',
+  //   props.application,
+  // )
   if (props.application) {
     console.log(
       '%c[CounselorStatus.vue] Value of is_counselor:',

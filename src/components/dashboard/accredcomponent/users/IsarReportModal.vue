@@ -90,6 +90,7 @@
             <div>
               <label for="land_registration_certificate" class="block text-sm font-medium text-gray-700">Land Registration Certificate</label>
               <input type="file" id="land_registration_certificate" @change="handleFileChange($event, 'land_registration_certificate')" class="form-file" accept=".pdf,.jpg,.png" required />
+              <p class="text-xs text-gray-500 mt-1">Maximum file size: 5MB.</p>
             </div>
           </div>
 
@@ -151,26 +152,50 @@
           <div class="p-4 border rounded-md space-y-4">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 items-center">
               <span class="font-medium">Total Faculty</span>
-              <input type="number" v-model.number="formData.isar_faculty_male" placeholder="Male" class="form-input" min="0" />
-              <input type="number" v-model.number="formData.isar_faculty_female" placeholder="Female" class="form-input" min="0" />
+              <div>
+                <label for="isar_faculty_male" class="block text-sm font-medium text-gray-700 mb-1">Male</label>
+                <input type="number" id="isar_faculty_male" v-model.number="formData.isar_faculty_male" class="form-input" min="0" />
+              </div>
+              <div>
+                <label for="isar_faculty_female" class="block text-sm font-medium text-gray-700 mb-1">Female</label>
+                <input type="number" id="isar_faculty_female" v-model.number="formData.isar_faculty_female" class="form-input" min="0" />
+              </div>
               <p class="p-2 bg-gray-100 rounded-md text-center">Total: {{ totalFaculty }}</p>
             </div>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 items-center">
               <span class="font-medium">Regular Faculty</span>
-              <input type="number" v-model.number="formData.isar_regular_faculty_male" placeholder="Male" class="form-input" min="0" />
-              <input type="number" v-model.number="formData.isar_regular_faculty_female" placeholder="Female" class="form-input" min="0" />
+              <div>
+                <label for="isar_regular_faculty_male" class="block text-sm font-medium text-gray-700 mb-1">Male</label>
+                <input type="number" id="isar_regular_faculty_male" v-model.number="formData.isar_regular_faculty_male" class="form-input" min="0" />
+              </div>
+              <div>
+                <label for="isar_regular_faculty_female" class="block text-sm font-medium text-gray-700 mb-1">Female</label>
+                <input type="number" id="isar_regular_faculty_female" v-model.number="formData.isar_regular_faculty_female" class="form-input" min="0" />
+              </div>
               <p class="p-2 bg-gray-100 rounded-md text-center">Total: {{ totalRegularFaculty }}</p>
             </div>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 items-center">
               <span class="font-medium">Contract Faculty</span>
-              <input type="number" v-model.number="formData.isar_contract_faculty_male" placeholder="Male" class="form-input" min="0" />
-              <input type="number" v-model.number="formData.isar_contract_faculty_female" placeholder="Female" class="form-input" min="0" />
+              <div>
+                <label for="isar_contract_faculty_male" class="block text-sm font-medium text-gray-700 mb-1">Male</label>
+                <input type="number" id="isar_contract_faculty_male" v-model.number="formData.isar_contract_faculty_male" class="form-input" min="0" />
+              </div>
+              <div>
+                <label for="isar_contract_faculty_female" class="block text-sm font-medium text-gray-700 mb-1">Female</label>
+                <input type="number" id="isar_contract_faculty_female" v-model.number="formData.isar_contract_faculty_female" class="form-input" min="0" />
+              </div>
               <p class="p-2 bg-gray-100 rounded-md text-center">Total: {{ totalContractFaculty }}</p>
             </div>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 items-center">
               <span class="font-medium">Visiting Faculty</span>
-              <input type="number" v-model.number="formData.isar_visiting_faculty_male" placeholder="Male" class="form-input" min="0" />
-              <input type="number" v-model.number="formData.isar_visiting_faculty_female" placeholder="Female" class="form-input" min="0" />
+              <div>
+                <label for="isar_visiting_faculty_male" class="block text-sm font-medium text-gray-700 mb-1">Male</label>
+                <input type="number" id="isar_visiting_faculty_male" v-model.number="formData.isar_visiting_faculty_male" class="form-input" min="0" />
+              </div>
+              <div>
+                <label for="isar_visiting_faculty_female" class="block text-sm font-medium text-gray-700 mb-1">Female</label>
+                <input type="number" id="isar_visiting_faculty_female" v-model.number="formData.isar_visiting_faculty_female" class="form-input" min="0" />
+              </div>
               <p class="p-2 bg-gray-100 rounded-md text-center">Total: {{ totalVisitingFaculty }}</p>
             </div>
           </div>
@@ -194,20 +219,38 @@
           <div class="p-4 border rounded-md space-y-4">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 items-center">
               <span class="font-medium">Technical Staff</span>
-              <input type="number" v-model.number="formData.isar_technical_staff_male" placeholder="Male" class="form-input" min="0" />
-              <input type="number" v-model.number="formData.isar_technical_staff_female" placeholder="Female" class="form-input" min="0" />
+              <div>
+                <label for="isar_technical_staff_male" class="block text-sm font-medium text-gray-700 mb-1">Male</label>
+                <input type="number" id="isar_technical_staff_male" v-model.number="formData.isar_technical_staff_male" class="form-input" min="0" />
+              </div>
+              <div>
+                <label for="isar_technical_staff_female" class="block text-sm font-medium text-gray-700 mb-1">Female</label>
+                <input type="number" id="isar_technical_staff_female" v-model.number="formData.isar_technical_staff_female" class="form-input" min="0" />
+              </div>
               <p class="p-2 bg-gray-100 rounded-md text-center">Total: {{ totalTechnicalStaff }}</p>
             </div>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 items-center">
               <span class="font-medium">Administrative Staff</span>
-              <input type="number" v-model.number="formData.isar_admin_staff_male" placeholder="Male" class="form-input" min="0" />
-              <input type="number" v-model.number="formData.isar_admin_staff_female" placeholder="Female" class="form-input" min="0" />
+              <div>
+                <label for="isar_admin_staff_male" class="block text-sm font-medium text-gray-700 mb-1">Male</label>
+                <input type="number" id="isar_admin_staff_male" v-model.number="formData.isar_admin_staff_male" class="form-input" min="0" />
+              </div>
+              <div>
+                <label for="isar_admin_staff_female" class="block text-sm font-medium text-gray-700 mb-1">Female</label>
+                <input type="number" id="isar_admin_staff_female" v-model.number="formData.isar_admin_staff_female" class="form-input" min="0" />
+              </div>
               <p class="p-2 bg-gray-100 rounded-md text-center">Total: {{ totalAdminStaff }}</p>
             </div>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 items-center">
               <span class="font-medium">Support Staff</span>
-              <input type="number" v-model.number="formData.isar_support_staff_male" placeholder="Male" class="form-input" min="0" />
-              <input type="number" v-model.number="formData.isar_support_staff_female" placeholder="Female" class="form-input" min="0" />
+              <div>
+                <label for="isar_support_staff_male" class="block text-sm font-medium text-gray-700 mb-1">Male</label>
+                <input type="number" id="isar_support_staff_male" v-model.number="formData.isar_support_staff_male" class="form-input" min="0" />
+              </div>
+              <div>
+                <label for="isar_support_staff_female" class="block text-sm font-medium text-gray-700 mb-1">Female</label>
+                <input type="number" id="isar_support_staff_female" v-model.number="formData.isar_support_staff_female" class="form-input" min="0" />
+              </div>
               <p class="p-2 bg-gray-100 rounded-md text-center">Total: {{ totalSupportStaff }}</p>
             </div>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 items-center">
@@ -222,26 +265,50 @@
           <div class="p-4 border rounded-md space-y-4">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 items-center">
               <span class="font-medium">Diploma Students</span>
-              <input type="number" v-model.number="formData.isar_students_diploma_male" placeholder="Male" class="form-input" min="0" />
-              <input type="number" v-model.number="formData.isar_students_diploma_female" placeholder="Female" class="form-input" min="0" />
+              <div>
+                <label for="isar_students_diploma_male" class="block text-sm font-medium text-gray-700 mb-1">Male</label>
+                <input type="number" id="isar_students_diploma_male" v-model.number="formData.isar_students_diploma_male" class="form-input" min="0" />
+              </div>
+              <div>
+                <label for="isar_students_diploma_female" class="block text-sm font-medium text-gray-700 mb-1">Female</label>
+                <input type="number" id="isar_students_diploma_female" v-model.number="formData.isar_students_diploma_female" class="form-input" min="0" />
+              </div>
               <p class="p-2 bg-gray-100 rounded-md text-center">Total: {{ totalDiplomaStudents }}</p>
             </div>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 items-center">
               <span class="font-medium">Bachelors' Students</span>
-              <input type="number" v-model.number="formData.isar_students_bachelors_male" placeholder="Male" class="form-input" min="0" />
-              <input type="number" v-model.number="formData.isar_students_bachelors_female" placeholder="Female" class="form-input" min="0" />
+              <div>
+                <label for="isar_students_bachelors_male" class="block text-sm font-medium text-gray-700 mb-1">Male</label>
+                <input type="number" id="isar_students_bachelors_male" v-model.number="formData.isar_students_bachelors_male" class="form-input" min="0" />
+              </div>
+              <div>
+                <label for="isar_students_bachelors_female" class="block text-sm font-medium text-gray-700 mb-1">Female</label>
+                <input type="number" id="isar_students_bachelors_female" v-model.number="formData.isar_students_bachelors_female" class="form-input" min="0" />
+              </div>
               <p class="p-2 bg-gray-100 rounded-md text-center">Total: {{ totalBachelorsStudents }}</p>
             </div>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 items-center">
               <span class="font-medium">Masters' Students</span>
-              <input type="number" v-model.number="formData.isar_students_masters_male" placeholder="Male" class="form-input" min="0" />
-              <input type="number" v-model.number="formData.isar_students_masters_female" placeholder="Female" class="form-input" min="0" />
+              <div>
+                <label for="isar_students_masters_male" class="block text-sm font-medium text-gray-700 mb-1">Male</label>
+                <input type="number" id="isar_students_masters_male" v-model.number="formData.isar_students_masters_male" class="form-input" min="0" />
+              </div>
+              <div>
+                <label for="isar_students_masters_female" class="block text-sm font-medium text-gray-700 mb-1">Female</label>
+                <input type="number" id="isar_students_masters_female" v-model.number="formData.isar_students_masters_female" class="form-input" min="0" />
+              </div>
               <p class="p-2 bg-gray-100 rounded-md text-center">Total: {{ totalMastersStudents }}</p>
             </div>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 items-center">
               <span class="font-medium">Other Students</span>
-              <input type="number" v-model.number="formData.isar_students_other_male" placeholder="Male" class="form-input" min="0" />
-              <input type="number" v-model.number="formData.isar_students_other_female" placeholder="Female" class="form-input" min="0" />
+              <div>
+                <label for="isar_students_other_male" class="block text-sm font-medium text-gray-700 mb-1">Male</label>
+                <input type="number" id="isar_students_other_male" v-model.number="formData.isar_students_other_male" class="form-input" min="0" />
+              </div>
+              <div>
+                <label for="isar_students_other_female" class="block text-sm font-medium text-gray-700 mb-1">Female</label>
+                <input type="number" id="isar_students_other_female" v-model.number="formData.isar_students_other_female" class="form-input" min="0" />
+              </div>
               <p class="p-2 bg-gray-100 rounded-md text-center">Total: {{ totalOtherStudents }}</p>
             </div>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 items-center">
@@ -262,6 +329,7 @@
                 {{ standard.standard_name }}
               </label>
               <input type="file" :id="`standard_file_${standard.id}`" @change="handleFileChange($event, `isar_standard_document_file_${standard.id}`)" class="form-file" accept=".pdf,.doc,.docx" required />
+              <p class="text-xs text-gray-500 mt-1">Maximum file size: 5MB.</p>
             </div>
           </div>
         </section>
@@ -269,7 +337,7 @@
 
       <footer class="p-4 border-t bg-gray-50 flex justify-end gap-4 sticky bottom-0">
         <button @click="close" type="button" class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">Cancel</button>
-        <button @click="handleSubmit" type="button" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Submit ISAR</button>
+        <button @click="handleSubmit" type="button" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Submit ISARs</button>
       </footer>
     </dialog>
   </div>
@@ -391,9 +459,20 @@ const totalAllStudents = computed(() => totalDiplomaStudents.value + totalBachel
 
 const handleFileChange = (event, key) => {
   const file = event.target.files[0];
-  if (file) {
-    filesToUpload.value[key] = file;
+  if (!file) {
+    delete filesToUpload.value[key];
+    return;
   }
+  const maxSize = 5 * 1024 * 1024; // 5MB
+
+  if (file.size > maxSize) {
+    toast.error(`File "${file.name}" exceeds the 5MB size limit.`);
+    event.target.value = ''; // Reset the file input
+    delete filesToUpload.value[key];
+    return;
+  }
+
+  filesToUpload.value[key] = file;
 };
 
 const handleSubmit = () => {
