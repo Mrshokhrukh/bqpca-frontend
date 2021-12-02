@@ -7,7 +7,7 @@
     </PageHeader>
 
     <div
-      v-if="engineeringStore.visibleMenus.hasRenewalInProgress"
+      v-if="engineeringStore.visibleMenus.hasRenewalInProgress || hasSubmittedRenewal || isRenewalActive"
       class="bg-blue-50 border-l-4 border-blue-500 text-blue-700 p-5 sm:p-6 mb-8 rounded-xl shadow-sm"
     >
       <div class="flex items-start">
@@ -16,12 +16,11 @@
         </div>
         <div class="ml-3">
           <h3 class="text-base sm:text-lg font-medium text-blue-800">
-            Renewal Application In Progress
+            {{ submittedMessageTitle }}
           </h3>
           <div class="mt-2 text-sm sm:text-base text-blue-700">
             <p>
-              You already have a renewal application under review by our staff. You can track the
-              status of your application in the "My Applications" section.
+              {{ submittedMessageText }}
             </p>
           </div>
           <div class="mt-4 sm:mt-6">
@@ -523,6 +522,22 @@ const isSubmitting = ref(false)
 const loadError = ref('')
 const declaration = ref(false)
 const remarks = ref('')
+const hasSubmittedRenewal = ref(false) // New ref for immediate feedback
+const isRenewalActive = ref(false) // New ref for persistent check
+
+const submittedMessageTitle = computed(() => {
+  if (hasSubmittedRenewal.value) {
+    return 'Renewal Application Successfully Submitted!'
+  }
+  return 'Renewal Application In Progress'
+})
+
+const submittedMessageText = computed(() => {
+  if (hasSubmittedRenewal.value) {
+    return `Your ${renewalType.value} application has been successfully submitted and is now under review by our staff. You can track its status in the "My Applications" section.`
+  }
+  return 'You already have a renewal application under review by our staff. You can track the status of your application in the "My Applications" section.'
+})
 
 const today = computed(() => dayjs().startOf('day')) // Use startOf('day') for consistency
 const expiryDate = computed(() =>
@@ -570,17 +585,26 @@ const isEligibleForRenewal = computed(() => {
   if (!formData.value.qualification_id_to_renew) return false
   if (!expiryDate.value || !expiryDate.value.isValid()) return false
 
-  // If it expires today, it's always eligible for renewal.
-  // This gracefully handles cases where a backend might prematurely set is_active to false.
+  // Case 1: Re-registration for expired qualifications.
+  // This is the primary condition for re-registration.
+  if (hasExpired.value) {
+    return true
+  }
+
+  // Case 2: Special case for applications expiring exactly today.
+  // This ensures eligibility even if is_active might have been prematurely set to false.
   if (expiresToday.value) {
     return true
   }
 
-  // Original logic for other cases
-  const canRenew = isExpiringWithin3Months.value && formData.value.is_active === true
-  const canReRegister = hasExpired.value
+  // Case 3: Renewal for active, soon-to-expire qualifications.
+  // For a standard renewal, it must be active AND expiring within 3 months.
+  if (isExpiringWithin3Months.value && formData.value.is_active === true) {
+    return true
+  }
 
-  return canRenew || canReRegister
+  // If none of the above conditions are met, the application is not eligible.
+  return false
 })
 
 const renewalEligibilityMessage = computed(() => {
@@ -732,6 +756,21 @@ const fetchApplicationData = async () => {
   try {
     const userCid = authStore.user?.cid
     if (!userCid) throw new Error('User CID not found. Please log in.')
+
+    // Check for existing pending renewals before proceeding
+    const renewalCheckResponse = await apiService.getEpcRenewals({
+      cid: userCid,
+      status: 'Pending',
+    })
+    if (
+      renewalCheckResponse.data &&
+      ((renewalCheckResponse.data.results && renewalCheckResponse.data.results.length > 0) ||
+        (Array.isArray(renewalCheckResponse.data) && renewalCheckResponse.data.length > 0))
+    ) {
+      isRenewalActive.value = true
+      isLoading.value = false
+      return // Stop execution, the "in progress" message will be shown
+    }
 
     const response = await apiService.getEpcApplicationsByCid(userCid)
 
@@ -907,8 +946,8 @@ const confirmSubmit = async () => {
           renewalType.value === 're-registration' ? 'Re-registration' : 'Renewal'
         } application submitted successfully! Payment will be processed later. Check "My Applications" for status.`,
       )
+      hasSubmittedRenewal.value = true
       await engineeringStore.initialize()
-      router.push('/admin/user/engineering_certification/my_applications')
     } else {
       console.warn(
         `${renewalType.value} created, but API response structure might be unexpected.`,
@@ -919,8 +958,8 @@ const confirmSubmit = async () => {
           renewalType.value === 're-registration' ? 'Re-registration' : 'Renewal'
         } application submitted successfully! Check "My Applications" for status. Payment will be handled later.`,
       )
+      hasSubmittedRenewal.value = true
       await engineeringStore.initialize()
-      router.push('/admin/user/engineering_certification/my_applications')
     }
   } catch (error) {
     console.error(`Error submitting ${renewalType.value}:`, error)
