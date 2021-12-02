@@ -125,7 +125,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <div class="relative">
-              <label for="cid" class="block text-sm font-medium text-gray-700">CID No.</label>
+              <label for="cid" class="block text-sm font-medium text-gray-700">Work Permit no.</label>
               <div class="mt-1 relative rounded-md shadow-sm">
                 <input type="text" id="cid" v-model="form.cid_no" :readonly=true @input="handleCIDInput" maxlength="11"
                   :class="[
@@ -222,7 +222,7 @@
           </div>
 
           <div>
-            <label for="dzongkhag_non_cid" class="block text-sm font-medium text-gray-700 required">Dzongkhag</label>
+            <label for="dzongkhag_non_cid" class="block text-sm font-medium text-gray-700 required">Country</label>
             <input type="text" id="dzongkhag_non_cid" v-model="form.dzongkhag" required
               @input="validateField('dzongkhag')" :class="[
                 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2',
@@ -237,7 +237,7 @@
           </div>
 
           <div>
-            <label for="gewog_non_cid" class="block text-sm font-medium text-gray-700 required">Gewog</label>
+            <label for="gewog_non_cid" class="block text-sm font-medium text-gray-700 required">State</label>
             <input type="text" id="gewog_non_cid" v-model="form.gewog" required @input="validateField('gewog')" :class="[
               'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2',
               {
@@ -250,7 +250,7 @@
           </div>
 
           <div>
-            <label for="village_non_cid" class="block text-sm font-medium text-gray-700 required">Village</label>
+            <label for="village_non_cid" class="block text-sm font-medium text-gray-700 required">City</label>
             <input type="text" id="village_non_cid" v-model="form.village" required @input="validateField('village')"
               :class="[
                 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-50 p-2',
