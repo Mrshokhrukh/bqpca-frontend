@@ -73,6 +73,7 @@
                     accept=".pdf"
                     class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
+                  <p v-if="errorMessage" class="mt-2 text-sm text-red-600">{{ errorMessage }}</p>
                 </div>
               </div>
 
@@ -322,6 +323,7 @@ const showDeleteModal = ref(false)
 const deleteId = ref(null)
 const currentPage = ref(1)
 const totalPages = ref(1)
+const errorMessage = ref('')
 
 // Methods
 const fetchAssessors = async (page = 1) => {
@@ -338,7 +340,14 @@ const fetchAssessors = async (page = 1) => {
 const handleFileUpload = (event) => {
   const file = event.target.files[0]
   if (file) {
+    if (file.size > 5 * 1024 * 1024) { // 5MB limit
+      errorMessage.value = 'File is too large. Maximum size is 5MB.';
+      formData.value.assessors_report = null;
+      event.target.value = ''; // Reset the file input
+      return;
+    }
     formData.value.assessors_report = file
+    errorMessage.value = ''; // Clear error on successful selection
   }
 }
 

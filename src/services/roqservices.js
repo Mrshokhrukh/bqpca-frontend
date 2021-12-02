@@ -6,7 +6,7 @@ export default {
     return apiClient.get('/recognitions/recognition-of-qualifications/', { params })
   },
   getRecognitionOfQualification(id) {
-    return apiClient.get(`/recognitions/recognition-of-qualifications/${id}/`)
+    return apiClient.get(`/recognitions/recognition-of-qualifications/?cid=${id}`)
   },
   createRecognitionOfQualification(formData) {
     return apiClient.post('/recognitions/recognition-of-qualifications/', formData)
