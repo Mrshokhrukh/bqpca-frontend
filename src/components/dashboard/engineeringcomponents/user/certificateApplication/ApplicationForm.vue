@@ -1,36 +1,65 @@
 <template>
   <div class="w-full mx-auto px-2 sm:px-4 py-4 sm:py-6">
-    <PageHeader :title="selectedType === 'cid' ? 'CID Holder Registration' : 'Non-CID Holder Registration'">
+    <PageHeader
+      :title="selectedType === 'cid' ? 'CID Holder Registration' : 'Non-CID Holder Registration'"
+    >
       <template #icon>
         <UserPlus class="w-6 h-6 text-indigo-600" />
       </template>
       <template #subtitle>
-        Please fill in all required fields marked with an asterisk (<span class="text-red-600">*</span>). Ensure all
-        information provided is accurate and up-to-date.
+        Please fill in all required fields marked with an asterisk (<span class="text-red-600"
+          >*</span
+        >). Ensure all information provided is accurate and up-to-date.
       </template>
     </PageHeader>
 
     <TransitionRoot as="template" :show="isConfirmationModalOpen">
       <Dialog as="div" class="relative z-50" @close="isConfirmationModalOpen = false">
-        <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100"
-          leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
+        <TransitionChild
+          as="template"
+          enter="ease-out duration-300"
+          enter-from="opacity-0"
+          enter-to="opacity-100"
+          leave="ease-in duration-200"
+          leave-from="opacity-100"
+          leave-to="opacity-0"
+        >
           <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
         </TransitionChild>
 
         <div class="fixed inset-0 z-10 overflow-y-auto">
-          <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-            <TransitionChild as="template" enter="ease-out duration-300"
+          <div
+            class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0"
+          >
+            <TransitionChild
+              as="template"
+              enter="ease-out duration-300"
               enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-              enter-to="opacity-100 translate-y-0 sm:scale-100" leave="ease-in duration-200"
+              enter-to="opacity-100 translate-y-0 sm:scale-100"
+              leave="ease-in duration-200"
               leave-from="opacity-100 translate-y-0 sm:scale-100"
-              leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+              leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+            >
               <DialogPanel
-                class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+                class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6"
+              >
                 <div>
-                  <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
-                    <svg class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                      stroke="currentColor" aria-hidden="true">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                  <div
+                    class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100"
+                  >
+                    <svg
+                      class="h-6 w-6 text-green-600"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="1.5"
+                      stroke="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M4.5 12.75l6 6 9-13.5"
+                      />
                     </svg>
                   </div>
                   <div class="mt-3 text-center sm:mt-5">
@@ -46,14 +75,18 @@
                   </div>
                 </div>
                 <div class="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
-                  <button type="button"
+                  <button
+                    type="button"
                     class="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2"
-                    @click="handleSubmitActual">
+                    @click="handleSubmitActual"
+                  >
                     Confirm
                   </button>
-                  <button type="button"
+                  <button
+                    type="button"
                     class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0"
-                    @click="isConfirmationModalOpen = false">
+                    @click="isConfirmationModalOpen = false"
+                  >
                     Cancel
                   </button>
                 </div>
@@ -64,7 +97,11 @@
       </Dialog>
     </TransitionRoot>
 
-    <form @submit.prevent="handleNext" class="bg-white border rounded-xl shadow-sm p-4 sm:p-6" v-if="stage === 1">
+    <form
+      @submit.prevent="handleNext"
+      class="bg-white border rounded-xl shadow-sm p-4 sm:p-6"
+      v-if="stage === 1"
+    >
       <h3 class="text-lg font-semibold text-gray-900 my-3">Step 1: Registration</h3>
       <div class="border-b border-gray-200 bg-gray-50 p-4 sm:p-6 rounded-t-xl">
         <h3 class="text-lg font-semibold text-gray-900">Personal Information</h3>
@@ -76,49 +113,67 @@
           <template v-if="selectedType === 'cid'">
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700 required">CID No.</label>
-              <input v-model="localFormData.cid_no" type="number" maxlength="11" :disabled="true" :readonly="true"
+              <input
+                v-model="localFormData.cid_no"
+                type="number"
+                maxlength="11"
+                :disabled="true"
+                :readonly="true"
                 oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
-                placeholder="Enter 11-digit CID number" @input="fetchDCRCData" />
+                placeholder="Enter 11-digit CID number"
+                @input="fetchDCRCData"
+              />
               <span v-if="errors.cid_no" class="text-xs text-red-500 mt-1">{{
                 errors.cid_no
-                }}</span>
+              }}</span>
             </div>
 
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700 required">Dzongkhag</label>
-              <input type="text" v-model="localFormData.dzongkhag"
+              <input
+                type="text"
+                v-model="localFormData.dzongkhag"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 bg-gray-100"
-                readonly />
+                readonly
+              />
               <span v-if="errors.dzongkhag" class="text-xs text-red-500 mt-1">{{
                 errors.dzongkhag
-                }}</span>
+              }}</span>
             </div>
 
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700 required">Gewog</label>
-              <input type="text" v-model="localFormData.gewog"
+              <input
+                type="text"
+                v-model="localFormData.gewog"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 bg-gray-100"
-                readonly />
+                readonly
+              />
               <span v-if="errors.gewog" class="text-xs text-red-500 mt-1">{{ errors.gewog }}</span>
             </div>
 
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700 required">Village</label>
-              <input type="text" v-model="localFormData.village"
+              <input
+                type="text"
+                v-model="localFormData.village"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 bg-gray-100"
-                readonly />
+                readonly
+              />
               <span v-if="errors.village" class="text-xs text-red-500 mt-1">{{
                 errors.village
-                }}</span>
+              }}</span>
             </div>
           </template>
 
           <template v-else>
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700 required">Nationality</label>
-              <select v-model="localFormData.nationality"
-                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2">
+              <select
+                v-model="localFormData.nationality"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
+              >
                 <option value="">SELECT NATIONALITY</option>
                 <option v-for="country in countries" :key="country" :value="country">
                   {{ country }}
@@ -126,33 +181,47 @@
               </select>
               <span v-if="errors.nationality" class="text-xs text-red-500 mt-1">{{
                 errors.nationality
-                }}</span>
+              }}</span>
             </div>
 
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700 required">Email Address</label>
-              <input v-model="localFormData.email_address" type="email"
+              <input
+                v-model="localFormData.email_address"
+                type="email"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
-                placeholder="Email Address" />
+                placeholder="Email Address"
+              />
               <span v-if="errors.email_address" class="text-xs text-red-500 mt-1">{{
                 errors.email_address
-                }}</span>
+              }}</span>
             </div>
 
             <div class="col-span-1">
-              <label class="block text-sm font-medium text-gray-700 required">Identity / Work Permit No</label>
-              <input v-model="localFormData.workPermitNo" type="text" :readonly="true"   :disabled="true"
+              <label class="block text-sm font-medium text-gray-700 required"
+                >Identity / Work Permit No</label
+              >
+              <input
+                v-model="localFormData.workPermitNo"
+                type="text"
+                :readonly="true"
+                :disabled="true"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
-                placeholder="Identity / Work Permit No" />
+                placeholder="Identity / Work Permit No"
+              />
               <span v-if="errors.workPermitNo" class="text-xs text-red-500 mt-1">{{
                 errors.workPermitNo
-                }}</span>
+              }}</span>
             </div>
 
             <div class="col-span-1">
-              <label class="block text-sm font-medium text-gray-700 required">Country of Residence</label>
-              <select v-model="localFormData.country"
-                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2">
+              <label class="block text-sm font-medium text-gray-700 required"
+                >Country of Residence</label
+              >
+              <select
+                v-model="localFormData.country"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
+              >
                 <option value="">SELECT COUNTRY</option>
                 <option v-for="countryItem in countries" :key="countryItem" :value="countryItem">
                   {{ countryItem }}
@@ -160,80 +229,109 @@
               </select>
               <span v-if="errors.country" class="text-xs text-red-500 mt-1">{{
                 errors.country
-                }}</span>
+              }}</span>
             </div>
 
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700">City / Town</label>
-              <input v-model="localFormData.city" type="text"
+              <input
+                v-model="localFormData.city"
+                type="text"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
-                placeholder="City / Town" />
+                placeholder="City / Town"
+              />
               <span v-if="errors.city" class="text-xs text-red-500 mt-1">{{ errors.city }}</span>
             </div>
 
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700">State / Province</label>
-              <input v-model="localFormData.state" type="text"
+              <input
+                v-model="localFormData.state"
+                type="text"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
-                placeholder="State / Province" />
+                placeholder="State / Province"
+              />
               <span v-if="errors.state" class="text-xs text-red-500 mt-1">{{ errors.state }}</span>
             </div>
 
             <div class="col-span-1">
               <label class="block text-sm font-medium text-gray-700 required">Mobile Number</label>
-              <input v-model="localFormData.mobileNumber" type="tel"
+              <input
+                v-model="localFormData.mobileNumber"
+                type="tel"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
-                placeholder="Mobile Number" />
+                placeholder="Mobile Number"
+              />
               <span v-if="errors.mobileNumber" class="text-xs text-red-500 mt-1">{{
                 errors.mobileNumber
-                }}</span>
+              }}</span>
             </div>
           </template>
 
           <div class="col-span-1">
             <label class="block text-sm font-medium text-gray-700 required">Full Name</label>
-            <input v-model="localFormData.full_name" type="text" :class="[
-              'mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2',
-              { 'bg-gray-100': selectedType === 'cid' },
-            ]" placeholder="Enter full name" :readonly="selectedType === 'cid'" />
+            <input
+              v-model="localFormData.full_name"
+              type="text"
+              :class="[
+                'mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2',
+                { 'bg-gray-100': selectedType === 'cid' },
+              ]"
+              placeholder="Enter full name"
+              :readonly="selectedType === 'cid'"
+            />
             <span v-if="errors.full_name" class="text-xs text-red-500 mt-1">{{
               errors.full_name
-              }}</span>
+            }}</span>
           </div>
 
           <div class="col-span-1">
             <label class="block text-sm font-medium text-gray-700 required">Gender</label>
-            <select v-model="localFormData.gender" :class="[
-              'mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2',
-              { 'bg-gray-100': selectedType === 'cid' },
-            ]" :disabled="selectedType === 'cid'">
+            <select
+              v-model="localFormData.gender"
+              :class="[
+                'mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2',
+                { 'bg-gray-100': selectedType === 'cid' },
+              ]"
+              :disabled="selectedType === 'cid'"
+            >
               <option value="">Select Gender</option>
               <option value="male">Male</option>
               <option value="female">Female</option>
-              <option value="O">Other</option>
+              <option value="others">Other</option>
             </select>
             <span v-if="errors.gender" class="text-xs text-red-500 mt-1">{{ errors.gender }}</span>
           </div>
 
           <div class="col-span-1">
             <label class="block text-sm font-medium text-gray-700 required">Date of Birth</label>
-            <input type="date" v-model="localFormData.date_of_birth" :class="[
-              'mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2',
-              { 'bg-gray-100': selectedType === 'cid' },
-            ]" :readonly="selectedType === 'cid'" />
+            <input
+              type="date"
+              v-model="localFormData.date_of_birth"
+              :class="[
+                'mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2',
+                { 'bg-gray-100': selectedType === 'cid' },
+              ]"
+              :readonly="selectedType === 'cid'"
+            />
             <span v-if="errors.date_of_birth" class="text-xs text-red-500 mt-1">{{
               errors.date_of_birth
-              }}</span>
+            }}</span>
           </div>
 
           <div class="col-span-1">
-            <label class="block text-sm font-medium text-gray-700 required">Contact Number (for communication)</label>
-            <input v-model="localFormData.contact_no" type="tel"
+            <label class="block text-sm font-medium text-gray-700 required"
+              >Contact Number (for communication)</label
+            >
+            <input
+              v-model="localFormData.contact_no"
+              type="tel"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
-              placeholder="Enter phone number" />
+              placeholder="Enter phone number"
+            />
             <span v-if="errors.contact_no" class="text-xs text-red-500 mt-1">{{
               errors.contact_no
-              }}</span>
+            }}</span>
           </div>
         </div>
 
@@ -246,19 +344,24 @@
             No available registration types. Please ensure they are configured in the master list.
           </div>
           <div v-else class="mt-2 flex flex-wrap gap-2">
-            <button v-for="regType in filteredRegistrationTypes" :key="regType.id" type="button"
-              @click="selectRegistrationType(regType.id)" :class="[
+            <button
+              v-for="regType in filteredRegistrationTypes"
+              :key="regType.id"
+              type="button"
+              @click="selectRegistrationType(regType.id)"
+              :class="[
                 'px-4 py-2 rounded-md text-sm font-medium transition-colors',
                 localFormData.registration_type === regType.id
                   ? 'bg-indigo-600 text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
-              ]">
+              ]"
+            >
               {{ regType.name }}
             </button>
           </div>
           <span v-if="errors.registration_type" class="text-xs text-red-500 mt-1">{{
             errors.registration_type
-            }}</span>
+          }}</span>
         </div>
 
         <div class="mt-8">
@@ -266,27 +369,36 @@
             <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-3">Passport Photo</h3>
             <div class="flex items-start space-x-4">
               <div class="flex-1">
-                <label class="block text-sm font-medium text-gray-700 required">Upload Passport Photo (JPG, PNG, max
-                  2MB)</label>
-                <input type="file" @change="handlePassportPhotoSelect"
+                <label class="block text-sm font-medium text-gray-700 required"
+                  >Upload Passport Photo (JPG, PNG, max 2MB)</label
+                >
+                <input
+                  type="file"
+                  @change="handlePassportPhotoSelect"
                   class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                  accept=".jpg,.jpeg,.png" />
+                  accept=".jpg,.jpeg,.png"
+                />
                 <span v-if="errors.passport_photo" class="text-xs text-red-500 mt-1">{{
                   errors.passport_photo
-                  }}</span>
+                }}</span>
               </div>
             </div>
           </div>
         </div>
 
         <div class="mt-8 flex justify-end space-x-3">
-          <button type="button" @click="$emit('back')"
-            class="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+          <button
+            type="button"
+            @click="$emit('back')"
+            class="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+          >
             Back to Selection
           </button>
-          <button type="submit"
+          <button
+            type="submit"
             class="px-4 py-2 bg-blue-600 text-sm text-white rounded-lg hover:bg-blue-700 transition-colors"
-            :disabled="isSubmitting">
+            :disabled="isSubmitting"
+          >
             <span v-if="isSubmitting">Saving...</span>
             <span v-else>Next: Qualification</span>
           </button>
@@ -294,8 +406,11 @@
       </div>
     </form>
 
-    <form @submit.prevent="openConfirmationModal" class="bg-white border rounded-xl shadow-sm p-4 sm:p-6"
-      v-else-if="stage === 2">
+    <form
+      @submit.prevent="openConfirmationModal"
+      class="bg-white border rounded-xl shadow-sm p-4 sm:p-6"
+      v-else-if="stage === 2"
+    >
       <h3 class="text-lg font-semibold text-gray-900 my-3">
         Step 2: Qualification & Document Upload
       </h3>
@@ -307,9 +422,13 @@
           </h3>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div class="col-span-1">
-              <label class="block text-sm font-medium text-gray-700 required">Qualification Type</label>
-              <select v-model="localFormData.qualification_type"
-                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2">
+              <label class="block text-sm font-medium text-gray-700 required"
+                >Qualification Type</label
+              >
+              <select
+                v-model="localFormData.qualification_type"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
+              >
                 <option value="">Select Qualification Type</option>
                 <option v-for="qType in qualificationTypes" :key="qType.id" :value="qType.id">
                   {{ qType.qualification_type_name }}
@@ -317,65 +436,104 @@
               </select>
               <span v-if="errors.qualification_type" class="text-xs text-red-500 mt-1">{{
                 errors.qualification_type
-                }}</span>
+              }}</span>
             </div>
 
             <div class="col-span-1">
-              <label class="block text-sm font-medium text-gray-700 required">Qualification Name</label>
-              <select v-model="localFormData.qualification_name" @change="
-                localFormData.qualification_name !== 'OTHERS'
-                  ? (localFormData.other_qualification_name_specify = '')
-                  : ''
+              <label class="block text-sm font-medium text-gray-700 required"
+                >Qualification Name</label
+              >
+              <select
+                v-model="localFormData.qualification_name"
+                @change="
+                  localFormData.qualification_name !== 'OTHERS'
+                    ? (localFormData.other_qualification_name_specify = '')
+                    : ''
                 "
-                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2">
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
+              >
                 <option value="">Select Qualification Name</option>
-                <option v-for="qualification in qualifications" :key="qualification.id" :value="qualification.id">
+                <option
+                  v-for="qualification in qualifications"
+                  :key="qualification.id"
+                  :value="qualification.id"
+                >
                   {{ qualification.qualification }}
                 </option>
                 <option value="OTHERS">Others (Please specify)</option>
               </select>
-              <span v-if="errors.qualification_name && localFormData.qualification_name !== 'OTHERS'"
-                class="text-xs text-red-500 mt-1">{{ errors.qualification_name }}</span>
+              <span
+                v-if="errors.qualification_name && localFormData.qualification_name !== 'OTHERS'"
+                class="text-xs text-red-500 mt-1"
+                >{{ errors.qualification_name }}</span
+              >
             </div>
 
             <div class="col-span-1" v-if="localFormData.qualification_name === 'OTHERS'">
-              <label class="block text-sm font-medium text-gray-700 required">Specify Qualification Name</label>
-              <input v-model="localFormData.other_qualification_name_specify" type="text"
+              <label class="block text-sm font-medium text-gray-700 required"
+                >Specify Qualification Name</label
+              >
+              <input
+                v-model="localFormData.other_qualification_name_specify"
+                type="text"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
-                placeholder="Enter your qualification name" />
-              <span v-if="errors.other_qualification_name_specify" class="text-xs text-red-500 mt-1">{{
-                errors.other_qualification_name_specify }}</span>
+                placeholder="Enter your qualification name"
+              />
+              <span
+                v-if="errors.other_qualification_name_specify"
+                class="text-xs text-red-500 mt-1"
+                >{{ errors.other_qualification_name_specify }}</span
+              >
             </div>
 
-            <div :class="localFormData.qualification_name === 'OTHERS'
-                ? 'col-span-2 sm:col-span-1'
-                : 'col-span-1'
-              ">
-              <label class="block text-sm font-medium text-gray-700 required">Institute/University</label>
-              <select v-model="localFormData.institute"
-                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2">
+            <div
+              :class="
+                localFormData.qualification_name === 'OTHERS'
+                  ? 'col-span-2 sm:col-span-1'
+                  : 'col-span-1'
+              "
+            >
+              <label class="block text-sm font-medium text-gray-700 required"
+                >Institute/University</label
+              >
+              <select
+                v-model="localFormData.institute"
+                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
+              >
                 <option value="">Select Institute/University</option>
-                <option v-for="university in universities" :key="university.id" :value="university.id">
+                <option
+                  v-for="university in universities"
+                  :key="university.id"
+                  :value="university.id"
+                >
                   {{ university.country }}, {{ university.university }},
                   {{ university.institute_name }}
                 </option>
               </select>
               <span v-if="errors.institute" class="text-xs text-red-500 mt-1">{{
                 errors.institute
-                }}</span>
+              }}</span>
             </div>
 
-            <div :class="localFormData.qualification_name === 'OTHERS'
-                ? 'col-span-2 sm:col-span-1'
-                : 'col-span-1'
-              ">
-              <label class="block text-sm font-medium text-gray-700 required">Year of Completion (YYYY-MM)</label>
-              <input type="month" v-model="localFormData.year_of_completion"
+            <div
+              :class="
+                localFormData.qualification_name === 'OTHERS'
+                  ? 'col-span-2 sm:col-span-1'
+                  : 'col-span-1'
+              "
+            >
+              <label class="block text-sm font-medium text-gray-700 required"
+                >Year of Completion (YYYY-MM)</label
+              >
+              <input
+                type="month"
+                v-model="localFormData.year_of_completion"
                 class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2"
-                placeholder="YYYY-MM" />
+                placeholder="YYYY-MM"
+              />
               <span v-if="errors.year_of_completion" class="text-xs text-red-500 mt-1">{{
                 errors.year_of_completion
-                }}</span>
+              }}</span>
             </div>
           </div>
         </div>
@@ -391,8 +549,10 @@
             types available are from the master list. (Allowed: .pdf, .doc, .docx, .jpg, .jpeg,
             .png; Max 2MB per file)
           </p>
-          <div v-if="currentRequiredDocNames.length > 0 && localFormData.registration_type"
-            class="mt-2 mb-3 p-3 bg-blue-50 border border-blue-200 rounded-md">
+          <div
+            v-if="currentRequiredDocNames.length > 0 && localFormData.registration_type"
+            class="mt-2 mb-3 p-3 bg-blue-50 border border-blue-200 rounded-md"
+          >
             <p class="text-sm font-medium text-blue-700">
               Mandatory documents for
               {{ getRegistrationTypeName(localFormData.registration_type) }}:
@@ -401,61 +561,100 @@
               <li v-for="docName in currentRequiredDocNames" :key="docName">{{ docName }}</li>
             </ul>
           </div>
-          <p v-else-if="
-            localFormData.registration_type &&
-            !isLoadingMasters &&
-            fetchedDocumentTypes.length > 0
-          " class="text-xs text-gray-500 mt-1 mb-3">
+          <p
+            v-else-if="
+              localFormData.registration_type &&
+              !isLoadingMasters &&
+              fetchedDocumentTypes.length > 0
+            "
+            class="text-xs text-gray-500 mt-1 mb-3"
+          >
             No specific mandatory documents are listed for
             {{ getRegistrationTypeName(localFormData.registration_type) }}. Please ensure all
             relevant documents are uploaded.
           </p>
-          <p v-else-if="!isLoadingMasters && fetchedDocumentTypes.length === 0"
-            class="text-xs text-yellow-600 mt-1 mb-3">
+          <p
+            v-else-if="!isLoadingMasters && fetchedDocumentTypes.length === 0"
+            class="text-xs text-yellow-600 mt-1 mb-3"
+          >
             Document types master list could not be loaded. Document selection may be affected.
           </p>
           <span v-if="errors.mandatory_documents" class="text-xs text-red-500 mt-1 block">{{
             errors.mandatory_documents
-            }}</span>
+          }}</span>
 
           <div class="space-y-3 mt-4">
-            <div v-for="(doc, index) in supportingDocuments" :key="index"
-              class="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 bg-white p-3 rounded-lg border border-gray-100 shadow-sm">
+            <div
+              v-for="(doc, index) in supportingDocuments"
+              :key="index"
+              class="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 bg-white p-3 rounded-lg border border-gray-100 shadow-sm"
+            >
               <div class="w-full sm:w-1/3">
-                <label :for="`doc_type_${index}`" class="sr-only">Document Type {{ index + 1 }}</label>
-                <select :id="`doc_type_${index}`" v-model="doc.type"
-                  class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 text-sm">
+                <label :for="`doc_type_${index}`" class="sr-only"
+                  >Document Type {{ index + 1 }}</label
+                >
+                <select
+                  :id="`doc_type_${index}`"
+                  v-model="doc.type"
+                  class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 text-sm"
+                  @change="updateFormDocuments"
+                >
                   <option value="">Select Document Type</option>
-                  <option v-for="docTypeOption in fetchedDocumentTypes" :key="docTypeOption.id"
-                    :value="docTypeOption.id">
+                  <option
+                    v-for="docTypeOption in fetchedDocumentTypes"
+                    :key="docTypeOption.id"
+                    :value="docTypeOption.id"
+                  >
                     {{ docTypeOption.document_name }}
                   </option>
                 </select>
-                <span v-if="errors[`document_type_${index}`]" class="text-xs text-red-500 mt-1">{{
-                  errors[`document_type_${index}`]
-                  }}</span>
+                <span v-if="errors[`document_type_${index}`]" class="text-xs text-red-500 mt-1">
+                  {{ errors[`document_type_${index}`] }}
+                </span>
               </div>
               <div class="flex-1 flex items-center space-x-2">
-                <label :for="`doc_file_${index}`" class="sr-only">File for Document {{ index + 1 }}</label>
-                <input :id="`doc_file_${index}`" type="file" @change="(e) => handleFileSelect(e, index)"
+                <label :for="`doc_file_${index}`" class="sr-only"
+                  >File for Document {{ index + 1 }}</label
+                >
+                <input
+                  :id="`doc_file_${index}`"
+                  type="file"
+                  @change="(e) => handleFileSelect(e, index)"
                   class="block w-full text-sm text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" multiple />
-                <button @click="removeDocument(index)" type="button"
+                  accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                  multiple
+                />
+                <button
+                  @click="removeDocument(index)"
+                  type="button"
                   class="p-1.5 text-gray-400 hover:text-red-500 transition-colors rounded-full focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1"
-                  aria-label="Remove document">
+                  aria-label="Remove document"
+                >
                   <span class="sr-only">Remove</span>
                   ✕
                 </button>
               </div>
-              <span v-if="errors[`document_file_${index}`]"
-                class="text-xs text-red-500 mt-1 w-full sm:w-auto sm:flex-initial">{{ errors[`document_file_${index}`]
-                }}</span>
+              <span
+                v-if="errors[`document_file_${index}`]"
+                class="text-xs text-red-500 mt-1 w-full sm:w-auto sm:flex-initial"
+              >
+                {{ errors[`document_file_${index}`] }}
+              </span>
             </div>
 
-            <button type="button" @click="addDocument"
-              class="mt-3 px-3 py-2 bg-blue-50 text-sm text-blue-700 rounded-lg hover:bg-blue-100 transition-colors inline-flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor" stroke-width="2">
+            <button
+              type="button"
+              @click="addDocument"
+              class="mt-3 px-3 py-2 bg-blue-50 text-sm text-blue-700 rounded-lg hover:bg-blue-100 transition-colors inline-flex items-center"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4 mr-1.5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
               </svg>
               Add Another Document Type
@@ -468,15 +667,27 @@
         <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-3">Declaration</h3>
         <div class="space-y-3">
           <div>
-            <label for="remarks" class="block text-sm font-medium text-gray-700">Remarks (Optional)</label>
-            <textarea id="remarks" v-model="localFormData.remarks" rows="3"
+            <label for="remarks" class="block text-sm font-medium text-gray-700"
+              >Remarks (Optional)</label
+            >
+            <textarea
+              id="remarks"
+              v-model="localFormData.remarks"
+              rows="3"
               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 text-sm"
-              placeholder="Enter any additional remarks or comments"></textarea>
+              placeholder="Enter any additional remarks or comments"
+            ></textarea>
           </div>
 
-          <div class="flex items-start space-x-3 bg-white p-3 rounded-lg border border-gray-100 shadow-sm">
-            <input type="checkbox" id="declaration_checkbox" v-model="localFormData.declaration"
-              class="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+          <div
+            class="flex items-start space-x-3 bg-white p-3 rounded-lg border border-gray-100 shadow-sm"
+          >
+            <input
+              type="checkbox"
+              id="declaration_checkbox"
+              v-model="localFormData.declaration"
+              class="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            />
             <label for="declaration_checkbox" class="text-sm text-gray-700">
               I hereby declare that all the information provided above is true and correct to the
               best of my knowledge. I understand that any false statements may result in the
@@ -485,18 +696,23 @@
           </div>
           <span v-if="errors.declaration" class="text-xs text-red-500 mt-1">{{
             errors.declaration
-            }}</span>
+          }}</span>
         </div>
       </div>
 
       <div class="mt-6 flex justify-end space-x-3">
-        <button type="button" @click="stage = 1"
-          class="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+        <button
+          type="button"
+          @click="stage = 1"
+          class="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+        >
           Back to Personal Info
         </button>
-        <button type="submit"
+        <button
+          type="submit"
           class="px-4 py-2 bg-blue-600 text-sm text-white rounded-lg hover:bg-blue-700 transition-colors"
-          :disabled="isSubmitting || !localFormData.declaration">
+          :disabled="isSubmitting || !localFormData.declaration"
+        >
           <span v-if="isSubmitting">Submitting...</span>
           <span v-else>Submit Registration</span>
         </button>
@@ -584,8 +800,9 @@ const handleFileSelect = (event, index) => {
     }
     const fileExtension = ('.' + file.name.split('.').pop()).toLowerCase()
     if (!ALLOWED_EXTENSIONS.includes(fileExtension)) {
-      errors[`document_file_${index}`] = `File '${file.name
-        }' has an invalid type. Allowed: ${ALLOWED_EXTENSIONS.join(', ')}.`
+      errors[`document_file_${index}`] = `File '${
+        file.name
+      }' has an invalid type. Allowed: ${ALLOWED_EXTENSIONS.join(', ')}.`
       toast.error(errors[`document_file_${index}`])
       event.target.value = ''
       supportingDocuments.value[index].files = []
@@ -608,7 +825,199 @@ const updateFormDocuments = () => {
 }
 
 const countries = [
-  'Afghanistan', 'Albania', 'Algeria', 'Andorra', 'Angola', 'Antigua and Barbuda', 'Argentina', 'Armenia', 'Australia', 'Austria', 'Azerbaijan', 'Bahamas', 'Bahrain', 'Bangladesh', 'Barbados', 'Belarus', 'Belgium', 'Belize', 'Benin', 'Bhutan', 'Bolivia', 'Bosnia and Herzegovina', 'Botswana', 'Brazil', 'Brunei', 'Bulgaria', 'Burkina Faso', 'Burundi', 'Cambodia', 'Cameroon', 'Canada', 'Cape Verde', 'Central African Republic', 'Chad', 'Chile', 'China', 'Colombia', 'Comoros', 'Congo', 'Costa Rica', 'Croatia', 'Cuba', 'Cyprus', 'Czech Republic', 'Denmark', 'Djibouti', 'Dominica', 'Dominican Republic', 'East Timor', 'Ecuador', 'Egypt', 'El Salvador', 'Equatorial Guinea', 'Eritrea', 'Estonia', 'Ethiopia', 'Fiji', 'Finland', 'France', 'Gabon', 'Gambia', 'Georgia', 'Germany', 'Ghana', 'Greece', 'Grenada', 'Guatemala', 'Guinea', 'Guinea-Bissau', 'Guyana', 'Haiti', 'Honduras', 'Hungary', 'Iceland', 'India', 'Indonesia', 'Iran', 'Iraq', 'Ireland', 'Israel', 'Italy', 'Ivory Coast', 'Jamaica', 'Japan', 'Jordan', 'Kazakhstan', 'Kenya', 'Kiribati', 'Korea, North', 'Korea, South', 'Kuwait', 'Kyrgyzstan', 'Laos', 'Latvia', 'Lebanon', 'Lesotho', 'Liberia', 'Libya', 'Liechtenstein', 'Lithuania', 'Luxembourg', 'Macedonia', 'Madagascar', 'Malawi', 'Malaysia', 'Maldives', 'Mali', 'Malta', 'Marshall Islands', 'Mauritania', 'Mauritius', 'Mexico', 'Micronesia', 'Moldova', 'Monaco', 'Mongolia', 'Montenegro', 'Morocco', 'Mozambique', 'Myanmar', 'Namibia', 'Nauru', 'Nepal', 'Netherlands', 'New Zealand', 'Nicaragua', 'Niger', 'Nigeria', 'Norway', 'Oman', 'Pakistan', 'Palau', 'Panama', 'Papua New Guinea', 'Paraguay', 'Peru', 'Philippines', 'Poland', 'Portugal', 'Qatar', 'Romania', 'Russia', 'Saint Kitts and Nevis', 'Saint Lucia', 'Saint Vincent', 'Samoa', 'San Marino', 'Sao Tome and Principe', 'Saudi Arabia', 'Senegal', 'Serbia', 'Seychelles', 'Sierra Leone', 'Singapore', 'Slovakia', 'Slovenia', 'Solomon Islands', 'Somalia', 'South Africa', 'South Sudan', 'Spain', 'Sri Lanka', 'Sudan', 'Suriname', 'Swaziland', 'Sweden', 'Switzerland', 'Syria', 'Taiwan', 'Tajikistan', 'Tanzania', 'Thailand', 'Togo', 'Tonga', 'Trinidad and Tobago', 'Tunisia', 'Turkey', 'Turkmenistan', 'Tuvalu', 'Uganda', 'Ukraine', 'United Arab Emirates', 'United Kingdom', 'United States', 'Uruguay', 'Uzbekistan', 'Vanuatu', 'Vatican City', 'Venezuela', 'Vietnam', 'Yemen', 'Zambia', 'Zimbabwe',
+  'Afghanistan',
+  'Albania',
+  'Algeria',
+  'Andorra',
+  'Angola',
+  'Antigua and Barbuda',
+  'Argentina',
+  'Armenia',
+  'Australia',
+  'Austria',
+  'Azerbaijan',
+  'Bahamas',
+  'Bahrain',
+  'Bangladesh',
+  'Barbados',
+  'Belarus',
+  'Belgium',
+  'Belize',
+  'Benin',
+  'Bhutan',
+  'Bolivia',
+  'Bosnia and Herzegovina',
+  'Botswana',
+  'Brazil',
+  'Brunei',
+  'Bulgaria',
+  'Burkina Faso',
+  'Burundi',
+  'Cambodia',
+  'Cameroon',
+  'Canada',
+  'Cape Verde',
+  'Central African Republic',
+  'Chad',
+  'Chile',
+  'China',
+  'Colombia',
+  'Comoros',
+  'Congo',
+  'Costa Rica',
+  'Croatia',
+  'Cuba',
+  'Cyprus',
+  'Czech Republic',
+  'Denmark',
+  'Djibouti',
+  'Dominica',
+  'Dominican Republic',
+  'East Timor',
+  'Ecuador',
+  'Egypt',
+  'El Salvador',
+  'Equatorial Guinea',
+  'Eritrea',
+  'Estonia',
+  'Ethiopia',
+  'Fiji',
+  'Finland',
+  'France',
+  'Gabon',
+  'Gambia',
+  'Georgia',
+  'Germany',
+  'Ghana',
+  'Greece',
+  'Grenada',
+  'Guatemala',
+  'Guinea',
+  'Guinea-Bissau',
+  'Guyana',
+  'Haiti',
+  'Honduras',
+  'Hungary',
+  'Iceland',
+  'India',
+  'Indonesia',
+  'Iran',
+  'Iraq',
+  'Ireland',
+  'Israel',
+  'Italy',
+  'Ivory Coast',
+  'Jamaica',
+  'Japan',
+  'Jordan',
+  'Kazakhstan',
+  'Kenya',
+  'Kiribati',
+  'Korea, North',
+  'Korea, South',
+  'Kuwait',
+  'Kyrgyzstan',
+  'Laos',
+  'Latvia',
+  'Lebanon',
+  'Lesotho',
+  'Liberia',
+  'Libya',
+  'Liechtenstein',
+  'Lithuania',
+  'Luxembourg',
+  'Macedonia',
+  'Madagascar',
+  'Malawi',
+  'Malaysia',
+  'Maldives',
+  'Mali',
+  'Malta',
+  'Marshall Islands',
+  'Mauritania',
+  'Mauritius',
+  'Mexico',
+  'Micronesia',
+  'Moldova',
+  'Monaco',
+  'Mongolia',
+  'Montenegro',
+  'Morocco',
+  'Mozambique',
+  'Myanmar',
+  'Namibia',
+  'Nauru',
+  'Nepal',
+  'Netherlands',
+  'New Zealand',
+  'Nicaragua',
+  'Niger',
+  'Nigeria',
+  'Norway',
+  'Oman',
+  'Pakistan',
+  'Palau',
+  'Panama',
+  'Papua New Guinea',
+  'Paraguay',
+  'Peru',
+  'Philippines',
+  'Poland',
+  'Portugal',
+  'Qatar',
+  'Romania',
+  'Russia',
+  'Saint Kitts and Nevis',
+  'Saint Lucia',
+  'Saint Vincent',
+  'Samoa',
+  'San Marino',
+  'Sao Tome and Principe',
+  'Saudi Arabia',
+  'Senegal',
+  'Serbia',
+  'Seychelles',
+  'Sierra Leone',
+  'Singapore',
+  'Slovakia',
+  'Slovenia',
+  'Solomon Islands',
+  'Somalia',
+  'South Africa',
+  'South Sudan',
+  'Spain',
+  'Sri Lanka',
+  'Sudan',
+  'Suriname',
+  'Swaziland',
+  'Sweden',
+  'Switzerland',
+  'Syria',
+  'Taiwan',
+  'Tajikistan',
+  'Tanzania',
+  'Thailand',
+  'Togo',
+  'Tonga',
+  'Trinidad and Tobago',
+  'Tunisia',
+  'Turkey',
+  'Turkmenistan',
+  'Tuvalu',
+  'Uganda',
+  'Ukraine',
+  'United Arab Emirates',
+  'United Kingdom',
+  'United States',
+  'Uruguay',
+  'Uzbekistan',
+  'Vanuatu',
+  'Vatican City',
+  'Venezuela',
+  'Vietnam',
+  'Yemen',
+  'Zambia',
+  'Zimbabwe',
 ]
 
 const qualificationTypes = ref([])
@@ -623,8 +1032,26 @@ const REGISTRATION_TYPE_KEYWORDS = {
 }
 
 const MANDATORY_DOC_KEYWORDS = {
-  provisional: ['graduation certificate', 'provisional certificate', 'course completion certificate', 'marksheet', 'internship completion', 'class x', 'class xii', 'citizenship identity card', 'security clearance', 'recognition of qualification',],
-  temporary: ['graduation certificate', 'work offer letter', 'request letter', 'passport copy', 'visa copy', 'permit copy',],
+  provisional: [
+    'graduation certificate',
+    'provisional certificate',
+    'course completion certificate',
+    'marksheet',
+    'internship completion',
+    'class x',
+    'class xii',
+    'citizenship identity card',
+    'security clearance',
+    'recognition of qualification',
+  ],
+  temporary: [
+    'graduation certificate',
+    'work offer letter',
+    'request letter',
+    'passport copy',
+    'visa copy',
+    'permit copy',
+  ],
 }
 
 onMounted(async () => {
@@ -657,7 +1084,7 @@ onMounted(async () => {
       localFormData.registration_type = filteredRegistrationTypes.value[0].id
     } else {
       const fullType = filteredRegistrationTypes.value.find(
-        (rt) => rt.name.toLowerCase().includes('full') || rt.name.toLowerCase().includes('new')
+        (rt) => rt.name.toLowerCase().includes('full') || rt.name.toLowerCase().includes('new'),
       )
       if (fullType) {
         localFormData.registration_type = fullType.id
@@ -667,7 +1094,9 @@ onMounted(async () => {
     }
   } catch (error) {
     console.error('Error fetching master data:', error)
-    toast.error('Failed to fetch master data. Some dropdowns or options may not populate correctly. Please try refreshing.')
+    toast.error(
+      'Failed to fetch master data. Some dropdowns or options may not populate correctly. Please try refreshing.',
+    )
   } finally {
     isLoadingMasters.value = false
   }
@@ -710,7 +1139,7 @@ const qualifications = computed(() => {
     return []
   }
   return allQualifications.value.filter(
-    (qual) => qual.qualification_type === localFormData.qualification_type
+    (qual) => qual.qualification_type === localFormData.qualification_type,
   )
 })
 
@@ -720,7 +1149,7 @@ watch(
     if (newType !== oldType) {
       localFormData.qualification_name = ''
     }
-  }
+  },
 )
 
 const errors = reactive({})
@@ -739,7 +1168,9 @@ const getRegistrationTypeCategory = (typeId) => {
   const nameLower = type.name.toLowerCase()
   if (REGISTRATION_TYPE_KEYWORDS.full.some((keyword) => nameLower.includes(keyword))) {
     return 'full'
-  } else if (REGISTRATION_TYPE_KEYWORDS.provisional.some((keyword) => nameLower.includes(keyword))) {
+  } else if (
+    REGISTRATION_TYPE_KEYWORDS.provisional.some((keyword) => nameLower.includes(keyword))
+  ) {
     return 'provisional'
   } else if (REGISTRATION_TYPE_KEYWORDS.temporary.some((keyword) => nameLower.includes(keyword))) {
     return 'temporary'
@@ -779,7 +1210,7 @@ watch(
   (newData) => {
     emit('update:modelValue', { ...newData })
   },
-  { deep: true }
+  { deep: true },
 )
 
 watch(
@@ -790,7 +1221,7 @@ watch(
       delete errors[`document_type_${index}`]
       delete errors[`document_file_${index}`]
     })
-  }
+  },
 )
 
 const validateFormStageOne = () => {
@@ -799,7 +1230,13 @@ const validateFormStageOne = () => {
       !key.startsWith('document_') &&
       key !== 'mandatory_documents' &&
       key !== 'declaration' &&
-      !['qualification_type', 'qualification_name', 'other_qualification_name_specify', 'institute', 'year_of_completion',].includes(key)
+      ![
+        'qualification_type',
+        'qualification_name',
+        'other_qualification_name_specify',
+        'institute',
+        'year_of_completion',
+      ].includes(key)
     ) {
       delete errors[key]
     }
@@ -853,7 +1290,10 @@ const validateFormStageOne = () => {
       errors.gewog = 'Gewog should auto-fill; try re-entering CID.'
     if (!localFormData.village && isCIDValid.value)
       errors.village = 'Village should auto-fill; try re-entering CID.'
-    if ((!localFormData.dzongkhag || !localFormData.gewog || !localFormData.village) && isCIDValid.value)
+    if (
+      (!localFormData.dzongkhag || !localFormData.gewog || !localFormData.village) &&
+      isCIDValid.value
+    )
       isValid = false
   } else {
     if (!localFormData.nationality) {
@@ -875,16 +1315,30 @@ const validateFormStageOne = () => {
       errors.country = 'Country of residence is required.'
       isValid = false
     }
+    if (!localFormData.city) {
+      errors.city = 'City / Town is required.'
+      isValid = false
+    }
+    if (!localFormData.state) {
+      errors.state = 'State / Province is required.'
+      isValid = false
+    }
     if (!localFormData.mobileNumber) {
       errors.mobileNumber = 'Mobile number is required.'
       isValid = false
     } else {
       const bhutaneseMobilePattern = /^[17]\d{7}$/
       const internationalMobilePattern = /^\+?\d{7,15}$/
-      if (localFormData.nationality === 'Bhutanese' && !bhutaneseMobilePattern.test(localFormData.mobileNumber)) {
+      if (
+        localFormData.nationality === 'Bhutanese' &&
+        !bhutaneseMobilePattern.test(localFormData.mobileNumber)
+      ) {
         errors.mobileNumber = 'Bhutanese mobile numbers must be 8 digits and start with 1 or 7.'
         isValid = false
-      } else if (localFormData.nationality !== 'Bhutanese' && !internationalMobilePattern.test(localFormData.mobileNumber)) {
+      } else if (
+        localFormData.nationality !== 'Bhutanese' &&
+        !internationalMobilePattern.test(localFormData.mobileNumber)
+      ) {
         errors.mobileNumber = 'Please enter a valid mobile number (7-15 digits, can start with +).'
         isValid = false
       }
@@ -894,7 +1348,15 @@ const validateFormStageOne = () => {
 }
 
 const validateForm = () => {
-  const stageTwoFields = ['qualification_type', 'qualification_name', 'other_qualification_name_specify', 'institute', 'year_of_completion', 'mandatory_documents', 'declaration',]
+  const stageTwoFields = [
+    'qualification_type',
+    'qualification_name',
+    'other_qualification_name_specify',
+    'institute',
+    'year_of_completion',
+    'mandatory_documents',
+    'declaration',
+  ]
   Object.keys(errors).forEach((key) => {
     if (stageTwoFields.includes(key) || key.startsWith('document_')) {
       delete errors[key]
@@ -911,7 +1373,10 @@ const validateForm = () => {
     errors.qualification_name = 'Qualification name is required.'
     isValid = false
   }
-  if (localFormData.qualification_name === 'OTHERS' && !localFormData.other_qualification_name_specify) {
+  if (
+    localFormData.qualification_name === 'OTHERS' &&
+    !localFormData.other_qualification_name_specify
+  ) {
     errors.other_qualification_name_specify = 'Please specify the qualification name.'
     isValid = false
   }
@@ -1002,7 +1467,8 @@ const fetchDCRCData = async () => {
   } catch (error) {
     console.error('Error fetching DCRC data:', error.response?.data || error.message)
     const errorMessage =
-      error.response?.data?.error || 'Failed to fetch citizen details. Please enter details manually.'
+      error.response?.data?.error ||
+      'Failed to fetch citizen details. Please enter details manually.'
     toast.error(errorMessage)
     localFormData.full_name = ''
     localFormData.date_of_birth = ''
@@ -1071,7 +1537,21 @@ const handleNext = async () => {
       delete formDataStageOne.workPermitNo
       delete formDataStageOne.mobileNumber
     }
-    const fieldsToRemove = ['documents', 'remarks', 'declaration', 'payment_status', 'payment_id', 'qualification_type', 'qualification_name', 'other_qualification_name_specify', 'institute', 'year_of_completion', 'is_active', 'application', 'cid_holder',]
+    const fieldsToRemove = [
+      'documents',
+      'remarks',
+      'declaration',
+      'payment_status',
+      'payment_id',
+      'qualification_type',
+      'qualification_name',
+      'other_qualification_name_specify',
+      'institute',
+      'year_of_completion',
+      'is_active',
+      'application',
+      'cid_holder',
+    ]
     if (props.selectedType === 'cid') {
       delete formDataStageOne.mobileNumber
       delete formDataStageOne.country
@@ -1107,7 +1587,7 @@ const handleNext = async () => {
     } catch (error) {
       console.error('Error submitting personal information:', error.response?.data || error.message)
       const errorMessages = Object.entries(
-        error.response?.data || { 'API Error': [error.message || 'Unknown error'] }
+        error.response?.data || { 'API Error': [error.message || 'Unknown error'] },
       )
         .map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(', ') : value}`)
         .join('; ')
@@ -1161,7 +1641,7 @@ const handleSubmitActual = async () => {
     if (localFormData.qualification_name === 'OTHERS') {
       qualificationFormData.append(
         'qualification_name_text',
-        localFormData.other_qualification_name_specify
+        localFormData.other_qualification_name_specify,
       )
     } else {
       qualificationFormData.append('qualification_name', localFormData.qualification_name)
@@ -1210,7 +1690,7 @@ const handleSubmitActual = async () => {
         // Append existing data to avoid wiping them out on the backend
         profileUpdateData.append(
           'contact_number',
-          authStore.user.contact_number || localFormData.contact_no
+          authStore.user.contact_number || localFormData.contact_no,
         )
         profileUpdateData.append('email', authStore.user.email || localFormData.email_address)
 
@@ -1223,7 +1703,6 @@ const handleSubmitActual = async () => {
         authStore.user.dzongkhag = localFormData.dzongkhag
 
         toast.info('Your profile location has been updated.')
-
       } catch (profileError) {
         console.error('Could not auto-update profile location:', profileError)
         toast.warning('Application submitted, but could not auto-update your profile location.')
@@ -1234,17 +1713,21 @@ const handleSubmitActual = async () => {
     emit('submit', { ...localFormData })
     router.push('/admin/user/engineering_certification/dashboard')
   } catch (error) {
-    console.error('Error submitting qualification and documents:', error.response?.data || error.message)
+    console.error(
+      'Error submitting qualification and documents:',
+      error.response?.data || error.message,
+    )
     const errorMessages = Object.entries(
-      error.response?.data || { 'API Error': [error.message || 'Unknown error'] }
+      error.response?.data || { 'API Error': [error.message || 'Unknown error'] },
     )
       .map(([key, value]) => {
         if (typeof value === 'object' && value !== null) {
           return Object.entries(value)
             .map(
               ([nestedKey, nestedValue]) =>
-                `${key}.${nestedKey}: ${Array.isArray(nestedValue) ? nestedValue.join(', ') : nestedValue
-                }`
+                `${key}.${nestedKey}: ${
+                  Array.isArray(nestedValue) ? nestedValue.join(', ') : nestedValue
+                }`,
             )
             .join('; ')
         }
