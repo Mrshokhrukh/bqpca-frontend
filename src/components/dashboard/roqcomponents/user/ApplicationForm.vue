@@ -125,7 +125,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <div class="relative">
-              <label for="cid" class="block text-sm font-medium text-gray-700">Work Permit no.</label>
+              <label for="cid" class="block text-sm font-medium text-gray-700">CID/Work Permit no/Passport No.</label>
               <div class="mt-1 relative rounded-md shadow-sm">
                 <input type="text" id="cid" v-model="form.cid_no" :readonly=true @input="handleCIDInput" maxlength="11"
                   :class="[
@@ -232,7 +232,7 @@
                 },
               ]" />
             <p v-if="validation.errors.dzongkhag" class="mt-1 text-sm text-red-500">
-              {{ validation.errors.dzongkhag }}
+              {{ 'Country is required' }}
             </p>
           </div>
 
@@ -245,7 +245,7 @@
               },
             ]" />
             <p v-if="validation.errors.gewog" class="mt-1 text-sm text-red-500">
-              {{ validation.errors.gewog }}
+              {{'State is required' }}
             </p>
           </div>
 
@@ -260,7 +260,7 @@
                 },
               ]" />
             <p v-if="validation.errors.village" class="mt-1 text-sm text-red-500">
-              {{ validation.errors.village }}
+              {{ 'City is required' }}
             </p>
           </div>
         </div>
