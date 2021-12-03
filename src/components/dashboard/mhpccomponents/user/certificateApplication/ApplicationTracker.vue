@@ -8,7 +8,8 @@
       </template>
     </PageHeader>
 
-    <div v-if="isLoading" class="my-8 flex justify-center">
+    <!-- Initial loading state (before any data is fetched) -->
+    <div v-if="initialLoading && !hasAttemptedFetch" class="my-8 flex justify-center">
       <div class="flex flex-col items-center space-y-3">
         <svg
           class="animate-spin h-8 w-8 text-blue-600"
@@ -30,53 +31,85 @@
             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
           ></path>
         </svg>
-        <p class="text-gray-600 font-medium">Loading your {{ loadingText }} data...</p>
+        <p class="text-gray-600 font-medium">Loading your application tracker...</p>
       </div>
     </div>
 
-    <div v-if="!isLoading">
-      <!-- New Applications Tab -->
-      <NewApplicationsTracker
-        v-if="currentTab === 'new' && newApplications.length > 0"
-        :applications="newApplications"
-        @open-certificate="openCertificateModal"
-        @initiate-payment="initiatePayment($event.application, $event.qualification)"
-      />
-
-      <!-- Renewal Applications Tab -->
-      <RenewalApplicationsTracker
-        v-if="currentTab === 'renewal' && renewalApplications.length > 0"
-        :applications="renewalApplications"
-        @initiate-payment="initiatePayment(null, $event)"
-      />
-
-      <!-- Additional Qualifications Tab -->
-      <AdditionalQualificationsTracker
-        v-if="currentTab === 'additional' && additionalApplications.length > 0"
-        :applications="additionalApplications"
-        @open-certificate="openCertificateModal"
-        @initiate-payment="initiatePayment($event.application, $event.qualification)"
-      />
-
-      <div
-        v-if="!apiError && currentDataIsEmpty"
-        class="text-center py-8 sm:py-12 bg-gray-50 rounded-xl border border-gray-200 shadow-md"
-      >
-        <div class="flex flex-col items-center justify-center">
-          <div class="p-3 bg-gray-100 rounded-full mb-3">
-            <SearchX class="w-6 h-6 text-gray-400" />
-          </div>
-          <h3 class="text-lg sm:text-xl font-semibold text-gray-700 mb-2">
-            No {{ noResultsText }} Found
-          </h3>
-          <p class="text-gray-600 max-w-md mx-auto text-sm px-4">
-            We couldn't find any {{ noResultsText.toLowerCase() }} matching your details.
-          </p>
+    <!-- Main content area -->
+    <div v-if="!initialLoading && hasAttemptedFetch">
+      <!-- Tab-specific loading state -->
+      <div v-if="isLoading && !apiError" class="my-8 flex justify-center">
+        <div class="flex flex-col items-center space-y-3">
+          <svg
+            class="animate-spin h-8 w-8 text-blue-600"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"
+            ></circle>
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+          <p class="text-gray-600 font-medium">Loading your {{ loadingText }} data...</p>
         </div>
       </div>
 
+      <div v-if="!isLoading && !apiError">
+        <!-- New Applications Tab -->
+        <NewApplicationsTracker
+          v-if="currentTab === 'new' && newApplications.length > 0"
+          :applications="newApplications"
+          @open-certificate="openCertificateModal"
+          @initiate-payment="initiatePayment($event.application, $event.qualification)"
+        />
+
+        <!-- Renewal Applications Tab -->
+        <RenewalApplicationsTracker
+          v-if="currentTab === 'renewal' && renewalApplications.length > 0"
+          :applications="renewalApplications"
+          @initiate-payment="initiatePayment(null, $event)"
+        />
+
+        <!-- Additional Qualifications Tab -->
+        <AdditionalQualificationsTracker
+          v-if="currentTab === 'additional' && additionalApplications.length > 0"
+          :applications="additionalApplications"
+          @open-certificate="openCertificateModal"
+          @initiate-payment="initiatePayment($event.application, $event.qualification)"
+        />
+
+        <!-- Empty state -->
+        <div
+          v-if="!apiError && currentDataIsEmpty"
+          class="text-center py-8 sm:py-12 bg-gray-50 rounded-xl border border-gray-200 shadow-md"
+        >
+          <div class="flex flex-col items-center justify-center">
+            <div class="p-3 bg-gray-100 rounded-full mb-3">
+              <SearchX class="w-6 h-6 text-gray-400" />
+            </div>
+            <h3 class="text-lg sm:text-xl font-semibold text-gray-700 mb-2">
+              No {{ noResultsText }} Found
+            </h3>
+            <p class="text-gray-600 max-w-md mx-auto text-sm px-4">
+              We couldn't find any {{ noResultsText.toLowerCase() }} matching your details.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Error state -->
       <div
-        v-if="apiError"
+        v-if="apiError && hasAttemptedFetch"
         class="text-center py-8 sm:py-12 bg-red-50 rounded-xl border border-red-200 shadow-md"
       >
         <div class="flex flex-col items-center justify-center">
@@ -85,9 +118,14 @@
           </div>
           <h3 class="text-lg sm:text-xl font-semibold text-red-700 mb-2">Error Loading Data</h3>
           <p class="text-red-600 max-w-md mx-auto text-sm px-4">
-            An error occurred while fetching your {{ loadingText }} data. Please try again later or
-            contact support if the problem persists.
+            {{ errorMessage || 'An error occurred while fetching your data. Please try again later or contact support if the problem persists.' }}
           </p>
+          <button
+            @click="retryFetch"
+            class="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+          >
+            Try Again
+          </button>
         </div>
       </div>
     </div>
@@ -129,9 +167,11 @@ const authStore = useAuthStore()
 const newApplications = ref([])
 const renewalApplications = ref([])
 const additionalApplications = ref([])
-const isLoading = ref(false)
+const initialLoading = ref(true)
+const isLoading = ref(false) 
 const hasAttemptedFetch = ref(false)
 const apiError = ref(false)
+const errorMessage = ref('')
 const showCertificateModal = ref(false)
 const selectedCertificateData = ref(null)
 const paymentModalRef = ref(null)
@@ -145,7 +185,10 @@ const tabs = [
   { name: 'additional', label: 'Additional Qualifications' },
 ]
 
-const userCid = computed(() => authStore.user?.cid)
+const userCid = computed(() => {
+  // Try multiple possible properties for CID
+  return authStore.user?.cid || authStore.user?.username || authStore.user?.user_cid
+})
 
 // --- Computed Properties for Dynamic UI Text (Updated) ---
 const pageHeaderTitle = computed(() => {
@@ -192,9 +235,11 @@ const handleTabChange = (tabName) => {
 }
 
 const fetchNewApplications = async () => {
-  if (!userCid.value) return
-  isLoading.value = true
-  apiError.value = false
+  if (!userCid.value) {
+    errorMessage.value = 'User CID not available. Please ensure you are logged in.'
+    throw new Error(errorMessage.value)
+  }
+
   try {
     const response = await apiService.getMhpcFullApplicationListByCid(userCid.value)
     if (response?.data?.results) {
@@ -207,17 +252,17 @@ const fetchNewApplications = async () => {
   } catch (error) {
     console.error('Error fetching new applications:', error)
     newApplications.value = []
-    apiError.value = true
-    toast.error('Failed to load new application data.')
-  } finally {
-    isLoading.value = false
+    errorMessage.value = error.response?.data?.detail || error.message || 'Failed to load new application data.'
+    throw error
   }
 }
 
 const fetchRenewalApplications = async () => {
-  if (!userCid.value) return
-  isLoading.value = true
-  apiError.value = false
+  if (!userCid.value) {
+    errorMessage.value = 'User CID not available. Please ensure you are logged in.'
+    throw new Error(errorMessage.value)
+  }
+
   try {
     const response = await apiService.getMhpcRenewals(userCid.value)
     if (response?.data?.results) {
@@ -228,17 +273,17 @@ const fetchRenewalApplications = async () => {
   } catch (error) {
     console.error('Error fetching renewal applications:', error)
     renewalApplications.value = []
-    apiError.value = true
-    toast.error('Failed to load renewal data.')
-  } finally {
-    isLoading.value = false
+    errorMessage.value = error.response?.data?.detail || error.message || 'Failed to load renewal data.'
+    throw error
   }
 }
 
 const fetchAdditionalApplications = async () => {
-  if (!userCid.value) return
-  isLoading.value = true
-  apiError.value = false
+  if (!userCid.value) {
+    errorMessage.value = 'User CID not available. Please ensure you are logged in.'
+    throw new Error(errorMessage.value)
+  }
+
   try {
     const response = await apiService.getMhpcFullApplicationListByCid(userCid.value)
     if (response?.data?.results) {
@@ -251,10 +296,8 @@ const fetchAdditionalApplications = async () => {
   } catch (error) {
     console.error('Error fetching additional applications:', error)
     additionalApplications.value = []
-    apiError.value = true
-    toast.error('Failed to load additional qualifications data.')
-  } finally {
-    isLoading.value = false
+    errorMessage.value = error.response?.data?.detail || error.message || 'Failed to load additional qualifications data.'
+    throw error
   }
 }
 
@@ -371,36 +414,47 @@ const handlePaymentCompleted = async (paymentData) => {
 }
 
 const fetchAllData = async () => {
-  isLoading.value = true
+  initialLoading.value = true
   apiError.value = false
-  hasAttemptedFetch.value = false
+  errorMessage.value = ''
+
   try {
+    // Check if user is authenticated
+    if (!authStore.isAuthenticated) {
+      throw new Error('Please log in to view your application status.')
+    }
+
+    if (!userCid.value) {
+      throw new Error('User CID not available. Please ensure your profile has a valid CID.')
+    }
+
     // Fetch all data sources concurrently
     await Promise.all([
       fetchNewApplications(),
       fetchRenewalApplications(),
       fetchAdditionalApplications(),
     ])
+
+    hasAttemptedFetch.value = true
+    apiError.value = false
   } catch (err) {
     console.error('Error during initial data fetch:', err)
     apiError.value = true
+    errorMessage.value = err.message || 'Failed to load application data. Please try again.'
+    toast.error(errorMessage.value)
   } finally {
+    initialLoading.value = false
     isLoading.value = false
-    hasAttemptedFetch.value = true
   }
+}
+
+const retryFetch = async () => {
+  await fetchAllData()
 }
 
 // --- Lifecycle Hook ---
 onMounted(async () => {
-  if (userCid.value) {
-    await fetchAllData()
-  } else {
-    console.warn('User CID not available.')
-    toast.warning('Please log in to view your application status.')
-    apiError.value = true
-    hasAttemptedFetch.value = true
-    isLoading.value = false
-  }
+  await fetchAllData()
 })
 </script>
 
@@ -409,8 +463,15 @@ button {
   cursor: pointer;
 }
 
+[v-if='initialLoading'] {
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 [v-if='isLoading'] {
-  min-height: 200px; /* Ensure loading indicator is visible */
+  min-height: 200px;
   display: flex;
   align-items: center;
   justify-content: center;
