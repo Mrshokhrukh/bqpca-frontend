@@ -100,7 +100,7 @@ const filteredUnclaimedSecondCopy = computed(() =>
   unclaimedSecondCopyApplications.value.filter(app =>
     Object.values(app).some(val =>
       String(val).toLowerCase().includes(secondCopySearchQuery.value.toLowerCase())
-    )
+    ) && !notSelectedStatus.value.includes(app.status)
   )
 )
 
@@ -110,19 +110,19 @@ const paginatedUnclaimedSecondCopy = computed(() => {
   return filteredUnclaimedSecondCopy.value.slice(start, end)
 })
 
-const filteredSecondCopyApplications = computed(() =>
-  unclaimedSecondCopyApplications.value.filter(app =>
-    Object.values(app).some(val =>
-      String(val).toLowerCase().includes(secondCopySearchQuery.value.toLowerCase())
-    ) && !notSelectedStatus.value.includes(app.status)
-  )
-)
+// const filteredSecondCopyApplications = computed(() =>
+//   unclaimedSecondCopyApplications.value.filter(app =>
+//     Object.values(app).some(val =>
+//       String(val).toLowerCase().includes(secondCopySearchQuery.value.toLowerCase())
+//     ) && !notSelectedStatus.value.includes(app.status)
+//   )
+// )
 
-const paginatedSecondCopyApplications = computed(() => {
-  const start = (secondCopyCurrentPage.value - 1) * secondCopyPerPage.value
-  const end = start + secondCopyPerPage.value
-  return filteredSecondCopyApplications.value.slice(start, end)
-})
+// const paginatedSecondCopyApplications = computed(() => {
+//   const start = (secondCopyCurrentPage.value - 1) * secondCopyPerPage.value
+//   const end = start + secondCopyPerPage.value
+//   return filteredSecondCopyApplications.value.slice(start, end)
+// })
 
 const assignedSecondCopySearchQuery = ref('')
 const assignedSecondCopyCurrentPage = ref(1)
@@ -184,15 +184,15 @@ const handleClaimSecondCopyApplication = async (application) => {
 // )
 
 // Compute total for pagination
-const filteredTotal = computed(() => filteredApplications.value.length)
+// const filteredTotal = computed(() => filteredApplications.value.length)
 
-// Get paginated data
-const paginatedApplications = computed(() => {
-  const start = (currentPage.value - 1) * perPage.value
-  const end = start + perPage.value
+// // Get paginated data
+// const paginatedApplications = computed(() => {
+//   const start = (currentPage.value - 1) * perPage.value
+//   const end = start + perPage.value
 
-  return filteredApplications.value.slice(start, end)
-})
+//   return filteredApplications.value.slice(start, end)
+// })
 
 // Reset pagination when filters change
 watch([selectedStatus, selectedType, searchQuery], () => {
@@ -276,7 +276,13 @@ const handleApplicationAction = ({ action, application }) => {
     selectedApplication.value = application
     showModal.value = true
     return
-  } else {
+  }
+  else if (action === 'viewRemarks') { // <-- fix here
+    selectedApplication.value = application
+    showRemarksModal.value = true
+    return
+  }
+  else {
     modalType.value = action
   }
   selectedApplication.value = application
