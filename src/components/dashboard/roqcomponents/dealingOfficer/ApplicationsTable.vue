@@ -135,7 +135,7 @@ const unclaimedFilteredApplications = computed(() =>
   unclaimedApplications.value.filter(app =>
     Object.values(app).some(val =>
       String(val).toLowerCase().includes(unclaimedSearchQuery.value.toLowerCase())
-    )
+    ) && app.is_second_copy === false
   )
 )
 const unclaimedFilteredTotal = computed(() => unclaimedFilteredApplications.value.length)
@@ -154,7 +154,7 @@ const assignedFilteredApplications = computed(() =>
       ? Object.values(app).some(val =>
           String(val).toLowerCase().includes(assignedSearchQuery.value.toLowerCase())
         )
-      : true
+      : true  && app.is_second_copy === false
     return matchesStatus && matchesSearch
   })
 )
