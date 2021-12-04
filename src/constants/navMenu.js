@@ -763,6 +763,14 @@ const serviceSpecificMenuItems = {
             name: 'CPD Methodologies',
             route: (serviceType) => `/admin/admin/${serviceType}/cpd_methodologies`,
           },
+          {
+            name: 'CPD Reason for Conducting',
+            route: (serviceType) => `/admin/admin/${serviceType}/cpd_reason_for_conducting`,
+          },
+          {
+            name: 'CPD Providing Agency',
+            route: (serviceType) => `/admin/admin/${serviceType}/cpd_providing_agency`,
+          },
         ],
       },
       {

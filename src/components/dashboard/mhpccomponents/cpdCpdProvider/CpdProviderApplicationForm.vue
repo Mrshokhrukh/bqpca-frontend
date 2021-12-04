@@ -352,7 +352,7 @@
               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2"
             >
               <option value="">Select Type</option>
-              <option v-for="option in cpdTypeOptions" :key="option.value" :value="option.value">
+              <option v-for="option in cpdTypeOptions" :key="option.value" :value="option.value" >
                 {{ option.text }}
               </option>
             </select>
@@ -1675,9 +1675,9 @@ const loadDropdownOptions = async () => {
     loading.value = true
     const [agencyRes, reasonRes, cpdTypeRes, methodologyRes, categoriesRes, subcategoriesRes] =
       await Promise.all([
-        apiService.getProvidingAgency(),
-        apiService.getReasonForCoducting(),
-        apiService.getMhpcMastersCpdActivities(),
+        apiService.getMhpcProvidingAgency(),
+        apiService.getMhpcReasonForConducting(),
+        apiService.getMhpcMastersSingleCpdActivity(),
         apiService.getMhpcMastersCpdMethodologies(),
         apiService.getMhpcMasterData('personnel-categories'),
         apiService.getMhpcMastersSubCategories(),
@@ -1689,7 +1689,7 @@ const loadDropdownOptions = async () => {
       reasonRes?.data?.results?.map((item) => ({ text: item.name, value: item.id })) || []
     cpdTypeOptions.value =
       cpdTypeRes?.data?.results?.map((item) => ({
-        text: item.cme_activity_name,
+        text: item.cpd_activity_name,
         value: item.id,
       })) || []
     methodologyOptions.value =
@@ -1707,6 +1707,8 @@ const loadDropdownOptions = async () => {
         value: sub.id,
         categoryId: sub.category_name,
       })) || []
+
+    console.log(cpdTypeRes)
   } catch (error) {
     console.error('Error loading dropdown options:', error)
     validationErrors.value.push('Failed to load form options. Please refresh.')

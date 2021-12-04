@@ -614,13 +614,45 @@ export default {
   deleteMhpcCapa(id) {
     return apiClient.delete(`/mhpc/mhpc-capa/${id}/`)
   },
-  //cpd providng agency
-  getProvidingAgency() {
+
+  //cpd providing agency
+  getMhpcProvidingAgency() {
     return apiClient.get('/mhpc/mhpc-cpd-providing-agencies/')
   },
+  createMhpcCpdProvidingAgency(data) {
+    return apiClient.post('/mhpc/mhpc-cpd-providing-agencies/', data)
+  },
+  getMhpcCpdProvidingAgency(id) {
+    return apiClient.get(`/mhpc/mhpc-cpd-providing-agencies/${id}/`)
+  },
+  updateMhpcCpdProvidingAgency(id, data) {
+    return apiClient.put(`/mhpc/mhpc-cpd-providing-agencies/${id}/`, data)
+  },
+  patchMhpcCpdProvidingAgency(id, data) {
+    return apiClient.patch(`/mhpc/mhpc-cpd-providing-agencies/${id}/`, data)
+  },
+  deleteMhpcCpdProvidingAgency(id) {
+    return apiClient.delete(`/mhpc/mhpc-cpd-providing-agencies/${id}/`)
+  },
+
   //cpd reason for condutiong agency
-  getReasonForCoducting() {
+  getMhpcReasonForConducting() {
     return apiClient.get('/mhpc/mhpc-cpd-reasons-for-conducting/')
+  },
+  createMhpcCpdReasonForConducting(data) {
+    return apiClient.post('/mhpc/mhpc-cpd-reasons-for-conducting/', data)
+  },
+  getMhpcCpdReasonForConducting(id) {
+    return apiClient.get(`/mhpc/mhpc-cpd-reasons-for-conducting/${id}/`)
+  },
+  updateMhpcCpdReasonForConducting(id, data) {
+    return apiClient.put(`/mhpc/mhpc-cpd-reasons-for-conducting/${id}/`, data)
+  },
+  patchMhpcCpdReasonForConducting(id, data) {
+    return apiClient.patch(`/mhpc/mhpc-cpd-reasons-for-conducting/${id}/`, data)
+  },
+  deleteMhpcCpdReasonForConducting(id) {
+    return apiClient.delete(`/mhpc/mhpc-cpd-reasons-for-conducting/${id}/`)
   },
 
   // MHPC Institute Departments

@@ -33,7 +33,7 @@
                 v-for="section in sections"
                 :key="section.refKey"
                 href="#"
-                @click.prevent="activeSection = section.refKey"
+                @click.prevent="scrollToSection(section.refKey)"
                 :class="[
                   'flex items-center px-3 py-2.5 text-sm font-medium rounded-lg cursor-pointer transition-colors duration-150',
                   activeSection === section.refKey

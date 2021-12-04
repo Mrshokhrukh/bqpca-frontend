@@ -196,6 +196,16 @@ const configurationCards = [
         route: `${basePath}/cpd_methodologies`,
         icon: null,
       },
+      {
+        text: 'CPD Providing Agencies',
+        route: `${basePath}/cpd_providing_agency`,
+        icon: null,
+      },
+      {
+        text: 'CPD Reasons for conducting',
+        route: `${basePath}/cpd_reason_for_conducting`,
+        icon: null,
+      }
     ],
     gradient: gradientClasses('blue', 'blue'),
     iconBg: iconBgClass('blue'),
