@@ -1708,7 +1708,6 @@ const loadDropdownOptions = async () => {
         categoryId: sub.category_name,
       })) || []
 
-    console.log(cpdTypeRes)
   } catch (error) {
     console.error('Error loading dropdown options:', error)
     validationErrors.value.push('Failed to load form options. Please refresh.')
