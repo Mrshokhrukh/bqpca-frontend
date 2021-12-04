@@ -277,19 +277,20 @@ onMounted(async () => {
       services.getQualifications(),
       services.getReasonsForIssueOfSecondCopy(),
       services.getTypesOfCourse(),
-      services.getGenders(),
-      services.getCountries(),
+      // services.getGenders(),
+      // services.getCountries(),
     ])
 
     counts.value = {
-      decisions: decisionsResponse.data.count,
-      learningTypes: learningTypesResponse.data.count,
-      qualifications: qualificationsResponse.data.count,
-      reasons: reasonsResponse.data.count,
-      courseTypes: courseTypesResponse.data.count,
-      genders: gendersResponse.data.count,
-      countries: countriesResponse.data.count,
+      decisions: decisionsResponse?.data?.count ?? 0,
+      learningTypes: learningTypesResponse?.data?.count ?? 0,
+      qualifications: qualificationsResponse?.data?.count ?? 0,
+      reasons: reasonsResponse?.data?.count ?? 0,
+      courseTypes: courseTypesResponse?.data?.count ?? 0,
+      // genders: gendersResponse?.data?.count ?? 0,
+      // countries: countriesResponse?.data?.count ?? 0,
     }
+
   } catch (error) {
     console.error('Error fetching counts:', error)
   }

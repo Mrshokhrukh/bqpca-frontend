@@ -458,7 +458,7 @@ const configurationCards = [
 onMounted(async () => {
   try {
     const countPromises = [
-      apiServices.getMhpcMastersCpdActivities(),
+      apiServices.getMhpcMastersSingleCpdActivity(),
       apiServices.getMhpcMastersCpdCredits(),
       apiServices.getMhpcMastersCpdMethodologies(),
       // apiServices.getMhpcMastersCpdActivity(),
