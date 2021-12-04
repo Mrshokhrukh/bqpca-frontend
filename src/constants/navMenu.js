@@ -1407,6 +1407,10 @@ const serviceSpecificMenuItems = {
         icon: getIconComponent('BookOpen'),
         children: [
           {
+            name: 'CPD Activity',
+            route: (serviceType) => `/admin/admin/${serviceType}/cpd_activity`,
+          },
+          {
             name: 'CPD Activities',
             route: (serviceType) => `/admin/admin/${serviceType}/cpd_activities`,
           },
@@ -1419,11 +1423,7 @@ const serviceSpecificMenuItems = {
             route: (serviceType) => `/admin/admin/${serviceType}/cpd_methodologies`,
           },
           {
-            name: 'CPD Activity',
-            route: (serviceType) => `/admin/admin/${serviceType}/cpd_activity`,
-          },
-          {
-            name: 'Reason for Conducting CPD',
+            name: 'CPD Reason for Conducting',
             route: (serviceType) => `/admin/admin/${serviceType}/master_cpd_reason_for_conducting`,
           },
           {
