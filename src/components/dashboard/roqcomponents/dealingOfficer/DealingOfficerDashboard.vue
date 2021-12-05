@@ -132,7 +132,7 @@ const timeRanges = [
 
 // Stats computation
 const stats = computed(() => {
-  const totalApplications = applications.value.length
+  const totalApplications = applications.value.filter((app) => !app.is_second_copy && app.status !== 'draft' && app.status !== 'processing_payment').length
 
   return {
     totalApplications,
