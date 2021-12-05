@@ -1,4 +1,3 @@
-ViewApplicationDetailsModal.vue
 <template>
   <TransitionRoot appear :show="isOpen" as="template">
     <Dialog as="div" @close="closeModalHandler" class="relative z-50">
@@ -532,18 +531,16 @@ ViewApplicationDetailsModal.vue
                                           'w-2 h-2 rounded-full',
                                           {
                                             'bg-yellow-400':
-                                              qualification.application_review_status === 'Pending',
+                                              (qualification.application_review_status || 'Pending') === 'Pending',
                                             'bg-green-400':
-                                              qualification.application_review_status ===
-                                              'Approved',
+                                              (qualification.application_review_status || 'Pending') === 'Approved',
                                             'bg-red-400':
-                                              qualification.application_review_status ===
-                                              'Regretted',
+                                              (qualification.application_review_status || 'Pending') === 'Regretted',
                                           },
                                         ]"
                                       ></span>
                                       <span class="text-sm text-gray-600">{{
-                                        qualification.application_review_status
+                                        qualification.application_review_status || 'Pending'
                                       }}</span>
                                     </div>
                                     <p
@@ -564,16 +561,16 @@ ViewApplicationDetailsModal.vue
                                           'w-2 h-2 rounded-full',
                                           {
                                             'bg-yellow-400':
-                                              qualification.physical_review_status === 'Pending',
+                                              (qualification.physical_review_status || 'Pending') === 'Pending',
                                             'bg-green-400':
-                                              qualification.physical_review_status === 'Approved',
+                                              (qualification.physical_review_status || 'Pending') === 'Approved',
                                             'bg-red-400':
-                                              qualification.physical_review_status === 'Regretted',
+                                              (qualification.physical_review_status || 'Pending') === 'Regretted',
                                           },
                                         ]"
                                       ></span>
                                       <span class="text-sm text-gray-600">{{
-                                        qualification.physical_review_status
+                                        qualification.physical_review_status || 'Pending'
                                       }}</span>
                                     </div>
                                     <p
@@ -594,16 +591,16 @@ ViewApplicationDetailsModal.vue
                                           'w-2 h-2 rounded-full',
                                           {
                                             'bg-yellow-400':
-                                              qualification.endorsement_decision === 'Pending',
+                                              (qualification.endorsement_decision || 'Pending') === 'Pending',
                                             'bg-green-400':
-                                              qualification.endorsement_decision === 'Approved',
+                                              (qualification.endorsement_decision || 'Pending') === 'Approved',
                                             'bg-red-400':
-                                              qualification.endorsement_decision === 'Regretted',
+                                              (qualification.endorsement_decision || 'Pending') === 'Regretted',
                                           },
                                         ]"
                                       ></span>
                                       <span class="text-sm text-gray-600">{{
-                                        qualification.endorsement_decision
+                                        qualification.endorsement_decision || 'Pending'
                                       }}</span>
                                     </div>
                                     <p
@@ -732,7 +729,6 @@ const props = defineProps({
     default: () => null,
   },
   onDownloadCertificate: {
-    // new prop to handle certificate download
     type: Function,
     default: () => {},
   },
@@ -750,18 +746,69 @@ const errorMessage = ref('')
 const personnelCategories = ref([])
 const personnelSubcategories = ref([])
 const sectors = ref([])
-const practiceAddresses = ref([]) // New ref for practice addresses
+const practiceAddresses = ref([])
+
+const overallStatus = computed(() => {
+  // Add strict safety checks
+  if (!props.application?.user_qualifications ||
+      !Array.isArray(props.application.user_qualifications) ||
+      props.application.user_qualifications.length === 0) {
+    return 'Pending'
+  }
+
+  const qualification = props.application.user_qualifications[0]
+
+  // Check if qualification exists
+  if (!qualification) return 'Pending'
+
+  const appReview = qualification.application_review_status || 'Pending'
+  const physReview = qualification.physical_review_status || 'Pending'
+  const endorse = qualification.endorsement_decision || 'Pending'
+
+  if (appReview === 'Regretted' || physReview === 'Regretted' || endorse === 'Regretted') {
+    return 'Regretted'
+  } else if (appReview === 'Approved' && physReview === 'Approved' && endorse === 'Approved') {
+    return 'Approved'
+  } else {
+    return 'Pending'
+  }
+})
 
 watch(
   () => props.application,
   (newApplication) => {
     if (newApplication) {
-      if (newApplication.user_qualifications && newApplication.user_qualifications.length > 0) {
-        editableQualification.value = { ...newApplication.user_qualifications[0] }
+      // Safely initialize editableQualification
+      if (newApplication.user_qualifications &&
+          Array.isArray(newApplication.user_qualifications) &&
+          newApplication.user_qualifications.length > 0) {
+        const qualification = newApplication.user_qualifications[0]
+        editableQualification.value = {
+          ...qualification,
+          application_review_status: qualification.application_review_status || 'Pending',
+          physical_review_status: qualification.physical_review_status || 'Pending',
+          endorsement_decision: qualification.endorsement_decision || 'Pending',
+          application_review_remark: qualification.application_review_remark || '',
+          physical_review_remark: qualification.physical_review_remark || '',
+          endorsement_remarks: qualification.endorsement_remarks || ''
+        }
       } else {
-        editableQualification.value = {}
+        // If no qualifications, create a default one
+        editableQualification.value = {
+          application_review_status: 'Pending',
+          physical_review_status: 'Pending',
+          endorsement_decision: 'Pending',
+          application_review_remark: '',
+          physical_review_remark: '',
+          endorsement_remarks: ''
+        }
       }
+
       editableApplication.value = { ...newApplication }
+    } else {
+      // If application is null, reset values
+      editableQualification.value = {}
+      editableApplication.value = {}
     }
     errorMessage.value = ''
   },
@@ -794,30 +841,37 @@ const formatDate = (date) => {
   }
 }
 
-const overallStatus = computed(() => {
-  if (!props.application?.user_qualifications?.[0]) return 'Pending'
-
-  const appReview = props.application.user_qualifications[0].application_review_status
-  const physReview = props.application.user_qualifications[0].physical_review_status
-  const endorse = props.application.user_qualifications[0].endorsement_decision
-
-  if (appReview === 'Regretted' || physReview === 'Regretted' || endorse === 'Regretted') {
-    return 'Regretted'
-  } else if (appReview === 'Approved' && physReview === 'Approved' && endorse === 'Approved') {
-    return 'Approved'
-  } else {
-    return 'Pending'
-  }
-})
-
 const startEditing = () => {
   isEditing.value = true
 }
 
 const cancelEditing = () => {
   isEditing.value = false
-  if (props.application && props.application.user_qualifications.length > 0) {
-    editableQualification.value = { ...props.application.user_qualifications[0] }
+  if (props.application) {
+    // Reset to original values
+    if (props.application.user_qualifications &&
+        Array.isArray(props.application.user_qualifications) &&
+        props.application.user_qualifications.length > 0) {
+      const qualification = props.application.user_qualifications[0]
+      editableQualification.value = {
+        ...qualification,
+        application_review_status: qualification.application_review_status || 'Pending',
+        physical_review_status: qualification.physical_review_status || 'Pending',
+        endorsement_decision: qualification.endorsement_decision || 'Pending',
+        application_review_remark: qualification.application_review_remark || '',
+        physical_review_remark: qualification.physical_review_remark || '',
+        endorsement_remarks: qualification.endorsement_remarks || ''
+      }
+    } else {
+      editableQualification.value = {
+        application_review_status: 'Pending',
+        physical_review_status: 'Pending',
+        endorsement_decision: 'Pending',
+        application_review_remark: '',
+        physical_review_remark: '',
+        endorsement_remarks: ''
+      }
+    }
     editableApplication.value = { ...props.application }
   }
   errorMessage.value = ''
@@ -840,21 +894,21 @@ const saveChanges = async () => {
       })
     }
 
-    // 2. Update application with qualification changes
+    // 2. Safety check: ensure we have valid qualification data
     if (props.application.id && editableQualification.value) {
+      const qualificationData = {
+        ...editableQualification.value,
+        application_review_status: editableQualification.value.application_review_status || 'Pending',
+        physical_review_status: editableQualification.value.physical_review_status || 'Pending',
+        endorsement_decision: editableQualification.value.endorsement_decision || 'Pending',
+        application_review_remark: editableQualification.value.application_review_remark || '',
+        physical_review_remark: editableQualification.value.physical_review_remark || '',
+        endorsement_remarks: editableQualification.value.endorsement_remarks || ''
+      }
+
       const applicationData = {
-        ...editableApplication.value, // Include personnel category, subcategory, practice address, and sector
-        user_qualifications: [
-          {
-            ...editableQualification.value,
-            application_review_status: editableQualification.value.application_review_status,
-            application_review_remark: editableQualification.value.application_review_remark,
-            physical_review_status: editableQualification.value.physical_review_status,
-            physical_review_remark: editableQualification.value.physical_review_remark,
-            endorsement_decision: editableQualification.value.endorsement_decision,
-            endorsement_remarks: editableQualification.value.endorsement_remarks,
-          },
-        ],
+        ...editableApplication.value,
+        user_qualifications: [qualificationData]
       }
 
       await apiServices.patchMhpcNewApplication(props.application.id, applicationData)
@@ -885,9 +939,9 @@ onMounted(async () => {
   isLoading.value = true
   try {
     // Assuming apiServices.getEpcMasterData is a function to fetch master data
-    personnelCategories.value = await apiServices.getEpcMasterData('personnel-categories') // Replace 'personnel-categories' with your actual endpoint
-    personnelSubcategories.value = await apiServices.getEpcMasterData('personnel-subcategories') // Replace 'personnel-subcategories' with your actual endpoint
-    sectors.value = await apiServices.getEpcMasterData('sectors') // Replace 'sectors' with your actual endpoint
+    personnelCategories.value = await apiServices.getEpcMasterData('personnel-categories')
+    personnelSubcategories.value = await apiServices.getEpcMasterData('personnel-subcategories')
+    sectors.value = await apiServices.getEpcMasterData('sectors')
   } catch (error) {
     console.error('Error fetching master data:', error)
     errorMessage.value = 'Failed to load dropdown options.'
