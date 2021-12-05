@@ -178,7 +178,7 @@ const tabs = ref([
   { id: 'conceptual_master_plan', name: 'Master Plan' },
   { id: 'academic_plan', name: 'Academic Plan' },
   { id: 'affiliation_details', name: 'Affiliation' },
-  { id: 'teaching_hospital', name: 'Teaching Hospital' },
+  { id: 'teaching_hospital', name: 'Teaching Institute' },
   { id: 'research_policy', name: 'Research' },
   { id: 'human_resource', name: 'HR' },
   { id: 'quality_assurance', name: 'QA' },

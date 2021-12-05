@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Teaching Hospital Education Programme</h1>
+    <h1>Teaching Institute Education Programme</h1>
   </div>
 </template>
 
