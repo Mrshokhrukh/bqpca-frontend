@@ -7,7 +7,7 @@
       class="sr-only"
       ref="fileInput"
       :id="inputId"
-      :required="required"
+      :required="required && !fileName"
     />
     <label
       :for="inputId"

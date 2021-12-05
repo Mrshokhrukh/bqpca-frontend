@@ -1,6 +1,6 @@
 <template>
   <div>
-    <CIDSelection v-model="isCIDHolder"  />
+    <CIDSelection v-model="isCIDHolder" />
 
     <PaymentModal ref="paymentModal" :amount="1000" @payment-completed="onPaymentCompleted"
       @close="onPaymentModalClose" />
@@ -245,7 +245,7 @@
               },
             ]" />
             <p v-if="validation.errors.gewog" class="mt-1 text-sm text-red-500">
-              {{'State is required' }}
+              {{ 'State is required' }}
             </p>
           </div>
 
@@ -547,7 +547,7 @@
           class="px-6 py-3 border border-primary rounded-md text-primary bg-primary-50 hover:bg-primary-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
           Save as Draft
         </button>
-        <button type="button" @click="openPaymentModal" :disabled="!form.declaration || isSubmitting"
+        <button type="submit" :disabled="!form.declaration || isSubmitting"
           class="px-6 py-3 bg-primary text-white rounded-md hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed">
           {{ isSubmitting ? 'Submitting...' : 'Submit' }}
         </button>
@@ -587,6 +587,10 @@ const courseTypeOptions = ref([])
 const props = defineProps({
   initialData: Object,
   mode: { type: String, default: 'create' },
+  skipPayment: { type: Boolean, default: false },
+  takeActionMode: { type: Boolean, default: false },
+
+
 })
 
 const getScalarId = (value) => {
@@ -725,17 +729,28 @@ const validation = reactive({
       return null
     },
     degree_certificate: (value) => {
-      if (form.from_in_country === false && !value && props.mode === 'create' && !props.initialData?.degree_certificate)
+      if (
+        form.from_in_country === false &&
+        !value &&
+        !(props.initialData?.degree_certificate && typeof props.initialData.degree_certificate === 'string')
+      )
         return 'Degree certificate is required'
       return null
     },
     academic_transcript: (value) => {
-      if (form.from_in_country === false && !value && props.mode === 'create' && !props.initialData?.academic_transcript)
+      if (
+        form.from_in_country === false &&
+        !value &&
+        !(props.initialData?.academic_transcript && typeof props.initialData.academic_transcript === 'string')
+      )
         return 'Academic transcript is required'
       return null
     },
     passport_size_photo: (value) => {
-      if (!value && props.mode === 'create' && !props.initialData?.passport_size_photo)
+      if (
+        !value &&
+        !(props.initialData?.passport_size_photo && typeof props.initialData.passport_size_photo === 'string')
+      )
         return 'Passport size photo is required'
       return null
     },
@@ -1026,7 +1041,11 @@ const formatDate = (dateString) => {
 const handleSubmit = () => {
   if (validateForm()) {
     if (form.declaration) {
-      openPaymentModal()
+      if (props.skipPayment) {
+        handleSubmitActual() // Directly submit, skip payment modal
+      } else {
+        openPaymentModal()
+      }
     } else {
       toast.error('Please accept the declaration')
       validation.errors.declaration = 'You must accept the declaration'
@@ -1065,6 +1084,9 @@ const handleSubmitActual = async (isDraft = false) => {
       type_of_course: 'type_of_course_id',
       qualification: 'qualification_id',
     }
+    if (props.takeActionMode && !isDraft) {
+      form.status = 'applied'
+    }
 
     for (const key in form) {
       if (Object.prototype.hasOwnProperty.call(form, key)) {
@@ -1090,7 +1112,7 @@ const handleSubmitActual = async (isDraft = false) => {
       }
     }
 
-    if (!isDraft) {
+    if (!isDraft && props.mode !== 'edit' && !props.skipPayment) {
       const paymentInitiationFormData = new FormData()
       paymentInitiationFormData.append('refNo', form.payment_id)
       paymentInitiationFormData.append('serviceCode', '100192') // ROQ New Application
