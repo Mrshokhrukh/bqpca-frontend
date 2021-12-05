@@ -2,11 +2,8 @@
   <div class="p-4 w-full">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
       <h2 class="text-3xl font-serif font-bold text-slate-900">ROQ Application Workspace</h2>
-      <button
-        class="inline-flex items-center px-6 py-3 bg-blue-600 text-white ..."
-        @click="loadAllData(true)"
-        :disabled="loading"
-      >
+      <button class="inline-flex items-center px-6 py-3 bg-blue-600 text-white ..." @click="loadAllData(true)"
+        :disabled="loading">
         <RefreshCw class="w-4 h-4 mr-2" :class="{ 'animate-spin': loading }" />
         {{ loading ? 'Refreshing...' : 'Refresh Lists' }}
       </button>
@@ -21,20 +18,11 @@
           <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
         </div>
         <div v-else class="w-full overflow-x-auto">
-          <ApplicationList
-            :applications="paginatedUnclaimedApplications"
-            :current-page="unclaimedCurrentPage"
-            :total-results="unclaimedFilteredTotal"
-            :per-page="unclaimedPerPage"
-            :search-query="unclaimedSearchQuery"
-            :user-role="userRole"
-            :no-results="unclaimedApplications.length === 0"
-            :show-claim-button="true"
-            @page-change="handleUnclaimedPageChange"
-            @per-page-change="handleUnclaimedPerPageChange"
-            @search-query-change="handleUnclaimedSearchChange"
-            @claim="handleClaimApplication"
-          />
+          <ApplicationList :applications="paginatedUnclaimedApplications" :current-page="unclaimedCurrentPage"
+            :total-results="unclaimedFilteredTotal" :per-page="unclaimedPerPage" :search-query="unclaimedSearchQuery"
+            :user-role="userRole" :no-results="unclaimedApplications.length === 0" :show-claim-button="true"
+            @page-change="handleUnclaimedPageChange" @per-page-change="handleUnclaimedPerPageChange"
+            @search-query-change="handleUnclaimedSearchChange" @claim="handleClaimApplication" />
         </div>
       </div>
     </div>
@@ -48,48 +36,26 @@
           <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
         </div>
         <div v-else class="w-full overflow-x-auto">
-          <ApplicationList
-            :applications="paginatedAssignedApplications"
-            :current-page="assignedCurrentPage"
-            :total-results="assignedFilteredTotal"
-            :per-page="assignedPerPage"
-            :search-query="assignedSearchQuery"
-            :selected-status="assignedSelectedStatus"
-            :user-role="userRole"
-            :no-results="assignedApplications.length === 0"
-            :show-claim-button="false"
-            @page-change="handleAssignedPageChange"
-            @per-page-change="handleAssignedPerPageChange"
-            @search-query-change="handleAssignedSearchChange"
-            @status-filter-change="handleAssignedStatusChange"
-            @action="handleApplicationAction"
-            @refresh="loadAllData"
-          />
+          <ApplicationList :applications="paginatedAssignedApplications" :current-page="assignedCurrentPage"
+            :total-results="assignedFilteredTotal" :per-page="assignedPerPage" :search-query="assignedSearchQuery"
+            :selected-status="assignedSelectedStatus" :user-role="userRole"
+            :no-results="assignedApplications.length === 0" :show-claim-button="false"
+            @page-change="handleAssignedPageChange" @per-page-change="handleAssignedPerPageChange"
+            @search-query-change="handleAssignedSearchChange" @status-filter-change="handleAssignedStatusChange"
+            @action="handleApplicationAction" @refresh="loadAllData" />
         </div>
       </div>
     </div>
 
-    <ApplicationModal
-      :show-modal="showModal"
-      :modal-type="modalType"
-      :application="selectedApplication"
-      :user-role="userRole"
-      @close="closeModal"
-      @update="handleApplicationUpdate"
-    />
-    <RemarksModal
-      :show-modal="showRemarksModal"
-      :chief-remarks="selectedApplication.chief_remarks"
+    <ApplicationModal :show-modal="showModal" :modal-type="modalType" :application="selectedApplication"
+      :user-role="userRole" @close="closeModal" @update="handleApplicationUpdate" />
+    <RemarksModal :show-modal="showRemarksModal" :chief-remarks="selectedApplication.chief_remarks"
       :dealing-officer-remarks="selectedApplication.dealing_officer_remarks"
-      :private-remarks="selectedApplication.chief_to_do_remarks"
-      @close="closeRemarksModal"
-    />
-    <ViewCertificateModal
-      v-if="modalType === 'viewCertificate'"
-      :show-modal="showModal"
-      :application="selectedApplication"
-      @close="closeModal"
-    />
+      :private-remarks="selectedApplication.chief_to_do_remarks" @close="closeRemarksModal" />
+    <ViewCertificateModal v-if="modalType === 'viewCertificate'" :show-modal="showModal"
+      :application="selectedApplication" @close="closeModal" />
+    <ReuploadModal v-if="showReuploadModal" :show-modal="showReuploadModal" :application="selectedApplication"
+      v-model:remarks="reuploadRemarks" @close="closeReuploadModal" @submit="handleReuploadSubmit" />
   </div>
 </template>
 
@@ -103,6 +69,7 @@ import ViewCertificateModal from '@/components/common/ROQ/ROQViewCertificateModa
 import apiService from '@/services/services'
 import { RefreshCw } from 'lucide-vue-next'
 import { useToast } from 'vue-toastification'
+import ReuploadModal from '@/components/common/ROQ/ReuploadModal.vue'
 
 const toast = useToast()
 const authStore = useAuthStore()
@@ -129,6 +96,8 @@ const showModal = ref(false)
 const modalType = ref(null)
 const selectedApplication = ref({})
 const showRemarksModal = ref(false)
+const showReuploadModal = ref(false)
+const reuploadRemarks = ref('')
 
 // --- Computed Properties for UNCLAIMED List ---
 const unclaimedFilteredApplications = computed(() =>
@@ -138,6 +107,31 @@ const unclaimedFilteredApplications = computed(() =>
     ) && app.is_second_copy === false
   )
 )
+
+const closeReuploadModal = () => {
+  showReuploadModal.value = false
+  reuploadRemarks.value = ''
+  selectedApplication.value = {}
+}
+
+const handleReuploadSubmit = async () => {
+  const updateLoadingToast = toast.info('Updating application for re-upload...', { timeout: false })
+  try {
+    await apiService.patchRecognitionOfQualification(selectedApplication.value.id, {
+      dealing_officer_remarks: reuploadRemarks.value,
+      status: 'reupload',
+    })
+    toast.dismiss(updateLoadingToast)
+    toast.success('Application marked for re-upload.')
+    await loadAllData()
+  } catch (e) {
+    toast.dismiss(updateLoadingToast)
+    toast.error(e.response?.data?.detail || 'Failed to update application.')
+  } finally {
+    closeReuploadModal()
+  }
+}
+
 const unclaimedFilteredTotal = computed(() => unclaimedFilteredApplications.value.length)
 const paginatedUnclaimedApplications = computed(() => {
   const start = (unclaimedCurrentPage.value - 1) * unclaimedPerPage.value
@@ -152,9 +146,9 @@ const assignedFilteredApplications = computed(() =>
     const matchesStatus = assignedSelectedStatus.value ? app.status === assignedSelectedStatus.value : true
     const matchesSearch = assignedSearchQuery.value
       ? Object.values(app).some(val =>
-          String(val).toLowerCase().includes(assignedSearchQuery.value.toLowerCase())
-        )
-      : true  && app.is_second_copy === false
+        String(val).toLowerCase().includes(assignedSearchQuery.value.toLowerCase())
+      )
+      : true && app.is_second_copy === false
     return matchesStatus && matchesSearch
   })
 )
@@ -228,7 +222,11 @@ const handleApplicationAction = ({ action, application }) => {
   modalType.value = action
   if (action === 'viewRemarks' || action === 'viewPrivateRemarks') {
     showRemarksModal.value = true
-  } else {
+  }
+  else if (action === 'reUpload') {
+    showReuploadModal.value = true 
+  }
+  else {
     showModal.value = true
   }
 }

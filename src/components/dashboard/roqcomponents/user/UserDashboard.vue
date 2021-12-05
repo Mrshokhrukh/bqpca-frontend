@@ -158,7 +158,7 @@ const isChartReady = ref(false)
 
 // Filtered applications (exclude is_second_copy: true)
 const filteredApplications = computed(() => {
-  return applications.value.filter((app) => !app.is_second_copy)
+  return applications.value.filter((app) => !app.is_second_copy && app.status !== 'draft' && app.status !== 'processing_payment')
 })
 
 // ... (rest of the computed properties: stats, avgProcessingTime, successRate remain the same) ...
