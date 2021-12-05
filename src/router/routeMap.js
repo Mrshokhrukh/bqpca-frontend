@@ -97,6 +97,8 @@ export default {
       cpd_credits: mhpcDashboard,
       cpd_methodologies: mhpcDashboard,
       cpd_activity: mhpcDashboard,
+      cpd_providing_agency: mhpcDashboard,
+      cpd_reason_for_conducting: mhpcDashboard,
       document_types: mhpcDashboard,
       e_signatures: mhpcDashboard,
       fee_structures: mhpcDashboard,

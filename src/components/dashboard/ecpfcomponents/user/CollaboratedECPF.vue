@@ -551,14 +551,38 @@
         </div>
 
         <!-- Action Buttons -->
+        <!-- Action Buttons -->
         <div class="flex justify-end space-x-4 mt-10 pt-6 border-t border-gray-200">
           <button
             type="button"
             @click="saveAsDraft"
             :disabled="isSubmitting"
-            class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg shadow-sm transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-lg shadow-sm transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
           >
-            {{ isSubmitting ? 'Saving...' : 'Save as Draft' }}
+            <span v-if="isSubmitting && actionType === 'draft'" class="inline-flex items-center">
+              <svg
+                class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              Saving...
+            </span>
+            <span v-else>Save as Draft</span>
           </button>
           <button
             type="button"
@@ -567,14 +591,37 @@
             :disabled="isSubmitting"
             class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-6 rounded-lg shadow-sm transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {{ isSubmitting ? 'Loading...' : 'Edit Draft' }}
+            {{ isSubmitting && actionType === 'edit' ? 'Loading...' : 'Edit Draft' }}
           </button>
           <button
             type="submit"
             :disabled="!declarationAgreed || isSubmitting || (formData.isDraft && formData.draftId)"
-            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg shadow-sm transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg shadow-sm transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
           >
-            {{ isSubmitting ? 'Submitting...' : 'Submit' }}
+            <span v-if="isSubmitting && actionType === 'submit'" class="inline-flex items-center">
+              <svg
+                class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              Submitting...
+            </span>
+            <span v-else>Submit</span>
           </button>
         </div>
       </form>
@@ -598,7 +645,7 @@ const isSubmitting = ref(false)
 const formMessage = reactive({ text: '', type: '' })
 const formEl = ref(null)
 const declarationAgreed = ref(false)
-
+const actionType = ref('')
 const NO_GEWOG_OPTION_VALUE = 'NO_GEWOG_APPLICABLE'
 
 const getInitialFormData = () => ({
@@ -937,7 +984,9 @@ const fetchExistingEcpfDetails = async (cid) => {
 }
 
 const submitForm = async () => {
+   actionType.value = 'submit'
   if (!validateForm()) {
+    actionType.value = ''
     // console.log('[submitForm] Validation failed.'); // Already handled by validateForm's setMessage
     return
   }
@@ -984,11 +1033,13 @@ const submitForm = async () => {
     }
   } finally {
     isSubmitting.value = false
+     actionType.value = ''
     // console.log('[submitForm] Submission process ended. isSubmitting:', isSubmitting.value);
   }
 }
 
 const saveAsDraft = async () => {
+  actionType.value = 'draft'
   isSubmitting.value = true
   clearMessage()
   // console.log('[saveAsDraft] Attempting to save as draft...');
@@ -1021,6 +1072,7 @@ const saveAsDraft = async () => {
     setMessage(error.message || 'Draft save failed due to an unexpected error.')
   } finally {
     isSubmitting.value = false
+    actionType.value = ''
   }
 }
 
@@ -1110,11 +1162,13 @@ const loadDraft = async (id) => {
 }
 
 const editDraft = () => {
+   actionType.value = 'edit'
   if (formData.draftId) {
     formData.isDraft = false
     // console.log('[editDraft] Draft unlocked. formData.isDraft set to false.');
     setMessage('Draft unlocked. You can now modify and submit the application.', 'success')
   } else {
+     actionType.value = ''
     // console.warn('[editDraft] Clicked but no draftId found in formData.');
   }
 }

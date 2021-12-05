@@ -220,7 +220,8 @@
             </div>
           </div>
           <button type="button" @click="addCourseProgramme"
-                  class="mt-2 w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition ease-in-out duration-150 inline-flex items-center justify-center">
+                  :disabled="isSubmitting || isSavingDraft"
+                  class="mt-2 w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition ease-in-out duration-150 inline-flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed">
             <Plus class="w-5 h-5 mr-2" /> Add New Course/Programme
           </button>
           <p v-if="errors.application_courses_json && (typeof errors.application_courses_json === 'string' || Array.isArray(errors.application_courses_json))" class="text-red-600 text-sm mt-3 flex items-center">
@@ -233,32 +234,51 @@
           <button
             type="button"
             @click="saveDraft"
-            :disabled="isSubmitting"
-            class="flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-gray-700 bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition ease-in-out duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+            :disabled="isSubmitting || isSavingDraft"
+            class="flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-gray-700 bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition ease-in-out duration-150 disabled:opacity-50 disabled:cursor-not-allowed min-w-[160px]"
           >
-            <Loader2 v-if="isSavingDraft" class="animate-spin mr-2 w-5 h-5" />
-            <Save v-else class="mr-2 w-5 h-5" />
-            {{ application.id ? 'Update Draft' : 'Save Draft' }}
+            <span v-if="isSavingDraft" class="flex items-center">
+              <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Saving...
+            </span>
+            <span v-else class="flex items-center">
+              <Save class="mr-2 w-5 h-5" />
+              {{ application.id ? 'Update Draft' : 'Save Draft' }}
+            </span>
           </button>
           <button
             type="button"
             @click="handleFinalSubmitApplication"
-            :disabled="isSubmitting"
-            class="flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition ease-in-out duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+            :disabled="isSubmitting || isSavingDraft"
+            class="flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition ease-in-out duration-150 disabled:opacity-50 disabled:cursor-not-allowed min-w-[180px]"
           >
-            <Loader2 v-if="isSubmitting" class="animate-spin mr-2 w-5 h-5" />
-            <CheckCircle v-else class="mr-2 w-5 h-5" />
-            {{ isSubmitting ? 'Processing...' : 'Submit Application' }}
+            <span v-if="isSubmitting" class="flex items-center">
+              <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Processing...
+            </span>
+            <span v-else class="flex items-center">
+              <CheckCircle class="mr-2 w-5 h-5" />
+              Submit Application
+            </span>
           </button>
         </div>
-        <p v-if="isSubmitting" class="text-center text-gray-500 text-sm mt-3 flex items-center justify-center">
-          <Loader2 class="animate-spin mr-2 w-5 h-5" /> Processing your request, please wait...
+        <p v-if="isSubmitting || isSavingDraft" class="text-center text-gray-500 text-sm mt-3 flex items-center justify-center">
+          <svg class="animate-spin mr-2 w-5 h-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          Processing your request, please wait...
         </p>
       </div>
     </div>
 
-
-      <div v-if="showConfirmationModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-opacity" @click="handleCancelSubmission">
+    <div v-if="showConfirmationModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-opacity" @click="handleCancelSubmission">
       <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md transform transition-all" @click.stop>
         <div class="text-center">
           <HelpCircle class="mx-auto h-12 w-12 text-blue-500" />
@@ -272,14 +292,16 @@
         <div class="mt-5 sm:mt-6 flex justify-center gap-4">
           <button
             type="button"
-            class="inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:text-sm"
+            :disabled="isSubmitting || isSavingDraft"
+            class="inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
             @click="handleCancelSubmission"
           >
             Cancel
           </button>
           <button
             type="button"
-            class="inline-flex w-full justify-center rounded-md border border-transparent bg-green-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 sm:text-sm"
+            :disabled="isSubmitting || isSavingDraft"
+            class="inline-flex w-full justify-center rounded-md border border-transparent bg-green-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
             @click="handleConfirmSubmission"
           >
             Confirm & Proceed
@@ -623,9 +645,6 @@ const saveDraft = async () => {
 };
 
 const onPaymentCompleted = (paymentData) => {
-  // We do NOT explicitly call paymentModal.value.closeModal() here
-  // because the modal itself will close due to the closeOnSuccess prop.
-
   submissionInitiated.value = true;
   application.value.is_payment_complete = false;
   application.value.payment_id_gateway = paymentData.paymentHash;
@@ -640,9 +659,6 @@ const onPaymentModalClose = () => {
   }
 };
 
-// ==========================================
-// UPDATED SUBMISSION HANDLER
-// ==========================================
 const handleSubmitActual = async () => {
   isSubmitting.value = true;
   errors.value = {};
@@ -864,5 +880,16 @@ fieldset > legend {
   font-weight: 600;
   color: #374151;
   background-color: #f9fafb;
+}
+
+/* Ensure consistent button sizing */
+button span {
+  display: flex;
+  align-items: center;
+}
+
+/* Smooth transitions for buttons */
+button {
+  transition: all 0.3s ease;
 }
 </style>

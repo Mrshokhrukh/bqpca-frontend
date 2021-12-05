@@ -557,9 +557,9 @@ const fetchApplications = async () => {
 
     if (response.data && Array.isArray(response.data.results)) {
       applications.value = response.data.results
-      if (response.data.results.length === 0) {
-        error.value = 'No applications found for your account.'
-      }
+      // if (response.data.results.length === 0) {
+      //   error.value = 'No applications found for your account.'
+      // }
     } else {
       applications.value = []
     }
