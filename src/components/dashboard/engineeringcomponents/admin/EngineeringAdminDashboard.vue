@@ -109,7 +109,6 @@ import {
 // --- State ---
 const counts = ref({
   cpdActivities: 0,
-
   cpdCredits: 0,
   cpdMethodologies: 0,
   documentTypes: 0,
@@ -184,6 +183,14 @@ const configurationCards = [
         text: 'CPD Methodologies',
         route: `${basePath}/cpd_methodologies`,
         icon: null,
+      },
+      {
+        text: 'CPD Reason for Conducting',
+        route: `${basePath}/master_cpd_reason_for_conducting`,
+      },
+      {
+        text: 'CPD Providing Agency',
+        route: `${basePath}/master_cpd_providing_agency`,
       },
 
     ],
@@ -408,33 +415,32 @@ onMounted(async () => {
       apiServices.getEpcMastersSectors(),
       apiServices.getEpcMastersSubCategories(),
       apiServices.getEpcMastersUniversities(),
-      apiServices.getEpcMastersCogsAgencies(),
-      apiServices.getEpcMastersCogsDepartments(),
-      apiServices.getEpcMastersCogsWorkplaces(),
+      apiServices.getEpcCogsAgencies(),
+      // apiServices.getEpcMastersCogsDepartments(),
+      // apiServices.getEpcMastersCogsWorkplaces(),
     ]
 
     const results = await Promise.all(countPromises)
 
     // Update counts state
-    counts.value.cpdActivities = results[0].data?.length || 0
-    counts.value.cpdCredits = results[1].data?.length || 0
-    counts.value.cpdMethodologies = results[2].data?.length || 0
-    counts.value.cpdActivities = results[3].data?.length || 0
-    counts.value.documentTypes = results[4].data?.length || 0
-    counts.value.eSignatures = results[5].data?.length || 0
-    counts.value.fileTypes = results[6].data?.length || 0
-    counts.value.feeStructures = results[7].data?.length || 0
-    counts.value.participationCategories = results[8].data?.length || 0
-    counts.value.participationSubCategories = results[9].data?.length || 0
-    counts.value.personnelCategories = results[10].data?.length || 0
-    counts.value.qualificationTypes = results[11].data?.length || 0
-    counts.value.registrationTypes = results[12].data?.length || 0
-    counts.value.sectors = results[13].data?.length || 0
-    counts.value.subCategories = results[14].data?.length || 0
-    counts.value.universities = results[15].data?.length || 0
-    counts.value.cogsAgencies = results[16].data?.length || 0
-    counts.value.cogsDepts = results[17].data?.length || 0
-    counts.value.cogsWorkplaces = results[18].data?.length || 0
+    counts.value.cpdActivities = results[0].data?.count || 0
+    counts.value.cpdCredits = results[1].data?.count || 0
+    counts.value.cpdMethodologies = results[2].data?.count || 0
+    counts.value.documentTypes = results[4].data?.count || 0
+    counts.value.eSignatures = results[5].data?.count || 0
+    counts.value.fileTypes = results[6].data?.count || 0
+    counts.value.feeStructures = results[7].data?.count || 0
+    counts.value.participationCategories = results[8].data?.count || 0
+    counts.value.participationSubCategories = results[9].data?.count || 0
+    counts.value.personnelCategories = results[10].data?.count || 0
+    counts.value.qualificationTypes = results[11].data?.count || 0
+    counts.value.registrationTypes = results[12].data?.count || 0
+    counts.value.sectors = results[13].data?.count || 0
+    counts.value.subCategories = results[14].data?.count || 0
+    counts.value.universities = results[15].data?.count || 0
+    counts.value.cogsAgencies = results[16].data?.count || 0
+    // counts.value.cogsDepts = results[17].data?.length || 0
+    // counts.value.cogsWorkplaces = results[18].data?.length || 0
   } catch (error) {
     console.error('Error fetching dashboard data:', error)
     // Consider adding user-friendly error handling (e.g., a notification)
