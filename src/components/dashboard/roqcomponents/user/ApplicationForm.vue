@@ -526,32 +526,46 @@
       </div>
 
       <div v-if="validation.showSummary && Object.keys(validation.errors).length > 0"
-        class="bg-red-50 border-l-4 border-red-400 p-4">
-        <div class="flex">
-          <div class="flex-shrink-0"></div>
-          <div class="ml-3">
-            <p class="text-sm text-red-700 font-medium">Please correct the following errors:</p>
-            <ul class="mt-2 text-sm text-red-700 list-disc list-inside pl-2">
-              <li v-for="(error, field) in validation.errors" :key="field">{{ error }}</li>
-            </ul>
-          </div>
+      class="bg-red-50 border-l-4 border-red-400 p-4">
+      <div class="flex">
+        <div class="flex-shrink-0"></div>
+        <div class="ml-3">
+          <p class="text-sm text-red-700 font-medium">Please correct the following errors:</p>
+          <ul class="mt-2 text-sm text-red-700 list-disc list-inside pl-2">
+            <li v-for="(error, field) in validation.errors" :key="field">{{ error }}</li>
+          </ul>
         </div>
       </div>
+    </div>
 
-      <div class="flex justify-end space-x-4">
-        <button type="button" @click="$emit('close-modal')"
-          class="px-6 py-3 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
-          Cancel
-        </button>
-        <button type="button" @click="handleSaveAsDraft"
-          class="px-6 py-3 border border-primary rounded-md text-primary bg-primary-50 hover:bg-primary-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
-          Save as Draft
-        </button>
-        <button type="button" @click="openPaymentModal" :disabled="!form.declaration || isSubmitting"
-          class="px-6 py-3 bg-primary text-white rounded-md hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed">
-          {{ isSubmitting ? 'Submitting...' : 'Submit' }}
-        </button>
-      </div>
+    <div class="flex justify-end space-x-4">
+      <button type="button" @click="$emit('close-modal')"
+        class="px-6 py-3 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+        Cancel
+      </button>
+      <button type="button" @click="handleSaveAsDraft" :disabled="isSavingDraft"
+        class="px-6 py-3 border border-primary rounded-md text-primary bg-primary-50 hover:bg-primary-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[120px]">
+        <span v-if="isSavingDraft" class="flex items-center">
+          <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          Saving...
+        </span>
+        <span v-else>Save as Draft</span>
+      </button>
+      <button type="button" @click="openPaymentModal" :disabled="!form.declaration || isSubmitting"
+        class="px-6 py-3 bg-primary text-white rounded-md hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[120px]">
+        <span v-if="isSubmitting" class="flex items-center">
+          <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          Submitting...
+        </span>
+        <span v-else>Submit</span>
+      </button>
+    </div>
     </form>
   </div>
 </template>
@@ -1038,6 +1052,7 @@ const handleSubmit = () => {
 }
 
 const handleSaveAsDraft = async () => {
+  isSavingDraft.value = true
   form.status = 'draft'
   const requiredForDraft = ['applicants_name']
   let isValid = true
@@ -1052,11 +1067,12 @@ const handleSaveAsDraft = async () => {
     await handleSubmitActual(true)
   } else {
     toast.error('Please provide at least your name to save as draft')
+    isSavingDraft.value = false
   }
 }
 
 const handleSubmitActual = async (isDraft = false) => {
-  isSubmitting.value = true
+  isSubmitting.value = !isDraft
   let redirectUrl = null
 
   try {
@@ -1199,5 +1215,21 @@ const handleCIDInput = (event) => {
 .required::after {
   content: ' *';
   color: #ef4444;
+}
+button {
+  transition: all 0.3s ease;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
 }
 </style>
