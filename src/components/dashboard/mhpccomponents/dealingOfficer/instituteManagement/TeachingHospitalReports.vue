@@ -6,7 +6,7 @@
         <h1
           class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight"
         >
-          Teaching Hospital Reports
+          Teaching Institute Reports
         </h1>
       </div>
       <div class="mt-4 flex md:ml-4 md:mt-0 items-center">

@@ -327,7 +327,7 @@ const detailSections = computed(() => [
     items: [
       { label: 'Academic Plan', field: 'academic_plan', icon: GraduationCap },
       { label: 'Affiliation Details', field: 'affiliation_details', icon: Users },
-      { label: 'Teaching Hospital', field: 'teaching_hospital_details', icon: Hospital },
+      { label: 'Teaching Institute', field: 'teaching_hospital_details', icon: Hospital },
       { label: 'Research Policy', field: 'research_policy', icon: FileText },
     ],
   },

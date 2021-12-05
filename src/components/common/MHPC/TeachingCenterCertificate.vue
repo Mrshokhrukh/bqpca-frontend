@@ -19,7 +19,7 @@
             Bhutan Qualifications and Professionals Certification Authority<br />
             Thimphu : Bhutan
           </h3>
-          <h2 class="text-2xl font-bold text-blue-900 mt-6">TEACHING HOSPITAL CERTIFICATE</h2>
+          <h2 class="text-2xl font-bold text-blue-900 mt-6">Teaching Institute CERTIFICATE</h2>
         </div>
         <div class="text-center w-32">
           <img src="@/assets/mhpc-logo.png" alt="MHPC Logo" class="h-24 mx-auto" />
@@ -33,7 +33,7 @@
         <h1 class="text-3xl font-bold text-blue-900 my-4">{{ centerData.center_name }}</h1>
         <p class="text-md text-gray-600">{{ centerData.location }}</p>
         <p class="text-justify text-md mt-10 px-12 leading-relaxed">
-          having fulfilled the requirements prescribed by the Medical and Health Professionals Council (MHPC), is hereby granted this certificate of recognition as a Teaching Hospital for health professionals.
+          having fulfilled the requirements prescribed by the Medical and Health Professionals Council (MHPC), is hereby granted this certificate of recognition as a Teaching Institute for health professionals.
         </p>
 
         <div class="grid grid-cols-[200px_1fr] gap-y-4 text-left text-sm mt-10 px-16">

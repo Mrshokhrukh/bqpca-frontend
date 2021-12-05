@@ -663,7 +663,7 @@
                     </div>
                   </div>
                   <div class="bg-white p-3 rounded shadow-sm border border-gray-100">
-                    <label class="block text-xs font-medium text-gray-500">Teaching Hospital</label>
+                    <label class="block text-xs font-medium text-gray-500">Teaching Institute</label>
                     <div class="mt-1 text-sm text-gray-900">
                       {{ instituteDetails.teaching_hospital || 'Not available' }}
                     </div>
