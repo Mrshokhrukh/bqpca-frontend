@@ -111,23 +111,23 @@
         </div>
         <div>
           <h3 class="text-xl font-semibold text-gray-800 mb-5 border-b border-gray-200 pb-3">
-            Location & Contact
+            {{authStore.village ? "Location & Contact": "Contact"}}
           </h3>
           <dl class="space-y-5">
-            <div class="flex flex-col">
-              <dt class="text-sm font-medium text-gray-500">Village</dt>
+            <div class="flex flex-col" v-if="authStore.village">
+              <dt class="text-sm font-medium text-gray-500" >{{ cidHolder ? "Village" : "City / Town"}}</dt>
               <dd class="mt-1 text-gray-900 font-medium text-lg">
                 {{ authStore.village || 'Not provided' }}
               </dd>
             </div>
-            <div class="flex flex-col">
-              <dt class="text-sm font-medium text-gray-500">Gewog</dt>
+            <div class="flex flex-col" v-if="authStore.gewog">
+              <dt class="text-sm font-medium text-gray-500">{{ cidHolder ? "Gewog" : "State / Province"}}</dt>
               <dd class="mt-1 text-gray-900 font-medium text-lg">
                 {{ authStore.gewog || 'Not provided' }}
               </dd>
             </div>
-            <div class="flex flex-col">
-              <dt class="text-sm font-medium text-gray-500">Dzongkhag</dt>
+            <div class="flex flex-col" v-if="authStore.dzongkhag">
+              <dt class="text-sm font-medium text-gray-500">{{ cidHolder ? "Dzongkhag" : "Country "}}</dt>
               <dd class="mt-1 text-gray-900 font-medium text-lg">
                 {{ authStore.dzongkhag || 'Not provided' }}
               </dd>
@@ -250,7 +250,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/authStore'
 import apiService from '@/services/services'
 import { useToast } from 'vue-toastification'
@@ -259,6 +259,7 @@ const authStore = useAuthStore()
 const toast = useToast()
 const isEditing = ref(false)
 const previewUrl = ref(null)
+const cidHolder = ref(false)
 
 const profileForm = ref({
   contactNumber: authStore.user?.contact_number || '',
@@ -353,4 +354,17 @@ const isValidEmail = (email) => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   return emailRegex.test(email)
 }
+
+const userApplications = async () => {
+  try {
+    const response = await apiService.getEpcNewApplications({ cid: authStore.user.cid })
+    cidHolder.value = response.data.results[0].cid_holder
+  } catch (error) {
+    console.error('Error fetching EPC new applications:', error)
+  }
+}
+
+onMounted(() => {
+  userApplications()
+})
 </script>
