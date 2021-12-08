@@ -430,40 +430,54 @@ const changedFieldOptions = [
 // Lifecycle Hooks
 //======================================================================
 onMounted(async () => {
+  // Fetch critical data first
   try {
-    const [appsRes, reasonsRes, qualsRes, courseTypesRes, feeRes] = await Promise.all([
-      apiService.getRecognitionOfQualifications({ cid: user.cid, page_size: 1000 }),
+    const appsRes = await apiService.getRecognitionOfQualifications({ cid: user.cid, page_size: 1000 });
+    originalApplications.value = (appsRes.data.results || []).filter(
+      (app) => app.status === 'approved' && !app.is_second_copy
+    );
+  } catch (error) {
+    toast.error('Failed to fetch your existing applications: ' + error.message);
+    console.error('Error fetching applications:', error);
+  }
+
+  // Fetch non-critical metadata
+  try {
+    const [reasonsRes, qualsRes, courseTypesRes] = await Promise.all([
       apiService.getReasonsForIssueOfSecondCopy(),
       apiService.getQualifications(),
       apiService.getTypesOfCourse(),
-      apiService.getServiceFee(serviceCodeForSecondCopy),
-    ])
+    ]);
 
-    originalApplications.value = (appsRes.data.results || []).filter(
-      (app) => app.status === 'approved' && !app.is_second_copy
-    )
-    reasonsForSecondCopy.value = reasonsRes.data.results
-    qualificationOptions.value = qualsRes.data.results.map((q) => ({ value: q.id, label: q.name }))
+    reasonsForSecondCopy.value = reasonsRes.data.results;
+    qualificationOptions.value = qualsRes.data.results.map((q) => ({ value: q.id, label: q.name }));
     courseTypeOptions.value = courseTypesRes.data.results.map((t) => ({
       value: t.id,
       label: t.name,
-    }))
+    }));
 
-    const othersReason = reasonsForSecondCopy.value.find((r) => r.name.toLowerCase() === 'others')
+    const othersReason = reasonsForSecondCopy.value.find((r) => r.name.toLowerCase() === 'others');
     if (othersReason) {
-      othersReasonId.value = othersReason.id
-    }
-
-    if (feeRes.data && feeRes.data.fees) {
-      paymentAmount.value = feeRes.data.fees
-    } else {
-      toast.error('Failed to fetch payment amount. Using default.')
-      paymentAmount.value = 1000 // Fallback
+      othersReasonId.value = othersReason.id;
     }
   } catch (error) {
-    toast.error('Failed to fetch initial data: ' + error.message)
-    console.error('Error fetching data:', error)
-    paymentAmount.value = 1000 // Fallback
+    toast.error('Failed to fetch form metadata: ' + error.message);
+    console.error('Error fetching metadata:', error);
+  }
+
+  // Fetch fee separately to handle failure gracefully
+  try {
+    const feeRes = await apiService.getServiceFee(serviceCodeForSecondCopy);
+    if (feeRes.data && feeRes.data.fees) {
+      paymentAmount.value = feeRes.data.fees;
+    } else {
+      toast.warn('Could not determine payment amount. Using default.');
+      paymentAmount.value = 1000; // Fallback
+    }
+  } catch (error) {
+    toast.warn('Could not determine payment amount. Using default.');
+    console.error('Error fetching service fee:', error);
+    paymentAmount.value = 1000; // Fallback
   }
 })
 
@@ -657,44 +671,49 @@ const handleSubmitActual = async () => {
     form.change_details_input.forEach((change, index) => {
       formData.append(
         `change_details_input[${index}][changed_field]`,
-        (change.changed_field || '').trim()
+        (change.changed_field || '').trim(),
       )
       formData.append(`change_details_input[${index}][old_value]`, (change.old_value || '').trim())
       formData.append(`change_details_input[${index}][new_value]`, (change.new_value || '').trim())
       if (change.other_description) {
         formData.append(
           `change_details_input[${index}][other_description]`,
-          (change.other_description || '').trim()
+          (change.other_description || '').trim(),
         )
       }
     })
 
-    // Create a separate FormData for the payment initiation
-    const paymentFormData = new FormData()
-    paymentFormData.append('refNo', form.payment_id)
-    paymentFormData.append('serviceCode', serviceCodeForSecondCopy)
-    paymentFormData.append('taxPayerName', form.applicants_name)
-    paymentFormData.append('taxPayerNo', form.cid_no)
-    paymentFormData.append('mobileNo', form.contact_no)
-    paymentFormData.append('payerEmail', form.email_address)
-    paymentFormData.append('totalPayableAmount', paymentAmount.value)
-    paymentFormData.append('payableAmount', paymentAmount.value)
-    paymentFormData.append('description', 'Payment for Second Copy ROQ')
-    paymentFormData.append('user', authStore.userId)
-    paymentFormData.append('application_no', form.payment_id)
-    paymentFormData.append('app_type', 'recognition_of_qualification')
-    paymentFormData.append('taxPayerDocumentNo', 'BAOW') // As per original code
-
-    // 1. Initiate payment
-    const paymentResponse = await apiService.makePayment(paymentFormData)
-    const redirectUrl = paymentResponse.data?.content?.redirectUrl
-    if (!redirectUrl) {
-      throw new Error('Redirect URL not received from payment gateway.')
-    }
-
-    // 2. Submit the application form data
+    // 1. Submit the application form data FIRST
     const appResponse = await apiService.createRecognitionOfQualification(formData)
+
     if (appResponse.status === 201) {
+      // 2. If application submission is successful, create and initiate payment
+      const paymentFormData = new FormData()
+      paymentFormData.append('refNo', form.payment_id)
+      paymentFormData.append('serviceCode', serviceCodeForSecondCopy)
+      paymentFormData.append('taxPayerName', form.applicants_name)
+      paymentFormData.append('taxPayerNo', form.cid_no)
+      paymentFormData.append('mobileNo', form.contact_no)
+      paymentFormData.append('payerEmail', form.email_address)
+      paymentFormData.append('totalPayableAmount', paymentAmount.value)
+      paymentFormData.append('payableAmount', paymentAmount.value)
+      paymentFormData.append('description', 'Payment for Second Copy ROQ')
+      paymentFormData.append('user', authStore.userId)
+      paymentFormData.append('application_no', form.payment_id)
+      paymentFormData.append('app_type', 'recognition_of_qualification')
+      paymentFormData.append('taxPayerDocumentNo', 'BAOW') // As per original code
+
+      const paymentResponse = await apiService.makePayment(paymentFormData)
+      const redirectUrl = paymentResponse.data?.content?.redirectUrl
+
+      if (!redirectUrl) {
+        toast.warn(
+          'Application submitted successfully, but payment initiation failed. Please contact support.',
+        )
+        emit('application-submitted') // The application IS submitted.
+        throw new Error('Redirect URL not received from payment gateway.')
+      }
+
       toast.success('Application submitted! Redirecting for payment...', { timeout: 5000 })
       window.open(redirectUrl, '_blank')
       emit('application-submitted')
