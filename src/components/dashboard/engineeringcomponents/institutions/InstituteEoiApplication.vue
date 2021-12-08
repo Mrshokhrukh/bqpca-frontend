@@ -1,4 +1,3 @@
-[file name]: InstituteEoiApplication.vue
 <template>
   <div v-if="showForm" class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative overflow-hidden">
     <!-- Toast Notification -->
@@ -88,7 +87,9 @@
                 <div
                   class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300"
                 >
-                  <UserIcon class="w-6 h-6 text-white" />
+                  <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
                 </div>
                 <div class="ml-6">
                   <h3
@@ -185,18 +186,6 @@
                   required
                 />
               </div>
-
-              <!-- Date of Birth (optional display) -->
-              <div v-if="userData?.date_of_birth">
-                <label for="date_of_birth" class="form-label">Date of Birth</label>
-                <input
-                  type="text"
-                  id="date_of_birth"
-                  :value="formatDate(userData.date_of_birth)"
-                  class="form-input disabled-input"
-                  readonly
-                />
-              </div>
             </div>
           </div>
         </div>
@@ -218,7 +207,9 @@
                 <div
                   class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300"
                 >
-                  <BuildingOffice2Icon class="w-6 h-6 text-white" />
+                  <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
                 </div>
                 <div class="ml-6">
                   <h3
@@ -361,16 +352,15 @@
                 />
               </div>
 
-              <!-- Chiwog -->
+              <!-- Chiwog (Optional) -->
               <div>
-                <label for="chiwog" class="form-label required-label">Chiwog</label>
+                <label for="chiwog" class="form-label">Chiwog (Optional)</label>
                 <input
                   type="text"
                   id="chiwog"
                   v-model.trim="formData.chiwog"
                   class="form-input"
-                  placeholder="Enter chiwog"
-                  required
+                  placeholder="Enter chiwog (optional)"
                 />
               </div>
 
@@ -385,32 +375,6 @@
                   placeholder="Enter complete address"
                   required
                 ></textarea>
-              </div>
-
-              <!-- Training Institute (If different) -->
-              <div>
-                <label for="teaching_institute" class="form-label">
-                  Training Institute Name (If different)
-                </label>
-                <input
-                  type="text"
-                  id="teaching_institute"
-                  v-model.trim="formData.teaching_institute"
-                  class="form-input"
-                  placeholder="Enter training institute name"
-                />
-              </div>
-
-              <!-- Website -->
-              <div>
-                <label for="website" class="form-label">Website</label>
-                <input
-                  type="url"
-                  id="website"
-                  v-model.trim="formData.website"
-                  class="form-input"
-                  placeholder="https://example.com"
-                />
               </div>
             </div>
           </div>
@@ -433,7 +397,10 @@
                 <div
                   class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300"
                 >
-                  <AcademicCapIcon class="w-6 h-6 text-white" />
+                  <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0v6" />
+                  </svg>
                 </div>
                 <div class="ml-6">
                   <h3
@@ -604,7 +571,9 @@
                 <div
                   class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-violet-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300"
                 >
-                  <UserGroupIcon class="w-6 h-6 text-white" />
+                  <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
                 </div>
                 <div class="ml-6">
                   <h3
@@ -756,7 +725,7 @@
             :disabled="!formData.declaration || isSubmitting"
             class="btn btn-primary w-full sm:w-auto"
           >
-            <Loader v-if="isSubmitting" class="animate-spin w-5 h-5 mr-2 text-white" />
+            <div v-if="isSubmitting" class="animate-spin w-5 h-5 mr-2 border-2 border-white border-t-transparent rounded-full"></div>
             <svg v-else class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
             </svg>
@@ -813,8 +782,6 @@ import apiService from '@/services/services'
 import { useAuthStore } from '@/stores/authStore'
 import { countryData } from '@/constants/countries.js'
 import { bhutanDzongkhagsGewogs } from '@/constants/dzongkhags.js'
-import { UserIcon, BuildingOffice2Icon, AcademicCapIcon, UserGroupIcon } from '@heroicons/vue/24/outline'
-import { Loader } from 'lucide-vue-next'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -844,16 +811,6 @@ const todayDate = computed(() => {
   return `${year}-${month}-${day}`
 })
 
-const formatDate = (dateString) => {
-  if (!dateString) return ''
-  const date = new Date(dateString)
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  })
-}
-
 const formData = ref({
   // Basic Information
   CID: '',
@@ -862,16 +819,14 @@ const formData = ref({
   contact_no: '',
   email_address: '',
 
-  // Institution Details
+  // Institution Details (removed teaching_institute and website)
   name_of_institution: '',
   country: 'Bhutan',
   gewog: '',
   dzongkhag: '',
   village: '',
   address: '',
-  chiwog: '',
-  teaching_institute: '',
-  website: '',
+  chiwog: '', // Made optional
 
   // Course Details
   title_of_course: '',
@@ -906,22 +861,13 @@ const programTypeOptions = [
   { value: 'B', label: 'Bachelor' },
 ]
 
-// Auto-fill user data from local storage
+// Auto-fill user data from auth store
 const autoFillUserData = () => {
   try {
-    // Try to get user from auth store first
     if (authStore.user) {
       userData.value = authStore.user
-    } else {
-      // Fallback to localStorage
-      const userStr = localStorage.getItem('user')
-      if (userStr) {
-        userData.value = JSON.parse(userStr)
-      }
-    }
 
-    if (userData.value) {
-      console.log('User data loaded:', userData.value)
+      console.log('User data loaded from auth store:', userData.value)
 
       // Auto-fill personal information
       if (userData.value.cid) {
@@ -949,7 +895,7 @@ const autoFillUserData = () => {
         formData.value.email_address = userData.value.email
       }
 
-      // Auto-fill institution location information if available
+      // Auto-fill location information if available
       if (userData.value.dzongkhag) {
         formData.value.dzongkhag = userData.value.dzongkhag
         // Trigger gewog loading
@@ -965,14 +911,18 @@ const autoFillUserData = () => {
         formData.value.village = userData.value.village
       }
 
-      if (userData.value.work_address) {
-        formData.value.address = userData.value.work_address
+      if (userData.value.chiwog) {
+        formData.value.chiwog = userData.value.chiwog
+      }
+
+      if (userData.value.work_address || userData.value.address) {
+        formData.value.address = userData.value.work_address || userData.value.address
       }
 
       isAutoFilled.value = true
       showToastNotification('Personal information has been auto-filled from your profile', 'success')
     } else {
-      console.log('No user data found for auto-fill')
+      console.log('No user data found in auth store')
     }
   } catch (error) {
     console.error('Error auto-filling user data:', error)
@@ -989,7 +939,25 @@ const handleDzongkhagChange = () => {
 
 const handleFileUpload = (event, fieldName) => {
   const file = event.target.files[0]
-  formData.value[fieldName] = file || null
+  if (file) {
+    // Validate file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      showToastNotification('File size should be less than 10MB')
+      event.target.value = ''
+      return
+    }
+
+    // Validate file type
+    const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
+    if (!allowedTypes.includes(file.type)) {
+      showToastNotification('Only PDF, DOC, and DOCX files are allowed')
+      event.target.value = ''
+      return
+    }
+
+    formData.value[fieldName] = file
+    showToastNotification('File selected successfully', 'success')
+  }
 }
 
 const validateForm = () => {
@@ -1003,7 +971,7 @@ const validateForm = () => {
     { field: 'dzongkhag', label: 'Dzongkhag' },
     { field: 'gewog', label: 'Gewog' },
     { field: 'village', label: 'Village' },
-    { field: 'chiwog', label: 'Chiwog' },
+    // { field: 'chiwog', label: 'Chiwog' }, // REMOVED - now optional
     { field: 'address', label: 'Address' },
     { field: 'title_of_course', label: 'Title of Course' },
     { field: 'course_duration', label: 'Course Duration' },
@@ -1054,10 +1022,18 @@ const validateForm = () => {
 }
 
 const handleSubmit = async () => {
+  // Check authentication
+  if (!authStore.isAuthenticated) {
+    showToastNotification('Please log in to submit the application.')
+    router.push('/login')
+    return
+  }
+
   if (!authStore.user || !authStore.user.cid) {
     showToastNotification('User authentication error. Please log in again.')
     return
   }
+
   formData.value.CID = authStore.user.cid
 
   if (!formData.value.declaration) {
@@ -1072,8 +1048,16 @@ const handleSubmit = async () => {
   isSubmitting.value = true
   const submitData = new FormData()
 
+  // Add authentication token if available
+  const token = authStore.token || localStorage.getItem('access_token')
+  if (token) {
+    apiService.defaults.headers.common['Authorization'] = `Bearer ${token}`
+  }
+
   Object.keys(formData.value).forEach((key) => {
     const value = formData.value[key]
+
+    // Skip review decision fields
     if (key === 'review_decision' || key === 'reason_if_rejected') {
       return
     }
@@ -1089,14 +1073,13 @@ const handleSubmit = async () => {
       } else {
         submitData.append(key, '')
       }
-    } else if (value !== null && value !== undefined) {
+    } else if (value !== null && value !== undefined && value !== '') {
       submitData.append(key, String(value).trim())
-    } else {
-      submitData.append(key, '')
     }
   })
 
   try {
+    console.log('Submitting form data...')
     const response = await apiService.createEpcInstitute(submitData)
     if (response.data) {
       showToastNotification('Expression of Interest submitted successfully!', 'success')
@@ -1110,12 +1093,18 @@ const handleSubmit = async () => {
   } catch (error) {
     console.error('Error submitting EOI form:', error)
     let message = 'Error submitting application. Please try again.'
-    if (error.response?.data) {
-      if (
-        typeof error.response.data === 'string' &&
-        error.response.data.includes('<!DOCTYPE html>')
-      ) {
-        message = 'Server returned an unexpected HTML error page. Please contact support.'
+
+    if (error.response?.status === 401) {
+      message = 'Session expired. Please log in again.'
+      authStore.logout()
+      router.push('/login')
+    } else if (error.response?.data) {
+      if (typeof error.response.data === 'string') {
+        if (error.response.data.includes('<!DOCTYPE html>')) {
+          message = 'Server returned an unexpected HTML error page. Please contact support.'
+        } else {
+          message = `Submission Failed: ${error.response.data}`
+        }
       } else if (error.response.data.error) {
         message = `Submission Failed: ${error.response.data.error}`
       } else if (typeof error.response.data === 'object') {
@@ -1130,10 +1119,11 @@ const handleSubmit = async () => {
         message = `Submission Failed: ${JSON.stringify(error.response.data)}`
       }
     } else if (error.request) {
-      message = 'Submission Failed: No response received from server. Check network connection.'
+      message = 'No response received from server. Check your network connection.'
     } else if (error.message) {
       message = `Submission Failed: ${error.message}`
     }
+
     showToastNotification(message)
   } finally {
     isSubmitting.value = false
@@ -1143,7 +1133,10 @@ const handleSubmit = async () => {
 const saveDraft = () => {
   const draftData = { ...formData.value }
   if (draftData.supporting_documents instanceof File) {
-    draftData.supporting_documents = { name: draftData.supporting_documents.name, type: draftData.supporting_documents.type }
+    draftData.supporting_documents = {
+      name: draftData.supporting_documents.name,
+      type: draftData.supporting_documents.type
+    }
   } else {
     draftData.supporting_documents = null
   }
