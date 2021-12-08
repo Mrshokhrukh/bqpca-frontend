@@ -472,8 +472,8 @@ export default {
   },
 
   // MHPC Application Endpoints
-  getMhpcNewApplications() {
-    return apiClient.get('/mhpc/mhpc-new-application/')
+  getMhpcNewApplications(queryParams) {
+    return apiClient.get('/mhpc/mhpc-new-application/', { params: queryParams })
   },
   createMhpcNewApplication(data) {
     return apiClient.post('/mhpc/mhpc-new-application/', data, {
