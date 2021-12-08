@@ -1,5 +1,8 @@
 <template>
-  <div v-if="showForm" class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative overflow-hidden">
+  <div
+    v-if="showForm"
+    class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative overflow-hidden"
+  >
     <!-- Toast Notification -->
     <div
       v-if="toastMessage"
@@ -35,7 +38,12 @@
             class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl mb-6 shadow-sm transform hover:scale-105 transition-transform duration-300"
           >
             <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+              />
             </svg>
           </div>
           <h1
@@ -44,7 +52,8 @@
             Expression of Interest Application
           </h1>
           <p class="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
-            Complete the form below to apply for engineering program certification. All required fields are marked with an asterisk.
+            Complete the form below to apply for engineering program certification. All required
+            fields are marked with an asterisk.
           </p>
           <p v-if="isAutoFilled" class="text-md text-emerald-600 mt-2 font-medium">
             <svg
@@ -65,11 +74,7 @@
         </div>
       </div>
 
-      <form
-        @submit.prevent="handleSubmit"
-        class="space-y-8"
-        enctype="multipart/form-data"
-      >
+      <form @submit.prevent="handleSubmit" class="space-y-8" enctype="multipart/form-data">
         <!-- Applicant Information Section -->
         <div class="group relative">
           <div
@@ -87,8 +92,18 @@
                 <div
                   class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300"
                 >
-                  <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  <svg
+                    class="w-6 h-6 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
                   </svg>
                 </div>
                 <div class="ml-6">
@@ -97,9 +112,7 @@
                   >
                     Applicant Information
                   </h3>
-                  <p class="text-slate-500 mt-1 text-sm">
-                    Personal details of the applicant
-                  </p>
+                  <p class="text-slate-500 mt-1 text-sm">Personal details of the applicant</p>
                 </div>
               </div>
             </div>
@@ -135,14 +148,13 @@
               <div>
                 <label for="gender" class="form-label required-label">Gender</label>
                 <div class="relative">
-                  <select
-                    id="gender"
-                    v-model="formData.gender"
-                    class="form-select"
-                    required
-                  >
+                  <select id="gender" v-model="formData.gender" class="form-select" required>
                     <option value="" disabled>Select Gender</option>
-                    <option v-for="option in genderOptions" :key="option.value" :value="option.value">
+                    <option
+                      v-for="option in genderOptions"
+                      :key="option.value"
+                      :value="option.value"
+                    >
                       {{ option.label }}
                     </option>
                   </select>
@@ -155,7 +167,12 @@
                       stroke="currentColor"
                       viewBox="0 0 24 24"
                     >
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 9l-7 7-7-7"
+                      />
                     </svg>
                   </div>
                 </div>
@@ -207,8 +224,18 @@
                 <div
                   class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300"
                 >
-                  <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  <svg
+                    class="w-6 h-6 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                    />
                   </svg>
                 </div>
                 <div class="ml-6">
@@ -217,9 +244,7 @@
                   >
                     Institution Details
                   </h3>
-                  <p class="text-slate-500 mt-1 text-sm">
-                    Details of the applying institution
-                  </p>
+                  <p class="text-slate-500 mt-1 text-sm">Details of the applying institution</p>
                 </div>
               </div>
             </div>
@@ -245,12 +270,7 @@
               <div>
                 <label for="country" class="form-label required-label">Country</label>
                 <div class="relative">
-                  <select
-                    id="country"
-                    v-model="formData.country"
-                    class="form-select"
-                    required
-                  >
+                  <select id="country" v-model="formData.country" class="form-select" required>
                     <option value="" disabled>Select Country</option>
                     <option v-for="c in countryData" :key="c.code" :value="c.name">
                       {{ c.name }}
@@ -265,7 +285,12 @@
                       stroke="currentColor"
                       viewBox="0 0 24 24"
                     >
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 9l-7 7-7-7"
+                      />
                     </svg>
                   </div>
                 </div>
@@ -300,7 +325,12 @@
                       stroke="currentColor"
                       viewBox="0 0 24 24"
                     >
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 9l-7 7-7-7"
+                      />
                     </svg>
                   </div>
                 </div>
@@ -333,7 +363,12 @@
                       stroke="currentColor"
                       viewBox="0 0 24 24"
                     >
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 9l-7 7-7-7"
+                      />
                     </svg>
                   </div>
                 </div>
@@ -397,9 +432,24 @@
                 <div
                   class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300"
                 >
-                  <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0v6" />
+                  <svg
+                    class="w-6 h-6 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 14l9-5-9-5-9 5 9 5z"
+                    />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 14l9-5-9-5-9 5 9 5zm0 0v6"
+                    />
                   </svg>
                 </div>
                 <div class="ml-6">
@@ -465,9 +515,7 @@
 
               <!-- Type of Program -->
               <div class="lg:col-span-2">
-                <label class="form-label required-label mb-4">
-                  Type of Program
-                </label>
+                <label class="form-label required-label mb-4"> Type of Program </label>
                 <div class="flex flex-wrap gap-6">
                   <label
                     v-for="option in programTypeOptions"
@@ -485,10 +533,14 @@
                       <div
                         class="w-5 h-5 rounded-full border-2 border-slate-300 peer-checked:border-amber-500 peer-checked:bg-amber-500 flex items-center justify-center transition-all duration-200 group-hover:border-amber-400"
                       >
-                        <div class="w-2.5 h-2.5 rounded-full bg-white opacity-0 peer-checked:opacity-100 transition-opacity duration-200"></div>
+                        <div
+                          class="w-2.5 h-2.5 rounded-full bg-white opacity-0 peer-checked:opacity-100 transition-opacity duration-200"
+                        ></div>
                       </div>
                     </div>
-                    <span class="ml-3 text-slate-700 group-hover:text-slate-900 transition-colors duration-200">
+                    <span
+                      class="ml-3 text-slate-700 group-hover:text-slate-900 transition-colors duration-200"
+                    >
                       {{ option.label }}
                     </span>
                   </label>
@@ -530,7 +582,12 @@
                     class="mt-2 text-sm text-green-600 flex items-center"
                   >
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
                     </svg>
                     File selected: {{ formData.supporting_documents.name }}
                   </p>
@@ -539,9 +596,7 @@
 
               <!-- Remarks -->
               <div class="lg:col-span-2">
-                <label for="remarks" class="form-label">
-                  Remarks (Optional)
-                </label>
+                <label for="remarks" class="form-label"> Remarks (Optional) </label>
                 <textarea
                   id="remarks"
                   v-model="formData.remarks"
@@ -571,8 +626,18 @@
                 <div
                   class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-violet-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform duration-300"
                 >
-                  <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  <svg
+                    class="w-6 h-6 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                    />
                   </svg>
                 </div>
                 <div class="ml-6">
@@ -618,7 +683,11 @@
                     required
                   >
                     <option value="" disabled>Select Gender</option>
-                    <option v-for="option in genderOptions" :key="option.value" :value="option.value">
+                    <option
+                      v-for="option in genderOptions"
+                      :key="option.value"
+                      :value="option.value"
+                    >
                       {{ option.label }}
                     </option>
                   </select>
@@ -631,7 +700,12 @@
                       stroke="currentColor"
                       viewBox="0 0 24 24"
                     >
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 9l-7 7-7-7"
+                      />
                     </svg>
                   </div>
                 </div>
@@ -666,6 +740,18 @@
                   required
                 />
               </div>
+
+              <!-- Add this in the Institution Details section -->
+              <div>
+                <label for="website" class="form-label">Website (Optional)</label>
+                <input
+                  type="url"
+                  id="website"
+                  v-model.trim="formData.website"
+                  class="form-input"
+                  placeholder="https://example.com"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -697,7 +783,10 @@
                   Declaration
                 </label>
                 <p class="text-slate-600 leading-relaxed">
-                  I/We certify that the information provided in this application is true, complete, and accurate to the best of my knowledge. I realize that any false, fictitious, or fraudulent statements may be subjected to administrative penalties. I am fully aware and understand the process and requirements of relevant agencies.
+                  I/We certify that the information provided in this application is true, complete,
+                  and accurate to the best of my knowledge. I realize that any false, fictitious, or
+                  fraudulent statements may be subjected to administrative penalties. I am fully
+                  aware and understand the process and requirements of relevant agencies.
                 </p>
               </div>
             </div>
@@ -715,7 +804,12 @@
             class="btn btn-draft w-full sm:w-auto order-last sm:order-first"
           >
             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3-3m0 0l-3 3m3-3v12" />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3-3m0 0l-3 3m3-3v12"
+              />
             </svg>
             Save as Draft
           </button>
@@ -725,9 +819,17 @@
             :disabled="!formData.declaration || isSubmitting"
             class="btn btn-primary w-full sm:w-auto"
           >
-            <div v-if="isSubmitting" class="animate-spin w-5 h-5 mr-2 border-2 border-white border-t-transparent rounded-full"></div>
+            <div
+              v-if="isSubmitting"
+              class="animate-spin w-5 h-5 mr-2 border-2 border-white border-t-transparent rounded-full"
+            ></div>
             <svg v-else class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+              />
             </svg>
             {{ isSubmitting ? 'Submitting...' : 'Submit Application' }}
           </button>
@@ -737,7 +839,10 @@
   </div>
 
   <!-- Already Approved View -->
-  <div v-else class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative overflow-hidden flex items-center justify-center">
+  <div
+    v-else
+    class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative overflow-hidden flex items-center justify-center"
+  >
     <div class="absolute inset-0 overflow-hidden pointer-events-none">
       <div
         class="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-emerald-400/20 to-teal-600/20 rounded-full blur-3xl"
@@ -747,13 +852,20 @@
       ></div>
     </div>
 
-    <div class="relative bg-white/80 backdrop-blur-xl border border-white/30 rounded-3xl shadow-xl p-12 max-w-lg mx-4">
+    <div
+      class="relative bg-white/80 backdrop-blur-xl border border-white/30 rounded-3xl shadow-xl p-12 max-w-lg mx-4"
+    >
       <div class="text-center">
         <div
           class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl mb-6 shadow-sm"
         >
           <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
           </svg>
         </div>
         <h2
@@ -823,6 +935,7 @@ const formData = ref({
   name_of_institution: '',
   country: 'Bhutan',
   gewog: '',
+  website: '',
   dzongkhag: '',
   village: '',
   address: '',
@@ -920,7 +1033,10 @@ const autoFillUserData = () => {
       }
 
       isAutoFilled.value = true
-      showToastNotification('Personal information has been auto-filled from your profile', 'success')
+      showToastNotification(
+        'Personal information has been auto-filled from your profile',
+        'success',
+      )
     } else {
       console.log('No user data found in auth store')
     }
@@ -931,7 +1047,7 @@ const autoFillUserData = () => {
 
 const handleDzongkhagChange = () => {
   const selectedDzongkhag = bhutanDzongkhagsGewogs.find(
-    (d) => d.dzongkhag === formData.value.dzongkhag
+    (d) => d.dzongkhag === formData.value.dzongkhag,
   )
   availableGewogs.value = selectedDzongkhag ? selectedDzongkhag.gewogs : []
   formData.value.gewog = ''
@@ -948,7 +1064,11 @@ const handleFileUpload = (event, fieldName) => {
     }
 
     // Validate file type
-    const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
+    const allowedTypes = [
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    ]
     if (!allowedTypes.includes(file.type)) {
       showToastNotification('Only PDF, DOC, and DOCX files are allowed')
       event.target.value = ''
@@ -971,7 +1091,6 @@ const validateForm = () => {
     { field: 'dzongkhag', label: 'Dzongkhag' },
     { field: 'gewog', label: 'Gewog' },
     { field: 'village', label: 'Village' },
-    // { field: 'chiwog', label: 'Chiwog' }, // REMOVED - now optional
     { field: 'address', label: 'Address' },
     { field: 'title_of_course', label: 'Title of Course' },
     { field: 'course_duration', label: 'Course Duration' },
@@ -1088,7 +1207,9 @@ const handleSubmit = async () => {
         router.push('/admin/institutions/engineering_certification/dashboard')
       }, 1500)
     } else {
-      showToastNotification('Submission received, but confirmation unclear. Please check status later.')
+      showToastNotification(
+        'Submission received, but confirmation unclear. Please check status later.',
+      )
     }
   } catch (error) {
     console.error('Error submitting EOI form:', error)
@@ -1111,7 +1232,7 @@ const handleSubmit = async () => {
         const errors = Object.entries(error.response.data)
           .map(
             ([field, messages]) =>
-              `${field}: ${Array.isArray(messages) ? messages.join(', ') : messages}`
+              `${field}: ${Array.isArray(messages) ? messages.join(', ') : messages}`,
           )
           .join('; ')
         message = `Submission Failed: ${errors || 'Please check your inputs.'}`
@@ -1135,7 +1256,7 @@ const saveDraft = () => {
   if (draftData.supporting_documents instanceof File) {
     draftData.supporting_documents = {
       name: draftData.supporting_documents.name,
-      type: draftData.supporting_documents.type
+      type: draftData.supporting_documents.type,
     }
   } else {
     draftData.supporting_documents = null
