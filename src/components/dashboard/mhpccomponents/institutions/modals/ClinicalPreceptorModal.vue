@@ -145,7 +145,7 @@ const filteredProfessionals = computed(() => {
     return eligibleProfessionalsList.value
   }
   const lowerCaseQuery = searchQuery.value.toLowerCase()
-  return eligibleProfessionalsList.value.filter(prof => 
+  return eligibleProfessionalsList.value.filter(prof =>
     prof.full_name.toLowerCase().includes(lowerCaseQuery) ||
     prof.registration_no.toLowerCase().includes(lowerCaseQuery)
   )
@@ -165,7 +165,7 @@ const selectedProfessionalsDetails = computed(() => {
 //     const response = await apiServices.getEligiblePreceptors()
 //     const rawProfessionals = response.data || []
 //     console.log(rawProfessionals);
-    
+
 
 //     if (!Array.isArray(rawProfessionals)) {
 //       eligibleProfessionalsList.value = []
@@ -196,7 +196,7 @@ const selectedProfessionalsDetails = computed(() => {
 
 
 
-//filtering after getting the application 
+//filtering after getting the application
 const fetchEligibleProfessionals = async () => {
   isLoadingProfessionals.value = true
   initialLoadDone.value = false
@@ -207,14 +207,18 @@ const fetchEligibleProfessionals = async () => {
 
         // const response1 = await apiServices.getEligiblePreceptors()
         // console.log("============");
-        
+
         // console.log(response1);
-        
+
 
 
     // Filter: Only applicants with a primary qualification that is Approved
     const approvedApplicants = rawApplicants.filter(app => {
       const primary = app.user_qualifications?.find(q => q.is_primary_qualification)
+
+      // Exclude if this applicant matches by CID
+      if (props.existingPreceptorIds.includes(app.cid_no)) return false
+
       return primary && primary.endorsement_decision === 'Approved'
     })
 
@@ -272,12 +276,12 @@ const submitPreceptors = async () => {
       application: profId,
     }
     console.log(preceptorData);
-    
+
     return apiServices.createMhpcClinicalPreceptor(preceptorData)
   })
 
   const results = await Promise.allSettled(preceptorPromises)
-  
+
   const successes = results.filter(r => r.status === 'fulfilled')
   const failures = results.filter(r => r.status === 'rejected')
 

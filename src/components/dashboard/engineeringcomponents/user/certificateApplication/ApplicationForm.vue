@@ -1620,6 +1620,7 @@ const handleNext = async () => {
     }
     apiFormData.append('applicant', user.id)
     apiFormData.append('is_draft', 'False')
+    apiFormData.append('cid_holder', localFormData.cid_holder)
     try {
       const response = await apiService.createEpcNewApplication(apiFormData)
       applicationId.value = response.data.id
