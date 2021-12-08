@@ -47,6 +47,22 @@
           <p class="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
             Complete the form below to apply for engineering program certification. All required fields are marked with an asterisk.
           </p>
+          <p v-if="isAutoFilled" class="text-md text-emerald-600 mt-2 font-medium">
+            <svg
+              class="w-5 h-5 inline-block mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+              />
+            </svg>
+            Personal details have been auto-filled from your profile
+          </p>
         </div>
       </div>
 
@@ -167,6 +183,18 @@
                   class="form-input"
                   placeholder="Enter email address"
                   required
+                />
+              </div>
+
+              <!-- Date of Birth (optional display) -->
+              <div v-if="userData?.date_of_birth">
+                <label for="date_of_birth" class="form-label">Date of Birth</label>
+                <input
+                  type="text"
+                  id="date_of_birth"
+                  :value="formatDate(userData.date_of_birth)"
+                  class="form-input disabled-input"
+                  readonly
                 />
               </div>
             </div>
@@ -796,6 +824,8 @@ const existingApplication = ref(null)
 const toastMessage = ref('')
 const showToast = ref(false)
 const isSubmitting = ref(false)
+const isAutoFilled = ref(false)
+const userData = ref(null)
 
 const showToastNotification = (message, type = 'info') => {
   toastMessage.value = message
@@ -813,6 +843,16 @@ const todayDate = computed(() => {
   const day = String(today.getDate()).padStart(2, '0')
   return `${year}-${month}-${day}`
 })
+
+const formatDate = (dateString) => {
+  if (!dateString) return ''
+  const date = new Date(dateString)
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  })
+}
 
 const formData = ref({
   // Basic Information
@@ -865,6 +905,79 @@ const programTypeOptions = [
   { value: 'D', label: 'Diploma' },
   { value: 'B', label: 'Bachelor' },
 ]
+
+// Auto-fill user data from local storage
+const autoFillUserData = () => {
+  try {
+    // Try to get user from auth store first
+    if (authStore.user) {
+      userData.value = authStore.user
+    } else {
+      // Fallback to localStorage
+      const userStr = localStorage.getItem('user')
+      if (userStr) {
+        userData.value = JSON.parse(userStr)
+      }
+    }
+
+    if (userData.value) {
+      console.log('User data loaded:', userData.value)
+
+      // Auto-fill personal information
+      if (userData.value.cid) {
+        formData.value.CID = userData.value.cid
+      }
+
+      // Construct full name from first, middle, and last names
+      const fullNameParts = []
+      if (userData.value.first_name) fullNameParts.push(userData.value.first_name)
+      if (userData.value.middle_name) fullNameParts.push(userData.value.middle_name)
+      if (userData.value.last_name) fullNameParts.push(userData.value.last_name)
+      if (fullNameParts.length > 0) {
+        formData.value.full_name = fullNameParts.join(' ')
+      }
+
+      if (userData.value.gender) {
+        formData.value.gender = userData.value.gender.toLowerCase()
+      }
+
+      if (userData.value.contact_number) {
+        formData.value.contact_no = userData.value.contact_number
+      }
+
+      if (userData.value.email) {
+        formData.value.email_address = userData.value.email
+      }
+
+      // Auto-fill institution location information if available
+      if (userData.value.dzongkhag) {
+        formData.value.dzongkhag = userData.value.dzongkhag
+        // Trigger gewog loading
+        setTimeout(() => {
+          handleDzongkhagChange()
+          if (userData.value.gewog) {
+            formData.value.gewog = userData.value.gewog
+          }
+        }, 100)
+      }
+
+      if (userData.value.village) {
+        formData.value.village = userData.value.village
+      }
+
+      if (userData.value.work_address) {
+        formData.value.address = userData.value.work_address
+      }
+
+      isAutoFilled.value = true
+      showToastNotification('Personal information has been auto-filled from your profile', 'success')
+    } else {
+      console.log('No user data found for auto-fill')
+    }
+  } catch (error) {
+    console.error('Error auto-filling user data:', error)
+  }
+}
 
 const handleDzongkhagChange = () => {
   const selectedDzongkhag = bhutanDzongkhagsGewogs.find(
@@ -1044,6 +1157,9 @@ const clearDraft = () => {
 }
 
 onMounted(async () => {
+  // Auto-fill user data first
+  autoFillUserData()
+
   if (authStore.user?.cid) {
     formData.value.CID = authStore.user.cid
 
@@ -1073,7 +1189,7 @@ onMounted(async () => {
       showForm.value = true
     }
 
-    // Load draft if exists
+    // Load draft if exists (after auto-fill)
     const savedDraft = localStorage.getItem('epcEoiFormDraft')
     if (savedDraft) {
       try {
