@@ -620,7 +620,7 @@
           <ClinicalPreceptorModal
             :application-id="selectedApplicationForPreceptor?.id"
             :existing-preceptor-ids="
-              selectedApplicationForPreceptor?.clinical_preceptors.map((p) => p.application) || []
+              selectedApplicationForPreceptor?.clinical_preceptors.map((p) => p.cid) || []
             "
             @close="closePreceptorModal"
             @submit-success="handlePreceptorSubmitSuccess"
