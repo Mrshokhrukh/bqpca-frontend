@@ -1469,8 +1469,8 @@ const handleSubmitActual = async () => {
     return
   }
 
-  try {    
-    
+  try {
+
     const qualificationFormData = new FormData()
     qualificationFormData.append('application', localFormData.application)
     if (localFormData.qualification_name === 'OTHERS') {
@@ -1507,24 +1507,32 @@ const handleSubmitActual = async () => {
     const profileUpdateData = new FormData()
     let needsUpdate = false
 
-    if (localFormData.village && localFormData.village !== authStore.user.village) {
-      profileUpdateData.append('village', localFormData.village)
+    let villageValue = localFormData.village
+    let gewogValue = localFormData.gewog
+    let dzongkhagValue = localFormData.dzongkhag
+
+    if (props.selectedType !== 'cid') {
+      villageValue = localFormData.city
+      gewogValue = localFormData.state
+      dzongkhagValue = localFormData.country
+    }
+
+    if (villageValue && villageValue !== authStore.user.village) {
+      profileUpdateData.append('village', villageValue)
       needsUpdate = true
     }
-    if (localFormData.gewog && localFormData.gewog !== authStore.user.gewog) {
-      profileUpdateData.append('gewog', localFormData.gewog)
+    if (gewogValue && gewogValue !== authStore.user.gewog) {
+      profileUpdateData.append('gewog', gewogValue)
       needsUpdate = true
     }
-    if (localFormData.dzongkhag && localFormData.dzongkhag !== authStore.user.dzongkhag) {
-      profileUpdateData.append('dzongkhag', localFormData.dzongkhag)
+    if (dzongkhagValue && dzongkhagValue !== authStore.user.dzongkhag) {
+      profileUpdateData.append('dzongkhag', dzongkhagValue)
       needsUpdate = true
     }
 
     if (needsUpdate) {
       try {
-        // Use the store action which handles both API call and state update
         await authStore.updateUserProfile(profileUpdateData)
-
         toast.info('Your profile location has been updated.')
       } catch (profileError) {
         console.error('Could not auto-update profile location:', profileError)
