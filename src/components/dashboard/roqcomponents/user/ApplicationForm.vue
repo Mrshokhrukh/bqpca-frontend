@@ -1134,7 +1134,7 @@ const handleSubmitActual = async (isDraft = false) => {
     if (!isDraft && props.mode !== 'edit' && !props.skipPayment) {
       const paymentInitiationFormData = new FormData()
       paymentInitiationFormData.append('refNo', form.payment_id)
-      paymentInitiationFormData.append('serviceCode', '100192') // ROQ New Application
+      paymentInitiationFormData.append('serviceCode', '102798') // ROQ New Application
       paymentInitiationFormData.append('taxPayerName', form.applicants_name)
       paymentInitiationFormData.append('taxPayerNo', form.cid_no || 'N/A')
       paymentInitiationFormData.append('taxPayerDocumentNo', form.cid_no || 'N/A')
