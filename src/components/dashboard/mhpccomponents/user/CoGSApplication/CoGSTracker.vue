@@ -189,7 +189,7 @@
     <PaymentModal
       ref="paymentModal"
       :amount="1000"
-      serviceCode="100247"
+      serviceCode="102803"
       description="CoGS Application Fee"
       appType="certificate_of_good_standing_fee"
       :applicationId="selectedApplication?.id"

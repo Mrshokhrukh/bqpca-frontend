@@ -690,7 +690,7 @@ const handleNewRegistrationPayment = async (paymentData) => {
   try {
     const paymentGatewayFormData = new FormData();
     paymentGatewayFormData.append('refNo', paymentId);
-    paymentGatewayFormData.append('serviceCode', '100261'); // EPC Teaching Center Initial Fee
+    paymentGatewayFormData.append('serviceCode', '103413'); // EPC Teaching Center Initial Fee
     paymentGatewayFormData.append('taxPayerName', centerForNewPayment.value.institute?.name_of_institution || user.cid);
     paymentGatewayFormData.append('taxPayerNo', user.cid);
     paymentGatewayFormData.append('taxPayerDocumentNo', user.cid);
