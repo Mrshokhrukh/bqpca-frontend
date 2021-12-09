@@ -1411,6 +1411,7 @@ const handleNext = async () => {
       } else {
         apiFormData.append('applicant', user.id)
         apiFormData.append('is_draft', 'False')
+        apiFormData.append('cid_holder', localFormData.cid_holder)
         response = await apiService.createMhpcNewApplication(apiFormData)
         toast.success('Personal information saved successfully!')
       }

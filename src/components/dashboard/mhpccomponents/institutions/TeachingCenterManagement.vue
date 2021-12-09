@@ -620,7 +620,7 @@
           <ClinicalPreceptorModal
             :application-id="selectedApplicationForPreceptor?.id"
             :existing-preceptor-ids="
-              selectedApplicationForPreceptor?.clinical_preceptors.map((p) => p.application) || []
+              selectedApplicationForPreceptor?.clinical_preceptors.map((p) => p.cid) || []
             "
             @close="closePreceptorModal"
             @submit-success="handlePreceptorSubmitSuccess"
@@ -1007,7 +1007,7 @@ const handleTeachingCenterPaymentCompleted = async (paymentData) => {
     const paymentGatewayFormData = new FormData();
     // refNo should be a unique identifier for this payment attempt
     paymentGatewayFormData.append('refNo', paymentId);
-    paymentGatewayFormData.append('serviceCode', '100250');
+    paymentGatewayFormData.append('serviceCode', '102829');
     paymentGatewayFormData.append('taxPayerName', appToPay.institute_details?.name_of_institution || user.cid);
     paymentGatewayFormData.append('taxPayerNo', user.cid);
     paymentGatewayFormData.append('taxPayerDocumentNo', user.cid);
