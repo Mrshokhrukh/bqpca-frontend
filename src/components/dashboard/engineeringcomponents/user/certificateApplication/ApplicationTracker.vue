@@ -320,10 +320,10 @@ const handlePaymentCompleted = async (paymentData) => {
     const isPrimary = itemForPayment.is_primary_qualification === true
 
     if (isPrimary) {
-      serviceCode = '100253' // Initial registration for engineering professional
+      serviceCode = '102812' // Initial registration for engineering professional
       description = 'EPC Initial Registration Fee'
     } else {
-      serviceCode = '100257' // Additional qualification fee for engineering professional
+      serviceCode = '102819' // Additional qualification fee for engineering professional
       description = 'EPC Additional Qualification Fee'
     }
   }

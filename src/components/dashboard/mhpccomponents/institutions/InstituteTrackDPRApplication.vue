@@ -575,7 +575,7 @@ const handlePaymentCompleted = async (paymentData) => {
   try {
     const paymentGatewayFormData = new FormData();
     paymentGatewayFormData.append('refNo', paymentId);
-    paymentGatewayFormData.append('serviceCode', '100248');
+    paymentGatewayFormData.append('serviceCode', '102826');
     paymentGatewayFormData.append('taxPayerName', user.cid);
     paymentGatewayFormData.append('taxPayerNo', user.cid);
     paymentGatewayFormData.append('taxPayerDocumentNo', user.cid);

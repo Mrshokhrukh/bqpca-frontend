@@ -822,7 +822,7 @@ const handlePaymentCompleted = async (paymentData) => {
   try {
     const paymentGatewayFormData = new FormData()
     paymentGatewayFormData.append('refNo', paymentId)
-    paymentGatewayFormData.append('serviceCode', '100252')
+    paymentGatewayFormData.append('serviceCode', '102828')
     paymentGatewayFormData.append('taxPayerName', selectedCenter.value.institute_details?.name_of_institution || user.cid)
     paymentGatewayFormData.append('taxPayerNo', user.cid)
     paymentGatewayFormData.append('taxPayerDocumentNo', user.cid)
