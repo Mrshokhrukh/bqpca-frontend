@@ -1,6 +1,15 @@
 <template>
+  <!-- Loading State -->
+  <div v-if="isChecking" class="min-h-screen flex items-center justify-center">
+    <div class="text-center">
+      <div class="animate-spin w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full mx-auto mb-4"></div>
+      <p class="text-gray-600">Checking application status...</p>
+    </div>
+  </div>
+
+  <!-- Main Form (Only shown if no existing application) -->
   <div
-    v-if="showForm"
+    v-else-if="showForm && !hasExistingApplication"
     class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative overflow-hidden"
   >
     <!-- Toast Notification -->
@@ -71,6 +80,21 @@
             </svg>
             Personal details have been auto-filled from your profile
           </p>
+
+          <!-- Reapply Notice -->
+          <div v-if="isReapply" class="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg inline-block">
+            <div class="flex items-center">
+              <svg class="w-5 h-5 text-yellow-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <span class="text-yellow-700 font-medium">You are submitting a new application after rejection</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -838,6 +862,128 @@
     </div>
   </div>
 
+  <!-- Already Applied View -->
+  <div
+    v-else-if="hasExistingApplication"
+    class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative overflow-hidden flex items-center justify-center"
+  >
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+      <div
+        class="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-indigo-600/20 rounded-full blur-3xl"
+      ></div>
+      <div
+        class="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-purple-400/20 to-pink-600/20 rounded-full blur-3xl"
+      ></div>
+    </div>
+
+    <div
+      class="relative bg-white/80 backdrop-blur-xl border border-white/30 rounded-3xl shadow-xl p-12 max-w-lg mx-4"
+    >
+      <div class="text-center">
+        <div
+          :class="[
+            'inline-flex items-center justify-center w-20 h-20 rounded-2xl mb-6 shadow-sm',
+            statusClass
+          ]"
+        >
+          <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              v-if="existingApplication?.review_decision === 'Approved'"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+            <path
+              v-else-if="existingApplication?.review_decision === 'Rejected'"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+            <path
+              v-else
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+        </div>
+        <h2
+          :class="[
+            'text-3xl font-bold bg-clip-text text-transparent mb-4',
+            statusTitleClass
+          ]"
+        >
+          {{ statusTitle }}
+        </h2>
+        <p class="text-slate-600 leading-relaxed mb-4">
+          {{ statusMessage }}
+        </p>
+
+        <!-- Rejection Details -->
+        <div v-if="existingApplication?.review_decision === 'Rejected' && existingApplication?.reason_if_rejected"
+             class="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <h4 class="font-medium text-red-700 mb-2">Rejection Reason:</h4>
+          <p class="text-red-600">{{ existingApplication.reason_if_rejected }}</p>
+        </div>
+
+        <!-- Reapply Section (Only for rejected applications) -->
+        <div v-if="existingApplication?.review_decision === 'Rejected'" class="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <p class="text-yellow-700 mb-4">Your previous application was rejected. You can submit a new application with corrected information.</p>
+          <button
+            @click="handleReapply"
+            class="btn btn-primary w-full"
+          >
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+              />
+            </svg>
+            Submit New Application
+          </button>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="mt-8 space-y-4">
+          <button
+            @click="router.push('/admin/institutions/engineering_certification/dashboard')"
+            class="btn btn-primary w-full"
+          >
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+              />
+            </svg>
+            Go to Dashboard
+          </button>
+
+          <button
+            @click="router.push('/admin/institutions/engineering_certification/track_eoi')"
+            class="btn btn-draft w-full"
+          >
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            Track Application Status
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Already Approved View -->
   <div
     v-else
@@ -889,13 +1035,14 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import apiService from '@/services/services'
 import { useAuthStore } from '@/stores/authStore'
 import { countryData } from '@/constants/countries.js'
 import { bhutanDzongkhagsGewogs } from '@/constants/dzongkhags.js'
 
 const router = useRouter()
+const route = useRoute()
 const authStore = useAuthStore()
 const availableGewogs = ref([])
 const showForm = ref(true)
@@ -905,6 +1052,75 @@ const showToast = ref(false)
 const isSubmitting = ref(false)
 const isAutoFilled = ref(false)
 const userData = ref(null)
+
+// New state variables for application status checking
+const hasExistingApplication = ref(false)
+const isChecking = ref(true)
+const isReapply = ref(false)
+
+// Computed properties for status display
+const statusClass = computed(() => {
+  if (!existingApplication.value) return 'bg-gradient-to-br from-blue-500 to-indigo-600'
+
+  switch (existingApplication.value.review_decision) {
+    case 'Approved':
+      return 'bg-gradient-to-br from-emerald-500 to-teal-600'
+    case 'Rejected':
+      return 'bg-gradient-to-br from-red-500 to-pink-600'
+    case 'Pending':
+      return 'bg-gradient-to-br from-yellow-500 to-amber-600'
+    default:
+      return 'bg-gradient-to-br from-blue-500 to-indigo-600'
+  }
+})
+
+const statusTitleClass = computed(() => {
+  if (!existingApplication.value) return 'from-blue-600 to-indigo-600'
+
+  switch (existingApplication.value.review_decision) {
+    case 'Approved':
+      return 'from-emerald-600 to-teal-600'
+    case 'Rejected':
+      return 'from-red-600 to-pink-600'
+    case 'Pending':
+      return 'from-yellow-600 to-amber-600'
+    default:
+      return 'from-blue-600 to-indigo-600'
+  }
+})
+
+const statusTitle = computed(() => {
+  if (!existingApplication.value) return 'Application Already Submitted'
+
+  switch (existingApplication.value.review_decision) {
+    case 'Approved':
+      return 'Application Approved'
+    case 'Rejected':
+      return 'Application Rejected'
+    case 'Pending':
+      return 'Application Under Review'
+    default:
+      return 'Application Status'
+  }
+})
+
+const statusMessage = computed(() => {
+  if (!existingApplication.value) return 'You have already submitted an Expression of Interest (EOI) application.'
+
+  const institution = existingApplication.value.name_of_institution || 'your institution'
+  const course = existingApplication.value.title_of_course || 'the course'
+
+  switch (existingApplication.value.review_decision) {
+    case 'Approved':
+      return `Your EOI application for ${course} at ${institution} has been approved. You can now proceed to DPR application.`
+    case 'Rejected':
+      return `Your EOI application for ${course} at ${institution} was rejected.`
+    case 'Pending':
+      return `Your EOI application for ${course} at ${institution} is currently under review.`
+    default:
+      return `Your EOI application for ${course} at ${institution} is being processed.`
+  }
+})
 
 const showToastNotification = (message, type = 'info') => {
   toastMessage.value = message
@@ -931,7 +1147,7 @@ const formData = ref({
   contact_no: '',
   email_address: '',
 
-  // Institution Details (removed teaching_institute and website)
+  // Institution Details
   name_of_institution: '',
   country: 'Bhutan',
   gewog: '',
@@ -939,7 +1155,7 @@ const formData = ref({
   dzongkhag: '',
   village: '',
   address: '',
-  chiwog: '', // Made optional
+  chiwog: '',
 
   // Course Details
   title_of_course: '',
@@ -958,7 +1174,7 @@ const formData = ref({
   // Declaration
   declaration: false,
 
-  // Review fields (hidden)
+  // Review fields
   review_decision: 'Pending',
   reason_if_rejected: '',
 })
@@ -973,6 +1189,50 @@ const programTypeOptions = [
   { value: 'D', label: 'Diploma' },
   { value: 'B', label: 'Bachelor' },
 ]
+
+// Check application status
+const checkApplicationStatus = async () => {
+  isChecking.value = true
+  isReapply.value = route.query.reapply === 'true'
+
+  try {
+    if (authStore.user?.cid) {
+      const response = await apiService.getEpcInstitutes()
+      const applications = response.data.results || []
+
+      const userApplication = applications.find(app => app.CID === authStore.user.cid)
+
+      if (userApplication) {
+        existingApplication.value = userApplication
+
+        // If reapply flag is set and application is rejected, allow new application
+        if (isReapply.value && userApplication.review_decision === 'Rejected') {
+          hasExistingApplication.value = false
+          showForm.value = true
+          showToastNotification('You can now submit a new application after rejection.', 'info')
+        } else {
+          hasExistingApplication.value = true
+          showForm.value = false
+        }
+      } else {
+        hasExistingApplication.value = false
+        showForm.value = true
+      }
+    } else {
+      // No user CID, allow form
+      hasExistingApplication.value = false
+      showForm.value = true
+    }
+  } catch (err) {
+    console.error('Error checking application status:', err)
+    // If error, still show form
+    hasExistingApplication.value = false
+    showForm.value = true
+    showToastNotification('Could not verify application status. You can proceed with submission.', 'warning')
+  } finally {
+    isChecking.value = false
+  }
+}
 
 // Auto-fill user data from auth store
 const autoFillUserData = () => {
@@ -1033,10 +1293,6 @@ const autoFillUserData = () => {
       }
 
       isAutoFilled.value = true
-      showToastNotification(
-        'Personal information has been auto-filled from your profile',
-        'success',
-      )
     } else {
       console.log('No user data found in auth store')
     }
@@ -1164,6 +1420,12 @@ const handleSubmit = async () => {
     return
   }
 
+  // Check if user already has an approved or pending application (except for reapply)
+  if (!isReapply.value && hasExistingApplication.value) {
+    showToastNotification('You already have an existing application. Please check your application status.')
+    return
+  }
+
   isSubmitting.value = true
   const submitData = new FormData()
 
@@ -1270,40 +1532,36 @@ const clearDraft = () => {
   localStorage.removeItem('epcEoiFormDraft')
 }
 
+const handleReapply = () => {
+  // Set reapply flag and reset existing application
+  isReapply.value = true
+  hasExistingApplication.value = false
+  showForm.value = true
+  existingApplication.value = null
+
+  // Clear form data except CID
+  Object.keys(formData.value).forEach(key => {
+    if (!['CID'].includes(key)) {
+      formData.value[key] = ''
+    }
+  })
+  formData.value.declaration = false
+
+  // Clear any existing draft
+  clearDraft()
+
+  showToastNotification('You can now submit a new application. Please fill in the form.', 'info')
+}
+
 onMounted(async () => {
-  // Auto-fill user data first
+  // Check application status first
+  await checkApplicationStatus()
+
+  // Auto-fill user data
   autoFillUserData()
 
-  if (authStore.user?.cid) {
-    formData.value.CID = authStore.user.cid
-
-    try {
-      const response = await apiService.getEpcInstitutes()
-      const applications = response.data.results
-      if (!Array.isArray(applications)) {
-        throw new Error("API response did not contain a 'results' array.")
-      }
-      const userApplication = applications.find((app) => app.CID === authStore.user.cid)
-      if (userApplication) {
-        existingApplication.value = userApplication
-        if (
-          userApplication.review_decision &&
-          userApplication.review_decision.toLowerCase() === 'approved'
-        ) {
-          showForm.value = false
-        } else {
-          showForm.value = true
-        }
-      } else {
-        showForm.value = true
-      }
-    } catch (err) {
-      console.error('Error fetching EOI applications:', err)
-      showToastNotification('Could not check your application status. Please try again later.')
-      showForm.value = true
-    }
-
-    // Load draft if exists (after auto-fill)
+  // Only load draft if no existing application or it's a reapply
+  if (!hasExistingApplication.value || isReapply.value) {
     const savedDraft = localStorage.getItem('epcEoiFormDraft')
     if (savedDraft) {
       try {
@@ -1327,8 +1585,6 @@ onMounted(async () => {
         clearDraft()
       }
     }
-  } else {
-    showToastNotification('Could not retrieve user information. Please log in again.')
   }
 })
 </script>
