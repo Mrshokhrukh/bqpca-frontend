@@ -294,7 +294,7 @@
                   <div class="flex items-end">
                       <button @click="assignAssessors" :disabled="isAssignActionInvalid || isProcessing" class="w-full md:w-auto rounded bg-blue-600 px-6 py-2 text-white font-medium hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-300 shadow-sm">
                         <span v-if="isProcessing">Saving...</span>
-                        <span v-else>Save Team</span>
+                        <span v-else>Assign Assessor</span>
                       </button>
                   </div>
                 </div>
