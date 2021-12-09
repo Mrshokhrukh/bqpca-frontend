@@ -594,6 +594,7 @@ const isSubmitting = ref(false)
 const currentYear = new Date().getFullYear()
 const minYear = currentYear - 50
 const isCIDHolder = ref(null)
+const isSavingDraft = ref(false)
 
 const qualificationOptions = ref([])
 const courseTypeOptions = ref([])
@@ -1071,6 +1072,8 @@ const handleSubmit = () => {
 }
 
 const handleSaveAsDraft = async () => {
+  console.log("draft ");
+  
   isSavingDraft.value = true
   form.status = 'draft'
   const requiredForDraft = ['applicants_name']
