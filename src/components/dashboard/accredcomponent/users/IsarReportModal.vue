@@ -57,7 +57,7 @@
             </div>
             <div>
               <label for="isar_cost_of_education_details" class="block text-sm font-medium text-gray-700">Cost of education (Tuition & Living)</label>
-              <input type="text" id="isar_cost_of_education_details" v-model="formData.isar_cost_of_education_details" class="form-input" placeholder="e.g., 500,000 BTN / year" required />
+              <input type="text" id="isar_cost_of_education_details" v-model="formData.isar_cost_of_education_details" class="form-input" placeholder="e.g., 500,000 PKR / year" required />
             </div>
             <div>
               <label for="isar_total_area_acres_details" class="block text-sm font-medium text-gray-700">Total area (in acres)</label>

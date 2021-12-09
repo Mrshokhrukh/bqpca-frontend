@@ -29,16 +29,27 @@
             </tr>
             <tr v-for="app in applications" :key="app.id" class="hover:bg-gray-50">
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                <!-- Defensive coding: Check if nested properties exist -->
                 {{ app.application_details?.institute_profile_details?.name || 'N/A' }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">
                 {{ app.application_details?.application_uid?.slice(0, 8) || 'N/A' }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm">
+                <!-- Priority 1: Reschedule Request -->
                 <span v-if="isRescheduleRequested(app)" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-orange-100 text-orange-800">
                   Reschedule Requested
                 </span>
+
+                <!-- Priority 2: Conflict Declared (FIXED LOGIC) -->
+                <!-- We now check the helper function 'hasActiveConflict' OR the status string -->
+                <span v-else-if="hasActiveConflict(app) || app.application_details?.status === 'coi_conflict_declared'" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 border border-red-200">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                  </svg>
+                  Conflict Declared
+                </span>
+
+                <!-- Default Status -->
                 <span v-else :class="getStatusClass(app.application_details?.status)" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full">
                   {{ app.application_details?.status_display || 'Unknown Status' }}
                 </span>
@@ -63,7 +74,7 @@
       </div>
     </div>
 
-    <!-- Modal Component Call (Unchanged) -->
+    <!-- Modal Component Call -->
     <IsarReportModal
       v-if="isModalOpen && selectedApplication"
       :is-open="isModalOpen"
@@ -93,7 +104,6 @@ const fetchData = async () => {
   isLoading.value = true;
   error.value = null;
   try {
-    // These API calls remain correct
     const [appsRes, assessorsRes, ratingsRes] = await Promise.all([
       apiService.getIsarReports(),
       apiService.getMastersAssessorPools(),
@@ -127,7 +137,15 @@ const closeReportModal = () => {
 
 const handleActionCompletion = () => {
   closeReportModal();
-  fetchData(); // This correctly refreshes the list after an action
+  fetchData();
+};
+
+// --- NEW FUNCTION: Check nested COI records for conflicts ---
+// This ensures the table updates even if the status string lags behind
+const hasActiveConflict = (app) => {
+  const cois = app.application_details?.assessor_cois_details;
+  if (!cois || !Array.isArray(cois)) return false;
+  return cois.some(coi => coi.status === 'conflict_declared');
 };
 
 const isRescheduleRequested = (app) => {
@@ -144,13 +162,12 @@ const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
     try {
         const date = new Date(dateString);
-        return date.toLocaleDateString('en-CA'); // YYYY-MM-DD format
+        return date.toLocaleDateString('en-CA');
     } catch (e) {
         return 'Invalid Date';
     }
 };
 
-// This function is correct as it maps the OVERALL APPLICATION status
 const getStatusClass = (status) => {
   const classes = {
     'draft_initial': 'bg-gray-100 text-gray-800',
@@ -160,13 +177,9 @@ const getStatusClass = (status) => {
     'isar_submitted_heqc_review': 'bg-blue-100 text-blue-800',
     'isar_queried_by_heqc': 'bg-orange-100 text-orange-800',
     'isar_accepted_by_heqc': 'bg-teal-100 text-teal-800',
-
-    // --- COI STATUSES (These are the application-level statuses, which is correct here) ---
     'coi_pending_declaration': 'bg-yellow-100 text-yellow-800',
     'coi_conflict_declared': 'bg-red-200 text-red-800',
     'coi_resolved_scheduling_visit': 'bg-teal-100 text-teal-800',
-
-    // --- SITE VISIT AND FINAL STATUSES ---
     'site_visit_scheduled': 'bg-indigo-100 text-indigo-800',
     'site_visit_confirmed': 'bg-indigo-200 text-indigo-900',
     'assessment_report_submitted': 'bg-cyan-100 text-cyan-800',

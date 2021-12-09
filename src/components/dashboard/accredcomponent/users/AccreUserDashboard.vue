@@ -287,7 +287,7 @@ const nextStep = computed(() => {
             icon: shallowRef(FileText),
             title: "Complete Your Draft Application",
             description: `Your application (Ref: ${app.application_reference_no}) is saved. Continue editing before submission.`,
-            actionType: 'link', link: `/admin/user/accreditation/apply_for_accreditation`, actionText: "Continue Application"
+            actionType: 'link', link: `/admin/user/accreditation/edit-application/${app.id}`, actionText: "Continue Application"
         },
         // REMOVED: The 'pending_payment' case is no longer needed as payment is instant.
         'initial_app_approved_awaiting_isar': {
