@@ -320,10 +320,14 @@
                             Remove Assessor
                         </button>
                     </div>
-                    <div v-else>
+                    <div v-else class="flex items-center gap-2">
                         <span class="rounded-full px-3 py-1 text-xs font-bold border" :class="getCoiStatusClass(coi.status)">
                             {{ coi.status_display }}
                         </span>
+                        <button v-if="coi.status === 'pending_institute_review'" @click="confirmNoConflict(coi)" :disabled="isProcessing" class="flex items-center gap-1 rounded bg-green-100 px-3 py-1.5 text-xs font-bold text-green-700 hover:bg-green-200 border border-green-200 transition">
+                            <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                            Approve (No Conflict)
+                        </button>
                     </div>
                   </div>
 
@@ -696,6 +700,40 @@ const submitFinalDecision = async () => {
       }
     }
   }, { type: TYPE.WARNING, timeout: false });
+};
+
+const confirmNoConflict = async (coi) => {
+  toast({
+    component: ConfirmToast,
+    props: {
+      message: `Confirm that there is no conflict of interest for ${coi.assessor_details.name}?`
+    },
+    listeners: {
+      onConfirm: async () => {
+        isProcessing.value = true;
+        try {
+          // Send true for institute_agrees_with_assessor
+          await apiService.post(`/accreditation/application-assessor-cois/${coi.id}/respond/`, {
+            institute_agrees_with_assessor: true,
+            institute_rejection_remarks: "" // Ensure remarks are empty for no conflict
+          });
+          toast.success(`COI for ${coi.assessor_details.name} approved.`);
+          emit('action-completed'); // Refresh parent data
+        } catch (error) {
+          toast.error(error.response?.data?.detail || `Error approving COI for ${coi.assessor_details.name}.`);
+        } finally {
+          isProcessing.value = false;
+        }
+      }
+    }
+  }, {
+    type: TYPE.INFO,
+    timeout: false,
+    closeOnClick: false,
+    pauseOnFocusLoss: false,
+    draggable: false,
+    closeButton: true
+  });
 };
 
 const close = () => emit('close');
