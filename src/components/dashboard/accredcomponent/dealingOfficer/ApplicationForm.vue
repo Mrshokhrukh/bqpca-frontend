@@ -10,7 +10,7 @@
 
       <!-- Left Column -->
       <div class="lg:col-span-2 space-y-6">
-
+        
         <!-- Institution Profile -->
         <div class="border p-4 rounded-lg bg-white shadow-sm">
           <h3 class="font-semibold text-lg mb-4 text-gray-700">Institution Profile</h3>
@@ -80,20 +80,9 @@
         <!-- Standards -->
         <div class="border p-4 rounded-lg bg-white shadow-sm">
           <h3 class="font-semibold text-lg mb-4 text-gray-700">Standards</h3>
-          <button v-if="isEditing" @click="addStandard"
-            :disabled="isAddingStandard"
-            class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded inline-flex items-center disabled:opacity-50 disabled:cursor-not-allowed">
-            <span v-if="isAddingStandard" class="flex items-center">
-              <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              Adding...
-            </span>
-            <span v-else class="flex items-center">
-              <Plus class="w-4 h-4 mr-2" />
-              Add Standard
-            </span>
+          <button v-if="isEditing" @click="addStandard" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded inline-flex items-center">
+            <Plus class="w-4 h-4 mr-2" />
+            Add Standard
           </button>
         </div>
 
@@ -109,20 +98,9 @@
             <label class="block text-gray-700 text-sm font-bold mb-2" for="supportingDocumentRemarks">Remarks (if any):</label>
             <textarea v-model="formData.supportingDocumentRemarks" id="supportingDocumentRemarks" rows="2" class="shadow-sm appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" :disabled="!isEditing"></textarea>
           </div>
-          <button v-if="isEditing" @click="addSupportingDocument"
-            :disabled="isAddingSupportingDocument"
-            class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded inline-flex items-center disabled:opacity-50 disabled:cursor-not-allowed">
-            <span v-if="isAddingSupportingDocument" class="flex items-center">
-              <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              Adding...
-            </span>
-            <span v-else class="flex items-center">
-              <Plus class="w-4 h-4 mr-2" />
-              Add Supporting Document
-            </span>
+          <button v-if="isEditing" @click="addSupportingDocument" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded inline-flex items-center">
+            <Plus class="w-4 h-4 mr-2" />
+            Add Supporting Document
           </button>
         </div>
 
@@ -183,68 +161,29 @@
 
     <!-- Buttons -->
     <div class="flex justify-end mt-6 space-x-4">
-      <button @click="closeModal"
-        :disabled="isSaving || isSubmitting || isSavingDraft"
-        class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center disabled:opacity-50 disabled:cursor-not-allowed">
+      <button @click="closeModal" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center">
         <X class="w-4 h-4 mr-2" />
         Cancel
       </button>
-      <button v-if="isEditing" @click="saveAsDraft"
-        :disabled="isSavingDraft || isSaving || isSubmitting"
-        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded inline-flex items-center disabled:opacity-50 disabled:cursor-not-allowed min-w-[140px] justify-center">
-        <span v-if="isSavingDraft" class="flex items-center">
-          <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
-          Saving...
-        </span>
-        <span v-else class="flex items-center">
-          <Save class="w-4 h-4 mr-2" />
-          Save as Draft
-        </span>
+      <button v-if="isEditing" @click="saveAsDraft" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded inline-flex items-center">
+        <Save class="w-4 h-4 mr-2" />
+        Save as Draft
       </button>
-      <button v-if="!isEditing" @click="enableEditing"
-        :disabled="isSaving || isSubmitting || isSavingDraft"
-        class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded inline-flex items-center disabled:opacity-50 disabled:cursor-not-allowed">
+      <button v-if="!isEditing" @click="enableEditing" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded inline-flex items-center">
         <Edit class="w-4 h-4 mr-2" />
         Edit
       </button>
-      <button v-if="isEditing" @click="saveData"
-        :disabled="isSaving || isSavingDraft || isSubmitting"
-        class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded inline-flex items-center disabled:opacity-50 disabled:cursor-not-allowed min-w-[100px] justify-center">
-        <span v-if="isSaving" class="flex items-center">
-          <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
-          Saving...
-        </span>
-        <span v-else class="flex items-center">
-          <Check class="w-4 h-4 mr-2" />
-          Save
-        </span>
+      <button v-if="isEditing" @click="saveData" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded inline-flex items-center">
+        <Check class="w-4 h-4 mr-2" />
+        Save
       </button>
-      <button @click="viewApplication"
-        :disabled="isSaving || isSubmitting || isSavingDraft"
-        class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded inline-flex items-center disabled:opacity-50 disabled:cursor-not-allowed">
+      <button @click="viewApplication" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded inline-flex items-center">
         <Eye class="w-4 h-4 mr-2" />
         View
       </button>
-      <button @click="submitApplication"
-        :disabled="isSubmitting || isSaving || isSavingDraft"
-        class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded inline-flex items-center disabled:opacity-50 disabled:cursor-not-allowed min-w-[120px] justify-center">
-        <span v-if="isSubmitting" class="flex items-center">
-          <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
-          Submitting...
-        </span>
-        <span v-else class="flex items-center">
-          <Send class="w-4 h-4 mr-2" />
-          Submit
-        </span>
+      <button @click="submitApplication" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded inline-flex items-center">
+        <Send class="w-4 h-4 mr-2" />
+        Submit
       </button>
     </div>
     </div>
@@ -272,13 +211,6 @@ const props = defineProps({
 const emit = defineEmits(['close', 'save'])
 
 const isEditing = ref(false) // Track whether the form is in edit mode
-
-// Loading states
-const isSaving = ref(false)
-const isSavingDraft = ref(false)
-const isSubmitting = ref(false)
-const isAddingStandard = ref(false)
-const isAddingSupportingDocument = ref(false)
 
 const formData = reactive({
   // Institution Profile
@@ -428,137 +360,45 @@ const closeModal = () => {
   emit('close')
 }
 
-const saveData = async () => {
-  isSaving.value = true
-  try {
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000))
-
-    const payload = {
-      ...props.application, // Keep the original application data
-      ...formData, // Override with form data
-    }
-    emit('save', payload)
-    isEditing.value = false // Disable editing after saving
-    toast.success('Data saved successfully!')
-  } catch (error) {
-    toast.error('Failed to save data. Please try again.')
-  } finally {
-    isSaving.value = false
+const saveData = () => {
+  const payload = {
+    ...props.application, // Keep the original application data
+    ...formData, // Override with form data
   }
+  emit('save', payload)
+  isEditing.value = false // Disable editing after saving
 }
 
 const enableEditing = () => {
   isEditing.value = true // Enable editing mode
 }
-
-const saveAsDraft = async () => {
-  isSavingDraft.value = true
-  try {
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1500))
-
-    // Your actual draft saving logic here
-    const draftPayload = {
-      ...formData,
-      status: 'draft'
-    }
-    // emit('save-draft', draftPayload)
-
-    toast.success('Application saved as draft!')
-  } catch (error) {
-    toast.error('Failed to save draft. Please try again.')
-  } finally {
-    isSavingDraft.value = false
-  }
+const saveAsDraft = () => {
+  toast.info('Saving as draft...')
 }
-
-const submitApplication = async () => {
-  isSubmitting.value = true
-  try {
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 2000))
-
-    // Your actual submission logic here
-    const submitPayload = {
-      ...formData,
-      status: 'submitted',
-      submittedAt: new Date().toISOString()
-    }
-    // emit('submit', submitPayload)
-
-    toast.success('Application submitted successfully!')
-  } catch (error) {
-    toast.error('Failed to submit application. Please try again.')
-  } finally {
-    isSubmitting.value = false
-  }
+const submitApplication = () => {
+  toast.info('Submitting application...')
 }
 
 const viewApplication = () => {
   isEditing.value = false
-  //Implement what happens with the view application, maybe display or something
-  toast.info('Viewing application...')
+  //Implement what happens with the view appication, maybe display or smth
 }
 
-const addStandard = async () => {
-  isAddingStandard.value = true
-  try {
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000))
+const addProgram = () => {}
+// const addAssessor = () => {
+//   //logic to do
+// }
 
-    // Your actual add standard logic here
-    // e.g., emit('add-standard', { standardData })
-
-    toast.success('Standard added successfully!')
-  } catch (error) {
-    toast.error('Failed to add standard. Please try again.')
-  } finally {
-    isAddingStandard.value = false
-  }
+// const addSiteVisit = () => {
+//   //logic to do
+// }
+// const addResult = () => {
+//   //logic to do
+// }
+const addStandard = () => {
+  //logic to do
 }
-
-const addSupportingDocument = async () => {
-  isAddingSupportingDocument.value = true
-  try {
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000))
-
-    // Your actual add supporting document logic here
-    // e.g., emit('add-supporting-document', { documentData })
-
-    toast.success('Supporting document added successfully!')
-  } catch (error) {
-    toast.error('Failed to add supporting document. Please try again.')
-  } finally {
-    isAddingSupportingDocument.value = false
-  }
+const addSupportingDocument = () => {
+  //logic to do
 }
 </script>
-
-<style scoped>
-/* Add spinner animation */
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.animate-spin {
-  animation: spin 1s linear infinite;
-}
-
-/* Smooth transitions for buttons */
-button {
-  transition: all 0.3s ease;
-}
-
-/* Ensure consistent button sizing */
-button span {
-  display: flex;
-  align-items: center;
-}
-</style>

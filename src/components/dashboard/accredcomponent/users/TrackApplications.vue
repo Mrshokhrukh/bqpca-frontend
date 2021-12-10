@@ -72,7 +72,7 @@
               >
                 View Details
               </button>
-              
+
               <button
                 v-if="canSubmitIsar(application)"
                 @click="openIsarModal(application)"
@@ -189,7 +189,7 @@ const canSubmitIsar = (application) => {
   if (application.status !== 'initial_app_approved_awaiting_isar') {
     return false;
   }
-  
+
   // Rule 2: The deadline must not have passed.
   if (isDeadlinePassed(application.isar_submission_deadline)) {
       return false;
