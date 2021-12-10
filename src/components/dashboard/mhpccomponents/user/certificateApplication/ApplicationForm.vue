@@ -613,7 +613,7 @@
                   :id="`doc_type_${index}`"
                   v-model="doc.type"
                   class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 text-sm bg-gray-100"
-                  disabled
+                  @change="updateFormDocuments"
                 >
                   <option value="">Select Document Type</option>
                   <option
