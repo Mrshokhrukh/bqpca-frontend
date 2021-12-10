@@ -560,7 +560,6 @@ const fetchApplications = async () => {
       // if (response.data.results.length === 0) {
       //   error.value = 'No applications found for your account.'
       // }
-      console.log(response)
     } else {
       applications.value = []
     }
