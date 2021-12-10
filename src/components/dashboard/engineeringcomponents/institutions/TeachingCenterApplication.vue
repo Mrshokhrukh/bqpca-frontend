@@ -482,22 +482,6 @@
                   placeholder="Enter teaching center remarks..."
                 ></textarea>
               </div>
-
-              <!-- General Remarks -->
-              <div class="lg:col-span-2 mb-6">
-                <label for="remarks" class="form-label">
-                  Remarks (General)
-                  <span class="text-slate-400 text-xs ml-1">(Optional)</span>
-                </label>
-                <textarea
-                  id="remarks"
-                  v-model="formData.remarks"
-                  rows="3"
-                  class="form-textarea w-full border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-400 transition"
-                  aria-label="General Remarks"
-                  placeholder="Enter general remarks..."
-                ></textarea>
-              </div>
             </div>
           </div>
         </div>
@@ -1005,7 +989,7 @@ const handleFormSubmit = async () => {
         errorMessage += 'An unexpected error occurred. Please check the console for more details.';
       }
     } else {
-      errorMessage += 
+      errorMessage +=
         error.message ||
         'An unexpected network or server error occurred. Please check the console for details.';
     }
