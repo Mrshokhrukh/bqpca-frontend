@@ -40,14 +40,17 @@
             <th class="py-3 px-4 text-left border-b font-semibold text-gray-600">Payment Status</th>
             <th class="py-3 px-4 text-left border-b font-semibold text-gray-600">Submission Date</th>
             <th class="py-3 px-4 text-left border-b font-semibold text-gray-600">Status</th>
+            <!-- NEW COLUMN: Grade Awarded -->
+            <th class="py-3 px-4 text-left border-b font-semibold text-gray-600">Grade Awarded</th>
             <th class="py-3 px-4 text-left border-b font-semibold text-gray-600">Validity Period</th>
             <th class="py-3 px-4 text-left border-b font-semibold text-gray-600">ISAR Deadline</th>
-            <th class="py-3 px-4 text-left border-b font-semibold text-gray-600">Actions</th>
+            <th class="py-3 px-4 text-left border-b font-semibold text-gray-600 min-w-[280px]">Actions</th>
           </tr>
         </thead>
         <tbody>
           <tr v-if="filteredApplications.length === 0">
-            <td colspan="8" class="py-4 px-4 text-center border-b text-gray-500">
+            <!-- Updated colspan to 9 to match new column count -->
+            <td colspan="9" class="py-4 px-4 text-center border-b text-gray-500">
               No applications found matching your criteria.
             </td>
           </tr>
@@ -74,6 +77,19 @@
                 {{ application.status_display || 'N/A' }}
               </span>
             </td>
+
+            <!-- NEW COLUMN DATA: Grade Awarded -->
+            <td class="py-3 px-4 border-b">
+              <div v-if="application.final_grade_awarded_details">
+                <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-800 font-bold border border-blue-200 shadow-sm" title="Grade Awarded">
+                    {{ application.final_grade_awarded_details.rating_category_name }}
+                </span>
+              </div>
+              <div v-else>
+                 <span class="text-gray-400 text-sm">-</span>
+              </div>
+            </td>
+
             <td class="py-3 px-4 border-b text-sm">
               <div v-if="application.status === 'approved_accredited' && application.accreditation_validity_from">
                   <span class="font-semibold text-green-700">{{ formatDate(application.accreditation_validity_from) }}</span>
@@ -93,26 +109,28 @@
               <span v-else class="text-gray-400">N/A</span>
             </td>
             <td class="py-3 px-4 border-b">
-              <button
-                @click="viewApplication(application)"
-                class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded text-sm mr-2"
-              >
-                View Details
-              </button>
-              <button
-                v-if="canSubmitIsar(application)"
-                @click="openIsarModal(application)"
-                class="bg-green-500 hover:bg-green-600 text-white py-1 px-3 rounded text-sm"
-              >
-                Submit ISAR
-              </button>
-              <button
-                v-if="application.status === 'approved_accredited'"
-                @click="openCertificateModal(application)"
-                class="bg-purple-500 hover:bg-purple-600 text-white py-1 px-3 rounded text-sm"
-              >
-                View Certificate
-              </button>
+              <div class="flex items-center gap-2">
+                <button
+                  @click="viewApplication(application)"
+                  class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded text-sm whitespace-nowrap"
+                >
+                  View Details
+                </button>
+                <button
+                  v-if="canSubmitIsar(application)"
+                  @click="openIsarModal(application)"
+                  class="bg-green-500 hover:bg-green-600 text-white py-1 px-3 rounded text-sm whitespace-nowrap"
+                >
+                  Submit ISAR
+                </button>
+                <button
+                  v-if="application.status === 'approved_accredited'"
+                  @click="openCertificateModal(application)"
+                  class="bg-purple-500 hover:bg-purple-600 text-white py-1 px-3 rounded text-sm whitespace-nowrap"
+                >
+                  View Certificate
+                </button>
+              </div>
             </td>
           </tr>
         </tbody>
@@ -172,7 +190,7 @@ const selectedApplicationForIsar = ref(null);
 const isCertificateModalOpen = ref(false);
 const selectedApplicationForCertificate = ref(null);
 
-// === NEW: State for the active signature ===
+// State for the active signature
 const activeSignature = ref({
   name: '',
   designation: '',
@@ -184,7 +202,7 @@ const fetchData = async () => {
   loading.value = true;
   error.value = null;
   try {
-    // === UPDATED: Fetch applications AND signature concurrently ===
+    // Fetch applications AND signature concurrently
     const [appsResponse, sigResponse] = await Promise.all([
         apiService.getAccreditationApplications(),
         apiService.getMastersESignatures({ is_active: true })
