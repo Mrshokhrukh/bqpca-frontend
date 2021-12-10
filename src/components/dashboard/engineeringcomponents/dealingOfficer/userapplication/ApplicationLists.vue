@@ -235,37 +235,33 @@ const paginationEnd = computed(() => {
 })
 
 const getStatus = (app) => {
-  // console.log(app);
-  const primary_qualification = app.user_qualifications.find((q) => q.is_primary_qualification === true);
-  // console.log(primary_qualification);
+  // Check if user_qualifications exists and is an array
+  if (!Array.isArray(app.user_qualifications) || app.user_qualifications.length === 0) {
+    return 'Pending'
+  }
 
+  // Find the primary qualification
+  const primary_qualification = app.user_qualifications.find((q) => q.is_primary_qualification === true)
 
-  // if (!Array.isArray(app.user_qualifications) || app.user_qualifications.length === 0) {
-  //   return 'Pending'
-  // }
+  // If no primary qualification found, return Pending
+  if (!primary_qualification) {
+    return 'Pending'
+  }
 
-  // for (const qualification of app.user_qualifications) {
-  //   const { application_review_status, physical_review_status, endorsement_decision } =
-  //     qualification
+  // Check for regretted status
+  if (
+    primary_qualification.application_review_status === 'Regretted' ||
+    primary_qualification.physical_review_status === 'Regretted' ||
+    primary_qualification.endorsement_decision === 'Regretted'
+  ) {
+    return 'Regretted'
+  }
 
-  //   if (
-  //     application_review_status === 'Regretted' ||
-  //     physical_review_status === 'Regretted' ||
-  //     endorsement_decision === 'Regretted'
-  //   ) {
-  //     return 'Regretted'
-  //   }
-  // }
-
+  // Check if all are approved
   const allApproved =
     primary_qualification.application_review_status === 'Approved' &&
     primary_qualification.physical_review_status === 'Approved' &&
     primary_qualification.endorsement_decision === 'Approved'
-
-  console.log(allApproved);
-
-
-
 
   if (allApproved) {
     return 'Approved'
@@ -273,11 +269,21 @@ const getStatus = (app) => {
 
   return 'Pending'
 }
-
 const getPaymentStatus = (app) => {
-  const primary_qualification = app.user_qualifications.find((q) => q.is_primary_qualification === true);
+  // Check if user_qualifications exists and is an array
+  if (!Array.isArray(app.user_qualifications) || app.user_qualifications.length === 0) {
+    return 'pending'
+  }
 
-  return primary_qualification.payment_status
+  // Find the primary qualification
+  const primary_qualification = app.user_qualifications.find((q) => q.is_primary_qualification === true)
+
+  // If no primary qualification found, return pending
+  if (!primary_qualification) {
+    return 'pending'
+  }
+
+  return primary_qualification.payment_status || 'pending'
 }
 
 const getStatusClasses = (app) => {
