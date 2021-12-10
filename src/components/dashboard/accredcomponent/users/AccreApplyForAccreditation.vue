@@ -698,7 +698,7 @@ const handleSubmitActual = async () => {
     paymentInitiationFormData.append('application_no', appId);
     // -----------------------
 
-    paymentInitiationFormData.append('serviceCode', '100194');
+    paymentInitiationFormData.append('serviceCode', '102801');
     paymentInitiationFormData.append('taxPayerName', application.value.institute_profile_name_display);
     paymentInitiationFormData.append('taxPayerNo', user.cid);
     paymentInitiationFormData.append('taxPayerDocumentNo', user.cid);

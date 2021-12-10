@@ -507,8 +507,8 @@ const getComprehensiveStatus = (application) => {
   if (application.is_draft) return 'Draft'
 
   const statusMap = {
-    SUBMITTED: 'Pending',
-    UNDER_REVIEW: 'Pending',
+    SUBMITTED: 'Submitted',
+    UNDER_REVIEW: 'Under Review',
     PENDING_CLARIFICATION: 'Pending',
     APPROVED: 'Approved',
     REGRETTED: 'Rejected',
@@ -525,7 +525,7 @@ const getComprehensiveStatus = (application) => {
 const getStatusClass = (application) => {
   const status = getComprehensiveStatus(application)
   switch (status) {
-    case 'Completed':
+    case 'Submitted':
       return 'bg-green-100 text-green-800'
     case 'Needs Participants':
       return 'bg-yellow-100 text-yellow-800'

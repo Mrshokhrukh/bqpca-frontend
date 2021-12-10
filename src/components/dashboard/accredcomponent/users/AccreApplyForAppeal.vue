@@ -398,7 +398,7 @@ const handleSubmitActual = async () => {
     // --- KEY CHANGE 2: Send Database ID for Backend Lookup ---
     paymentInitiationFormData.append('application_no', appealId);
 
-    paymentInitiationFormData.append('serviceCode', '100195');
+    paymentInitiationFormData.append('serviceCode', '102801');
     paymentInitiationFormData.append('taxPayerName', autoFilledDetails['Name of Institution']);
     paymentInitiationFormData.append('taxPayerNo', user.cid);
     paymentInitiationFormData.append('taxPayerDocumentNo', user.cid);

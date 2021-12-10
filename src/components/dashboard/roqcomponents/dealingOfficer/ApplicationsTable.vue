@@ -47,8 +47,10 @@
       </div>
     </div>
 
-    <ApplicationModal v-if="modalType === 'view'" :show-modal="showModal" :modal-type="modalType" :application="selectedApplication"
-      :user-role="userRole" @close="closeModal" @update="handleApplicationUpdate" />
+    <ApplicationModal
+      v-if="['view', 'edit', 'addNote', 'forward', 'approve', 'regret', 'addPrivateNote'].includes(modalType)"
+      :show-modal="showModal" :modal-type="modalType" :application="selectedApplication" :user-role="userRole"
+      @close="closeModal" @update="handleApplicationUpdate" />
     <RemarksModal :show-modal="showRemarksModal" :chief-remarks="selectedApplication.chief_remarks"
       :dealing-officer-remarks="selectedApplication.dealing_officer_remarks"
       :private-remarks="selectedApplication.chief_to_do_remarks" @close="closeRemarksModal" />
