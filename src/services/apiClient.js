@@ -3,12 +3,12 @@ import axios from 'axios'
 import { useAuthStore } from '@/stores/authStore'
 
 const apiClient = axios.create({
-  baseURL:
-    import.meta.env.MODE === 'production'
-      ? import.meta.env.VITE_API_BASE_URL_PROD
-      : import.meta.env.VITE_API_BASE_URL,
-  baseURL: 'http://127.0.0.1:8000/api',
-  // baseURL: 'https://bqpca.systems.gov.bt/api',
+  // baseURL:
+  //   import.meta.env.MODE === 'production'
+  //     ? import.meta.env.VITE_API_BASE_URL_PROD
+  //     : import.meta.env.VITE_API_BASE_URL,
+  // baseURL: 'http://127.0.0.1:8000/api',
+  baseURL: 'https://bqpca.systems.gov.bt/api',
   headers: {
     'Content-Type': 'application/json',
   },
