@@ -1430,12 +1430,19 @@ const validateForm = () => {
     errors.year_of_completion = 'Year of completion is required.'
     isValid = false
   }
+  if(supportingDocuments.value.length === 0){
+    errors.mandatory_documents = "Please Select atleast one or more documents"
+    isValid = false
+  }
 
   supportingDocuments.value.forEach((doc, index) => {
     if (doc.type && doc.files.length === 0) {
       errors[`document_file_${index}`] = 'Please upload a file for this selected document type.'
       isValid = false
     } else if (!doc.type && doc.files.length > 0) {
+      errors[`document_type_${index}`] = 'Please select a document type for this uploaded file.'
+      isValid = false
+    }else if(doc.type='Select Document Type'){
       errors[`document_type_${index}`] = 'Please select a document type for this uploaded file.'
       isValid = false
     }
