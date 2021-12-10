@@ -1093,8 +1093,6 @@ onMounted(async () => {
     allRegistrationTypesFromAPI.value = responses[3]?.data?.results || []
     fetchedDocumentTypes.value = responses[4]?.data?.results || []
 
-    console.log(responses[4])
-
     if (filteredRegistrationTypes.value.length === 1) {
       localFormData.registration_type = filteredRegistrationTypes.value[0].id
     } else {
