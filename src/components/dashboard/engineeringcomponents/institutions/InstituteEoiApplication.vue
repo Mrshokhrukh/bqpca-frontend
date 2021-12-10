@@ -7,9 +7,9 @@
     </div>
   </div>
 
-  <!-- Main Form (Only shown if no existing application) -->
+  <!-- Main Form (Only shown if no existing application or it's a reapply) -->
   <div
-    v-else-if="showForm && !hasExistingApplication"
+    v-else-if="showForm && (!hasExistingApplication || shouldAllowReapply)"
     class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative overflow-hidden"
   >
     <!-- Toast Notification -->
@@ -81,8 +81,8 @@
             Personal details have been auto-filled from your profile
           </p>
 
-          <!-- Reapply Notice -->
-          <div v-if="isReapply" class="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg inline-block">
+          <!-- Reapply Notice for Rejected/Regretted applications -->
+          <div v-if="isReapply && isRejectedOrRegretted" class="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg inline-block">
             <div class="flex items-center">
               <svg class="w-5 h-5 text-yellow-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -92,7 +92,10 @@
                   d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
-              <span class="text-yellow-700 font-medium">You are submitting a new application after rejection</span>
+              <span class="text-yellow-700 font-medium">
+                You are submitting a new application after
+                {{ existingApplication?.review_decision === 'Regretted' ? 'regretting' : 'rejection' }}
+              </span>
             </div>
           </div>
         </div>
@@ -765,7 +768,7 @@
                 />
               </div>
 
-              <!-- Add this in the Institution Details section -->
+              <!-- Website (Optional) -->
               <div>
                 <label for="website" class="form-label">Website (Optional)</label>
                 <input
@@ -862,9 +865,9 @@
     </div>
   </div>
 
-  <!-- Already Applied View -->
+  <!-- Already Applied View (Show only if not reapply) -->
   <div
-    v-else-if="hasExistingApplication"
+    v-else-if="hasExistingApplication && !shouldAllowReapply"
     class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 relative overflow-hidden flex items-center justify-center"
   >
     <div class="absolute inset-0 overflow-hidden pointer-events-none">
@@ -895,7 +898,7 @@
               d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
             />
             <path
-              v-else-if="existingApplication?.review_decision === 'Rejected'"
+              v-else-if="isRejectedOrRegretted"
               stroke-linecap="round"
               stroke-linejoin="round"
               stroke-width="2"
@@ -922,16 +925,21 @@
           {{ statusMessage }}
         </p>
 
-        <!-- Rejection Details -->
-        <div v-if="existingApplication?.review_decision === 'Rejected' && existingApplication?.reason_if_rejected"
+        <!-- Rejection/Regretted Details -->
+        <div v-if="isRejectedOrRegretted && existingApplication?.reason_if_rejected"
              class="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-          <h4 class="font-medium text-red-700 mb-2">Rejection Reason:</h4>
+          <h4 class="font-medium text-red-700 mb-2">
+            {{ existingApplication.review_decision === 'Regretted' ? 'Regretted Reason:' : 'Rejection Reason:' }}
+          </h4>
           <p class="text-red-600">{{ existingApplication.reason_if_rejected }}</p>
         </div>
 
-        <!-- Reapply Section (Only for rejected applications) -->
-        <div v-if="existingApplication?.review_decision === 'Rejected'" class="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-          <p class="text-yellow-700 mb-4">Your previous application was rejected. You can submit a new application with corrected information.</p>
+        <!-- Reapply Section (Only for rejected/regretted applications) -->
+        <div v-if="isRejectedOrRegretted" class="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <p class="text-yellow-700 mb-4">
+            Your previous application was {{ existingApplication.review_decision.toLowerCase() }}.
+            You can submit a new application with corrected information.
+          </p>
           <button
             @click="handleReapply"
             class="btn btn-primary w-full"
@@ -1058,6 +1066,12 @@ const hasExistingApplication = ref(false)
 const isChecking = ref(true)
 const isReapply = ref(false)
 
+// Computed property to check if application is rejected or regretted
+const isRejectedOrRegretted = computed(() => {
+  const rejectedStatuses = ['Rejected', 'Regretted'];
+  return rejectedStatuses.includes(existingApplication.value?.review_decision);
+})
+
 // Computed properties for status display
 const statusClass = computed(() => {
   if (!existingApplication.value) return 'bg-gradient-to-br from-blue-500 to-indigo-600'
@@ -1066,6 +1080,7 @@ const statusClass = computed(() => {
     case 'Approved':
       return 'bg-gradient-to-br from-emerald-500 to-teal-600'
     case 'Rejected':
+    case 'Regretted':
       return 'bg-gradient-to-br from-red-500 to-pink-600'
     case 'Pending':
       return 'bg-gradient-to-br from-yellow-500 to-amber-600'
@@ -1081,6 +1096,7 @@ const statusTitleClass = computed(() => {
     case 'Approved':
       return 'from-emerald-600 to-teal-600'
     case 'Rejected':
+    case 'Regretted':
       return 'from-red-600 to-pink-600'
     case 'Pending':
       return 'from-yellow-600 to-amber-600'
@@ -1097,6 +1113,8 @@ const statusTitle = computed(() => {
       return 'Application Approved'
     case 'Rejected':
       return 'Application Rejected'
+    case 'Regretted':
+      return 'Application Regretted'
     case 'Pending':
       return 'Application Under Review'
     default:
@@ -1115,11 +1133,21 @@ const statusMessage = computed(() => {
       return `Your EOI application for ${course} at ${institution} has been approved. You can now proceed to DPR application.`
     case 'Rejected':
       return `Your EOI application for ${course} at ${institution} was rejected.`
+    case 'Regretted':
+      return `Your EOI application for ${course} at ${institution} was regretted.`
     case 'Pending':
       return `Your EOI application for ${course} at ${institution} is currently under review.`
     default:
       return `Your EOI application for ${course} at ${institution} is being processed.`
   }
+})
+
+// Computed property to determine if reapply should be allowed
+const shouldAllowReapply = computed(() => {
+  // Allow reapply only if:
+  // 1. User has a rejected or regretted application AND
+  // 2. The route has reapply=true query param OR user explicitly clicked reapply
+  return isReapply.value && isRejectedOrRegretted.value
 })
 
 const showToastNotification = (message, type = 'info') => {
@@ -1205,16 +1233,17 @@ const checkApplicationStatus = async () => {
       if (userApplication) {
         existingApplication.value = userApplication
 
-        // If reapply flag is set and application is rejected, allow new application
-        if (isReapply.value && userApplication.review_decision === 'Rejected') {
-          hasExistingApplication.value = false
+        // Check if we should show the form for reapply
+        if (isReapply.value && isRejectedOrRegretted.value) {
+          hasExistingApplication.value = false // Allow form to show
           showForm.value = true
-          showToastNotification('You can now submit a new application after rejection.', 'info')
+          showToastNotification(`You can now submit a new application after ${userApplication.review_decision.toLowerCase()}.`, 'info')
         } else {
-          hasExistingApplication.value = true
+          hasExistingApplication.value = true // Show status page
           showForm.value = false
         }
       } else {
+        // No existing application
         hasExistingApplication.value = false
         showForm.value = true
       }
@@ -1420,9 +1449,22 @@ const handleSubmit = async () => {
     return
   }
 
-  // Check if user already has an approved or pending application (except for reapply)
-  if (!isReapply.value && hasExistingApplication.value) {
+  // Allow submission if:
+  // 1. No existing application OR
+  // 2. User is reapplying after rejection or regretting
+  const canSubmit = !hasExistingApplication.value ||
+                    (isReapply.value && isRejectedOrRegretted.value)
+
+  if (!canSubmit) {
     showToastNotification('You already have an existing application. Please check your application status.')
+    return
+  }
+
+  // Additional check: If user has a pending or approved application and is not reapplying
+  if (existingApplication.value &&
+      !isReapply.value &&
+      !isRejectedOrRegretted.value) {
+    showToastNotification('You already have an application in progress. Please check your application status.')
     return
   }
 
@@ -1459,12 +1501,21 @@ const handleSubmit = async () => {
     }
   })
 
+  // Add reapply reference if applicable
+  const rejectedAppId = sessionStorage.getItem('rejectedApplicationId') || route.query.rejected_app_id
+  if (rejectedAppId && isReapply.value) {
+    submitData.append('reapply_from_id', rejectedAppId)
+  }
+
   try {
     console.log('Submitting form data...')
     const response = await apiService.createEpcInstitute(submitData)
     if (response.data) {
       showToastNotification('Expression of Interest submitted successfully!', 'success')
       clearDraft()
+      // Clear reapply session storage
+      sessionStorage.removeItem('rejectedApplicationId')
+      sessionStorage.removeItem('rejectedApplicationStatus')
       setTimeout(() => {
         router.push('/admin/institutions/engineering_certification/dashboard')
       }, 1500)
@@ -1533,6 +1584,12 @@ const clearDraft = () => {
 }
 
 const handleReapply = () => {
+  // Store the rejected/regretted application ID for reference
+  if (existingApplication.value?.id) {
+    sessionStorage.setItem('rejectedApplicationId', existingApplication.value.id);
+    sessionStorage.setItem('rejectedApplicationStatus', existingApplication.value.review_decision);
+  }
+
   // Set reapply flag and reset existing application
   isReapply.value = true
   hasExistingApplication.value = false
@@ -1550,7 +1607,14 @@ const handleReapply = () => {
   // Clear any existing draft
   clearDraft()
 
-  showToastNotification('You can now submit a new application. Please fill in the form.', 'info')
+  // Navigate with reapply query parameter
+  router.push({
+    path: '/admin/institutions/engineering_certification/apply_for_eoi',
+    query: {
+      reapply: 'true',
+      status: existingApplication.value?.review_decision?.toLowerCase()
+    }
+  })
 }
 
 onMounted(async () => {
@@ -1560,8 +1624,9 @@ onMounted(async () => {
   // Auto-fill user data
   autoFillUserData()
 
-  // Only load draft if no existing application or it's a reapply
-  if (!hasExistingApplication.value || isReapply.value) {
+  // Only load draft if no existing application OR it's a valid reapply
+  if (!hasExistingApplication.value ||
+      (isReapply.value && isRejectedOrRegretted.value)) {
     const savedDraft = localStorage.getItem('epcEoiFormDraft')
     if (savedDraft) {
       try {

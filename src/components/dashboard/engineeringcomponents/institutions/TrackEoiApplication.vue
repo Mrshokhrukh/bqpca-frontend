@@ -84,7 +84,7 @@
               <div class="flex flex-col sm:flex-row gap-2">
                 <!-- Reapply Button (for rejected/regretted applications) -->
                 <button
-                  v-if="showReapplyButton(application.review_decision)"
+                  v-if="canReapply(application)"
                   @click="handleReapply(application)"
                   class="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-green-600 to-emerald-600 rounded-lg hover:from-green-700 hover:to-emerald-700 transition-colors shadow-sm"
                 >
@@ -150,7 +150,7 @@
 
           <!-- Rejected Status Message -->
           <div
-            v-if="showReapplyButton(application.review_decision)"
+            v-if="canReapply(application)"
             class="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg"
           >
             <div class="flex items-center">
@@ -162,7 +162,7 @@
                   d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.998-.833-2.732 0L4.342 16.5c-.77.833.192 2.5 1.732 2.5z"
                 />
               </svg>
-              <span class="text-yellow-700">You can submit a new application with corrected information.</span>
+              <span class="text-yellow-700">Your application was rejected. You can submit a new application with corrected information.</span>
             </div>
           </div>
         </div>
@@ -227,15 +227,29 @@ const isLoading = ref(false)
 const apiError = ref(false)
 const errorMessage = ref('')
 
-// Helper function to check if reapply button should be shown
-const showReapplyButton = (status) => {
-  return status === 'Rejected' || status === 'Regretted';
+// Helper function to check if user can reapply
+const canReapply = (application) => {
+  const rejectedStatuses = ['Rejected', 'Regretted'];
+  return rejectedStatuses.includes(application.review_decision);
 }
 
 // Method to handle reapply
 const handleReapply = (application) => {
-  // Navigate to EOI application form with reapply context
-  router.push('/admin/institutions/engineering_certification/apply_for_eoi?reapply=true')
+  if (canReapply(application)) {
+    // Store the rejected/regretted application ID for reference
+    sessionStorage.setItem('rejectedApplicationId', application.id);
+    sessionStorage.setItem('rejectedApplicationStatus', application.review_decision);
+
+    // Navigate to EOI application form with reapply context
+    router.push({
+      path: '/admin/institutions/engineering_certification/apply_for_eoi',
+      query: {
+        reapply: 'true',
+        rejected_app_id: application.id,
+        status: application.review_decision.toLowerCase()
+      }
+    })
+  }
 }
 
 // Optional: View application details
@@ -273,7 +287,6 @@ const getStatusColor = (status) => {
 
 // Method to fetch applications from the API
 const fetchApplications = async () => {
-  // ... existing fetchApplications code remains the same ...
   if (!authStore.user || !authStore.user.cid) {
     errorMessage.value = 'User information not available. Please log in again.'
     apiError.value = true
