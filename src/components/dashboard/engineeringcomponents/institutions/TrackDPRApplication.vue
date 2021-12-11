@@ -238,8 +238,13 @@ const fetchApplications = async () => {
     const response = await apiService.getEpcInstitutes();
     if (response?.data?.results) {
       const userCid = authStore.user.cid;
+
       applications.value = response.data.results.filter(
-        (app) => app.dpr_name && app.CID && app.CID.toLowerCase() === userCid.toLowerCase()
+        (app) =>
+          app.CID &&
+          app.CID.toLowerCase() === userCid.toLowerCase() &&
+          app.dpr_name && // Check if dpr_name exists
+          app.dpr_name.trim() !== '' // Check if it's not empty or just whitespace
       );
     } else {
       applications.value = [];
@@ -286,7 +291,7 @@ const handlePaymentCompleted = async (paymentData) => {
   try {
     const paymentGatewayFormData = new FormData();
     paymentGatewayFormData.append('refNo', paymentId);
-    paymentGatewayFormData.append('serviceCode', '102805');
+    paymentGatewayFormData.append('serviceCode', '100259');
     paymentGatewayFormData.append('taxPayerName', user.full_name || user.cid);
     paymentGatewayFormData.append('taxPayerNo', user.cid);
     paymentGatewayFormData.append('taxPayerDocumentNo', user.cid);
