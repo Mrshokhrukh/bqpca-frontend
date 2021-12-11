@@ -1067,35 +1067,6 @@ const allQualifications = ref([])
 const universities = ref([])
 const allRegistrationTypesFromAPI = ref([])
 
-const REGISTRATION_TYPE_KEYWORDS = {
-  full: ['full', 'new'],
-  provisional: ['provisional'],
-  temporary: ['temporary'],
-}
-
-const MANDATORY_DOC_KEYWORDS = {
-  provisional: [
-    'graduation certificate',
-    'provisional certificate',
-    'course completion certificate',
-    'marksheet',
-    'internship completion',
-    'class x',
-    'class xii',
-    'citizenship identity card',
-    'security clearance',
-    'recognition of qualification',
-  ],
-  temporary: [
-    'graduation certificate',
-    'work offer letter',
-    'request letter',
-    'passport copy',
-    'visa copy',
-    'permit copy',
-  ],
-}
-
 onMounted(async () => {
   isLoadingMasters.value = true
   if (props.selectedType === 'cid') {
@@ -1220,27 +1191,28 @@ const getRegistrationTypeCategory = (typeId) => {
   return null
 }
 
+// const getRegistrationTypeCategory = (typeId) => {
+//   const type = allRegistrationTypesFromAPI.value.find((rt) => rt.id === typeId)
+//   if (!type) return null
+//   const nameLower = type.name.toLowerCase()
+//   if (REGISTRATION_TYPE_KEYWORDS.full.some((keyword) => nameLower.includes(keyword))) {
+//     return 'full'
+//   } else if (
+//     REGISTRATION_TYPE_KEYWORDS.provisional.some((keyword) => nameLower.includes(keyword))
+//   ) {
+//     return 'provisional'
+//   } else if (REGISTRATION_TYPE_KEYWORDS.temporary.some((keyword) => nameLower.includes(keyword))) {
+//     return 'temporary'
+//   }
+//   return null
+// }
+
 const currentMandatoryDocIds = computed(() => {
-  const category = getRegistrationTypeCategory(localFormData.registration_type)
-  if (category === 'full') {
-    return fetchedDocumentTypes.value.map((dt) => dt.id)
-  } else if (category === 'provisional' || category === 'temporary') {
-    const keywords = MANDATORY_DOC_KEYWORDS[category]
-    return fetchedDocumentTypes.value
-      .filter((dt) => {
-        const docNameLower = dt.document_name.toLowerCase()
-        return keywords.some((keyword) => docNameLower.includes(keyword.toLowerCase()))
-      })
-      .map((dt) => dt.id)
-  }
-  return []
+  return fetchedDocumentTypes.value.map((doc) => doc.id)
 })
 
 const currentRequiredDocNames = computed(() => {
-  const mandatoryIds = currentMandatoryDocIds.value
-  return fetchedDocumentTypes.value
-    .filter((dt) => mandatoryIds.includes(dt.id))
-    .map((dt) => dt.document_name)
+  return fetchedDocumentTypes.value.map((doc) => doc.document_name)
 })
 
 const isCIDValid = computed(() => {
@@ -1256,14 +1228,27 @@ watch(
 )
 
 watch(
-  () => localFormData.registration_type,
-  () => {
+  [() => localFormData.registration_type, fetchedDocumentTypes],
+  ([newRegType], [oldRegType]) => {
     delete errors.mandatory_documents
     supportingDocuments.value.forEach((_, index) => {
       delete errors[`document_type_${index}`]
       delete errors[`document_file_${index}`]
     })
+
+    if (!newRegType || fetchedDocumentTypes.value.length === 0) {
+      supportingDocuments.value = [{ type: '', files: [] }]
+      return
+    }
+
+    const mandatoryIds = currentMandatoryDocIds.value
+    if (mandatoryIds.length > 0) {
+      supportingDocuments.value = mandatoryIds.map((id) => ({ type: id, files: [] }))
+    } else {
+      supportingDocuments.value = [{ type: '', files: [] }]
+    }
   },
+  { deep: true },
 )
 
 const validateFormStageOne = () => {
@@ -1431,6 +1416,13 @@ const validateForm = () => {
     isValid = false
   }
 
+  const validUploadedDocs = supportingDocuments.value.filter((d) => d.type && d.files.length > 0)
+
+  if (validUploadedDocs.length === 0) {
+    errors.mandatory_documents = 'At least one supporting document must be uploaded.'
+    isValid = false
+  }
+
   supportingDocuments.value.forEach((doc, index) => {
     if (doc.type && doc.files.length === 0) {
       errors[`document_file_${index}`] = 'Please upload a file for this selected document type.'
@@ -1442,7 +1434,6 @@ const validateForm = () => {
   })
 
   const mandatoryDocIds = currentMandatoryDocIds.value
-  const validUploadedDocs = supportingDocuments.value.filter((d) => d.type && d.files.length > 0)
   const uploadedDocTypeIds = new Set(validUploadedDocs.map((d) => d.type))
 
   const missingMandatoryDocNames = []

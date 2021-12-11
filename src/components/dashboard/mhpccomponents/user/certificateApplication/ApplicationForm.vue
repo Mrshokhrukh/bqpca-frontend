@@ -613,7 +613,7 @@
                   :id="`doc_type_${index}`"
                   v-model="doc.type"
                   class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 text-sm bg-gray-100"
-                  disabled
+                  @change="updateFormDocuments"
                 >
                   <option value="">Select Document Type</option>
                   <option
@@ -1480,9 +1480,9 @@ const handleSubmitActual = async () => {
         localFormData.other_qualification_name_specify,
       )
     } else {
-      qualificationFormData.append('qualification_name_id', Number(localFormData.qualification_name))
+      qualificationFormData.append('qualification_name', Number(localFormData.qualification_name))
     }
-    qualificationFormData.append('qualification_type_id', Number(localFormData.qualification_type))
+    qualificationFormData.append('qualification_type', Number(localFormData.qualification_type))
     qualificationFormData.append('institute_university', localFormData.institute)
     if (localFormData.year_of_completion) {
       const year = localFormData.year_of_completion.split('-')[0]
