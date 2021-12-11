@@ -238,8 +238,13 @@ const fetchApplications = async () => {
     const response = await apiService.getEpcInstitutes();
     if (response?.data?.results) {
       const userCid = authStore.user.cid;
+
       applications.value = response.data.results.filter(
-        (app) => app.CID && app.CID.toLowerCase() === userCid.toLowerCase()
+        (app) =>
+          app.CID &&
+          app.CID.toLowerCase() === userCid.toLowerCase() &&
+          app.dpr_name && // Check if dpr_name exists
+          app.dpr_name.trim() !== '' // Check if it's not empty or just whitespace
       );
     } else {
       applications.value = [];
