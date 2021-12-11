@@ -1480,9 +1480,9 @@ const handleSubmitActual = async () => {
         localFormData.other_qualification_name_specify,
       )
     } else {
-      qualificationFormData.append('qualification_name_id', Number(localFormData.qualification_name))
+      qualificationFormData.append('qualification_name', Number(localFormData.qualification_name))
     }
-    qualificationFormData.append('qualification_type_id', Number(localFormData.qualification_type))
+    qualificationFormData.append('qualification_type', Number(localFormData.qualification_type))
     qualificationFormData.append('institute_university', localFormData.institute)
     if (localFormData.year_of_completion) {
       const year = localFormData.year_of_completion.split('-')[0]
