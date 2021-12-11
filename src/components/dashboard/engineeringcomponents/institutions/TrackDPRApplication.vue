@@ -239,7 +239,7 @@ const fetchApplications = async () => {
     if (response?.data?.results) {
       const userCid = authStore.user.cid;
       applications.value = response.data.results.filter(
-        (app) => app.CID && app.CID.toLowerCase() === userCid.toLowerCase()
+        (app) => app.dpr_name && app.CID && app.CID.toLowerCase() === userCid.toLowerCase()
       );
     } else {
       applications.value = [];
